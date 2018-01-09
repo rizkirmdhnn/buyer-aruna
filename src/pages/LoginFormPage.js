@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Text, Image, View } from 'react-native';
-// import firebase from 'firebase';
+import { Text, Image, View, TouchableOpacity } from 'react-native';
 import { Button, Card, CardSection, Input, Spinner } from './../components/common';
-
+// import firebase from 'firebase';
+import RegistrationFormPage from './RegistrationFormPage';
 
 class LoginFormPage extends Component {
 
@@ -31,14 +31,6 @@ class LoginFormPage extends Component {
         this.setState({ error: 'Authentication Failed', loading: false });
     }
 
-    onLoginSuccess() {
-        this.setState({
-            email: '',
-            password: '',
-            loading: false,
-            error: ''
-        });
-    }
     renderButton() {
         if (this.state.loading) {
             return <Spinner size="small" />
@@ -50,6 +42,22 @@ class LoginFormPage extends Component {
             </Button>
         );
     }
+
+    onLoginSuccess() {
+        this.setState({
+            email: '',
+            password: '',
+            loading: false,
+            error: ''
+        });
+    }
+
+    navSecond() {
+        this.props.navigator.push({
+            component: RegistrationForm
+        })
+    }
+
 
     render() {
         return (
@@ -90,11 +98,13 @@ class LoginFormPage extends Component {
 
                 <CardSection>
                     <Text style={styles.textBottom}>
-                        Belom memiliki akun?  
+                        Belom memiliki akun?
                     </Text>
-                    <Text style={styles.textLinkSignUp}>
-                        Sign Up 
-                    </Text>
+
+                    <TouchableOpacity onPress={this.navSecond.bind(this)}>
+                        <Text style={styles.textLinkSignUp}>Sign Up</Text>
+                    </TouchableOpacity>
+
                 </CardSection>
 
                 <CardSection>
@@ -115,7 +125,8 @@ const styles = {
     imageStyle: {
         paddingLeft: 200,
         height: 50,
-        width: 50
+        width: 50,
+        alignSelf: 'center'
     },
     textBottom: {
         margin: 5,

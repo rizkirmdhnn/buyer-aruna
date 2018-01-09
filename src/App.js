@@ -1,32 +1,57 @@
+/**
+ *  Import Component
+ */
 import React, { Component } from 'react';
-import { View } from 'react-native';
-import { DrawerNavigator } from 'react-navigation';
+import { View, Text } from 'react-native';
+import { TabNavigator } from 'react-navigation';
+
+
+/**
+ *  List Page
+ */
+import MasterPage from './pages/MasterPage';
 import LoginFormPage from './pages/LoginFormPage';
+import RequestOrderPage from './pages/RequestOrderPage';
 import HomePage from './pages/HomePage';
-import { Button, Spinner } from './components/common';
-import RequestOrder from './pages/RequestOrder';
+import TransactionPage from './pages/TransactionPage'
 
 
-class App extends Component {
+class App extends React.Component {
     state = { loggedIn: null };
 
     renderContent() {
         switch (this.state.loggedIn) {
-            case true:
-                return <Button onPress={() => firebase.auth().signOut()}>Log Out</Button>;
+            case false:
+                return <LoginFormPage />;
             default:
-                return <HomePage />;
+                return <MasterPage />;
         }
     }
 
     render() {
+        const MainNavigator = TabNavigator ({
+            home: { screen: HomePage },
+            request: { screen: RequestOrderPage },
+            transaction: { screen: TransactionPage }
+        });
+
         return (
-            <View>
-                {this.renderContent()}
+            <View style={styles.container}>
+                <MainNavigator />
             </View>
         );
     };
 };
 
+
+const styles = {
+    container: {
+        flex: 1,
+        backgroundColor: '#FFF'
+    },
+    tabNav: {
+        backgroundColor: '#FFF'
+    }
+}
 
 export default App;
