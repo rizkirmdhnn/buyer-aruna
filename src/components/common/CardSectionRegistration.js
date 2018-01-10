@@ -1,27 +1,23 @@
-import React from 'react';
-import { View } from 'react-native';
+import React, { Component } from 'react'
+import { View } from 'react-native'
 
+class CardSectionRegistration extends Component {
+	render() {
+		return (
+			<View style={styles.containerStyle}>
+				{this.props.children}
+			</View>
+		)
+	}
+}
 
-const CardSectionRegistration = (props) => {
-    return (
-        <View style={style.containerStyle}>
-            {props.children}
-        </View>
-    );
-};
+const styles = {
+	containerStyle: {
+		padding: 5,
+		justifyContent: 'flex-start',
+		flexDirection: 'row',
+		position: 'relative'
+	}
+}
 
-
-const style = {
-    containerStyle: {
-        borderBottomWidth: 1,
-        padding: 2,
-        backgroundColor: '#fff',
-        justifyContent: 'flex-start',
-        flexDirection: 'row',
-        borderColor: '#ddd',
-        position: 'relative'
-    }
-};
-
-
-export { CardSectionRegistration };
+export { CardSectionRegistration }

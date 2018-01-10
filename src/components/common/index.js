@@ -5,6 +5,7 @@ export * from './CardSection';
 export * from './CardSectionRegistration';
 export * from './Header';
 export * from './Input';
+export * from './InputRegistration';
 export * from './Spinner';
 export * from './HeaderHome';
 export * from './CardProduct';
