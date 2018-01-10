@@ -5,7 +5,12 @@ import { Text, View } from 'react-native';
 class RequestOrderPage extends Component {
     
     static navigationOptions = {
-		title: 'Request'
+        title: 'Request',
+        header: () => {
+            return {
+                right: <Text>Go Back</Text>
+            };
+        }
     }
 
     render(){

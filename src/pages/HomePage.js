@@ -5,6 +5,14 @@ import React, { Component } from 'react';
 import { View, Text, Image, ScrollView, Dimensions, TouchableHighlight } from 'react-native';
 import { Button, CardProduct, CardSectionProduct } from './../components/common';
 
+
+/**
+ *  Import Common
+ */
+
+import { HeaderHome } from './../components/common';
+
+
 class HomePage extends Component {
 
     static navigationOptions = {
@@ -12,13 +20,13 @@ class HomePage extends Component {
     }
 
     render() {
-        const { navigate } = this.props.navigation
+        const { navigate } = this.props.navigation;
 
         return (
             <ScrollView>
                 <View style={styles.container}>
                     {/* <RouteTab /> */}
-
+                    <HeaderHome />
                     <Image
                         style={styles.imageStyle}
                         source={require('./../assets/image/fish_1.jpg')}

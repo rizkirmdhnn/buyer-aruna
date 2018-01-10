@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
-import { Text, Image, View, TouchableOpacity } from 'react-native';
+import { Text, Image, View, TouchableOpacity, ScrollView } from 'react-native';
 import { Card, CardSection, Input, Spinner } from './../components/common';
 // import firebase from 'firebase';
 import { Button } from 'react-native-elements'
+import RegistrationFormPage from './../pages/RegistrationFormPage';
 
 class LoginFormPage extends Component {
 
     // static navigationOptions = {
-	// 	title: 'Login'
-	// }
+    // 	title: 'Login'
+    // }
 
 
     state = {
@@ -58,65 +59,63 @@ class LoginFormPage extends Component {
         });
     }
 
-    navSecond() {
-        this.props.navigator.push({
-            component: RegistrationForm
-        })
-    }
-
 
     render() {
+        const { navigate } = this.props.navigation
+
         return (
-            <Card>
-                <CardSection>
-                    <Image
-                        style={styles.imageStyle}
-                        source={require('./../assets/image/logo.png')}
-                    />
-                </CardSection>
+            <ScrollView>
+                <Card>
+                    <CardSection>
+                        <Image
+                            style={styles.imageStyle}
+                            source={require('./../assets/image/logo.png')}
+                        />
+                    </CardSection>
 
-                <CardSection>
-                    <Input
-                        placeholder="Username/email"
-                        label="Email"
-                        value={this.state.email}
-                        onChangeText={email => this.setState({ email })}
-                    />
-                </CardSection>
+                    <CardSection>
+                        <Input
+                            placeholder="Username/email"
+                            label="Email"
+                            value={this.state.email}
+                            onChangeText={email => this.setState({ email })}
+                        />
+                    </CardSection>
 
-                <CardSection>
-                    <Input
-                        secureTextEntry
-                        placeholder="Password"
-                        label="Password"
-                        value={this.state.password}
-                        onChangeText={password => this.setState({ password })}
-                    />
-                </CardSection>
+                    <CardSection>
+                        <Input
+                            secureTextEntry
+                            placeholder="Password"
+                            label="Password"
+                            value={this.state.password}
+                            onChangeText={password => this.setState({ password })}
+                        />
+                    </CardSection>
 
-                <Text style={styles.errorText}>
-                    {this.state.error}
-                </Text>
-
-                <CardSection>
-                    {this.renderButton()}
-                </CardSection>
-
-                <CardSection>
-                    <Text style={styles.textBottom}>
-                        Belom memiliki akun?
+                    <Text style={styles.errorText}>
+                        {this.state.error}
                     </Text>
 
-                    <TouchableOpacity onPress={this.navSecond.bind(this)}>
-                        <Text style={styles.textLinkSignUp}>Sign Up</Text>
-                    </TouchableOpacity>
+                    <CardSection>
+                        {this.renderButton()}
+                    </CardSection>
 
-                </CardSection>
+                    <CardSection>
+                        <Text style={styles.textBottom}>
+                            Belom memiliki akun?
+                    </Text>
 
-                <CardSection>
-                    <Text style={styles.textLinkForgetPassword}>Lupa Password?</Text>
-                </CardSection>
-            </Card>
+                        <TouchableOpacity onPress={() => navigate('RegistrationForm')}>
+                            <Text style={styles.textLinkSignUp}>Sign Up</Text>
+                        </TouchableOpacity>
+
+                    </CardSection>
+
+                    <CardSection>
+                        <Text style={styles.textLinkForgetPassword}>Lupa Password?</Text>
+                    </CardSection>
+                </Card>
+            </ScrollView>
         );
     }
 };
