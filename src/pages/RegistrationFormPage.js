@@ -4,6 +4,10 @@ import { Button, CardRegistration, CardSectionRegistration, Input, Spinner, Head
 
 
 class RegistrationFormPage extends Component {
+      static navigationOptions = {
+		title: 'Registration'
+    }
+    
     return() {
         render(
             <Card>

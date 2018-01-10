@@ -3,6 +3,11 @@ import { Text, View } from 'react-native';
 
 
 class RequestOrderPage extends Component {
+    
+    static navigationOptions = {
+		title: 'Request'
+    }
+
     render(){
         return(
             <View>

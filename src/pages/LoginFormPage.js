@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
 import { Text, Image, View, TouchableOpacity } from 'react-native';
-import { Button, Card, CardSection, Input, Spinner } from './../components/common';
+import { Card, CardSection, Input, Spinner } from './../components/common';
 // import firebase from 'firebase';
-import RegistrationFormPage from './RegistrationFormPage';
+import { Button } from 'react-native-elements'
 
 class LoginFormPage extends Component {
+
+    // static navigationOptions = {
+	// 	title: 'Login'
+	// }
+
 
     state = {
         email: '',
@@ -37,9 +42,10 @@ class LoginFormPage extends Component {
         }
 
         return (
-            <Button onPress={this.onButtonPress.bind(this)}>
-                Log In
-            </Button>
+            <Button
+                title="Login"
+                buttonStyle={styles.buttonStyle}
+            />
         );
     }
 
@@ -117,15 +123,22 @@ class LoginFormPage extends Component {
 
 
 const styles = {
+    buttonStyle: {
+        backgroundColor: '#18A0DF',
+        width: 318,
+        height: 50,
+        margin: 5,
+        borderRadius: 5
+    },
     errorText: {
         fontSize: 20,
         alignSelf: 'center',
         color: 'red'
     },
     imageStyle: {
-        paddingLeft: 200,
-        height: 50,
-        width: 50,
+        marginLeft: 70,
+        height: 200,
+        width: 200,
         alignSelf: 'center'
     },
     textBottom: {
