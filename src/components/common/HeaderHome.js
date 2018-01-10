@@ -1,26 +1,57 @@
 import React from 'react';
-import { Text, StyleSheet, View } from 'react-native';
+import { Text, StyleSheet, View, Image } from 'react-native';
+
+import { SearchBar } from 'react-native-elements';
+
 
 const HeaderHome = (props) => {
     const { textStyle, header } = styles;
     return (
         <View style={header}>
-            <Text style={textStyle}>{props.headerText}</Text>
+            <Image
+                style={styles.menuStyle}
+                source={require('./../../assets/image/menuButton.png')}
+            />
+            <SearchBar
+                round
+                placeholder='Type Here...'
+                style={styles.searchStyle}
+            />
+            <Image
+                style={styles.bellStyle}
+                source={require('./../../assets/image/bell.png')}
+            />
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     header: {
-        backgroundColor: '#EFF6F9',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: 50,
-        paddingTop: 1
+        flex: 1,
+        flexDirection: 'column',
+        backgroundColor: '#5D9FE2'
     },
-    textStyle: {
-        fontSize: 15,
-        fontWeight: 'bold',
+    searchStyle: {
+        // flex: 1,
+        flexDirection: 'column',
+    },
+    menuStyle: {
+        flexDirection: 'row',
+        height: 20,
+        width: 25,
+        marginLeft: 12,
+        marginRight: 12,
+        marginBottom: 12,
+        marginTop: 17
+    },
+    bellStyle: {
+        flexDirection: 'row',
+        height: 20,
+        width: 25,
+        marginLeft: 12,
+        marginRight: 12,
+        marginBottom: 12,
+        marginTop: 17
     }
 });
 

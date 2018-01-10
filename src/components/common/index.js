@@ -7,3 +7,5 @@ export * from './Header';
 export * from './Input';
 export * from './Spinner';
 export * from './HeaderHome';
+export * from './CardProduct';
+export * from './CardSectionProduct';
