@@ -15,6 +15,8 @@ import HomePage from './pages/HomePage';
 import TransactionPage from './pages/TransactionPage';
 import RequestFormOrderPage from './pages/RequestFormOrderPage';
 import ProfileSupplierPage from './pages/ProfileSupplierPage';
+import RegistrationFormPage from './pages/RegistrationFormPage';
+
 /**
  *  List Component
  */
@@ -34,7 +36,7 @@ class App extends React.Component {
     }
 
     render() {
-        const MainNavigator = TabNavigator({            
+        const MainNavigator = TabNavigator({         
             Home: { screen: HomePage },
             Request: { screen: RequestOrderPage },
             Transaction: {
@@ -60,9 +62,17 @@ class App extends React.Component {
                         screen: ProfileSupplierPage,
                         navigationOptions: {
                             title: 'ProfileSupplier',
-                            // header: null,
                             tabBarVisible: false
                         },
+                    },
+                    RegistrationForm: {
+                        screen: RegistrationFormPage
+                        // navigationOptions: {
+                            // title: 'RegistrationForm',
+                            // header: null,
+                            // headerBackTitle: true,
+                            // tabBarVisible: false
+                        // },
                     },
                 })
             },
@@ -71,9 +81,9 @@ class App extends React.Component {
 
         return (
             <View style={styles.container} >
-                {/* <HeaderHome headerText="Home Aruna" /> */}
-                <HeaderHome />
+                {/* <HeaderHome /> */}
                 <MainNavigator style={styles.tabNav} />
+                {/* <LoginFormPage /> */}
             </View>
         );
     };
