@@ -28,8 +28,9 @@ const HeaderHome = (props) => {
 const styles = StyleSheet.create({
     header: {
         flex: 1,
-        flexDirection: 'column',
-        backgroundColor: '#5D9FE2'
+        flexDirection: 'row',
+        backgroundColor: '#5D9FE2',
+        marginBottom: 3,
     },
     searchStyle: {
         // flex: 1,

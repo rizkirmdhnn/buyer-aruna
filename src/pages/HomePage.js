@@ -16,7 +16,7 @@ import { HeaderHome } from './../components/common';
 class HomePage extends Component {
 
     static navigationOptions = {
-        title: 'Home',
+        header: null
     }
 
     render() {
@@ -25,7 +25,6 @@ class HomePage extends Component {
         return (
             <ScrollView>
                 <View style={styles.container}>
-                    {/* <RouteTab /> */}
                     <HeaderHome />
                     <Image
                         style={styles.imageStyle}
@@ -33,7 +32,7 @@ class HomePage extends Component {
                     />
 
                     <Button
-                        onPress={() => navigate('RequestFormOrder')}>
+                        onPress={() => navigate('Login')}>
                         Requests Now!
                     </Button>
 
@@ -215,7 +214,7 @@ const styles = {
         fontWeight: 'bold'
     },
     textCardLink: {
-        color: 'blue',
+        color: '#5D9FE2',
         flex: 1,
         flexDirection: 'row',
         marginRight: 18,

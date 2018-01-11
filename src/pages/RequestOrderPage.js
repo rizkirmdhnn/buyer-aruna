@@ -1,21 +1,17 @@
 import React, { Component } from 'react';
 import { Text, View } from 'react-native';
-
+import { HeaderHome } from './../components/common';
 
 class RequestOrderPage extends Component {
     
     static navigationOptions = {
-        title: 'Request',
-        header: () => {
-            return {
-                right: <Text>Go Back</Text>
-            };
-        }
+        header: null
     }
 
     render(){
         return(
             <View>
+                <HeaderHome />
                 <Text> Page Request Order </Text>
             </View>
         );

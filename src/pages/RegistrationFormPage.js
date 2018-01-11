@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { View, ScrollView, Text, Picker, KeyboardAvoidingView, TextInput } from 'react-native'
 import { CardRegistration, CardSectionRegistration, InputRegistration, Button } from './../components/common'
-
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 /**
  *  Import Common
@@ -9,20 +9,34 @@ import { CardRegistration, CardSectionRegistration, InputRegistration, Button } 
 
 // import { Header } from './../components/common';
 class RegistrationFormPage extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = { showAlert: false };
+    };
+
+    showAlert = () => {
+        this.setState({
+            showAlert: true
+        });
+    };
+
+    hideAlert = () => {
+        this.setState({
+            showAlert: false
+        });
+    };
+
     static navigationOptions = {
         title: 'RegistrationForm',
-        header: () => {
-            return {
-                right: <Text>Go Back</Text>
-            };
-        }
-        // header: null,
-        // headerBackTitle: true,
-        // tabBarVisible: false,
+        headerStyle: { backgroundColor: '#5D9FE2' },
+        headerTitleStyle: { color: '#FFFFFF' }
     }
 
     render() {
+
         const { navigate } = this.props.navigation
+        const { showAlert } = this.state;
 
         return (
             <View>
@@ -127,12 +141,34 @@ class RegistrationFormPage extends Component {
 
                         </CardRegistration>
                         <CardSectionRegistration>
-                            <Button onPress={() => alert('Yakin data anda sudah benar ?')}>
+                            <Button onPress={() => this.showAlert()}>
                                 Register
 						</Button>
                         </CardSectionRegistration>
                     </ScrollView>
                 </KeyboardAvoidingView>
+
+
+                <AwesomeAlert
+                    show={showAlert}
+                    showProgress={false}
+                    title="Confirm"
+                    message="Yakin data anda sudah benar ?"
+                    closeOnTouchOutside={true}
+                    closeOnHardwareBackPress={false}
+                    showCancelButton={true}
+                    showConfirmButton={true}
+                    cancelText="No, Cancel!"
+                    confirmText="Yes, Sure!"
+                    confirmButtonColor="#DD6B55"
+                    onCancelPressed={() => {
+                        this.hideAlert();
+                    }}
+                    onConfirmPressed={() => {
+                        this.hideAlert();
+                    }}
+                />
+
             </View>
         )
     }

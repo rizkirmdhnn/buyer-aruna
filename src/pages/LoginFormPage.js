@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Text, Image, View, TouchableOpacity, ScrollView } from 'react-native';
 import { Card, CardSection, Input, Spinner } from './../components/common';
-// import firebase from 'firebase';
+import axios from 'axios';
 import { Button } from 'react-native-elements'
 import RegistrationFormPage from './../pages/RegistrationFormPage';
 
@@ -20,17 +20,25 @@ class LoginFormPage extends Component {
     };
 
     onButtonPress() {
-        console.log('Login Bottom Pressed');
+        console.log('Start');
         const { email, password } = this.state;
         this.setState({ error: '', loading: true });
 
-        // firebase.auth().signInWithEmailAndPassword(email, password)
-        //     .then(this.onLoginSuccess.bind(this))
-        //     .catch(() => {
-        //         firebase.auth().createUserWithEmailAndPassword(email, password)
-        //             .then(this.onLoginSuccess.bind(this))
-        //             .catch(this.onLoginFail.bind(this));
-        //     });
+        axios.post('http://192.168.1.107:5000/api/v1/login', {
+            'email': email,
+            'password': password
+        }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => {
+                console.log('SUKSES', response);
+            })
+            .catch(error => {
+                console.log('ERROR', error.message);
+            });
+
     }
 
     onLoginFail() {
@@ -46,6 +54,7 @@ class LoginFormPage extends Component {
             <Button
                 title="Login"
                 buttonStyle={styles.buttonStyle}
+                onPress={this.onButtonPress.bind(this)}
             />
         );
     }
@@ -103,7 +112,7 @@ class LoginFormPage extends Component {
                     <CardSection>
                         <Text style={styles.textBottom}>
                             Belom memiliki akun?
-                    </Text>
+                        </Text>
 
                         <TouchableOpacity onPress={() => navigate('RegistrationForm')}>
                             <Text style={styles.textLinkSignUp}>Sign Up</Text>

@@ -36,53 +36,25 @@ class App extends React.Component {
     }
 
     render() {
-        const MainNavigator = TabNavigator({         
+
+        const MainScreenNavigator = TabNavigator({
             Home: { screen: HomePage },
             Request: { screen: RequestOrderPage },
-            Transaction: {
-                screen: StackNavigator({
-                    Transaction: { screen: TransactionPage },
-                    Login: {
-                        screen: LoginFormPage,
-                        navigationOptions: {
-                            title: 'Login',
-                            header: null,
-                            tabBarVisible: false
-                        },
-                    },
-                    RequestFormOrder: {
-                        screen: RequestFormOrderPage,
-                        navigationOptions: {
-                            title: 'RequestFormOrder',
-                            header: null,
-                            tabBarVisible: false
-                        },
-                    },
-                    ProfileSupplier: {
-                        screen: ProfileSupplierPage,
-                        navigationOptions: {
-                            title: 'ProfileSupplier',
-                            tabBarVisible: false
-                        },
-                    },
-                    RegistrationForm: {
-                        screen: RegistrationFormPage
-                        // navigationOptions: {
-                            // title: 'RegistrationForm',
-                            // header: null,
-                            // headerBackTitle: true,
-                            // tabBarVisible: false
-                        // },
-                    },
-                })
-            },
-        },
-    );
+            Transaction: { screen: TransactionPage }
+        });
+
+        const SimpleApp = StackNavigator({
+            Home: { screen: MainScreenNavigator },
+            ProfileSupplier: { screen: ProfileSupplierPage },
+            RequestFormOrder: { screen: RequestFormOrderPage },
+            RegistrationForm: { screen: RegistrationFormPage },
+            Login: { screen: LoginFormPage }
+          });
 
         return (
             <View style={styles.container} >
                 {/* <HeaderHome /> */}
-                <MainNavigator style={styles.tabNav} />
+                <SimpleApp />
                 {/* <LoginFormPage /> */}
             </View>
         );
@@ -94,9 +66,6 @@ const styles = {
     container: {
         flex: 1,
         backgroundColor: '#FFF'
-    },
-    tabNav: {
-        backgroundColor: 'red'
     }
 }
 
