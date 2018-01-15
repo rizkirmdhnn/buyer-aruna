@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Text, View } from 'react-native';
-import { HeaderHome } from './../components/common';
+// import { HeaderHome } from './../components/common';
 
 class TransactionPage extends Component {
     static navigationOptions = {
@@ -10,7 +10,7 @@ class TransactionPage extends Component {
     render() {
         return(
             <View>
-                <HeaderHome />
+                {/* <HeaderHome /> */}
                 <Text> Transaksi Page </Text>
             </View>
         );
