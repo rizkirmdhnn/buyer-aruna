@@ -28,7 +28,7 @@ class RegistrationFormPage extends Component {
     };
 
     static navigationOptions = {
-        title: 'RegistrationForm',
+        title: 'Registration',
         headerStyle: { backgroundColor: '#5D9FE2' },
         headerTitleStyle: { color: '#FFFFFF' }
     }
