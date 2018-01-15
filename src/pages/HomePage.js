@@ -2,18 +2,74 @@
  *  Import Component
  */
 import React, { Component } from 'react';
-import { View, Text, Image, ScrollView, Dimensions, TouchableHighlight } from 'react-native';
+import { View, Text, Image, ScrollView, Dimensions, TouchableHighlight, AsyncStorage } from 'react-native';
 import { Button, CardProduct, CardSectionProduct } from './../components/common';
-
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 /**
  *  Import Common
  */
 
-import { HeaderHome } from './../components/common';
+// import { HeaderHome } from './../components/common';
 
 
 class HomePage extends Component {
+
+    constructor(props) {
+        super(props)
+        this.state = {
+            showAlert: false
+        }
+    }
+
+    showAlert = () => {
+        this.setState({
+            showAlert: true
+        });
+    };
+
+    hideAlert = () => {
+        this.setState({
+            showAlert: false
+        });
+    };
+
+    credentialButton() {
+        const { navigate } = this.props.navigation;
+        AsyncStorage.getItem('loginCredential', (err, result) => {
+            console.log(result, 'Token');
+            if (result !== null) {
+                navigate('RequestFormOrder');
+            } else if (result == null) {
+                this.setState({
+                    showAlert: true
+                });
+            }
+        });
+    }
+
+    credentialProduct() {
+        const { navigate } = this.props.navigation;
+        AsyncStorage.getItem('loginCredential', (err, result) => {
+            console.log(result, 'Token');
+            if (result !== null) {
+                navigate('FormProductRequest');
+            } else if (result == null) {
+                this.setState({
+                    showAlert: true
+                });
+            }
+        });
+    }
+
+    isLogout() {
+        AsyncStorage.getItem('loginCredential', (err, result) => {
+            AsyncStorage.removeItem('loginCredential', () => {
+                alert('Berhasil Logout!');
+            });
+        });
+    }
+
 
     static navigationOptions = {
         header: null
@@ -21,19 +77,24 @@ class HomePage extends Component {
 
     render() {
         const { navigate } = this.props.navigation;
-
+        const { showAlert } = this.state;
         return (
-            <ScrollView>
-                <View style={styles.container}>
-                    <HeaderHome />
+            <View style={styles.container}>
+                <ScrollView>
                     <Image
                         style={styles.imageStyle}
                         source={require('./../assets/image/fish_1.jpg')}
                     />
 
                     <Button
-                        onPress={() => navigate('Login')}>
+                        onPress={() => {
+                            this.credentialButton()
+                        }}>
                         Requests Now!
+                    </Button>
+                    <Button
+                        onPress={() => this.isLogout()}>
+                        Logout
                     </Button>
 
                     <View style={styles.containerTextProductCard}>
@@ -45,28 +106,40 @@ class HomePage extends Component {
 
                         <CardProduct style={styles.cardProductCard}>
                             <CardSectionProduct>
-                                <Image
-                                    style={styles.productCardStyle}
-                                    source={require('./../assets/image/fish_2.jpg')}
-                                />
+                                <TouchableHighlight onPress={() => {
+                                    this.credentialProduct()
+                                }}>
+                                    <Image
+                                        style={styles.productCardStyle}
+                                        source={require('./../assets/image/fish_2.jpg')}
+                                    />
+                                </TouchableHighlight>
                             </CardSectionProduct>
                         </CardProduct>
 
                         <CardProduct style={styles.cardProductCard}>
                             <CardSectionProduct>
-                                <Image
-                                    style={styles.productCardStyle}
-                                    source={require('./../assets/image/fish_2.jpg')}
-                                />
+                                <TouchableHighlight onPress={() => {
+                                    this.credentialProduct()
+                                }}>
+                                    <Image
+                                        style={styles.productCardStyle}
+                                        source={require('./../assets/image/fish_2.jpg')}
+                                    />
+                                </TouchableHighlight>
                             </CardSectionProduct>
                         </CardProduct>
 
                         <CardProduct style={styles.cardProductCard}>
                             <CardSectionProduct>
-                                <Image
-                                    style={styles.productCardStyle}
-                                    source={require('./../assets/image/fish_2.jpg')}
-                                />
+                                <TouchableHighlight onPress={() => {
+                                    this.credentialProduct()
+                                }}>
+                                    <Image
+                                        style={styles.productCardStyle}
+                                        source={require('./../assets/image/fish_2.jpg')}
+                                    />
+                                </TouchableHighlight>
                             </CardSectionProduct>
                         </CardProduct>
                     </View>
@@ -75,28 +148,40 @@ class HomePage extends Component {
 
                         <CardProduct style={styles.cardProductCard}>
                             <CardSectionProduct>
-                                <Image
-                                    style={styles.productCardStyle}
-                                    source={require('./../assets/image/fish_2.jpg')}
-                                />
+                                <TouchableHighlight onPress={() => {
+                                    this.credentialProduct()
+                                }}>
+                                    <Image
+                                        style={styles.productCardStyle}
+                                        source={require('./../assets/image/fish_2.jpg')}
+                                    />
+                                </TouchableHighlight>
                             </CardSectionProduct>
                         </CardProduct>
 
                         <CardProduct style={styles.cardProductCard}>
                             <CardSectionProduct>
-                                <Image
-                                    style={styles.productCardStyle}
-                                    source={require('./../assets/image/fish_2.jpg')}
-                                />
+                                <TouchableHighlight onPress={() => {
+                                    this.credentialProduct()
+                                }}>
+                                    <Image
+                                        style={styles.productCardStyle}
+                                        source={require('./../assets/image/fish_2.jpg')}
+                                    />
+                                </TouchableHighlight>
                             </CardSectionProduct>
                         </CardProduct>
 
                         <CardProduct style={styles.cardProductCard}>
                             <CardSectionProduct>
-                                <Image
-                                    style={styles.productCardStyle}
-                                    source={require('./../assets/image/fish_2.jpg')}
-                                />
+                                <TouchableHighlight onPress={() => {
+                                    this.credentialProduct()
+                                }}>
+                                    <Image
+                                        style={styles.productCardStyle}
+                                        source={require('./../assets/image/fish_2.jpg')}
+                                    />
+                                </TouchableHighlight>
                             </CardSectionProduct>
                         </CardProduct>
                     </View>
@@ -179,8 +264,32 @@ class HomePage extends Component {
                             </CardSectionProduct>
                         </CardProduct>
                     </View>
-                </View>
-            </ScrollView>
+                </ScrollView>
+
+                {/* <View> */}
+                <AwesomeAlert
+                    show={showAlert}
+                    showProgress={false}
+                    title=""
+                    message="Anda belum log in ?"
+                    closeOnTouchOutside={true}
+                    closeOnHardwareBackPress={false}
+                    showCancelButton={true}
+                    showConfirmButton={true}
+                    cancelText="Daftar Akun"
+                    confirmText="Log in"
+                    confirmButtonColor="#DD6B55"
+                    onCancelPressed={() => {
+                        this.hideAlert();
+                        navigate('RegistrationForm');
+                    }}
+                    onConfirmPressed={() => {
+                        this.hideAlert();
+                        navigate('Login');
+                    }}
+                />
+                {/* </View> */}
+            </View>
         );
     }
 };
