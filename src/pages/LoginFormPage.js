@@ -1,17 +1,14 @@
 import React, { Component } from 'react';
-import { Text, Image, View, TouchableOpacity, ScrollView } from 'react-native';
+import { Text, Image, View, TouchableOpacity, ScrollView, AsyncStorage } from 'react-native';
 import { Card, CardSection, Input, Spinner } from './../components/common';
 import axios from 'axios';
-import { Button } from 'react-native-elements'
+import { Button } from 'react-native-elements';
 import RegistrationFormPage from './../pages/RegistrationFormPage';
 
 class LoginFormPage extends Component {
-
-    // static navigationOptions = {
-    // 	title: 'Login'
-    // }
-
-
+    static navigationOptions = {
+        headerLeft: null
+    }
     state = {
         email: '',
         password: '',
@@ -23,8 +20,10 @@ class LoginFormPage extends Component {
         console.log('Start');
         const { email, password } = this.state;
         this.setState({ error: '', loading: true });
-
-        axios.post('http://192.168.1.107:5000/api/v1/login', {
+        const { navigate } = this.props.navigation
+        // 107 Raosan
+        // 111 Arif
+        axios.post('http://192.168.64.1:3000/api/Arunausercredentials/login', {
             'email': email,
             'password': password
         }, {
@@ -34,15 +33,22 @@ class LoginFormPage extends Component {
             })
             .then(response => {
                 console.log('SUKSES', response);
+                AsyncStorage.setItem('loginCredential', response.data.id).then(() => {
+                    this.setState({
+                        email: '',
+                        password: '',
+                        loading: false,
+                        error: ''
+                    });
+                });
+                navigate('Home');
             })
             .catch(error => {
+                // this.onLoginFail.bind(this)
+                this.setState({ error: 'Authentication Failed', loading: false });
                 console.log('ERROR', error.message);
             });
 
-    }
-
-    onLoginFail() {
-        this.setState({ error: 'Authentication Failed', loading: false });
     }
 
     renderButton() {
@@ -66,11 +72,17 @@ class LoginFormPage extends Component {
             loading: false,
             error: ''
         });
+        navigate('HomePage');
+    }
+    static navigationOptions = {
+        // title: 'RegistrationForm',
+        headerStyle: { backgroundColor: '#5D9FE2' },
+        headerTitleStyle: { color: '#FFFFFF' }
     }
 
 
     render() {
-        const { navigate } = this.props.navigation
+        // const { navigate } = this.props.navigation
 
         return (
             <ScrollView>
@@ -144,9 +156,11 @@ const styles = {
         color: 'red'
     },
     imageStyle: {
-        marginLeft: 70,
-        height: 200,
-        width: 200,
+        flex: 1,
+        marginTop: 80,
+        marginBottom: 80,
+        height: 70,
+        width: 500,
         alignSelf: 'center'
     },
     textBottom: {
