@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Text, View } from 'react-native';
-import { HeaderHome } from './../components/common';
+// import { HeaderHome } from './../components/common';
 
 class RequestOrderPage extends Component {
     
@@ -11,7 +11,7 @@ class RequestOrderPage extends Component {
     render(){
         return(
             <View>
-                <HeaderHome />
+                {/* <HeaderHome /> */}
                 <Text> Page Request Order </Text>
             </View>
         );
