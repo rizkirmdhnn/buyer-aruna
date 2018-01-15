@@ -16,7 +16,7 @@ import TransactionPage from './pages/TransactionPage';
 import RequestFormOrderPage from './pages/RequestFormOrderPage';
 import ProfileSupplierPage from './pages/ProfileSupplierPage';
 import RegistrationFormPage from './pages/RegistrationFormPage';
-
+import FormProductRequestPage from './pages/FormProductRequestPage';
 /**
  *  List Component
  */
@@ -46,10 +46,11 @@ class App extends React.Component {
         const SimpleApp = StackNavigator({
             Home: { screen: MainScreenNavigator },
             ProfileSupplier: { screen: ProfileSupplierPage },
+            FormProductRequest: { screen: FormProductRequestPage},
             RequestFormOrder: { screen: RequestFormOrderPage },
             RegistrationForm: { screen: RegistrationFormPage },
             Login: { screen: LoginFormPage }
-          });
+        });
 
         return (
             <View style={styles.container} >
