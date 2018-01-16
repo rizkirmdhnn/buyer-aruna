@@ -34,7 +34,7 @@ class LoginFormPage extends Component {
             })
             .then(response => {
                 console.log('SUKSES', response);
-                AsyncStorage.setItem('loginCredential', response.data.id).then(() => {
+                AsyncStorage.setItem('loginCredential', response.data.token).then(() => {
                     this.setState({
                         email: '',
                         password: '',
