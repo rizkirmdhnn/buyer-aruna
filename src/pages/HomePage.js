@@ -5,12 +5,13 @@ import React, { Component } from 'react';
 import { View, Text, Image, ScrollView, Dimensions, TouchableHighlight, AsyncStorage } from 'react-native';
 import { Button, CardProduct, CardSectionProduct } from './../components/common';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import { Header, SearchBar, Icon } from 'react-native-elements';
 
 /**
  *  Import Common
  */
 
-// import { HeaderHome } from './../components/common';
+import { HeaderHome } from './../components/common';
 
 
 class HomePage extends Component {
@@ -72,13 +73,55 @@ class HomePage extends Component {
 
 
     static navigationOptions = {
-        header: null
+        header: (
+            <View>
+                <Header
+                    containerStyle={{ backgroundColor: 'red' }}
+                    leftComponent={{ icon: 'menu', color: '#fff' }}
+                    centerComponent={{ text: 'Home', style: { color: '#EFF6F9' } }}
+                    rightComponent={{ icon: 'notifications', color: '#faa51a' }}
+                />
+                <SearchBar
+                    style={{ flex: 1 }}
+                    round
+                    lightTheme
+                    inputStyle={{ color: 'white' }}
+                    placeholder='Type Here...' />
+            </View>
+
+            // <View style={{ flexDirection: 'row', backgroundColor: '#5D9FE2' }}>
+
+            //     <View>
+            //         <Image
+            //             style={{
+            //                 height: 20,
+            //                 width: 25,
+            //                 marginLeft: 15,
+            //                 marginRight: 12,
+            //                 marginBottom: 12,
+            //                 marginTop: 17
+            //             }}
+            //             source={require('./../assets/image/menuButton.png')}
+            //         />
+            //     </View>
+
+            //     <View>
+            //         <SearchBar
+            //             style={{ flex: 1}}
+            //             lightTheme
+            //             inputStyle={{color: 'black'}}
+            //             placeholder='Type Here...' />
+            //     </View>
+            // </View>
+        )
     }
 
     render() {
         const { navigate } = this.props.navigation;
         const { showAlert } = this.state;
+
         return (
+
             <View style={styles.container}>
                 <ScrollView>
                     <Image
