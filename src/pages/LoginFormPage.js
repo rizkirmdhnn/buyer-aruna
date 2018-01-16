@@ -4,6 +4,7 @@ import { Card, CardSection, Input, Spinner } from './../components/common';
 import axios from 'axios';
 import { Button } from 'react-native-elements';
 import RegistrationFormPage from './../pages/RegistrationFormPage';
+import { BASE_URL } from './../shared/lb.config';
 
 class LoginFormPage extends Component {
     static navigationOptions = {
@@ -23,7 +24,7 @@ class LoginFormPage extends Component {
         const { navigate } = this.props.navigation
         // 107 Raosan
         // 111 Arif
-        axios.post('http://192.168.64.1:3000/api/Arunausercredentials/login', {
+        axios.post(`${BASE_URL}/login`, {
             'email': email,
             'password': password
         }, {
@@ -82,7 +83,7 @@ class LoginFormPage extends Component {
 
 
     render() {
-        // const { navigate } = this.props.navigation
+        const { navigate } = this.props.navigation
 
         return (
             <ScrollView>
