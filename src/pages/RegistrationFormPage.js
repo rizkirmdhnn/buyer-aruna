@@ -16,19 +16,19 @@ class RegistrationFormPage extends Component {
         this.state = {
             showAlert: false,
 
-            organizationType: 'PT',
-            nameInstitution: 'Aruna',
-            addressInstitution: 'Jakarta',
-            npwp: '123123789761',
-            email: 'aruna@gmail.com',
+            organizationType: '',
+            nameInstitution: '',
+            addressInstitution: '',
+            npwp: '',
+            email: '',
 
-            name: 'Rendy Sutandy',
-            idNumber: '123123123123',
-            photo: 'IMG_XGAH45-8765434-HJHJK-818384.jpg',
-            address: 'Jakarta',
-            phone: '085219100674',
-            username: 'rendy',
-            password: 'aruna'
+            name: '',
+            idNumber: '',
+            photo: '',
+            address: '',
+            phone: '',
+            username: '',
+            password: ''
 
         };
     };
