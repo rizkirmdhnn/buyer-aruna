@@ -77,7 +77,7 @@ class LoginFormPage extends Component {
     }
     static navigationOptions = {
         // title: 'RegistrationForm',
-        headerStyle: { backgroundColor: '#5D9FE2' },
+        headerStyle: { backgroundColor: '#006AAF' },
         headerTitleStyle: { color: '#FFFFFF' }
     }
 
@@ -145,7 +145,7 @@ class LoginFormPage extends Component {
 
 const styles = {
     buttonStyle: {
-        backgroundColor: '#18A0DF',
+        backgroundColor: '#006AAF',
         width: 318,
         height: 50,
         margin: 5,

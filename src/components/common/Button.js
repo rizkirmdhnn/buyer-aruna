@@ -25,7 +25,7 @@ const styles = {
     buttonStyle: {
         flex: 1,
         alignSelf: 'stretch',
-        backgroundColor: '#18A0DF',
+        backgroundColor: '#006AAF',
         borderRadius: 5,
         borderWidth: 1,
         borderColor: '#007AFF',

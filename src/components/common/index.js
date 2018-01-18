@@ -10,3 +10,5 @@ export * from './Spinner';
 export * from './HeaderHome';
 export * from './CardProduct';
 export * from './CardSectionProduct';
+export * from './ContainerSection';
+export * from './Container';

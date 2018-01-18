@@ -13,7 +13,8 @@ import LoginFormPage from './pages/LoginFormPage';
 import RequestOrderPage from './pages/RequestOrderPage';
 import HomePage from './pages/HomePage';
 import TransactionPage from './pages/TransactionPage';
-import RequestFormOrderPage from './pages/RequestFormOrderPage';
+import RequestFormOrderFirstPage from './pages/RequestFormOrderFirstPage';
+import RequestFormOrderSecondPage from './pages/RequestFormOrderSecondPage';
 import ProfileSupplierPage from './pages/ProfileSupplierPage';
 import RegistrationFormPage from './pages/RegistrationFormPage';
 import FormProductRequestPage from './pages/FormProductRequestPage';
@@ -41,13 +42,26 @@ class App extends React.Component {
             Home: { screen: HomePage },
             Request: { screen: RequestOrderPage },
             Transaction: { screen: TransactionPage }
+        }, {
+            tabBarOptions: {
+                upperCaseLabel: false,
+                activeTintColor: 'white',
+                indicatorStyle: {
+                    borderBottomColor: '#ffffff',
+                    borderBottomWidth: 2,
+                  },
+                style: {
+                    backgroundColor: '#006AAF',
+                }
+            }
         });
 
         const SimpleApp = StackNavigator({
             Home: { screen: MainScreenNavigator },
             ProfileSupplier: { screen: ProfileSupplierPage },
-            FormProductRequest: { screen: FormProductRequestPage},
-            RequestFormOrder: { screen: RequestFormOrderPage },
+            FormProductRequest: { screen: FormProductRequestPage },
+            RequestFormOrderFirst: { screen: RequestFormOrderFirstPage },
+            RequestFormOrderSecond: { screen: RequestFormOrderSecondPage },
             RegistrationForm: { screen: RegistrationFormPage },
             Login: { screen: LoginFormPage }
         });

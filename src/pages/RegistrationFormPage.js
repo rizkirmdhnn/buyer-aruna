@@ -1,14 +1,14 @@
 import React, { Component } from 'react'
 import { View, ScrollView, Text, Picker, KeyboardAvoidingView, Keyboard, TextInput } from 'react-native'
-import { CardRegistration, CardSectionRegistration, InputRegistration, Button } from './../components/common'
 import AwesomeAlert from 'react-native-awesome-alerts';
-import { BASE_URL } from './../shared/lb.config';
 import axios from 'axios';
+
 /**
  *  Import Common
  */
+import { CardRegistration, CardSectionRegistration, InputRegistration, Button } from './../components/common'
+import { BASE_URL } from './../shared/lb.config';
 
-// import { Header } from './../components/common';
 class RegistrationFormPage extends Component {
 
     constructor(props) {
@@ -47,13 +47,13 @@ class RegistrationFormPage extends Component {
 
     static navigationOptions = {
         title: 'Registration',
-        headerStyle: { backgroundColor: '#5D9FE2' },
+        headerStyle: { backgroundColor: '#006AAF' },
         headerTitleStyle: { color: '#FFFFFF' }
     }
 
     onChangeInput = (name, v) => {
-		this.setState({[name]: v})
-	}
+        this.setState({ [name]: v })
+    }
 
     register = () => {
         Keyboard.dismiss()
@@ -81,17 +81,17 @@ class RegistrationFormPage extends Component {
                 }
 
                 this.setState({ loading: false })
-            })
-            .catch(error => {
-                if (error.response) {
-                    alert(error.response.data.message)
-                }
-                else {
-                    alert('Koneksi internet bermasalah')
-                }
+            });
+            // .catch(error => {
+            //     if (error.response) {
+            //         alert(error.response.data.message)
+            //     }
+            //     else {
+            //         alert('Koneksi internet bermasalah')
+            //     }
 
-                this.setState({ loading: false })
-            })
+            //     this.setState({ loading: false })
+            // })
     }
 
 
@@ -100,7 +100,7 @@ class RegistrationFormPage extends Component {
         const { navigate } = this.props.navigation
         const { showAlert } = this.state;
 
-        const { 
+        const {
 			organizationType,
             nameInstitution,
             addressInstitution,
@@ -119,138 +119,134 @@ class RegistrationFormPage extends Component {
 
 
         return (
-            <View>
-                {/* <Header headerText="Registrasi" /> */}
-                <KeyboardAvoidingView
-                    style={styles.container}
-                    behavior="padding"
-                    keyboardVerticalOffset={80}
+            <KeyboardAvoidingView
+                style={styles.container}
+                behavior="padding"
+                keyboardVerticalOffset={80}
+            >
+                <ScrollView
+                    style={styles.containerStyle}
+                    keyboardShouldPersistTaps="always"
                 >
-                    <ScrollView
-                        style={styles.containerStyle}
-                        keyboardShouldPersistTaps="always"
-                    >
-                        <CardRegistration>
-                            <CardSectionRegistration>
-                                <Text style={styles.headerStyle}>
-                                    INFORMASI LEMBAGA
-							</Text>
-                            </CardSectionRegistration>
-                            <CardSectionRegistration>
-                                <InputRegistration
-                                    label='Jenis Lembaga'
-                                    placeholder='Jenis Lembaga'
-                                    value={organizationType}
-                                    onChangeText={v => this.onChangeInput('organizationType', v)}
-
-                                />
-                            </CardSectionRegistration>
-                            <CardSectionRegistration>
-                                <InputRegistration
-                                    label='Nama Lembaga'
-                                    placeholder='Nama Lembaga'
-                                    value={nameInstitution}
-                                    onChangeText={v => this.onChangeInput('nameInstitution', v)}
-                                />
-                            </CardSectionRegistration>
-                            <CardSectionRegistration>
-                                <InputRegistration
-                                    label='Alamat Lembaga'
-                                    placeholder='Alamat Lembaga'
-                                    value={addressInstitution}
-                                    onChangeText={v => this.onChangeInput('addressInstitution', v)}
-                                />
-                            </CardSectionRegistration>
-                            <CardSectionRegistration>
-                                <InputRegistration
-                                    label='NPWP Lembaga'
-                                    placeholder='NPWP Lembaga'
-                                    value={npwp}
-                                    onChangeText={v => this.onChangeInput('npwp', v)}
-                                />
-                            </CardSectionRegistration>
-                            <CardSectionRegistration>
-                                <InputRegistration
-                                    label='Email'
-                                    placeholder='Email'
-                                    value={email}
-                                    onChangeText={v => this.onChangeInput('email', v)}
-                                />
-                            </CardSectionRegistration>
-                        </CardRegistration>
-
-                        <CardRegistration>
-                            <CardSectionRegistration>
-                                <Text style={styles.headerStyle}>
-                                    INFORMASI PERSONAL
-							</Text>
-                            </CardSectionRegistration>
-                            <CardSectionRegistration>
-                                <InputRegistration
-                                    label='Nama Lengkap'
-                                    placeholder='contoh: Ahmad Darudi'
-                                    value={name}
-                                    onChangeText={v => this.onChangeInput('name', v)}
-                                />
-                            </CardSectionRegistration>
-                            <CardSectionRegistration>
-                                <InputRegistration
-                                    label='No. KTP'
-                                    placeholder='contoh: 321317989029'
-                                    value={idNumber}
-                                    onChangeText={v => this.onChangeInput('idNumber', v)}
-                                />
-                            </CardSectionRegistration>
-                            <CardSectionRegistration>
-                                <InputRegistration
-                                    label='Alamat'
-                                    placeholder='Alamat'
-                                    value={address}
-                                    onChangeText={v => this.onChangeInput('address', v)}
-                                />
-                            </CardSectionRegistration>
-                            <CardSectionRegistration>
-                                <InputRegistration
-                                    label='No. HP'
-                                    placeholder='contoh: 085621017922'
-                                    value={phone}
-                                    onChangeText={v => this.onChangeInput('phone', v)}
-                                />
-                            </CardSectionRegistration>
-                            <CardSectionRegistration>
-                                <InputRegistration
-                                    label='Username'
-                                    placeholder='Username'
-                                    value={username}
-                                    onChangeText={v => this.onChangeInput('username', v)}
-                                />
-                            </CardSectionRegistration>
-                            <CardSectionRegistration>
-                                <InputRegistration
-                                    label='Password'
-                                    placeholder='minimal 6 karakter'
-                                    secureTextEntry
-                                />
-                            </CardSectionRegistration>
-                            <CardSectionRegistration>
-                                <InputRegistration
-                                    label='Konfirmasi Password'
-                                    placeholder='minimal 6 karakter'
-                                    secureTextEntry
-                                    value={password}
-                                    onChangeText={v => this.onChangeInput('password', v)}
-                                />
-                            </CardSectionRegistration>
-
-                        </CardRegistration>
+                    <CardRegistration>
                         <CardSectionRegistration>
-                            <Button onPress={() => this.showAlert()}>
-                                Register
-						</Button>
+                            <Text style={styles.headerStyle}>
+                                INFORMASI LEMBAGA
+							</Text>
                         </CardSectionRegistration>
-                    </ScrollView>
-                </KeyboardAvoidingView>
+                        <CardSectionRegistration>
+                            <InputRegistration
+                                label='Jenis Lembaga'
+                                placeholder='Jenis Lembaga'
+                                value={organizationType}
+                                onChangeText={v => this.onChangeInput('organizationType', v)}
 
+                            />
+                        </CardSectionRegistration>
+                        <CardSectionRegistration>
+                            <InputRegistration
+                                label='Nama Lembaga'
+                                placeholder='Nama Lembaga'
+                                value={nameInstitution}
+                                onChangeText={v => this.onChangeInput('nameInstitution', v)}
+                            />
+                        </CardSectionRegistration>
+                        <CardSectionRegistration>
+                            <InputRegistration
+                                label='Alamat Lembaga'
+                                placeholder='Alamat Lembaga'
+                                value={addressInstitution}
+                                onChangeText={v => this.onChangeInput('addressInstitution', v)}
+                            />
+                        </CardSectionRegistration>
+                        <CardSectionRegistration>
+                            <InputRegistration
+                                label='NPWP Lembaga'
+                                placeholder='NPWP Lembaga'
+                                value={npwp}
+                                onChangeText={v => this.onChangeInput('npwp', v)}
+                            />
+                        </CardSectionRegistration>
+                        <CardSectionRegistration>
+                            <InputRegistration
+                                label='Email'
+                                placeholder='Email'
+                                value={email}
+                                onChangeText={v => this.onChangeInput('email', v)}
+                            />
+                        </CardSectionRegistration>
+                    </CardRegistration>
+
+                    <CardRegistration>
+                        <CardSectionRegistration>
+                            <Text style={styles.headerStyle}>
+                                INFORMASI PERSONAL
+							</Text>
+                        </CardSectionRegistration>
+                        <CardSectionRegistration>
+                            <InputRegistration
+                                label='Nama Lengkap'
+                                placeholder='contoh: Ahmad Darudi'
+                                value={name}
+                                onChangeText={v => this.onChangeInput('name', v)}
+                            />
+                        </CardSectionRegistration>
+                        <CardSectionRegistration>
+                            <InputRegistration
+                                label='No. KTP'
+                                placeholder='contoh: 321317989029'
+                                value={idNumber}
+                                onChangeText={v => this.onChangeInput('idNumber', v)}
+                            />
+                        </CardSectionRegistration>
+                        <CardSectionRegistration>
+                            <InputRegistration
+                                label='Alamat'
+                                placeholder='Alamat'
+                                value={address}
+                                onChangeText={v => this.onChangeInput('address', v)}
+                            />
+                        </CardSectionRegistration>
+                        <CardSectionRegistration>
+                            <InputRegistration
+                                label='No. HP'
+                                placeholder='contoh: 085621017922'
+                                value={phone}
+                                onChangeText={v => this.onChangeInput('phone', v)}
+                            />
+                        </CardSectionRegistration>
+                        <CardSectionRegistration>
+                            <InputRegistration
+                                label='Username'
+                                placeholder='Username'
+                                value={username}
+                                onChangeText={v => this.onChangeInput('username', v)}
+                            />
+                        </CardSectionRegistration>
+                        <CardSectionRegistration>
+                            <InputRegistration
+                                label='Password'
+                                placeholder='minimal 6 karakter'
+                                secureTextEntry
+                            />
+                        </CardSectionRegistration>
+                        <CardSectionRegistration>
+                            <InputRegistration
+                                label='Konfirmasi Password'
+                                placeholder='minimal 6 karakter'
+                                secureTextEntry
+                                value={password}
+                                onChangeText={v => this.onChangeInput('password', v)}
+                            />
+                        </CardSectionRegistration>
+
+                    </CardRegistration>
+                    <CardSectionRegistration>
+                        <Button onPress={() => this.showAlert()}>
+                            Register
+						</Button>
+                    </CardSectionRegistration>
+                </ScrollView>
 
                 <AwesomeAlert
                     show={showAlert}
@@ -272,7 +268,7 @@ class RegistrationFormPage extends Component {
                     }}
                 />
 
-            </View>
+            </KeyboardAvoidingView>
         )
     }
 }

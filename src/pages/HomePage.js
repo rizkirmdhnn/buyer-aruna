@@ -5,7 +5,8 @@ import React, { Component } from 'react';
 import { View, Text, Image, ScrollView, Dimensions, TouchableHighlight, AsyncStorage } from 'react-native';
 import { Button, CardProduct, CardSectionProduct } from './../components/common';
 import AwesomeAlert from 'react-native-awesome-alerts';
-import { Header, SearchBar, Icon } from 'react-native-elements';
+import { Header, SearchBar, Icon, SideMenu, List, ListItem } from 'react-native-elements';
+import axios from 'axios';
 
 /**
  *  Import Common
@@ -40,7 +41,7 @@ class HomePage extends Component {
         AsyncStorage.getItem('loginCredential', (err, result) => {
             console.log(result, 'Token');
             if (result !== null) {
-                navigate('RequestFormOrder');
+                navigate('RequestFormOrderFirst');
             } else if (result == null) {
                 this.setState({
                     showAlert: true
@@ -73,9 +74,11 @@ class HomePage extends Component {
 
 
     static navigationOptions = {
+        headerStyle: { backgroundColor: '#006AAF' },
         header: (
             <View>
                 <Header
+                    backgroundColor={'#006AAF'}
                     containerStyle={{ backgroundColor: 'red' }}
                     leftComponent={{ icon: 'menu', color: '#fff' }}
                     centerComponent={{ text: 'Home', style: { color: '#EFF6F9' } }}
@@ -88,31 +91,6 @@ class HomePage extends Component {
                     inputStyle={{ color: 'white' }}
                     placeholder='Type Here...' />
             </View>
-
-            // <View style={{ flexDirection: 'row', backgroundColor: '#5D9FE2' }}>
-
-            //     <View>
-            //         <Image
-            //             style={{
-            //                 height: 20,
-            //                 width: 25,
-            //                 marginLeft: 15,
-            //                 marginRight: 12,
-            //                 marginBottom: 12,
-            //                 marginTop: 17
-            //             }}
-            //             source={require('./../assets/image/menuButton.png')}
-            //         />
-            //     </View>
-
-            //     <View>
-            //         <SearchBar
-            //             style={{ flex: 1}}
-            //             lightTheme
-            //             inputStyle={{color: 'black'}}
-            //             placeholder='Type Here...' />
-            //     </View>
-            // </View>
         )
     }
 
@@ -309,7 +287,6 @@ class HomePage extends Component {
                     </View>
                 </ScrollView>
 
-                {/* <View> */}
                 <AwesomeAlert
                     show={showAlert}
                     showProgress={false}
@@ -321,7 +298,7 @@ class HomePage extends Component {
                     showConfirmButton={true}
                     cancelText="Daftar Akun"
                     confirmText="Log in"
-                    confirmButtonColor="#DD6B55"
+                    confirmButtonColor="#006AAF"
                     onCancelPressed={() => {
                         this.hideAlert();
                         navigate('RegistrationForm');
@@ -331,7 +308,7 @@ class HomePage extends Component {
                         navigate('Login');
                     }}
                 />
-                {/* </View> */}
+
             </View>
         );
     }
