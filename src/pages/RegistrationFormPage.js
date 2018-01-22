@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, ScrollView, Text, Picker, KeyboardAvoidingView, Keyboard, TextInput } from 'react-native'
+import { View, ScrollView, Text, Picker, Keyboard, TextInput } from 'react-native'
 import AwesomeAlert from 'react-native-awesome-alerts';
 import axios from 'axios';
 
@@ -82,16 +82,16 @@ class RegistrationFormPage extends Component {
 
                 this.setState({ loading: false })
             });
-            // .catch(error => {
-            //     if (error.response) {
-            //         alert(error.response.data.message)
-            //     }
-            //     else {
-            //         alert('Koneksi internet bermasalah')
-            //     }
+        // .catch(error => {
+        //     if (error.response) {
+        //         alert(error.response.data.message)
+        //     }
+        //     else {
+        //         alert('Koneksi internet bermasalah')
+        //     }
 
-            //     this.setState({ loading: false })
-            // })
+        //     this.setState({ loading: false })
+        // })
     }
 
 
@@ -119,11 +119,7 @@ class RegistrationFormPage extends Component {
 
 
         return (
-            <KeyboardAvoidingView
-                style={styles.container}
-                behavior="padding"
-                keyboardVerticalOffset={80}
-            >
+            <View>
                 <ScrollView
                     style={styles.containerStyle}
                     keyboardShouldPersistTaps="always"
@@ -267,8 +263,7 @@ class RegistrationFormPage extends Component {
                         this.register();
                     }}
                 />
-
-            </KeyboardAvoidingView>
+            </View>
         )
     }
 }

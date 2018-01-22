@@ -11,6 +11,7 @@ import {
     TextInput,
     AsyncStorage,
     TouchableWithoutFeedback,
+    TouchableOpacity,
     Image,
     Input
 } from 'react-native';
@@ -20,12 +21,15 @@ import {
     InputRegistration,
     Button,
     ContainerSection,
-    Container
+    Container,
+    Spinner
 } from './../components/common';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import AutoComplete from '../components/AutoComplete';
 import { BASE_URL } from './../shared/lb.config';
 import axios from 'axios';
+import DateTimePicker from 'react-native-modal-datetime-picker';
+import moment from 'moment';
 
 class RequestFormOrderFirstPage extends Component {
 
@@ -35,27 +39,46 @@ class RequestFormOrderFirstPage extends Component {
         headerTitleStyle: { color: '#FFFFFF' }
     }
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            load: null,
+            loading: null,
+            dataMapCity: '',
+            dataCity: '',
+            dataProvinsi: '',
+            suggestions: [],
+            provinsiId: '',
+            cityId: '',
+            size: '',
+            deskripsi: '',
+
+            quantity: '',
+            minBudget: '',
+            maxBudget: '',
+            datePick: ''
+        };
+    };
+
+
     onChangeInput = (name, v) => {
         this.setState({ [name]: v });
         console.log(v);
     }
 
 
+    state = {
+        isDateTimePickerVisible: false,
+    };
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            suggestions: '1',
-            countryId: '1',
-            provinsiId: '1',
-            cityId: '1',
-            size: '',
-            deskripsi: '',
+    _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
 
-            quantity: '',
-            minBudget: '',
-            maxBudget: ''
-        };
+    _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
+
+    _handleDatePicked = (date) => {
+        const dateNow = moment(date).format('DD/MM/YYYY');
+        this.setState({ datePick: dateNow })
+        this._hideDateTimePicker();
     };
 
     onSubmit = () => {
@@ -91,9 +114,7 @@ class RequestFormOrderFirstPage extends Component {
 
 
     querySuggestion = (text) => {
-        console.log(text, 'Text');
         AsyncStorage.getItem('loginCredential', (err, result) => {
-            console.log(result, 'Token');
 
             axios.get(`${BASE_URL}/fishes/search?key=${text}`, {
                 headers: { 'x-access-token': result }
@@ -101,7 +122,6 @@ class RequestFormOrderFirstPage extends Component {
                 .then(response => {
                     res = response.data.data
                     const result = res
-                    console.log(result);
                     this.setState({ suggestions: result })
                 })
                 .catch(error => {
@@ -116,12 +136,246 @@ class RequestFormOrderFirstPage extends Component {
         });
     }
 
+    componentWillMount() {
+        this.setState({ loading: true });
+        AsyncStorage.getItem('loginCredential', (err, resultToken) => {
+
+            axios.get(`${BASE_URL}/provinces`, {
+                headers: { 'x-access-token': resultToken }
+            })
+                .then(response => {
+                    res = response.data.data
+                    const resultDataCity = res
+                    this.setState({ dataProvinsi: resultDataCity, loading: false });
+                })
+                .catch(error => {
+                    if (error.response) {
+                        alert(error.response.data.message)
+                    }
+                    else {
+                        alert('Koneksi internet bermasalah Provinsi')
+                    }
+                })
+        });
+    }
+
+    renderProvinceCity = () => {
+        if (this.state.dataProvinsi == '') {
+            return <Picker.Item label='Pilih Provinsi' value='0' />
+        } else {
+            const dataProvCity = this.state.dataProvinsi;
+            return dataProvCity.map((data) => {
+                return <Picker.Item label={data.name} value={data.id} />
+            })
+        }
+    }
+
+
+    onChangeProvince = (name, v) => {
+        this.setState({ [name]: v });
+        console.log(v, this.state.load, 'Value DropDown Provinci');
+
+        AsyncStorage.getItem('loginCredential', (err, resultToken) => {
+            axios.get(`${BASE_URL}/cities/search-province/${v}`, {
+                headers: { 'x-access-token': resultToken }
+            })
+                .then(response => {
+                    const result = response.data.data;
+                    console.log(result, 'Data City');
+                    this.setState({ dataMapCity: result });
+                    console.log(this.state.dataMapCity, 'Lemparan ID City');
+                })
+                .catch(error => {
+                    if (error.response) {
+                        alert(error.response.data.message)
+                    }
+                    else {
+                        alert('Koneksi internet bermasalah')
+                    }
+                })
+        });
+    }
+
+    renderPickerCity = () => {
+        if (this.state.dataMapCity == '') {
+            return <Picker.Item label='Pilih Kota' value='0' />
+        } else {
+            const resultRender = this.state.dataMapCity;
+            return resultRender.map((data) => {
+                return <Picker.Item label={data.name} value={data.id} />
+            })
+        }
+    }
+
+
+
+    renderAllData = () => {
+        if (this.state.loading == true) {
+            return <Spinner size="small" />
+        } else if (this.state.loading == false) {
+            const {
+                dataMapCity,
+                dataCity,
+                dataProvinsi,
+                suggestions,
+                provinsiId,
+                cityId,
+                size,
+                quantity,
+                minBudget,
+                maxBudget,
+                deskripsi,
+                datePick
+            } = this.state
+
+            return (
+                <ScrollView
+                    keyboardShouldPersistTaps="always"
+                >
+                    <Container>
+
+                        <CardSectionRegistration>
+                            <TouchableWithoutFeedback>
+                                <View style={{ flex: 1, padding: 8 }}>
+                                    <Image
+                                        style={{ width: '100%' }}
+                                        source={require('./../assets/image/upload-foto.png')}
+                                    />
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </CardSectionRegistration>
+
+                        <CardSectionRegistration>
+                            <Text style={styles.headerStyle}>
+                                INFORMASI KOMODITAS
+							</Text>
+                        </CardSectionRegistration>
+                        <CardSectionRegistration>
+                            <AutoComplete
+                                label="Nama Komoditas"
+                                suggestions={suggestions}
+                                onChangeText={text => this.querySuggestion(text)}
+                            />
+                        </CardSectionRegistration>
+                        <CardSectionRegistration>
+                            <InputRegistration
+                                label='Ukuran Komoditas'
+                                placeholder='Ukuran'
+                                value={size}
+                                onChangeText={v => this.onChangeInput('size', v)}
+                            />
+                            <Text style={styles.unitStyle}> kg/pcs</Text>
+
+                            <InputRegistration
+                                label='Kuantitas Komoditas'
+                                placeholder='Jumlah'
+                                value={quantity}
+                                onChangeText={v => this.onChangeInput('quantity', v)}
+                            />
+                            <Text style={styles.unitStyle}> kg</Text>
+
+                        </CardSectionRegistration>
+
+                        <CardSectionRegistration>
+                            <InputRegistration
+                                placeholder='Deskripsi Komoditas'
+                                value={deskripsi}
+                                style={styles.textArea}
+                                onChangeText={v => this.onChangeInput('deskripsi', v)}
+                            />
+                        </CardSectionRegistration>
+
+                        <View>
+                            <Text style={styles.unitStyle}>Rentang Harga/kg</Text>
+                        </View>
+
+                        <CardSectionRegistration>
+                            <InputRegistration
+                                placeholder='Min'
+                                value={minBudget}
+                                onChangeText={v => this.onChangeInput('minBudget', v)}
+                            />
+                            <Text style={styles.unitStyles}>-</Text>
+
+                            <InputRegistration
+                                placeholder='Max'
+                                value={maxBudget}
+                                onChangeText={v => this.onChangeInput('maxBudget', v)}
+                            />
+
+                        </CardSectionRegistration>
+
+                        <CardSectionRegistration>
+                            <Text style={styles.headerStyle}>
+                                TUJUAN PENGIRIMAN
+							</Text>
+                        </CardSectionRegistration>
+
+                        <CardSectionRegistration>
+                            <InputRegistration
+                                placeholder='Tanggal Penerimaan'
+                                value={datePick}
+                                onChangeText={v => this.onChangeInput('datePick', v)}
+                                editable={false}
+                            />
+                            <TouchableOpacity onPress={this._showDateTimePicker}>
+                                <Image
+                                    style={{ marginTop: 10, width: 50, height: 50 }}
+                                    source={require('./../assets/image/date-icon.png')}
+                                />
+                            </TouchableOpacity>
+                            <DateTimePicker
+                                isVisible={this.state.isDateTimePickerVisible}
+                                onConfirm={this._handleDatePicked}
+                                onCancel={this._hideDateTimePicker}
+                            />
+                        </CardSectionRegistration>
+
+                        <ContainerSection>
+                            <View style={styles.pickerContainer}>
+                                <Text style={styles.pickerTextStyle}>Provinsi</Text>
+                                <View style={styles.pickerStyle}>
+                                    <Picker
+                                        selectedValue={provinsiId}
+                                        onValueChange={v => this.onChangeProvince('provinsiId', v)}
+                                    >
+                                        {this.renderProvinceCity()}
+                                    </Picker>
+                                </View>
+                            </View>
+                        </ContainerSection>
+
+                        <ContainerSection>
+                            <View style={styles.pickerContainer}>
+                                <Text style={styles.pickerTextStyle}>Kota/Kabupaten</Text>
+                                <View style={styles.pickerStyle}>
+                                    <Picker
+                                        selectedValue={cityId}
+                                        onValueChange={v => this.onChangeInput('cityId', v)}
+                                    >
+                                        {this.renderPickerCity()}
+                                    </Picker>
+                                </View>
+                            </View>
+                        </ContainerSection>
+
+                    </Container>
+
+                    <ContainerSection>
+                        {this.renderButton()}
+                    </ContainerSection>
+
+                </ScrollView>
+            )
+        }
+    }
+
 
 
     render() {
         const {
+            dataProvinsi,
             suggestions,
-            countryId,
             provinsiId,
             cityId,
             size,
@@ -129,144 +383,13 @@ class RequestFormOrderFirstPage extends Component {
             minBudget,
             maxBudget,
             deskripsi,
+            datePick
         } = this.state
 
         return (
-
-            <ScrollView
-                keyboardShouldPersistTaps="always"
-            >
-                <Container>
-
-                    <CardSectionRegistration>
-                        <TouchableWithoutFeedback>
-                            <View style={{ flex: 1, padding: 8 }}>
-                                <Image
-                                    style={{ width: '100%' }}
-                                    source={require('./../assets/image/upload-foto.png')}
-                                />
-                            </View>
-                        </TouchableWithoutFeedback>
-                    </CardSectionRegistration>
-
-                    <CardSectionRegistration>
-                        <Text style={styles.headerStyle}>
-                            INFORMASI KOMODITAS
-							</Text>
-                    </CardSectionRegistration>
-                    <CardSectionRegistration>
-                        <AutoComplete
-                            label="Nama Komoditas"
-                            suggestions={suggestions}
-                            onChangeText={text => this.querySuggestion(text)}
-                        />
-                    </CardSectionRegistration>
-                    <CardSectionRegistration>
-                        <InputRegistration
-                            label='Ukuran Komoditas'
-                            placeholder='Ukuran'
-                            value={size}
-                            onChangeText={v => this.onChangeInput('size', v)}
-                        />
-                        <Text style={styles.unitStyle}> kg/pcs</Text>
-
-                        <InputRegistration
-                            label='Kuantitas Komoditas'
-                            placeholder='Jumlah'
-                            value={quantity}
-                            onChangeText={v => this.onChangeInput('quantity', v)}
-                        />
-                        <Text style={styles.unitStyle}> kg</Text>
-
-                    </CardSectionRegistration>
-
-                    <CardSectionRegistration>
-                        <InputRegistration
-                            placeholder='Deskripsi Komoditas'
-                            value={deskripsi}
-                            style={styles.textArea}
-                            onChangeText={v => this.onChangeInput('deskripsi', v)}
-                        />
-                    </CardSectionRegistration>
-
-                    <View>
-                        <Text style={styles.unitStyle}>Rentang Harga/kg</Text>
-                    </View>
-
-                    <CardSectionRegistration>
-                        <InputRegistration
-                            placeholder='Min'
-                            value={minBudget}
-                            onChangeText={v => this.onChangeInput('minBudget', v)}
-                        />
-                        <Text style={styles.unitStyles}>-</Text>
-
-                        <InputRegistration
-                            placeholder='Max'
-                            value={maxBudget}
-                            onChangeText={v => this.onChangeInput('maxBudget', v)}
-                        />
-
-                    </CardSectionRegistration>
-
-                    <CardSectionRegistration>
-                        <Text style={styles.headerStyle}>
-                            TUJUAN PENGIRIMAN
-							</Text>
-                    </CardSectionRegistration>
-
-                    <ContainerSection>
-                        <View style={styles.pickerContainer}>
-                            <Text style={styles.pickerTextStyle}>Negara</Text>
-                            <View style={styles.pickerStyle}>
-                                <Picker
-                                    selectedValue={countryId}
-                                    onValueChange={v => this.onChangeInput('countryId', v)}
-                                >
-                                    <Picker.Item label="Indonesia" value="1" />
-                                    <Picker.Item label="Singapura" value="2" />
-                                </Picker>
-                            </View>
-                        </View>
-                    </ContainerSection>
-
-                    <ContainerSection>
-                        <View style={styles.pickerContainer}>
-                            <Text style={styles.pickerTextStyle}>Provinsi</Text>
-                            <View style={styles.pickerStyle}>
-                                <Picker
-                                    selectedValue={provinsiId}
-                                    onValueChange={v => this.onChangeInput('provinsiId', v)}
-                                >
-                                    <Picker.Item label="DKI Jakarta" value="1" />
-                                    <Picker.Item label="Banten" value="2" />
-                                </Picker>
-                            </View>
-                        </View>
-                    </ContainerSection>
-
-                    <ContainerSection>
-                        <View style={styles.pickerContainer}>
-                            <Text style={styles.pickerTextStyle}>Kota/Kabupaten</Text>
-                            <View style={styles.pickerStyle}>
-                                <Picker
-                                    selectedValue={cityId}
-                                    onValueChange={v => this.onChangeInput('cityId', v)}
-                                >
-                                    <Picker.Item label="Jakarta" value="1" />
-                                    <Picker.Item label="Tangerang" value="2" />
-                                </Picker>
-                            </View>
-                        </View>
-                    </ContainerSection>
-
-                </Container>
-
-                <ContainerSection>
-                    {this.renderButton()}
-                </ContainerSection>
-
-            </ScrollView>
+            <View>
+                {this.renderAllData()}
+            </View>
         );
     }
 };

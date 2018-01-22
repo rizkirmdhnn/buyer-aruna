@@ -3,7 +3,7 @@ import { Text, View, TextInput } from 'react-native'
 
 class InputRegistration extends Component {
 	render() {
-		const { label, value, onChangeText, placeholder, secureTextEntry, keyboardType } = this.props
+		const { label, value, onChangeText, placeholder, secureTextEntry, keyboardType, editable } = this.props
 		const { inputStyle, labelStyle, containerStyle } = styles
 
 		return (
@@ -17,6 +17,7 @@ class InputRegistration extends Component {
 					onChangeText={onChangeText}
 					style={inputStyle}
 					keyboardType={keyboardType}
+					editable = {editable}
 				/>
 			</View>
 		)
