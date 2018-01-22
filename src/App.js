@@ -64,6 +64,8 @@ class App extends React.Component {
             RequestFormOrderSecond: { screen: RequestFormOrderSecondPage },
             RegistrationForm: { screen: RegistrationFormPage },
             Login: { screen: LoginFormPage }
+        }, {
+            cardStyle: { backgroundColor: '#FFF' }
         });
 
         return (
