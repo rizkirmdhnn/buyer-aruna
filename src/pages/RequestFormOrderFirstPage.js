@@ -48,6 +48,9 @@ class RequestFormOrderFirstPage extends Component {
             dataCity: '',
             dataProvinsi: '',
             suggestions: [],
+			value: '',
+			FishId: '',
+
             provinsiId: '',
             cityId: '',
             size: '',
@@ -114,6 +117,7 @@ class RequestFormOrderFirstPage extends Component {
 
 
     querySuggestion = (text) => {
+        console.log(text, 'Text');
         AsyncStorage.getItem('loginCredential', (err, result) => {
 
             axios.get(`${BASE_URL}/fishes/search?key=${text}`, {
@@ -122,6 +126,7 @@ class RequestFormOrderFirstPage extends Component {
                 .then(response => {
                     res = response.data.data
                     const result = res
+                    console.log(result, 'Result AutoComplete');
                     this.setState({ suggestions: result })
                 })
                 .catch(error => {
@@ -160,14 +165,10 @@ class RequestFormOrderFirstPage extends Component {
     }
 
     renderProvinceCity = () => {
-        if (this.state.dataProvinsi == '') {
-            return <Picker.Item label='Pilih Provinsi' value='0' />
-        } else {
-            const dataProvCity = this.state.dataProvinsi;
-            return dataProvCity.map((data) => {
-                return <Picker.Item label={data.name} value={data.id} />
-            })
-        }
+        const dataProvCity = this.state.dataProvinsi;
+        return dataProvCity.map((data) => {
+            return <Picker.Item label={data.name} value={data.id} />
+        })
     }
 
 
@@ -207,6 +208,15 @@ class RequestFormOrderFirstPage extends Component {
         }
     }
 
+    onItemSelected = (item) => {
+        console.log(item, 'Item Fish');
+		this.setState({
+			suggestions: [],
+			FishId: item.id,
+			value: item.name
+		})
+	}
+
 
 
     renderAllData = () => {
@@ -218,6 +228,7 @@ class RequestFormOrderFirstPage extends Component {
                 dataCity,
                 dataProvinsi,
                 suggestions,
+                value,
                 provinsiId,
                 cityId,
                 size,
@@ -255,7 +266,20 @@ class RequestFormOrderFirstPage extends Component {
                                 label="Nama Komoditas"
                                 suggestions={suggestions}
                                 onChangeText={text => this.querySuggestion(text)}
-                            />
+                            >
+                                {
+                                    suggestions && suggestions.map(item =>
+                                        <TouchableOpacity
+                                            key={item.id}
+                                            onPress={() => this.onItemSelected(item)}
+                                        >
+                                            <View style={styles.containerItemAutoSelect}>
+                                                <Text>{item.name}</Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    )
+                                }
+                            </AutoComplete>
                         </CardSectionRegistration>
                         <CardSectionRegistration>
                             <InputRegistration
@@ -339,6 +363,7 @@ class RequestFormOrderFirstPage extends Component {
                                         selectedValue={provinsiId}
                                         onValueChange={v => this.onChangeProvince('provinsiId', v)}
                                     >
+                                        <Picker.Item label='Pilih Provinsi' value='0' />
                                         {this.renderProvinceCity()}
                                     </Picker>
                                 </View>

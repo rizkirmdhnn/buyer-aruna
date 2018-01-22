@@ -26,7 +26,7 @@ class AutoComplete extends Component {
 
 const styles = {
 	containerStyle: {
-		flex: 1,
+		flex: 1
 	},
 	inputStyle: {
 		paddingLeft: 5,
