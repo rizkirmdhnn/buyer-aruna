@@ -2,11 +2,22 @@
  *  Import Component
  */
 import React, { Component } from 'react';
-import { View, Text, Image, ScrollView, Dimensions, TouchableHighlight, AsyncStorage } from 'react-native';
-import { Button, CardProduct, CardSectionProduct } from './../components/common';
+import {
+    View,
+    Text,
+    Image,
+    ScrollView,
+    Dimensions,
+    TouchableWithoutFeedback,
+    TouchableHighlight,
+    AsyncStorage,
+    FlatList
+} from 'react-native';
+import { Button, CardProduct, CardSectionProduct, Spinner } from './../components/common';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { Header, SearchBar, Icon, SideMenu, List, ListItem } from 'react-native-elements';
 import axios from 'axios';
+import { BASE_URL } from './../shared/lb.config';
 
 /**
  *  Import Common
@@ -20,7 +31,9 @@ class HomePage extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            showAlert: false
+            showAlert: false,
+            supplierList: '',
+            loading: null
         }
     }
 
@@ -93,6 +106,78 @@ class HomePage extends Component {
             </View>
         )
     }
+
+    componentWillMount() {
+        this.setState({ loading: true })
+        AsyncStorage.getItem('loginCredential', (err, result) => {
+            axios.get(`${BASE_URL}/suppliers/popular`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => {
+                    console.log('SUKSES', response);
+                    const res = response.data.data;
+                    this.setState({ supplierList: res });
+                    this.setState({ loading: false })
+                })
+                .catch(error => {
+                    console.log('ERROR', error.message);
+                });
+        });
+    }
+
+    renderSupplierPopuler = (item) => {
+        return item.map((dataSupplier) => {
+            return (
+                <CardProduct style={styles.cardProductCard}>
+                    <TouchableWithoutFeedback onPress={() => this.goSupplier()}>
+                        <CardSectionProduct>
+                            <Image
+                                style={styles.productCardStyle}
+                                source={require('./../assets/image/photo.png')}
+                            />
+                            <Text>{dataSupplier.name}</Text>
+                        </CardSectionProduct>
+                    </TouchableWithoutFeedback>
+                </CardProduct>
+            )
+        })
+    }
+
+    renderComponentSupplier() {
+        if (this.state.loading == true) {
+            return <Spinner size="small" />
+        } else if (this.state.loading == false) {
+            // return (
+                // <FlatList
+                //     data={[this.state.supplierList]}
+                //     renderItem={({ item }) => this.renderSupplierPopuler(item)}
+                // />
+            // );
+            return this.state.supplierList.map((dataSupplier) => {
+                return (
+                    <CardProduct style={styles.cardProductCard}>
+                        <TouchableWithoutFeedback onPress={() => this.goSupplier()}>
+                            <CardSectionProduct>
+                                <Image
+                                    style={styles.productCardStyle}
+                                    source={require('./../assets/image/photo.png')}
+                                />
+                                <Text style={{ marginLeft: 23, fontWeight: 'bold' }}>{dataSupplier.name}</Text>
+                            </CardSectionProduct>
+                        </TouchableWithoutFeedback>
+                    </CardProduct>
+                )
+            })
+        }
+    }
+
+    goSupplier = (props) => {
+        const dataSupplier = props;
+        this.props.navigation.navigate('ProfileSuplier', { datas: dataSupplier })
+    }
+
 
     render() {
         const { navigate } = this.props.navigation;
@@ -214,77 +299,24 @@ class HomePage extends Component {
                         <Text style={styles.textCardLink}>Lihat Semua</Text>
                     </View>
 
-                    <View style={styles.containerProductCard}>
-
-                        <CardProduct style={styles.cardProductCard}>
-                            <CardSectionProduct>
-                                <TouchableHighlight onPress={() => navigate('ProfileSupplier')}>
-                                    <Image
-                                        style={styles.productCardStyle}
-                                        source={require('./../assets/image/fish_2.jpg')}
-                                    />
-                                </TouchableHighlight>
-                            </CardSectionProduct>
-                        </CardProduct>
-
-                        <CardProduct style={styles.cardProductCard}>
-                            <CardSectionProduct>
-                                <TouchableHighlight onPress={() => navigate('ProfileSupplier')}>
-                                    <Image
-                                        style={styles.productCardStyle}
-                                        source={require('./../assets/image/fish_2.jpg')}
-                                    />
-                                </TouchableHighlight>
-                            </CardSectionProduct>
-                        </CardProduct>
-
-                        <CardProduct style={styles.cardProductCard}>
-                            <CardSectionProduct>
-                                <TouchableHighlight onPress={() => navigate('ProfileSupplier')}>
-                                    <Image
-                                        style={styles.productCardStyle}
-                                        source={require('./../assets/image/fish_2.jpg')}
-                                    />
-                                </TouchableHighlight>
-                            </CardSectionProduct>
-                        </CardProduct>
-                    </View>
 
                     <View style={styles.containerProductCard}>
-
-                        <CardProduct style={styles.cardProductCard}>
-                            <CardSectionProduct>
-                                <TouchableHighlight onPress={() => navigate('ProfileSupplier')}>
-                                    <Image
-                                        style={styles.productCardStyle}
-                                        source={require('./../assets/image/fish_2.jpg')}
-                                    />
-                                </TouchableHighlight>
-                            </CardSectionProduct>
-                        </CardProduct>
-
-                        <CardProduct style={styles.cardProductCard}>
-                            <CardSectionProduct>
-                                <TouchableHighlight onPress={() => navigate('ProfileSupplier')}>
-                                    <Image
-                                        style={styles.productCardStyle}
-                                        source={require('./../assets/image/fish_2.jpg')}
-                                    />
-                                </TouchableHighlight>
-                            </CardSectionProduct>
-                        </CardProduct>
-
-                        <CardProduct style={styles.cardProductCard}>
-                            <CardSectionProduct>
-                                <TouchableHighlight onPress={() => navigate('ProfileSupplier')}>
-                                    <Image
-                                        style={styles.productCardStyle}
-                                        source={require('./../assets/image/fish_2.jpg')}
-                                    />
-                                </TouchableHighlight>
-                            </CardSectionProduct>
-                        </CardProduct>
+                        {this.renderComponentSupplier()}
                     </View>
+
+                    {/* <View style={styles.containerProductCard}>
+                        <CardProduct style={styles.cardProductCard}>
+                            <CardSectionProduct>
+                                <TouchableHighlight onPress={() => navigate('ProfileSupplier')}>
+                                    <Image
+                                        style={styles.productCardStyle}
+                                        source={require('./../assets/image/fish_2.jpg')}
+                                    />
+                                </TouchableHighlight>
+                            </CardSectionProduct>
+                        </CardProduct>
+                    </View> */}
+
                 </ScrollView>
 
                 <AwesomeAlert
