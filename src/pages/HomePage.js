@@ -149,12 +149,6 @@ class HomePage extends Component {
         if (this.state.loading == true) {
             return <Spinner size="small" />
         } else if (this.state.loading == false) {
-            // return (
-                // <FlatList
-                //     data={[this.state.supplierList]}
-                //     renderItem={({ item }) => this.renderSupplierPopuler(item)}
-                // />
-            // );
             return this.state.supplierList.map((dataSupplier) => {
                 return (
                     <CardProduct style={styles.cardProductCard}>
@@ -303,19 +297,6 @@ class HomePage extends Component {
                     <View style={styles.containerProductCard}>
                         {this.renderComponentSupplier()}
                     </View>
-
-                    {/* <View style={styles.containerProductCard}>
-                        <CardProduct style={styles.cardProductCard}>
-                            <CardSectionProduct>
-                                <TouchableHighlight onPress={() => navigate('ProfileSupplier')}>
-                                    <Image
-                                        style={styles.productCardStyle}
-                                        source={require('./../assets/image/fish_2.jpg')}
-                                    />
-                                </TouchableHighlight>
-                            </CardSectionProduct>
-                        </CardProduct>
-                    </View> */}
 
                 </ScrollView>
 
