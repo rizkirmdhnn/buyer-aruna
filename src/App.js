@@ -18,11 +18,12 @@ import RequestFormOrderSecondPage from './pages/RequestFormOrderSecondPage';
 import ProfileSupplierPage from './pages/ProfileSupplierPage';
 import RegistrationFormPage from './pages/RegistrationFormPage';
 import FormProductRequestPage from './pages/FormProductRequestPage';
+import DetailRequestOrderPage from './pages/DetailRequestOrderPage';
 /**
  *  List Component
  */
 import { HeaderHome } from './components/common';
-
+console.disableYellowBox = true;
 
 class App extends React.Component {
     state = { loggedIn: false };
@@ -63,7 +64,8 @@ class App extends React.Component {
             RequestFormOrderFirst: { screen: RequestFormOrderFirstPage },
             RequestFormOrderSecond: { screen: RequestFormOrderSecondPage },
             RegistrationForm: { screen: RegistrationFormPage },
-            Login: { screen: LoginFormPage }
+            Login: { screen: LoginFormPage },
+            DetailRequestOrder: { screen: DetailRequestOrderPage }
         }, {
             cardStyle: { backgroundColor: '#FFF' }
         });

@@ -60,11 +60,10 @@ class RegistrationFormPage extends Component {
         this.setState({ loading: true })
 
         const data = this.state
-        const url = `${BASE_URL}/register-buyer`;
-        console.log(url, 'URL');
-
-        axios.post(`${BASE_URL}/register-buyer`, data)
+        console.log(data, 'DATA REGISTER');
+        axios.post(`${BASE_URL}/supplier/register`, data)
             .then(response => {
+                console.log(response, 'Response');
                 console.log(response.status)
                 if (response.status === 200) {
                     const resetAction = NavigationActions.reset({
@@ -131,13 +130,19 @@ class RegistrationFormPage extends Component {
 							</Text>
                         </CardSectionRegistration>
                         <CardSectionRegistration>
-                            <InputRegistration
-                                label='Jenis Lembaga'
-                                placeholder='Jenis Lembaga'
-                                value={organizationType}
-                                onChangeText={v => this.onChangeInput('organizationType', v)}
-
-                            />
+                            <View style={styles.pickerContainer}>
+                                <Text style={styles.pickerTextStyle}>Jenis Lembaga</Text>
+                                <View style={styles.pickerStyle}>
+                                    <Picker
+                                        selectedValue={organizationType}
+                                        onValueChange={v => this.onChangeInput('organizationType', v)}
+                                    >
+                                        <Picker.Item label='PT' value='PT' />
+                                        <Picker.Item label='CV' value='CV' />
+                                        <Picker.Item label='OTHERS' value='OTHERS' />
+                                    </Picker>
+                                </View>
+                            </View>
                         </CardSectionRegistration>
                         <CardSectionRegistration>
                             <InputRegistration
@@ -279,7 +284,24 @@ const styles = {
         color: '#8e8e8e',
         flex: 1,
         paddingLeft: 5
-    }
+    },
+    pickerTextStyle: {
+        color: '#8e8e8e',
+        paddingLeft: 5,
+        fontSize: 16
+    },
+    pickerContainer: {
+        flex: 1,
+        height: 65,
+        marginBottom: 5
+    },
+    pickerStyle: {
+        flex: 1,
+        borderBottomWidth: 1,
+        borderColor: '#716c6c',
+        marginRight: 3,
+        marginLeft: 3,
+    },
 }
 
 export default RegistrationFormPage;

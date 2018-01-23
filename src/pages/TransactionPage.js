@@ -5,10 +5,11 @@ import { Header, SearchBar, Icon } from 'react-native-elements';
 
 class TransactionPage extends Component {
     static navigationOptions = {
-        title: 'Transaction',
+        title: 'Transaksi',
         header: (
             <View>
                 <Header
+                    backgroundColor={'#006AAF'}
                     containerStyle={{ backgroundColor: 'red' }}
                     leftComponent={{ icon: 'menu', color: '#fff' }}
                     centerComponent={{ text: 'Home', style: { color: '#EFF6F9' } }}

@@ -20,7 +20,7 @@ import {
 } from './../components/common';
 import { BASE_URL } from './../shared/lb.config';
 import axios from 'axios';
-import { CheckBox } from 'react-native-elements'
+import { CheckBox } from 'react-native-elements';
 
 class RequestFormOrderSecondPage extends Component {
 
@@ -36,7 +36,7 @@ class RequestFormOrderSecondPage extends Component {
             datax: [{}],
             dataSupplier: [{}],
             loading: null,
-            checked: true
+            checked: true,
         };
     };
 
@@ -51,15 +51,16 @@ class RequestFormOrderSecondPage extends Component {
         AsyncStorage.getItem('loginCredential', (err, result) => {
 
             const token = result;
+            console.log(token);
             axios.post(`${BASE_URL}/generate-request`, {
-                'FishId': 1,
+                'FishId': this.state.datax.FishId,
                 'ProvinceId': this.state.datax.provinsiId,
                 'CityId': this.state.datax.cityId,
                 'minBudget': this.state.datax.minBudget,
                 'maxBudget': this.state.datax.maxBudget
             }, {
                     headers: {
-                        'token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyLCJuYW1lIjoiYXJpZiIsImVtYWlsIjoiYXJpZkBnbWFpbGMub3JnIiwicGFzc3dvcmQiOiIxMjMxMjMiLCJwaG9uZSI6IjA4MjExMTEyMjIxIiwicGhvdG8iOiJpa2FuLmpwZyIsImFkZHJlc3MiOiJhbGRpcm9uIiwicm9sZSI6bnVsbCwicG9pbnRBbW91bnQiOjAsImlkTnVtYmVyIjoiMzI0NzAyNDQyMzQxMjIiLCJvcmdhbml6YXRpb25UeXBlIjoicHQiLCJucHdwIjpudWxsLCJzdWJEaXN0cmljdCI6bnVsbCwidmlsbGFnZSI6bnVsbCwiYWN0aXZlIjpmYWxzZSwidmVyaWZpZWQiOmZhbHNlLCJjcmVhdGVkQXQiOiIyMDE4LTAxLTE0VDAwOjAwOjAwLjAwMFoiLCJ1cGRhdGVkQXQiOiIyMDE4LTAxLTE0VDAwOjAwOjAwLjAwMFoiLCJDaXR5SWQiOjF9LCJpYXQiOjE1MTU4OTUyMTIsImV4cCI6MTUxNjUwMDAxMn0.jJcAMQkXQIwoJQ9JAzaNImgS9rYbzG9xgg4pTfHMMGs',
+                        'token': token,
                         'Content-Type': 'application/json'
                     }
                 })
@@ -78,9 +79,10 @@ class RequestFormOrderSecondPage extends Component {
 
     }
 
-    checkBox = () => {
+    checkBox = (props) => {
+        const dataClick = props;
+        console.log(dataClick, 'Data Checked');
         this.setState({ checked: !this.state.checked })
-        console.log(this.state.checked, 'Checked');
     }
 
     renderLoading = () => {
@@ -99,7 +101,37 @@ class RequestFormOrderSecondPage extends Component {
     }
 
     onSubmit = () => {
-        Keyboard.dismiss()
+        console.log('Submit Request');
+        // const dataRequest = this.state;
+        // console.log(dataRequest, 'All Data Request');
+
+        AsyncStorage.getItem('loginCredential', (err, result) => {
+            const token = result;
+            console.log(token, 'Token');
+            axios.post(`${BASE_URL}/buyer/requests`, {
+                'FishId': this.state.datax.FishId,
+                'minBudget': this.state.datax.minBudget,
+                'maxBudget': this.state.datax.maxBudget,
+                'dueDate': '2018-11-11T10:10:10.000Z',
+                'quantity': this.state.datax.quantity,
+                'SupplierIds': [1],
+                'photo': './../assets/image/upload-foto.png'
+            }, {
+                    headers: {
+                        'token': token
+                    }
+                })
+                .then(response => {
+                    res = response.data.data;
+                    console.log(response, 'RES');
+                }).catch(error => {
+                    console.log(error, 'Error Request')
+                })
+                .catch(error => {
+                    console.log(error.message, 'Error nya');
+                    alert('Koneksi internet bermasalah')
+                })
+        });
 
     }
 
@@ -112,13 +144,7 @@ class RequestFormOrderSecondPage extends Component {
         return (
             <Button
                 onPress={
-                    () => Alert.alert(
-                        '',
-                        'Sukses Request Order.',
-                        [
-                            { text: 'Ya', onPress: () => navigate('Home') },
-                        ]
-                    )
+                    () => this.onSubmit()
                 }
             >
                 Next
@@ -126,11 +152,15 @@ class RequestFormOrderSecondPage extends Component {
         )
     }
 
+    onChangeInput = (name, v) => {
+        this.setState({ [name]: v });
+        console.log(v);
+    }
+
 
     renderItem = (item) => {
-        console.log(item, 'Data Supplier');
+        console.log(item, 'Item Data Supplier');
         return item.map((data) => {
-            console.log(data, 'DATA MAP')
             return (
                 <View style={styles.itemContainerStyleSupplier}>
                     <View style={styles.thumbnailContainerStyle}>
@@ -143,10 +173,12 @@ class RequestFormOrderSecondPage extends Component {
                         <Text style={styles.hedaerTextStyle}>{data.User.name}</Text>
                         <View style={{ flexDirection: 'row' }}>
                             <Text style={{ flex: 1, fontWeight: 'bold' }}>500 Kg </Text>
+                            <Text style={{ flex: 1, fontWeight: 'bold' }}>{data.minBudget}</Text>
+                            <Text style={{ flex: 1, fontWeight: 'bold' }}>{data.maxBudget} </Text>
                             <View style={{ flex: 1 }}>
                                 <CheckBox
                                     checked={this.state.checked}
-                                    onPress={() => this.checkBox()}
+                                    onPress={() => this.checkBox(data)}
                                 />
                             </View>
                         </View>
@@ -159,7 +191,6 @@ class RequestFormOrderSecondPage extends Component {
     }
 
     renderData = (item) => {
-        console.log(item, 'Data Product');
         return (
             <View style={styles.itemContainerStyle}>
                 <View style={styles.thumbnailContainerStyle}>
@@ -169,7 +200,7 @@ class RequestFormOrderSecondPage extends Component {
                     />
                 </View>
                 <View style={styles.headerContentStyle}>
-                    <Text style={styles.headerTextStyle}>{item.suggestions[0].name}</Text>
+                    <Text style={styles.headerTextStyle}>{item.value}</Text>
                     <View style={{ flexDirection: 'column', flex: 1 }}>
                         <Text style={styles.titleTextStyle}>{item.quantity} Kg</Text>
                         <Text>Rp. {item.minBudget} - {item.maxBudget}</Text>
@@ -181,7 +212,7 @@ class RequestFormOrderSecondPage extends Component {
     }
 
     render(props) {
-        
+
         return (
             <View>
                 <FlatList

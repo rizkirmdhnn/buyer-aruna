@@ -100,14 +100,7 @@ class RequestFormOrderFirstPage extends Component {
         return (
             <Button
                 onPress={
-                    () => Alert.alert(
-                        '',
-                        'Yakin sudah mengisi informasi dengan benar?',
-                        [
-                            { text: 'Tidak', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-                            { text: 'Ya', onPress: () => this.onSubmit() },
-                        ]
-                    )
+                    () => this.onSubmit()
                 }
             >
                 Next

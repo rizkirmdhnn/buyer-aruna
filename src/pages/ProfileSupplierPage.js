@@ -12,7 +12,7 @@ class ProfileSupplierPage extends Component {
     render() {
         return (
             <View>
-                <Text> Profile Supplier Page </Text>
+                <Text> Profile Nelayan </Text>
             </View>
         );
     }
