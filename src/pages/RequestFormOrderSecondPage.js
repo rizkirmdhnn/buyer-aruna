@@ -21,6 +21,7 @@ import {
 import { BASE_URL } from './../shared/lb.config';
 import axios from 'axios';
 import { CheckBox } from 'react-native-elements';
+import moment from 'moment';
 
 class RequestFormOrderSecondPage extends Component {
 
@@ -37,6 +38,7 @@ class RequestFormOrderSecondPage extends Component {
             dataSupplier: [{}],
             loading: null,
             checked: true,
+            idSupplier: []
         };
     };
 
@@ -76,7 +78,6 @@ class RequestFormOrderSecondPage extends Component {
                     alert('Koneksi internet bermasalah')
                 })
         });
-
     }
 
     checkBox = (props) => {
@@ -104,44 +105,50 @@ class RequestFormOrderSecondPage extends Component {
         console.log('Submit Request');
         AsyncStorage.getItem('loginCredential', (err, result) => {
             const token = result;
-            console.log(token, 'Token');
-            this.setState({ loading: true });
-            const data = {
-                'FishId': this.state.datax.FishId,
-                'minBudget': this.state.datax.minBudget,
-                'maxBudget': this.state.datax.maxBudget,
-                'dueDate': '2018-11-11T10:10:10.000Z',
-                'quantity': this.state.datax.quantity,
-                'size': 10,
-                'SupplierIds': ['1'],
-                'photo': this.state.datax.photo.uri
-            }
+            const { navigate } = this.props.navigation;
+            const dataRequest = new FormData();
+            dataRequest.append('FishId', this.state.datax.FishId);
+            dataRequest.append('minBudget', this.state.datax.minBudget);
+            dataRequest.append('maxBudget', this.state.datax.maxBudget);
+            dataRequest.append('dueDate', this.state.datax.datePick);
+            dataRequest.append('quantity', this.state.datax.quantity);
+            dataRequest.append('size', this.state.datax.size);
 
-            const dataPhoto = new FormData();
-            dataPhoto.append(data); // you can append anyone.
-            dataPhoto.append({
-                uri: this.state.datax.photo.uri,
-                type: 'image/jpeg', // or photo.type
-                name: 'example'
-            });
-            console.log(dataPhoto, 'Data Foto');
-            console.log(data, 'Data All');
-            axios.post(`${BASE_URL}/buyer/requests`, dataPhoto, {
-                headers: {
-                    'token': token,
-                    'Content-Type': 'multipart/form-data'
-                }
+            this.state.idSupplier.map((item, index) => {
+                console.log(item, ' ', index, 'MAPING');
+                dataRequest.append('SupplierIds[' + index + ']', item)
             })
-                .then(response => {
+
+            // dataRequest.append('SupplierIds', this.state.idSupplier);
+            dataRequest.append('photo', {
+                uri: this.state.datax.photo.uri,
+                type: 'image/jpeg',
+                name: 'formrequest'
+            });
+
+            console.log(this.state.datax, 'Data Request');
+            console.log(dataRequest, 'Data Form Append');
+
+            axios.post(`${BASE_URL}/buyer/requests`,
+                dataRequest
+                , {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'token': token
+                    }
+                }).then(response => {
                     res = response.data.data;
                     console.log(response, 'RES');
+                    navigate('Request');
                     this.setState({ loading: false });
                 })
                 .catch(error => {
                     console.log(error.message, 'Error nya');
-                    alert('Koneksi internet bermasalah')
+                    console.log(error.response, 'Error nya');
+                    console.log(error, 'Error nya');
+                    alert(error.message.data)
                     this.setState({ loading: false });
-            })
+                })
         });
 
     }
@@ -172,6 +179,9 @@ class RequestFormOrderSecondPage extends Component {
     renderItem = (item) => {
         console.log(item, 'Item Data Supplier');
         return item.map((data) => {
+            console.log(data.User.id, 'ID Supplier');
+            this.state.idSupplier.push(data.User.id);
+            console.log(this.state.idSupplier, 'ID PUSH SUPPLIER')
             return (
                 <View style={styles.itemContainerStyleSupplier}>
                     <View style={styles.thumbnailContainerStyle}>
@@ -200,6 +210,7 @@ class RequestFormOrderSecondPage extends Component {
         })
 
     }
+
 
     renderData = (item) => {
         console.log(item, 'Item Data')
@@ -234,7 +245,6 @@ class RequestFormOrderSecondPage extends Component {
                 />
                 <View style={styles.containerScroll}>
                     <ScrollView
-
                     >
                         {this.renderLoading()}
                     </ScrollView>

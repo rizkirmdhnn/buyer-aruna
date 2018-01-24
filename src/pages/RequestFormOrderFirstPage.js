@@ -63,6 +63,7 @@ class RequestFormOrderFirstPage extends Component {
             minBudget: '',
             maxBudget: '',
             datePick: '',
+            dateNowPick: '',
             photo: null
         };
     };
@@ -83,8 +84,10 @@ class RequestFormOrderFirstPage extends Component {
     _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
 
     _handleDatePicked = (date) => {
+        console.log(date, 'Date Nya')
+        const dateTemp = moment(date).format('YYYY-MM-DD h:mm:ss'); 
         const dateNow = moment(date).format('DD/MM/YYYY');
-        this.setState({ datePick: dateNow })
+        this.setState({ datePick: dateTemp, dateNowPick: dateNow })
         this._hideDateTimePicker();
     };
 
@@ -270,6 +273,7 @@ class RequestFormOrderFirstPage extends Component {
                 maxBudget,
                 deskripsi,
                 datePick,
+                dateNowPick,
                 photo
             } = this.state
 
@@ -373,8 +377,8 @@ class RequestFormOrderFirstPage extends Component {
                         <CardSectionRegistration>
                             <InputRegistration
                                 placeholder='Tanggal Penerimaan'
-                                value={datePick}
-                                onChangeText={v => this.onChangeInput('datePick', v)}
+                                value={dateNowPick}
+                                onChangeText={v => this.onChangeInput('dateNowPick', v)}
                                 editable={false}
                             />
                             <TouchableOpacity onPress={this._showDateTimePicker}>
