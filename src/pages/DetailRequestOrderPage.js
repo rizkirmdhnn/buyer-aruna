@@ -126,12 +126,19 @@ class DetailRequestOrderPage extends Component {
         this.setState({ checked: !this.state.checked })
     }
 
+    endRequest = () => {
+        console.log('End Request');
+    }
+
     renderButton() {
+        if (this.state.loading) {
+            return <Spinner size="small" />
+        }
         return (
             <Button
                 title="Akhiri Permintaan"
                 buttonStyle={styles.buttonStyle}
-                // onPress={this.onButtonPress.bind(this)}
+                onPress={this.endRequest.bind(this)}
             />
         );
     }

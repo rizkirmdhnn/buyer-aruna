@@ -114,6 +114,7 @@ class RegistrationFormPage extends Component {
             })
             .catch(error => {
                 console.log(error.response, 'Error');
+                alert(error.response.data.message);
                 this.setState({ loading: false })
             })
     }
@@ -323,14 +324,6 @@ class RegistrationFormPage extends Component {
                                 </TouchableOpacity>
                             </View>
                         </CardSectionRegistration>
-                        <CardSectionRegistration>
-                            <InputRegistration
-                                label='Email'
-                                placeholder='Email'
-                                value={email}
-                                onChangeText={v => this.onChangeInput('email', v)}
-                            />
-                        </CardSectionRegistration>
                     </CardRegistration>
 
                     <CardRegistration>
@@ -390,10 +383,10 @@ class RegistrationFormPage extends Component {
                         </CardSectionRegistration>
                         <CardSectionRegistration>
                             <InputRegistration
-                                label='Username'
-                                placeholder='Username'
-                                value={username}
-                                onChangeText={v => this.onChangeInput('username', v)}
+                                label='Email'
+                                placeholder='Email'
+                                value={email}
+                                onChangeText={v => this.onChangeInput('email', v)}
                             />
                         </CardSectionRegistration>
                         <CardSectionRegistration>
