@@ -102,35 +102,46 @@ class RequestFormOrderSecondPage extends Component {
 
     onSubmit = () => {
         console.log('Submit Request');
-        // const dataRequest = this.state;
-        // console.log(dataRequest, 'All Data Request');
-
         AsyncStorage.getItem('loginCredential', (err, result) => {
             const token = result;
             console.log(token, 'Token');
-            axios.post(`${BASE_URL}/buyer/requests`, {
+            this.setState({ loading: true });
+            const data = {
                 'FishId': this.state.datax.FishId,
                 'minBudget': this.state.datax.minBudget,
                 'maxBudget': this.state.datax.maxBudget,
                 'dueDate': '2018-11-11T10:10:10.000Z',
                 'quantity': this.state.datax.quantity,
-                'SupplierIds': [1],
-                'photo': './../assets/image/upload-foto.png'
-            }, {
-                    headers: {
-                        'token': token
-                    }
-                })
+                'size': 10,
+                'SupplierIds': ['1'],
+                'photo': this.state.datax.photo.uri
+            }
+
+            const dataPhoto = new FormData();
+            dataPhoto.append(data); // you can append anyone.
+            dataPhoto.append({
+                uri: this.state.datax.photo.uri,
+                type: 'image/jpeg', // or photo.type
+                name: 'example'
+            });
+            console.log(dataPhoto, 'Data Foto');
+            console.log(data, 'Data All');
+            axios.post(`${BASE_URL}/buyer/requests`, dataPhoto, {
+                headers: {
+                    'token': token,
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
                 .then(response => {
                     res = response.data.data;
                     console.log(response, 'RES');
-                }).catch(error => {
-                    console.log(error, 'Error Request')
+                    this.setState({ loading: false });
                 })
                 .catch(error => {
                     console.log(error.message, 'Error nya');
                     alert('Koneksi internet bermasalah')
-                })
+                    this.setState({ loading: false });
+            })
         });
 
     }
@@ -191,12 +202,13 @@ class RequestFormOrderSecondPage extends Component {
     }
 
     renderData = (item) => {
+        console.log(item, 'Item Data')
         return (
             <View style={styles.itemContainerStyle}>
                 <View style={styles.thumbnailContainerStyle}>
                     <Image
                         style={styles.thumbnailStyle}
-                        source={require('./../assets/image/gurame.jpg')}
+                        source={{ uri: this.state.datax.photo.uri }}
                     />
                 </View>
                 <View style={styles.headerContentStyle}>

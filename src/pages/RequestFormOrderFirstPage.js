@@ -9,6 +9,7 @@ import {
     KeyboardAvoidingView,
     Keyboard,
     TextInput,
+    PixelRatio,
     AsyncStorage,
     TouchableWithoutFeedback,
     TouchableOpacity,
@@ -31,6 +32,8 @@ import axios from 'axios';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 
+import ImagePicker from 'react-native-image-picker';
+
 class RequestFormOrderFirstPage extends Component {
 
     static navigationOptions = {
@@ -48,8 +51,8 @@ class RequestFormOrderFirstPage extends Component {
             dataCity: '',
             dataProvinsi: '',
             suggestions: [],
-			value: '',
-			FishId: '',
+            value: '',
+            FishId: '',
 
             provinsiId: '',
             cityId: '',
@@ -59,7 +62,8 @@ class RequestFormOrderFirstPage extends Component {
             quantity: '',
             minBudget: '',
             maxBudget: '',
-            datePick: ''
+            datePick: '',
+            photo: null
         };
     };
 
@@ -87,7 +91,7 @@ class RequestFormOrderFirstPage extends Component {
     onSubmit = () => {
         Keyboard.dismiss();
         const data = this.state;
-
+        console.log(data, 'DATA LEMPAR');
         this.props.navigation.navigate('RequestFormOrderSecond', { datas: data })
     }
 
@@ -203,12 +207,48 @@ class RequestFormOrderFirstPage extends Component {
 
     onItemSelected = (item) => {
         console.log(item, 'Item Fish');
-		this.setState({
-			suggestions: [],
-			FishId: item.id,
-			value: item.name
-		})
-	}
+        this.setState({
+            suggestions: [],
+            FishId: item.id,
+            value: item.name
+        })
+    }
+
+    selectPhotoTapped() {
+        const options = {
+            quality: 1.0,
+            maxWidth: 500,
+            maxHeight: 500,
+            storageOptions: {
+                skipBackup: true
+            }
+        };
+
+
+        ImagePicker.showImagePicker(options, (response) => {
+            console.log('Response = ', response);
+
+            if (response.didCancel) {
+                console.log('User cancelled photo picker');
+            }
+            else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            }
+            else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+            }
+            else {
+                const source = { uri: response.uri };
+
+                // You can also display the image using data:
+                // let source = { uri: 'data:image/jpeg;base64,' + response.data };
+
+                this.setState({
+                    photo: source
+                });
+            }
+        });
+    }
 
 
 
@@ -229,7 +269,8 @@ class RequestFormOrderFirstPage extends Component {
                 minBudget,
                 maxBudget,
                 deskripsi,
-                datePick
+                datePick,
+                photo
             } = this.state
 
             return (
@@ -239,14 +280,15 @@ class RequestFormOrderFirstPage extends Component {
                     <Container>
 
                         <CardSectionRegistration>
-                            <TouchableWithoutFeedback>
-                                <View style={{ flex: 1, padding: 8 }}>
-                                    <Image
-                                        style={{ width: '100%' }}
-                                        source={require('./../assets/image/upload-foto.png')}
-                                    />
-                                </View>
-                            </TouchableWithoutFeedback>
+                            <View style={styles.container}>
+                                <TouchableOpacity onPress={this.selectPhotoTapped.bind(this)}>
+                                    <View style={[styles.avatar, styles.avatarContainer, { marginBottom: 20 }]}>
+                                        {this.state.photo === null ? <Text>Take a Picture</Text> :
+                                            <Image style={styles.avatar} source={this.state.photo} />
+                                        }
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
                         </CardSectionRegistration>
 
                         <CardSectionRegistration>
@@ -466,6 +508,23 @@ const styles = {
     textArea: {
         height: 50,
         borderLine: 1
+    },
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#F5FCFF'
+    },
+    avatarContainer: {
+        borderColor: '#9B9B9B',
+        borderWidth: 1 / PixelRatio.get(),
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    avatar: {
+        borderRadius: 75,
+        width: 150,
+        height: 150
     }
 }
 
