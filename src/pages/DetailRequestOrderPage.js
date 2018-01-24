@@ -4,12 +4,13 @@ import {
     CardRegistration,
     CardSectionRegistration,
     InputRegistration,
-    Button,
     ContainerSection,
     Container,
     Spinner
 } from './../components/common';
 import { CheckBox } from 'react-native-elements';
+import moment from 'moment';
+import { Button } from 'react-native-elements';
 
 class DetailRequestOrderPage extends Component {
     static navigationOptions = {
@@ -21,16 +22,22 @@ class DetailRequestOrderPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            dataMaster: ''
+            dataMaster: '',
+            loading: null
         };
     };
 
     componentWillMount() {
+        this.setState({ loading: true });
         console.log(this.props.navigation.state.params.datas, 'Data Order');
         this.setState({ dataMaster: this.props.navigation.state.params.datas })
+        this.setState({ loading: false });
     }
 
     renderData = (item) => {
+        console.log(item, 'Item Detail Request');
+        const dateFormat = moment(item.dueDate).format('DD/MM/YYYY');
+        const timeFormat = moment(item.dueDate).format('h:mm:ss');
         return (
             <View style={styles.itemContainerStyle}>
                 <View style={styles.thumbnailContainerStyle}>
@@ -40,18 +47,52 @@ class DetailRequestOrderPage extends Component {
                     />
                 </View>
                 <View style={styles.headerContentStyle}>
-                    <Text style={styles.headerTextStyle}>{item.name}</Text>
+                    <Text style={styles.headerTextStyle}>{item.Fish.name}</Text>
+                    <Text style={styles.headerTextStyle}>{item.size}</Text>
                     <View style={{ flexDirection: 'column', flex: 1 }}>
-                        <Text>{item.dueDate}</Text>
+                        <Text>Rp. {item.minBudget} - Rp. {item.maxBudget}</Text>
+                        <Text>Batas Waktu: {dateFormat} Pukul: {timeFormat}</Text>
                     </View>
                 </View>
             </View>
         )
     }
 
+    renderFlatListDetail = () => {
+        if (this.state.loading) {
+            return <Spinner size="small" />
+        } else {
+            return (
+                <View>
+                    <FlatList
+                        data={[this.state.dataMaster]}
+                        renderItem={({ item }) => this.renderData(item)}
+                    />
+                </View>
+            );
+        }
+    }
+
+    renderFlatListSupplier = () => {
+        if (this.state.loading) {
+            return <Spinner size="small" />
+        } else {
+            return (
+                <View>
+                    <FlatList
+                        data={[this.state.dataMaster]}
+                        renderItem={({ item }) => this.renderSupplier(item)}
+                    />
+                </View>
+            );
+        }
+    }
+
+
 
     renderSupplier = (item) => {
-        return item.map((data) => {
+        console.log(item.Requests, 'Render Supplier Detail')
+        return item.Requests.map((data) => {
             return (
                 <View style={styles.itemContainerStyleSupplier}>
                     <View style={styles.thumbnailContainerStyle}>
@@ -61,14 +102,14 @@ class DetailRequestOrderPage extends Component {
                         />
                     </View>
                     <View style={styles.headerContentStyle}>
-                        <Text style={styles.hedaerTextStyle}>{data.name}</Text>
+                        <Text style={styles.hedaerTextStyle}>{data.SupplierId}</Text>
                         <View style={{ flexDirection: 'row' }}>
-                            <Text style={{ flex: 1, fontWeight: 'bold' }}>{data.size} </Text>
-                            <Text style={{ flex: 1, fontWeight: 'bold' }}>{data.budget}</Text>
+                            <Text style={{ flex: 1, fontWeight: 'bold' }}>500 Kg </Text>
+                            <Text style={{ flex: 1, fontWeight: 'bold' }}>Rp. 100.000 - Rp. 500.000</Text>
                             <View style={{ flex: 1 }}>
                                 <CheckBox
                                     checked={true}
-                                    onPress={() => this.checkBox(data)}
+                                // onPress={() => this.checkBox(data)}
                                 />
                             </View>
                         </View>
@@ -85,40 +126,21 @@ class DetailRequestOrderPage extends Component {
         this.setState({ checked: !this.state.checked })
     }
 
+    renderButton() {
+        return (
+            <Button
+                title="Akhiri Permintaan"
+                buttonStyle={styles.buttonStyle}
+                // onPress={this.onButtonPress.bind(this)}
+            />
+        );
+    }
+
 
     render(props) {
-        const supplierData = [
-            {
-                id: 1,
-                name: 'Koperasi Sana Sini',
-                size: '500 kg',
-                budget: 'Rp. 10.000.000 - 2.000.000'
-            },
-            {
-                id: 1,
-                name: 'Koperasi Aku Kamu',
-                size: '300 kg',
-                budget: 'Rp. 10.000.000 - 2.000.000'
-            },
-            {
-                id: 1,
-                name: 'Koperasi Dia',
-                size: '100 kg',
-                budget: 'Rp. 10.000.000 - 2.000.000'
-            },
-            {
-                id: 1,
-                name: 'Koperasi Mereka',
-                size: '250 kg',
-                budget: 'Rp. 10.000.000 - 2.000.000'
-            }
-        ]
         return (
             <View>
-                <FlatList
-                    data={[this.state.dataMaster]}
-                    renderItem={({ item }) => this.renderData(item)}
-                />
+                {this.renderFlatListDetail()}
 
                 <View style={{ flexDirection: 'row' }}>
                     <Text style={{ justifyContent: 'flex-start' }}> Nelayan Dipilih </Text>
@@ -127,11 +149,12 @@ class DetailRequestOrderPage extends Component {
 
                 <View style={styles.containerScroll}>
                     <ScrollView>
-                        <FlatList
-                            data={[supplierData]}
-                            renderItem={({ item }) => this.renderSupplier(item)}
-                        />
+                        {this.renderFlatListSupplier()}
                     </ScrollView>
+                </View>
+
+                <View>
+                    {this.renderButton()}
                 </View>
             </View>
         );
@@ -223,7 +246,14 @@ const styles = {
         borderRightWidth: 2,
         borderLeftWidth: 2,
         borderBottomWidth: 2
-    }
+    },
+    buttonStyle: {
+        backgroundColor: '#006AAF',
+        width: 318,
+        height: 50,
+        margin: 5,
+        borderRadius: 5
+    },
 }
 
 export default DetailRequestOrderPage;

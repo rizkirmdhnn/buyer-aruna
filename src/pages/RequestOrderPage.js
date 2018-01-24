@@ -1,16 +1,53 @@
 import React, { Component } from 'react';
-import { Text, FlatList, View, Image, TouchableWithoutFeedback } from 'react-native';
+import { Text, FlatList, View, Image, TouchableWithoutFeedback, AsyncStorage } from 'react-native';
 import { Header, SearchBar, Icon } from 'react-native-elements';
-// import { NavigationActions } from 'react-navigation';
+import { BASE_URL } from './../shared/lb.config';
+import axios from 'axios';
+import {
+    CardRegistration,
+    CardSectionRegistration,
+    InputRegistration,
+    Button,
+    ContainerSection,
+    Container,
+    Spinner
+} from './../components/common';
+import moment from 'moment';
+
 
 class RequestOrderPage extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            dataList: ''
+            loading: null,
+            tokenUser: '',
+            dataReqOrder: ''
         };
     };
+
+    componentWillMount() {
+        this.setState({ loading: true });
+
+        AsyncStorage.getItem('loginCredential', (err, result) => {
+            this.setState({ tokenUser: result });
+
+            axios.get(`${BASE_URL}/buyer/requests`, {
+                headers: {
+                    'token': this.state.tokenUser
+                }
+            }).then(response => {
+                res = response.data.data;
+                console.log(res, 'Data Request Order');
+                this.setState({ dataReqOrder: res });
+                this.setState({ loading: false });
+            })
+                .catch(error => {
+                    console.log(error.message, 'Error nya');
+                    alert('Koneksi internet bermasalah');
+                })
+        })
+    }
 
     static navigationOptions = {
         title: 'Permintaan',
@@ -35,6 +72,8 @@ class RequestOrderPage extends Component {
 
     renderData = (item) => {
         return item.map((datax) => {
+            const dateFormat = moment(datax.dueDate).format('DD/MM/YYYY');
+            const timeFormat = moment(datax.dueDate).format('h:mm:ss');
             return (
                 <TouchableWithoutFeedback
                     onPress={() => this.detailOrder(datax)}
@@ -47,59 +86,44 @@ class RequestOrderPage extends Component {
                             />
                         </View>
                         <View style={styles.headerContentStyle}>
-                            <Text style={styles.headerTextStyle}>{datax.name}</Text>
+                            <Text style={styles.headerTextStyle}>{datax.Fish.name}</Text>
                             <View style={{ flexDirection: 'column', flex: 1 }}>
-                                <Text>{datax.dueDate}</Text>
-                                <Text>{datax.response}</Text>
+                                <Text style={{ fontSize: 13 }}>Batas Waktu: {dateFormat} Pukul: {timeFormat} </Text>
+                                <Text>5 Sanggup | 4 Menolak | 1 Menunggu</Text>
                             </View>
                         </View>
                     </View>
                 </TouchableWithoutFeedback>
             )
         })
-
     }
 
-    _keyExtractor = (item, index) => item.id;
+    renderFlatList = () => {
+        if (this.state.loading) {
+            return <Spinner size="small" />
+        } else{
+            return (
+                <View>
+                    <FlatList
+                        data={[this.state.dataReqOrder]}
+                        renderItem={({ item }) => this.renderData(item)}
+                    />
+                </View>
+            );
+        }
+    }
+
 
     detailOrder = (props) => {
         const listData = props;
         this.props.navigation.navigate('DetailRequestOrder', { datas: listData })
     }
 
-    componentWillMount() {
-        const data =
-            [
-                {
-                    id: 1,
-                    name: 'Kakap Merah - 400 kg',
-                    dueDate: 'Batas Waktu: 19/2/2018 pukul 03.00',
-                    response: '7 Sanggup | 3 Menolak | 2 Menunggu'
-                },
-                {
-                    id: 2,
-                    name: 'Tuna Merah - 500 kg',
-                    dueDate: 'Batas Waktu: 19/2/2018 pukul 03.00',
-                    response: '3 Sanggup | 6 Menolak | 1 Menunggu'
-                },
-                {
-                    id: 3,
-                    name: 'Tongkol Abu Abu - 800 kg',
-                    dueDate: 'Batas Waktu: 19/2/2018 pukul 03.00',
-                    response: '1 Sanggup | 3 Menolak | 7 Menunggu'
-                }
-            ]
-        this.setState({ dataList: data });
-    }
 
     render() {
         return (
             <View>
-                <FlatList
-                    data={[this.state.dataList]}
-                    renderItem={({ item }) => this.renderData(item)}
-                    keyExtractor={this._keyExtractor}
-                />
+               {this.renderFlatList()}
             </View>
         );
     }
@@ -133,6 +157,7 @@ const styles = {
     },
     headerTextStyle: {
         fontSize: 20,
+        color: 'black',
         fontWeight: 'bold'
     },
     titleTextStyle: {
