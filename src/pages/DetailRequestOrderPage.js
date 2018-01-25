@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, FlatList, Image, ScrollView } from 'react-native';
+import { Text, View, FlatList, Image, ScrollView, AsyncStorage } from 'react-native';
 import {
     CardRegistration,
     CardSectionRegistration,
@@ -11,6 +11,8 @@ import {
 import { CheckBox } from 'react-native-elements';
 import moment from 'moment';
 import { Button } from 'react-native-elements';
+import { BASE_URL } from './../shared/lb.config';
+import axios from 'axios';
 
 class DetailRequestOrderPage extends Component {
     static navigationOptions = {
@@ -23,15 +25,22 @@ class DetailRequestOrderPage extends Component {
         super(props);
         this.state = {
             dataMaster: '',
-            loading: null
+            loading: null,
+            idRequest: [],
+            tokenUser: ''
         };
     };
 
     componentWillMount() {
         this.setState({ loading: true });
-        console.log(this.props.navigation.state.params.datas, 'Data Order');
-        this.setState({ dataMaster: this.props.navigation.state.params.datas })
-        this.setState({ loading: false });
+
+        AsyncStorage.getItem('loginCredential', (err, result) => {
+            this.setState({
+                dataMaster: this.props.navigation.state.params.datas,
+                loading: false,
+                tokenUser: result
+            })
+        });
     }
 
     renderData = (item) => {
@@ -127,7 +136,36 @@ class DetailRequestOrderPage extends Component {
     }
 
     endRequest = () => {
-        console.log('End Request');
+        console.log(this.state.dataMaster, 'End Request');
+        this.setState({ loading: true });
+        const { navigate } = this.props.navigation;
+        this.state.dataMaster.Requests.map((item, index) => {
+            this.state.idRequest.push(item.id)
+        })
+        const dataId = {
+            'RequestIds': this.state.idRequest
+        }
+        const idReq = this.state.dataMaster.id;
+        console.log(dataId, 'ID PUT');
+        axios.put(`${BASE_URL}/buyer/requests/${idReq}`,
+            dataId
+            , {
+                headers: {
+                    'token': this.state.tokenUser,
+                    'Content-Type': 'application/json',
+                }
+            }).then(response => {
+                res = response.data.data;
+                console.log(response, 'RES');
+                this.setState({ loading: false });
+                navigate('Transaction');
+            })
+            .catch(error => {
+                console.log(error.message, 'Error nya');
+                console.log(error.response, 'Error nya');
+                console.log(error, 'Error nya');
+                alert("Sorry, Something error!")
+            })
     }
 
     renderButton() {
@@ -136,7 +174,7 @@ class DetailRequestOrderPage extends Component {
         }
         return (
             <Button
-                title="Akhiri Permintaan"
+                title="Lanjut Transaksi"
                 buttonStyle={styles.buttonStyle}
                 onPress={this.endRequest.bind(this)}
             />

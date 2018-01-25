@@ -1,7 +1,17 @@
 import React, { Component } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, AsyncStorage, FlatList, Image } from 'react-native';
 import { Header, SearchBar, Icon } from 'react-native-elements';
-
+import axios from 'axios';
+import { BASE_URL } from './../shared/lb.config';
+import {
+    CardRegistration,
+    CardSectionRegistration,
+    InputRegistration,
+    ContainerSection,
+    Container,
+    Spinner
+} from './../components/common';
+import moment from 'moment';
 
 class TransactionPage extends Component {
     static navigationOptions = {
@@ -24,14 +34,159 @@ class TransactionPage extends Component {
             </View>
         )
     }
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            loading: null,
+            tokenUser: '',
+            dataTransaksi: []
+        };
+    };
+
+
+    componentDidMount() {
+        this.setState({ loading: true });
+        AsyncStorage.getItem('loginCredential', (err, result) => {
+            this.setState({ tokenUser: result });
+
+            axios.get(`${BASE_URL}/buyer/orders`, {
+                headers: {
+                    'token': this.state.tokenUser
+                }
+            }).then(response => {
+                const result = response.data.data;
+                console.log(result, 'Data Transaksi');
+                this.setState({ dataTransaksi: result, loading: false });
+            })
+                .catch(error => {
+                    console.log(error.message, 'Error nya');
+                    alert("Sorry, Something error!")
+                })
+        });
+    }
+
+    renderData = (item) => {
+        console.log(item, 'Item Transaksi');
+        return item.map((item, index) => {
+            console.log(item, 'Data Transaksi Map')
+            const dateFormat = moment(item.Request.Transaction.updatedAt).format('DD/MM/YYYY');
+            const timeFormat = moment(item.Request.Transaction.updatedAt).format('h:mm:ss');
+            return (
+                <View style={styles.itemContainerStyle}>
+                    <View style={styles.thumbnailContainerStyle}>
+                        <Image
+                            style={styles.thumbnailStyle}
+                            source={{ uri: `${BASE_URL}/images/${item.Request.Transaction.photo}` }}
+                        />
+                    </View>
+                    <View style={{ flexDirection: 'column', flex: 1 }}>
+                        <View>
+                            <Text style={styles.headerTextStyle}>{item.Request.Transaction.Fish.name} - {item.Request.Transaction.size} Kg</Text>
+                            <Text style={styles.titleTextStyle}>{item.Request.User.name}</Text>
+                        </View>
+
+                        <View style={{ flexDirection: 'row', flex: 1 }}>
+                            <Image
+                                style={styles.trackingImage}
+                                source={require('./../assets/image/ts1.png')}
+                            />
+                            <Image
+                                style={styles.trackingImage}
+                                source={require('./../assets/image/ts2.png')}
+                            />
+                            <Image
+                                style={styles.trackingImage}
+                                source={require('./../assets/image/ts3.png')}
+                            />
+                            <Image
+                                style={styles.trackingImage}
+                                source={require('./../assets/image/ts4.png')}
+                            />
+                            <Image
+                                style={styles.trackingImage}
+                                source={require('./../assets/image/ts5.png')}
+                            />
+                        </View>
+                    </View>
+
+                    <View>
+                        <Text>DP Dibayar</Text>
+                        <Text>{dateFormat}</Text>
+                    </View>
+                </View>
+            )
+        })
+    }
+
+
+    renderTransaksi = () => {
+        if (this.state.loading) {
+            return <Spinner size="small" />
+        } else {
+            return (
+                <View>
+                    <FlatList
+                        data={[this.state.dataTransaksi]}
+                        renderItem={({ item }) => this.renderData(item)}
+                    />
+                </View>
+            );
+        }
+    }
+
+
     render() {
         return (
             <View>
-                {/* <HeaderHome /> */}
-                <Text> Transaksi Page </Text>
+                {this.renderTransaksi()}
             </View>
         );
     }
 };
+
+
+
+const styles = {
+    thumbnailStyle: {
+        height: 50,
+        width: 50,
+        borderRadius: 8
+    },
+    itemContainerStyle: {
+        borderBottomWidth: 1,
+        padding: 5,
+        justifyContent: 'flex-start',
+        flexDirection: 'row',
+        borderColor: '#ddd',
+    },
+    thumbnailContainerStyle: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 15,
+    },
+    trackingImage: {
+        height: 22,
+        width: 22,
+        borderRadius: 8
+    },
+    headerContentStyle: {
+        flex: 1,
+        marginRight: 15,
+        marginTop: 5,
+        marginBottom: 10,
+        flexDirection: 'column',
+        justifyContent: 'space-around'
+    },
+    headerTextStyle: {
+        fontSize: 15,
+        color: 'black',
+        fontWeight: 'bold'
+    },
+    titleTextStyle: {
+        fontSize: 13,
+        fontWeight: 'bold'
+    }
+}
 
 export default TransactionPage;
