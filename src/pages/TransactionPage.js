@@ -1,5 +1,12 @@
 import React, { Component } from 'react';
-import { Text, View, AsyncStorage, FlatList, Image } from 'react-native';
+import { 
+    Text, 
+    View, 
+    AsyncStorage, 
+    FlatList, 
+    Image, 
+    TouchableWithoutFeedback 
+} from 'react-native';
 import { Header, SearchBar, Icon } from 'react-native-elements';
 import axios from 'axios';
 import { BASE_URL } from './../shared/lb.config';
@@ -66,6 +73,11 @@ class TransactionPage extends Component {
         });
     }
 
+    detailTransaction = (props) => {
+        const dataTransaction = props;
+        this.props.navigation.navigate('DetailTransaction', { datas: dataTransaction })
+    }
+
     renderData = (item) => {
         console.log(item, 'Item Transaksi');
         return item.map((item, index) => {
@@ -73,48 +85,52 @@ class TransactionPage extends Component {
             const dateFormat = moment(item.Request.Transaction.updatedAt).format('DD/MM/YYYY');
             const timeFormat = moment(item.Request.Transaction.updatedAt).format('h:mm:ss');
             return (
-                <View style={styles.itemContainerStyle}>
-                    <View style={styles.thumbnailContainerStyle}>
-                        <Image
-                            style={styles.thumbnailStyle}
-                            source={{ uri: `${BASE_URL}/images/${item.Request.Transaction.photo}` }}
-                        />
-                    </View>
-                    <View style={{ flexDirection: 'column', flex: 1 }}>
+                <TouchableWithoutFeedback
+                    onPress={() => this.detailTransaction(item)}
+                >
+                    <View style={styles.itemContainerStyle}>
+                        <View style={styles.thumbnailContainerStyle}>
+                            <Image
+                                style={styles.thumbnailStyle}
+                                source={{ uri: `${BASE_URL}/images/${item.Request.Transaction.photo}` }}
+                            />
+                        </View>
+                        <View style={{ flexDirection: 'column', flex: 1 }}>
+                            <View>
+                                <Text style={styles.headerTextStyle}>{item.Request.Transaction.Fish.name} - {item.Request.Transaction.size} Kg</Text>
+                                <Text style={styles.titleTextStyle}>{item.Request.Supplier.name}</Text>
+                            </View>
+
+                            <View style={{ flexDirection: 'row', flex: 1 }}>
+                                <Image
+                                    style={styles.trackingImage}
+                                    source={require('./../assets/image/ts1.png')}
+                                />
+                                <Image
+                                    style={styles.trackingImage}
+                                    source={require('./../assets/image/ts2.png')}
+                                />
+                                <Image
+                                    style={styles.trackingImage}
+                                    source={require('./../assets/image/ts3.png')}
+                                />
+                                <Image
+                                    style={styles.trackingImage}
+                                    source={require('./../assets/image/ts4.png')}
+                                />
+                                <Image
+                                    style={styles.trackingImage}
+                                    source={require('./../assets/image/ts5.png')}
+                                />
+                            </View>
+                        </View>
+
                         <View>
-                            <Text style={styles.headerTextStyle}>{item.Request.Transaction.Fish.name} - {item.Request.Transaction.size} Kg</Text>
-                            <Text style={styles.titleTextStyle}>{item.Request.User.name}</Text>
-                        </View>
-
-                        <View style={{ flexDirection: 'row', flex: 1 }}>
-                            <Image
-                                style={styles.trackingImage}
-                                source={require('./../assets/image/ts1.png')}
-                            />
-                            <Image
-                                style={styles.trackingImage}
-                                source={require('./../assets/image/ts2.png')}
-                            />
-                            <Image
-                                style={styles.trackingImage}
-                                source={require('./../assets/image/ts3.png')}
-                            />
-                            <Image
-                                style={styles.trackingImage}
-                                source={require('./../assets/image/ts4.png')}
-                            />
-                            <Image
-                                style={styles.trackingImage}
-                                source={require('./../assets/image/ts5.png')}
-                            />
+                            <Text>DP Dibayar</Text>
+                            <Text>{dateFormat}</Text>
                         </View>
                     </View>
-
-                    <View>
-                        <Text>DP Dibayar</Text>
-                        <Text>{dateFormat}</Text>
-                    </View>
-                </View>
+                </TouchableWithoutFeedback>
             )
         })
     }
