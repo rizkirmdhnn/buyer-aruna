@@ -20,6 +20,7 @@ import RegistrationFormPage from './pages/RegistrationFormPage';
 import FormProductRequestPage from './pages/FormProductRequestPage';
 import DetailRequestOrderPage from './pages/DetailRequestOrderPage';
 import DetailTransactionPage from './pages/DetailTransactionPage';
+import FormContractPage from './pages/FormContractPage';
 /**
  *  List Component
  */
@@ -67,7 +68,8 @@ class App extends React.Component {
             RegistrationForm: { screen: RegistrationFormPage },
             Login: { screen: LoginFormPage },
             DetailRequestOrder: { screen: DetailRequestOrderPage },
-            DetailTransaction: { screen: DetailTransactionPage }
+            DetailTransaction: { screen: DetailTransactionPage },
+            FormContract: { screen: FormContractPage }
         }, {
             cardStyle: { backgroundColor: '#FFF' }
         });

@@ -49,6 +49,11 @@ class DetailTransactionPage extends Component {
         this.setState({ loading: false })
     }
 
+    createContract = (props) => {
+        const detailTransaction = props;
+        this.props.navigation.navigate('FormContract', { datas: detailTransaction })
+    }
+
     fetchDetail = () => {
         let id = this.props.navigation.state.params.id
         let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjo4LCJuYW1lIjoiYXJpZiIsImVtYWlsIjoiYXJpZi5mYXRodXNycm9zY2NjY21hbm5AZ21haWwuY29tIiwicGFzc3dvcmQiOiIxMjMxY3MyeDMiLCJwaG9uZSI6IjMzMjMyMzIyY2NzeDNjY3NjMjNjY2NjIiwicGhvdG8iOiJpa2FuLmpwZyIsImFkZHJlc3MiOiJhbGRpcm9uIiwicm9sZSI6InN1cHBsaWVyIiwicG9pbnRBbW91bnQiOjAsImlkTnVtYmVyIjoiMTIzM3MyY3MzY2NjY2NjY3gyMjMyIiwib3JnYW5pemF0aW9uVHlwZSI6InB0IiwibnB3cCI6ImtlbHVyYWhhbiIsInN1YkRpc3RyaWN0Ijoia2VjYW1hdGFuIiwidmlsbGFnZSI6ImtlbHVyYWhhbiIsImFjdGl2ZSI6ZmFsc2UsInZlcmlmaWVkIjpmYWxzZSwiY3JlYXRlZEF0IjoiMjAxOC0wMS0xNlQwNDo1MDo1Ni4wMDBaIiwidXBkYXRlZEF0IjoiMjAxOC0wMS0xNlQwNDo1MDo1Ni4wMDBaIiwiQ2l0eUlkIjoxfSwiaWF0IjoxNTE2MjEwMjY5LCJleHAiOjE1MTY4MTUwNjl9.np8CZKxqf6F88aRiKqoIKETl2gRAWie4Aec3GbXGG7s'
@@ -176,7 +181,7 @@ class DetailTransactionPage extends Component {
                                         <View style={{ flex: 1 }}>
                                             <Button
                                                 onPress={() => {
-                                                    this.sendRequest()
+                                                    this.createContract()
                                                 }}>
                                                 Buat Kontrak
                                             </Button>

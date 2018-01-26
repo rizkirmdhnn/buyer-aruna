@@ -30,13 +30,14 @@ const styles = {
 		paddingRight: 5,
 		paddingBottom: 10,
 		fontSize: 16,
-		flex: 1,
+		flex: 1
 	},
 	labelStyle: {
+		color: 'black',
+		fontWeight: 'bold',
 		fontSize: 16,
 		paddingLeft: 5,
-		flex: 1,
-		color: '#8e8e8e'
+		flex: 1
 	},
 	containerStyle: {
 		height: 60,
