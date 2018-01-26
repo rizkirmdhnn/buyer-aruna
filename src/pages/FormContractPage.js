@@ -74,6 +74,22 @@ class FormContractPage extends Component {
         };
     };
 
+    backPage() {
+        const { navigate } = this.props.navigation
+        Alert.alert(
+            '',
+            'Yakin batal mengubah fishlog?',
+            [
+                { text: 'Tidak', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+                {
+                    text: 'Ya', onPress: () => {
+                        navigate('DetailTransaction')
+                    }
+                },
+            ]
+        )
+    }
+
 
     componentWillMount() {
         this.setState({
@@ -116,9 +132,9 @@ class FormContractPage extends Component {
 
     onSubmit = () => {
         console.log(this.state);
-        const { navigate } = this.props.navigation
+
         const dataContract = {
-            "fishDescribe": this.state.dataMaster.Request.Transaction.describe, 
+            "fishDescribe": this.state.dataMaster.Request.Transaction.describe,
             "size": this.state.dataMaster.Request.Transaction.size,
             "quantity": this.state.dataMaster.Request.Transaction.quantity,
             "price": this.state.price,
@@ -134,7 +150,7 @@ class FormContractPage extends Component {
             "fishReject": this.state.fishReject,
             "maxFishReject": this.state.maxFishReject
         }
-        
+
         const idTransaction = this.state.dataMaster.id;
 
         AsyncStorage.getItem('loginCredential', (err, result) => {
@@ -152,7 +168,16 @@ class FormContractPage extends Component {
                 }).then(response => {
                     res = response.data.data;
                     console.log(response, 'RES');
-                    navigate('Transaction');
+
+                    Alert.alert(
+                        '',
+                        'Data kontrak berhasil disimpan. Silahkan tunggu jawaban dari Nelayan',
+                        [
+                            { text: 'Ok', onPress: () => this.navigationRedirect() },
+                        ]
+                    )
+
+
                 })
                 .catch(error => {
                     console.log(error.message, 'Error nya');
@@ -161,6 +186,11 @@ class FormContractPage extends Component {
                     alert(error.message.data)
                 })
         })
+    }
+
+    navigationRedirect() {
+        const { navigate } = this.props.navigation
+        navigate('Transaction');
     }
 
 
@@ -172,7 +202,14 @@ class FormContractPage extends Component {
         return (
             <Button
                 onPress={
-                    () => this.onSubmit()
+                    () => Alert.alert(
+                        '',
+                        'Sudah yakin dengan form kontrak anda ?',
+                        [
+                            { text: 'Tidak', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+                            { text: 'Ya', onPress: () => this.onSubmit() },
+                        ]
+                    )
                 }
             >
                 Selanjutnya
