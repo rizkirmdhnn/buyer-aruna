@@ -42,16 +42,12 @@ class DetailTransactionPage extends Component {
     }
 
     componentWillMount() {
-        // this.fetchDetail()
-        this.setState({ loading: false })
         this.setState({ dataMaster: this.props.navigation.state.params.datas });
-        console.log(this.state.dataMaster, 'Data Master Transaksi');
-        this.setState({ loading: false })
+        console.log(this.props.navigation.state.params.datas, 'Data Master Transaksi');
     }
 
-    createContract = (props) => {
-        const detailTransaction = props;
-        this.props.navigation.navigate('FormContract', { datas: detailTransaction })
+    createContract () {
+        this.props.navigation.navigate('FormContract', { datas: this.props.navigation.state.params.datas })
     }
 
     fetchDetail = () => {

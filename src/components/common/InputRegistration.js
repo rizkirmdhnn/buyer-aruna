@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Text, View, TextInput } from 'react-native'
 
+
 class InputRegistration extends Component {
 	render() {
 		const { label, value, onChangeText, placeholder, secureTextEntry, keyboardType, editable } = this.props
