@@ -36,10 +36,28 @@ import ImagePicker from 'react-native-image-picker';
 
 class RequestFormOrderFirstPage extends Component {
 
-    static navigationOptions = {
+
+
+
+    static navigationOptions = ({ navigation, screenProps }) => ({
         title: 'Create Request Order',
         headerStyle: { backgroundColor: '#006AAF' },
-        headerTitleStyle: { color: '#FFFFFF' }
+        headerTitleStyle: { color: '#FFFFFF' },
+        headerLeft:
+            // <Button name={'arrow-left'}
+            //     onPress={() => { navigation.navigate('Home') }} />
+            <TouchableOpacity
+                onPress={() => { navigation.navigate('Home') }}
+            >
+                <Image
+                    style={{ width: 20, height: 20, marginLeft: 30 }}
+                    source={require('./../assets/image/arr.png')} />
+            </TouchableOpacity>
+    });
+
+    goBack() {
+        const { navigate } = this.props.navigation;
+        navigate('Home');
     }
 
     constructor(props) {
@@ -47,6 +65,8 @@ class RequestFormOrderFirstPage extends Component {
         this.state = {
             load: null,
             loading: null,
+            loadButton: null,
+            unitFish: '',
             dataMapCity: '',
             dataCity: '',
             dataProvinsi: '',
@@ -85,22 +105,49 @@ class RequestFormOrderFirstPage extends Component {
 
     _handleDatePicked = (date) => {
         console.log(date, 'Date Nya')
-        const dateTemp = moment(date).format('YYYY-MM-DD h:mm:ss'); 
+        const dateTemp = moment(date).format('YYYY-MM-DD h:mm:ss');
         const dateNow = moment(date).format('DD/MM/YYYY');
         this.setState({ datePick: dateTemp, dateNowPick: dateNow })
         this._hideDateTimePicker();
     };
 
     onSubmit = () => {
-        Keyboard.dismiss();
-        const data = this.state;
-        console.log(data, 'DATA LEMPAR');
-        this.props.navigation.navigate('RequestFormOrderSecond', { datas: data })
+        console.log(this.state, 'DATA FORM 1');
+
+        if (this.state.FishId == '') {
+            alert('Anda belum memilih Komoditas');
+        } else if (this.state.size == '') {
+            alert('Anda belum menentukan Ukuran');
+        } else if (this.state.quantity == '') {
+            alert('Anda belum menentukan Kuantitas');
+        } else if (this.state.deskripsi == '') {
+            alert('Anda belum menentukan Deskripsi Komoditas');
+        } else if (this.state.minBudget == '') {
+            alert('Anda belum menentukan min Harga');
+        } else if (this.state.maxBudget == '') {
+            alert('Anda belum menentukan max Harga')
+        } else if (this.state.dateNowPick == '') {
+            alert('Anda belum menentuan tanggal Permintaan')
+        } else if (this.state.provinsiId == '') {
+            alert('anda belum memilih Provinsi');
+        } else if (this.state.cityId == '') {
+            alert('Anda belum memilih Kota')
+        } else if (this.state.maxBudget < this.state.minBudget) {
+            alert('Harga Max tidak bisa lebih kecil dari Harga Min')
+        } else if (this.state.quantity < this.state.size) {
+            alert('Kuantitas Komoditas tidak bisa lebih kecil dari Ukuran Komoditas')
+        } else {
+            console.log('LOLOS');
+            Keyboard.dismiss();
+            const data = this.state;
+            console.log(data, 'DATA LEMPAR');
+            this.props.navigation.navigate('RequestFormOrderSecond', { datas: data })
+        }
     }
 
 
     renderButton = () => {
-        if (this.state.loading) {
+        if (this.state.loadButton) {
             return <Spinner size='large' />
         }
 
@@ -117,7 +164,7 @@ class RequestFormOrderFirstPage extends Component {
 
 
     querySuggestion = (text) => {
-        console.log(text, 'Text');
+        this.setState({ value: text })
         AsyncStorage.getItem('loginCredential', (err, result) => {
 
             axios.get(`${BASE_URL}/fishes/search?key=${text}`, {
@@ -125,9 +172,9 @@ class RequestFormOrderFirstPage extends Component {
             })
                 .then(response => {
                     res = response.data.data
-                    const result = res
-                    console.log(result, 'Result AutoComplete');
-                    this.setState({ suggestions: result })
+                    this.setState({ suggestions: res })
+                    console.log(res, 'Auto Complete Nya')
+
                 })
                 .catch(error => {
                     if (error.response) {
@@ -143,6 +190,17 @@ class RequestFormOrderFirstPage extends Component {
 
     componentWillMount() {
         this.setState({ loading: true });
+
+        const { params } = this.props.navigation.state
+        console.log(params)
+
+        if (params && params.FishId !== '') {
+            this.setState({
+                value: params.value,
+                FishId: params.FishId
+            })
+        }
+
         AsyncStorage.getItem('loginCredential', (err, resultToken) => {
 
             axios.get(`${BASE_URL}/provinces`, {
@@ -209,11 +267,12 @@ class RequestFormOrderFirstPage extends Component {
     }
 
     onItemSelected = (item) => {
-        console.log(item, 'Item Fish');
+        console.log(item, 'Ikan terpilih');
         this.setState({
             suggestions: [],
             FishId: item.id,
-            value: item.name
+            value: item.name,
+            unitFish: item.unit
         })
     }
 
@@ -305,6 +364,7 @@ class RequestFormOrderFirstPage extends Component {
                                 label="Nama Komoditas"
                                 suggestions={suggestions}
                                 onChangeText={text => this.querySuggestion(text)}
+                                value={value}
                             >
                                 {
                                     suggestions && suggestions.map(item =>
@@ -327,7 +387,7 @@ class RequestFormOrderFirstPage extends Component {
                                 value={size}
                                 onChangeText={v => this.onChangeInput('size', v)}
                             />
-                            <Text style={styles.unitStyle}> kg/pcs</Text>
+                            <Text style={styles.unitStyle}>{this.state.unitFish}</Text>
 
                             <InputRegistration
                                 label='Kuantitas Komoditas'

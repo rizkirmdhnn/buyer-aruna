@@ -11,7 +11,7 @@ class AutoComplete extends Component {
 				<Text style={labelStyle}>{label}</Text>
 				<TextInput 
 					placeholder={placeholder}
-					autoCorrect={true}
+					autoCorrect={false}
 					value={value}
 					onChangeText={onChangeText}
 					style={inputStyle}

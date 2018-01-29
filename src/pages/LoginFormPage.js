@@ -14,8 +14,15 @@ class LoginFormPage extends Component {
         email: '',
         password: '',
         error: '',
-        loading: false
+        loading: false,
+
+        dataRedirect: ''
     };
+
+    componentWillMount() {
+        console.log(this.props.navigation.state.params.datas, 'Data Passing');
+        this.setState({ dataRedirect: this.props.navigation.state.params.datas })
+    }
 
     onButtonPress() {
         console.log('Start');
@@ -42,9 +49,10 @@ class LoginFormPage extends Component {
                         error: ''
                     });
                 });
-                navigate('Home');
+                navigate(this.state.dataRedirect);
             })
             .catch(error => {
+                console.log(error.response)
                 // this.onLoginFail.bind(this)
                 this.setState({ error: 'Authentication Failed', loading: false });
                 console.log('ERROR', error.message);

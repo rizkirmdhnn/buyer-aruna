@@ -50,7 +50,7 @@ class DetailTransactionPage extends Component {
         this.props.navigation.navigate('FormContract', { datas: this.props.navigation.state.params.datas })
     }
 
-    createContract () {
+    createContractRevision () {
         this.props.navigation.navigate('FormContractRevision', { datas: this.props.navigation.state.params.datas })
     }
 
@@ -188,7 +188,7 @@ class DetailTransactionPage extends Component {
 
                                             <Button
                                                 onPress={() => {
-                                                    this.createContract()
+                                                    this.createContractRevision()
                                                 }}>
                                                 Edit Kontrak
                                             </Button>

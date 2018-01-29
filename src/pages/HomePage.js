@@ -318,7 +318,7 @@ class HomePage extends Component {
                     }}
                     onConfirmPressed={() => {
                         this.hideAlert();
-                        navigate('Login');
+                        this.props.navigation.navigate('Login', { datas: 'RequestFormOrderFirst' })
                     }}
                 />
 
