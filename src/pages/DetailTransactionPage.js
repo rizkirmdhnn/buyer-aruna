@@ -50,6 +50,10 @@ class DetailTransactionPage extends Component {
         this.props.navigation.navigate('FormContract', { datas: this.props.navigation.state.params.datas })
     }
 
+    createContract () {
+        this.props.navigation.navigate('FormContractRevision', { datas: this.props.navigation.state.params.datas })
+    }
+
     fetchDetail = () => {
         let id = this.props.navigation.state.params.id
         let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjo4LCJuYW1lIjoiYXJpZiIsImVtYWlsIjoiYXJpZi5mYXRodXNycm9zY2NjY21hbm5AZ21haWwuY29tIiwicGFzc3dvcmQiOiIxMjMxY3MyeDMiLCJwaG9uZSI6IjMzMjMyMzIyY2NzeDNjY3NjMjNjY2NjIiwicGhvdG8iOiJpa2FuLmpwZyIsImFkZHJlc3MiOiJhbGRpcm9uIiwicm9sZSI6InN1cHBsaWVyIiwicG9pbnRBbW91bnQiOjAsImlkTnVtYmVyIjoiMTIzM3MyY3MzY2NjY2NjY3gyMjMyIiwib3JnYW5pemF0aW9uVHlwZSI6InB0IiwibnB3cCI6ImtlbHVyYWhhbiIsInN1YkRpc3RyaWN0Ijoia2VjYW1hdGFuIiwidmlsbGFnZSI6ImtlbHVyYWhhbiIsImFjdGl2ZSI6ZmFsc2UsInZlcmlmaWVkIjpmYWxzZSwiY3JlYXRlZEF0IjoiMjAxOC0wMS0xNlQwNDo1MDo1Ni4wMDBaIiwidXBkYXRlZEF0IjoiMjAxOC0wMS0xNlQwNDo1MDo1Ni4wMDBaIiwiQ2l0eUlkIjoxfSwiaWF0IjoxNTE2MjEwMjY5LCJleHAiOjE1MTY4MTUwNjl9.np8CZKxqf6F88aRiKqoIKETl2gRAWie4Aec3GbXGG7s'
@@ -181,6 +185,13 @@ class DetailTransactionPage extends Component {
                                                 }}>
                                                 Buat Kontrak
                                             </Button>
+
+                                            <Button
+                                                onPress={() => {
+                                                    this.createContract()
+                                                }}>
+                                                Edit Kontrak
+                                            </Button>
                                         </View>
                                     </View>
                                 </View>
@@ -225,7 +236,7 @@ class DetailTransactionPage extends Component {
                     <CardSection>
                         <TouchableWithoutFeedback onPress={() => this.setState({ deliveryExpanded: !deliveryExpanded })}>
                             <View style={{ flex: 1, flexDirection: 'row' }}>
-                                <Text style={{ flex: 1, fontSize: 20 }}>Pengiriman</Text>
+                                <Text style={{ flex: 1, fontSize: 20 }}>Penerimaan</Text>
                                 <View style={{ flex: 1 }}>
                                     <Icon size={30} style={{ alignSelf: 'flex-end' }} name={deliveryExpanded ? 'md-arrow-dropup' : 'md-arrow-dropdown'} />
                                 </View>
