@@ -227,7 +227,7 @@ class RequestFormOrderSecondPage extends Component {
                     <View style={{ flexDirection: 'column', flex: 1 }}>
                         <Text style={styles.titleTextStyle}>{item.quantity} Kg</Text>
                         <Text>Rp. {item.minBudget} - {item.maxBudget}</Text>
-                        <Text>Batas Waktu: {item.datePick}</Text>
+                        {/* <Text>Batas Waktu: {item.datePick}</Text> */}
                     </View>
                 </View>
             </View>

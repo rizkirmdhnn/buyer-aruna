@@ -114,7 +114,9 @@ class RequestFormOrderFirstPage extends Component {
     onSubmit = () => {
         console.log(this.state, 'DATA FORM 1');
 
-        if (this.state.FishId == '') {
+        if(this.state.photo == require('./../assets/image/upload-foto.png')) {
+            alert('Anda belum upload Foto');
+        } else if (this.state.FishId == '') {
             alert('Anda belum memilih Komoditas');
         } else if (this.state.size == '') {
             alert('Anda belum menentukan Ukuran');
@@ -189,6 +191,8 @@ class RequestFormOrderFirstPage extends Component {
     }
 
     componentWillMount() {
+        this.setState({ photo: require('./../assets/image/upload-foto.png') })
+        console.log(this.state.photo, 'POTO DEFAULT');
         this.setState({ loading: true });
 
         const { params } = this.props.navigation.state
@@ -345,7 +349,7 @@ class RequestFormOrderFirstPage extends Component {
                         <CardSectionRegistration>
                             <View style={styles.container}>
                                 <TouchableOpacity onPress={this.selectPhotoTapped.bind(this)}>
-                                    <View style={[styles.avatar, styles.avatarContainer, { marginBottom: 20 }]}>
+                                    <View style={[styles.avatar, styles.avatarContainer]}>
                                         {this.state.photo === null ? <Text>Take a Picture</Text> :
                                             <Image style={styles.avatar} source={this.state.photo} />
                                         }
@@ -545,13 +549,13 @@ const styles = {
         marginRight: 3,
         marginLeft: 3,
     },
-    container: {
-        flex: 1,
-        marginLeft: 10,
-        marginRight: 10,
-        alignItems: "stretch",
-        justifyContent: "center"
-    },
+    // container: {
+    //     flex: 1,
+    //     marginLeft: 10,
+    //     marginRight: 10,
+    //     alignItems: "stretch",
+    //     justifyContent: "center"
+    // },
     thumb: {
         width: 30,
         height: 30,
@@ -580,15 +584,16 @@ const styles = {
         backgroundColor: '#F5FCFF'
     },
     avatarContainer: {
+        borderRadius: 10,
         borderColor: '#9B9B9B',
         borderWidth: 1 / PixelRatio.get(),
         justifyContent: 'center',
         alignItems: 'center'
     },
     avatar: {
-        borderRadius: 75,
-        width: 150,
-        height: 150
+        resizeMode: 'stretch',
+        width: 320,
+        height: 130
     }
 }
 
