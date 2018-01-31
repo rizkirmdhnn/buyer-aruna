@@ -37,6 +37,7 @@ class RequestFormOrderSecondPage extends Component {
             datax: [{}],
             dataSupplier: [{}],
             loading: null,
+            loader: null,
             checked: true,
             idSupplier: []
         };
@@ -103,6 +104,7 @@ class RequestFormOrderSecondPage extends Component {
 
     onSubmit = () => {
         console.log('Submit Request');
+        this.setState({ loader: true });
         AsyncStorage.getItem('loginCredential', (err, result) => {
             const token = result;
             const { navigate } = this.props.navigation;
@@ -140,14 +142,14 @@ class RequestFormOrderSecondPage extends Component {
                     res = response.data.data;
                     console.log(response, 'RES');
                     navigate('Request');
-                    this.setState({ loading: false });
+                    this.setState({ loader: true });
                 })
                 .catch(error => {
                     console.log(error.message, 'Error nya');
                     console.log(error.response, 'Error nya');
                     console.log(error, 'Error nya');
                     alert(error.message.data)
-                    this.setState({ loading: false });
+                    this.setState({ loader: true });
                 })
         });
 
@@ -155,7 +157,7 @@ class RequestFormOrderSecondPage extends Component {
 
     renderButton = () => {
         const { navigate } = this.props.navigation;
-        if (this.state.loading) {
+        if (this.state.loading || this.state.loader) {
             return <View style={styles.loadingStyle}><Spinner size='large' /></View>
         }
 

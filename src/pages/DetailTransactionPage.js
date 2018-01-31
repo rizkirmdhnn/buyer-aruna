@@ -32,6 +32,17 @@ class DetailTransactionPage extends Component {
             checked: false,
             isModalVisible: false,
 
+            contractDone: null,
+            contractNotDone: null,
+            contractRevision: null,
+
+            requestContainer: null,
+            contractContainer: null,
+            dpContainer: null,
+            deliveryContainer: null,
+            paidContainer: null,
+            doneContainer: null,
+
             requestExpanded: false,
             contractExpanded: false,
             dpExpanded: false,
@@ -43,14 +54,58 @@ class DetailTransactionPage extends Component {
 
     componentWillMount() {
         this.setState({ dataMaster: this.props.navigation.state.params.datas });
-        console.log(this.props.navigation.state.params.datas, 'Data Master Transaksi');
     }
 
-    createContract () {
+    componentDidMount() {
+        console.log(this.state.dataMaster, 'DATA MASTER');
+
+        if (this.state.dataMaster.Contract == null) {
+            this.setState({
+                contractNotDone: true,
+                contractDone: false,
+                dpContainer: false,
+                deliveryContainer: false,
+                paidContainer: false,
+                doneContainer: false,
+            })
+        } else {
+            this.setState({
+                contractDone: true
+            })
+            if (this.state.dataMaster.Contract.Status.id === 4 && this.state.dataMaster.Contract.Status.id === 6) {
+                this.setState({
+                    dpContainer: false,
+                    deliveryContainer: false,
+                    paidContainer: false,
+                    doneContainer: false,
+                })
+            } else if (this.state.dataMaster.Contract.Status.id === 5) {
+                this.setState({
+                    dpContainer: true,
+                    deliveryContainer: false,
+                    paidContainer: false,
+                    doneContainer: false,
+                })
+            } else if (this.state.dataMaster.Contract.Status.id === 6) {
+                this.setState({
+                    contractRevision: true,
+                    dpContainer: true,
+                    deliveryContainer: false,
+                    paidContainer: false,
+                    doneContainer: false,
+                })
+            }
+
+        }
+    }
+
+
+
+    createContract() {
         this.props.navigation.navigate('FormContract', { datas: this.props.navigation.state.params.datas })
     }
 
-    createContractRevision () {
+    createContractRevision() {
         this.props.navigation.navigate('FormContractRevision', { datas: this.props.navigation.state.params.datas })
     }
 
@@ -80,7 +135,24 @@ class DetailTransactionPage extends Component {
     }
 
     render() {
-        const { requestExpanded, contractExpanded, dpExpanded, deliveryExpanded, paidExpanded, doneExpanded, data } = this.state
+        const {
+
+            requestExpanded,
+            contractExpanded,
+            dpExpanded,
+            deliveryExpanded,
+            paidExpanded,
+            doneExpanded,
+            requestContainer,
+            contractContainer,
+            dpContainer,
+            deliveryContainer,
+            paidContainer,
+            doneContainer,
+            contractDone,
+            contractNotDone,
+            contractRevision,
+            data } = this.state
 
         if (this.state.loading) {
             return <Spinner size='large' />
@@ -107,7 +179,7 @@ class DetailTransactionPage extends Component {
 
                 <Card>
                     <CardSection>
-                        <TouchableWithoutFeedback onPress={() => this.setState({ requestExpanded: !requestExpanded })}>
+                        <TouchableWithoutFeedback onPress={() => { this.setState({ requestExpanded: !requestExpanded }); console.log(this.state.requestExpanded, 'Request Klik') }}>
                             <View style={{ flex: 1, flexDirection: 'row' }}>
                                 <Text style={{ flex: 1, fontSize: 20 }}>Permintaan</Text>
                                 <View style={{ flex: 1 }}>
@@ -164,37 +236,63 @@ class DetailTransactionPage extends Component {
                     {
                         contractExpanded ?
                             <CardSection>
-                                <View style={{ flexDirection: 'column' }}>
-                                    <View>
-                                        <Text>Lakukan Kontrak sebelum tanggal 02/02/2018, Lakukan diskusi untuk mempercepat transaksi</Text>
-                                    </View>
-                                    <View style={{ height: 20 }} />
-                                    <View>
-                                        {/* <TouchableOpacity onPress={() => Linking.openURL('http://komisiyudisial.go.id/downlot.php?file=Peraturan-KY-Nomor-2-Tahun-2015.pdf').catch(err => console.error('An error occurred', err))}>
-                                            <View style={{ marginTop: 15, flexDirection: 'row' }}>
-                                                <Text style={{ color: 'blue' }}>File Download.pdf</Text>
-                                                <Icon size={20} style={{ color: 'blue', marginLeft: 5 }} name="md-download" />
+                                {
+                                    contractNotDone ?
+                                        <View style={{ flexDirection: 'column' }}>
+                                            <View>
+                                                <Text>Lakukan Kontrak sebelum tanggal 02/02/2018, Lakukan diskusi untuk mempercepat transaksi</Text>
                                             </View>
-                                        </TouchableOpacity> */}
-                                    </View>
-                                    <View style={{ marginTop: 10, flexDirection: 'row' }}>
-                                        <View style={{ flex: 1 }}>
-                                            <Button
-                                                onPress={() => {
-                                                    this.createContract()
-                                                }}>
-                                                Buat Kontrak
-                                            </Button>
-
-                                            <Button
-                                                onPress={() => {
-                                                    this.createContractRevision()
-                                                }}>
-                                                Edit Kontrak
-                                            </Button>
+                                            <View style={{ height: 20 }} />
+                                            <View style={{ marginTop: 10, flexDirection: 'row' }}>
+                                                <View style={{ flex: 1 }}>
+                                                    <Button
+                                                        onPress={() => {
+                                                            this.createContract()
+                                                        }}>
+                                                        Buat Kontrak
+                                                    </Button>
+                                                </View>
+                                            </View>
                                         </View>
-                                    </View>
-                                </View>
+                                        :
+                                        <View />
+                                }
+                                {
+                                    contractDone ?
+                                        <View style={{ flexDirection: 'column' }}>
+                                            <View>
+                                                <Text>Anda sudah mengisi formulir kontrak. Status : {this.state.dataMaster.Contract.Status.name}, Lakukan
+                                                    diskusi untuk mempercepat transaksi.
+                                                </Text>
+                                            </View>
+                                            <View style={{ height: 20 }} />
+                                            <View>
+                                                <TouchableOpacity onPress={() => Linking.openURL('http://komisiyudisial.go.id/downlot.php?file=Peraturan-KY-Nomor-2-Tahun-2015.pdf').catch(err => console.error('An error occurred', err))}>
+                                                    <View style={{ marginTop: 15, flexDirection: 'row' }}>
+                                                        <Text style={{ color: 'blue', marginLeft: 10 }}>fileDummyTest.pdf</Text>
+                                                        <Icon size={20} style={{ color: 'blue', marginLeft: 5 }} name="md-download" />
+                                                    </View>
+                                                </TouchableOpacity>
+                                            </View>
+                                            {
+                                                contractRevision ?
+                                                    <View style={{ marginTop: 10, flexDirection: 'row' }}>
+                                                        <View style={{ flex: 1 }}>
+                                                            <Button
+                                                                onPress={() => {
+                                                                    this.createContractRevision()
+                                                                }}>
+                                                                Edit Kontrak
+                                                    </Button>
+                                                        </View>
+                                                    </View>
+                                                    :
+                                                    <View />
+                                            }
+                                        </View>
+                                        :
+                                        <View />
+                                }
                             </CardSection>
                             :
                             <View />
@@ -203,16 +301,22 @@ class DetailTransactionPage extends Component {
                 </Card>
 
                 <Card>
-                    <CardSection>
-                        <TouchableWithoutFeedback onPress={() => this.setState({ dpExpanded: !dpExpanded })}>
-                            <View style={{ flex: 1, flexDirection: 'row' }}>
-                                <Text style={{ flex: 1, fontSize: 20 }}>Pembayaran DP</Text>
-                                <View style={{ flex: 1 }}>
-                                    <Icon size={30} style={{ alignSelf: 'flex-end' }} name={dpExpanded ? 'md-arrow-dropup' : 'md-arrow-dropdown'} />
-                                </View>
-                            </View>
-                        </TouchableWithoutFeedback>
-                    </CardSection>
+                    {
+                        dpContainer ?
+                            <CardSection>
+                                <TouchableWithoutFeedback onPress={() => this.setState({ dpExpanded: !dpExpanded })}>
+                                    <View style={{ flex: 1, flexDirection: 'row' }}>
+                                        <Text style={{ flex: 1, fontSize: 20 }}>Pembayaran DP</Text>
+                                        <View style={{ flex: 1 }}>
+                                            <Icon size={30} style={{ alignSelf: 'flex-end' }} name={dpExpanded ? 'md-arrow-dropup' : 'md-arrow-dropdown'} />
+                                        </View>
+                                    </View>
+                                </TouchableWithoutFeedback>
+
+                            </CardSection>
+                            :
+                            <View />
+                    }
                     {
                         dpExpanded ?
                             <CardSection>
@@ -233,16 +337,21 @@ class DetailTransactionPage extends Component {
                 </Card>
 
                 <Card>
-                    <CardSection>
-                        <TouchableWithoutFeedback onPress={() => this.setState({ deliveryExpanded: !deliveryExpanded })}>
-                            <View style={{ flex: 1, flexDirection: 'row' }}>
-                                <Text style={{ flex: 1, fontSize: 20 }}>Penerimaan</Text>
-                                <View style={{ flex: 1 }}>
-                                    <Icon size={30} style={{ alignSelf: 'flex-end' }} name={deliveryExpanded ? 'md-arrow-dropup' : 'md-arrow-dropdown'} />
-                                </View>
-                            </View>
-                        </TouchableWithoutFeedback>
-                    </CardSection>
+                    {
+                        deliveryContainer ?
+                            <CardSection>
+                                <TouchableWithoutFeedback onPress={() => this.setState({ deliveryExpanded: !deliveryExpanded })}>
+                                    <View style={{ flex: 1, flexDirection: 'row' }}>
+                                        <Text style={{ flex: 1, fontSize: 20 }}>Penerimaan</Text>
+                                        <View style={{ flex: 1 }}>
+                                            <Icon size={30} style={{ alignSelf: 'flex-end' }} name={deliveryExpanded ? 'md-arrow-dropup' : 'md-arrow-dropdown'} />
+                                        </View>
+                                    </View>
+                                </TouchableWithoutFeedback>
+                            </CardSection>
+                            :
+                            <View />
+                    }
                     {
                         deliveryExpanded ?
                             <CardSection>
@@ -278,16 +387,21 @@ class DetailTransactionPage extends Component {
                 </Card>
 
                 <Card>
-                    <CardSection>
-                        <TouchableWithoutFeedback onPress={() => this.setState({ paidExpanded: !paidExpanded })}>
-                            <View style={{ flex: 1, flexDirection: 'row' }}>
-                                <Text style={{ flex: 1, fontSize: 20 }}>Pelunasan</Text>
-                                <View style={{ flex: 1 }}>
-                                    <Icon size={30} style={{ alignSelf: 'flex-end' }} name={paidExpanded ? 'md-arrow-dropup' : 'md-arrow-dropdown'} />
-                                </View>
-                            </View>
-                        </TouchableWithoutFeedback>
-                    </CardSection>
+                    {
+                        paidContainer ?
+                            <CardSection>
+                                <TouchableWithoutFeedback onPress={() => this.setState({ paidExpanded: !paidExpanded })}>
+                                    <View style={{ flex: 1, flexDirection: 'row' }}>
+                                        <Text style={{ flex: 1, fontSize: 20 }}>Pelunasan</Text>
+                                        <View style={{ flex: 1 }}>
+                                            <Icon size={30} style={{ alignSelf: 'flex-end' }} name={paidExpanded ? 'md-arrow-dropup' : 'md-arrow-dropdown'} />
+                                        </View>
+                                    </View>
+                                </TouchableWithoutFeedback>
+                            </CardSection>
+                            :
+                            <View />
+                    }
                     {
                         paidExpanded ?
                             <CardSection>
@@ -306,16 +420,21 @@ class DetailTransactionPage extends Component {
                 </Card>
 
                 <Card>
-                    <CardSection>
-                        <TouchableWithoutFeedback onPress={() => this.setState({ doneExpanded: !doneExpanded })}>
-                            <View style={{ flex: 1, flexDirection: 'row' }}>
-                                <Text style={{ flex: 1, fontSize: 20 }}>Selesai</Text>
-                                <View style={{ flex: 1 }}>
-                                    <Icon size={30} style={{ alignSelf: 'flex-end' }} name={doneExpanded ? 'md-arrow-dropup' : 'md-arrow-dropdown'} />
-                                </View>
-                            </View>
-                        </TouchableWithoutFeedback>
-                    </CardSection>
+                    {
+                        doneContainer ?
+                            <CardSection>
+                                <TouchableWithoutFeedback onPress={() => this.setState({ doneExpanded: !doneExpanded })}>
+                                    <View style={{ flex: 1, flexDirection: 'row' }}>
+                                        <Text style={{ flex: 1, fontSize: 20 }}>Selesai</Text>
+                                        <View style={{ flex: 1 }}>
+                                            <Icon size={30} style={{ alignSelf: 'flex-end' }} name={doneExpanded ? 'md-arrow-dropup' : 'md-arrow-dropdown'} />
+                                        </View>
+                                    </View>
+                                </TouchableWithoutFeedback>
+                            </CardSection>
+                            :
+                            <View />
+                    }
                     {
                         doneExpanded ?
                             <CardSection>

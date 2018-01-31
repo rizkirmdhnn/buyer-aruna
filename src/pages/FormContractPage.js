@@ -14,6 +14,7 @@ import {
     TouchableWithoutFeedback,
     TouchableOpacity,
     Image,
+    TouchableNativeFeedback,
     Input
 } from 'react-native';
 import {
@@ -34,14 +35,36 @@ import moment from 'moment';
 import { CheckBox } from 'react-native-elements'
 
 import ImagePicker from 'react-native-image-picker';
+import numeral from 'numeral'
 
 class FormContractPage extends Component {
 
-    static navigationOptions = {
+    static navigationOptions = ({ navigation }) => ({
         title: 'Buat Kontrak',
         headerStyle: { backgroundColor: '#006AAF' },
-        headerTitleStyle: { color: '#FFFFFF' }
-    }
+        headerTitleStyle: { color: '#FFFFFF' },
+        headerLeft:
+            <TouchableNativeFeedback
+                onPress={() => {
+                    Alert.alert(
+                        '',
+                        'Batal Mengisi Kontrak?',
+                        [
+                            { text: 'Tidak', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+                            {
+                                text: 'Ya', onPress: () => {
+                                    // navigate('DetailTransactionPage')
+                                    navigation.goBack()
+                                }
+                            },
+                        ]
+                    )
+                }}>
+                <Image
+                    style={{ width: 20, height: 20, marginLeft: 30 }}
+                    source={require('./../assets/image/arr.png')} />
+            </TouchableNativeFeedback>
+    });
 
     constructor(props) {
         super(props);
@@ -73,22 +96,6 @@ class FormContractPage extends Component {
 
         };
     };
-
-    backPage() {
-        const { navigate } = this.props.navigation
-        Alert.alert(
-            '',
-            'Yakin batal mengubah fishlog?',
-            [
-                { text: 'Tidak', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-                {
-                    text: 'Ya', onPress: () => {
-                        navigate('DetailTransaction')
-                    }
-                },
-            ]
-        )
-    }
 
 
     componentWillMount() {
@@ -130,13 +137,29 @@ class FormContractPage extends Component {
         this._hideTanggalDP();
     };
 
+    backPage() {
+        const { navigate } = this.props.navigation
+        Alert.alert(
+            '',
+            'Batal Mengisi Kontrak?',
+            [
+                { text: 'Tidak', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+                {
+                    text: 'Ya', onPress: () => {
+                        navigate('DetailTransactionPage')
+                    }
+                },
+            ]
+        )
+    }
+
     onSubmit = () => {
         console.log(this.state);
 
         const dataContract = {
             "fishDescribe": this.state.dataMaster.Request.Transaction.describe,
             "size": this.state.dataMaster.Request.Transaction.size,
-            "quantity": this.state.dataMaster.Request.Transaction.quantity,
+            "quantity": this.state.quantity,
             "price": this.state.price,
             "name": this.state.dataMaster.Request.Supplier.name,
             "idNumber": this.state.dataMaster.Request.Supplier.idNumber,
@@ -217,6 +240,12 @@ class FormContractPage extends Component {
         )
     }
 
+    onChangeInput = (name, v) => {
+		this.setState({[name]: v})
+		console.log(v, 'Text Type');
+	}
+
+
     renderAllData = () => {
         const {
             loading,
@@ -241,7 +270,7 @@ class FormContractPage extends Component {
             fishReject,
             maxFishReject
             } = this.state
-
+        console.log(dpAmount, 'Dp Amount');
         const sizeConvert = { uri: `${BASE_URL}/images/${this.state.dataMaster.Request.Transaction.photo}` };
         return (
             <ScrollView
@@ -283,9 +312,8 @@ class FormContractPage extends Component {
 
                         <InputRegistration
                             label="Kuantitas"
-                            value={this.state.dataMaster.Request.Transaction.quantity.toString()}
+                            value={this.state.quantity}
                             style={styles.textArea}
-                            editable={false}
                         />
                         <Text style={styles.unitStyle}> kg</Text>
 
@@ -405,11 +433,18 @@ class FormContractPage extends Component {
 
                     <CardSectionRegistration>
                         <InputRegistration
+                            label="Harga/Kg"
+							keyboardType="numeric"
+							value={dpAmount ? numeral(parseInt(dpAmount)).format('0,0') : ''}
+							onChangeText={v => this.onChangeInput('dpAmount', v.replace(/\./g, ''))}
+                        />
+
+                        {/* <InputRegistration
                             label='Nominal DP'
                             placeholder='Nominal DP'
                             value={dpAmount}
                             onChangeText={v => this.onChangeInput('dpAmount', v)}
-                        />
+                        /> */}
                     </CardSectionRegistration>
 
                     <CardSectionRegistration>

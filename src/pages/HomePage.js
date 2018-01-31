@@ -33,7 +33,8 @@ class HomePage extends Component {
         this.state = {
             showAlert: false,
             supplierList: '',
-            loading: null
+            loading: null,
+            tokenUser: ''
         }
     }
 
@@ -110,6 +111,7 @@ class HomePage extends Component {
     componentWillMount() {
         this.setState({ loading: true })
         AsyncStorage.getItem('loginCredential', (err, result) => {
+            this.setState({ tokenUser: result });
             axios.get(`${BASE_URL}/suppliers/popular`, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -169,7 +171,31 @@ class HomePage extends Component {
 
     goSupplier = (props) => {
         const dataSupplier = props;
-        this.props.navigation.navigate('ProfileSuplier', { datas: dataSupplier })
+        this.props.navigation.navigate('ProfileSuplier', { datas: dataSupplier });
+    }
+
+    isLogin() {
+        const { navigate } = this.props.navigation;
+        this.props.navigation.navigate('Login', { datas: 'Home' });
+    }
+
+    renderButton = () => {
+        if (this.state.tokenUser !== null) {
+            return (
+                <Button
+                    onPress={() => this.isLogout()}>
+                    Logout
+                </Button>
+            )
+        } else if (this.state.tokenUser == null) {
+            return (
+                <Button
+                    onPress={() => this.isLogin()}>
+                    Login
+                </Button>
+            )
+
+        }
     }
 
 
@@ -192,10 +218,7 @@ class HomePage extends Component {
                         }}>
                         Requests Now!
                     </Button>
-                    <Button
-                        onPress={() => this.isLogout()}>
-                        Logout
-                    </Button>
+                    {this.renderButton()}
 
                     <View style={styles.containerTextProductCard}>
                         <Text style={styles.textCard}>PRODUCT TERLARIS</Text>

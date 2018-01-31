@@ -44,8 +44,6 @@ class RequestFormOrderFirstPage extends Component {
         headerStyle: { backgroundColor: '#006AAF' },
         headerTitleStyle: { color: '#FFFFFF' },
         headerLeft:
-            // <Button name={'arrow-left'}
-            //     onPress={() => { navigation.navigate('Home') }} />
             <TouchableOpacity
                 onPress={() => { navigation.navigate('Home') }}
             >
@@ -114,7 +112,7 @@ class RequestFormOrderFirstPage extends Component {
     onSubmit = () => {
         console.log(this.state, 'DATA FORM 1');
 
-        if(this.state.photo == require('./../assets/image/upload-foto.png')) {
+        if (this.state.photo == require('./../assets/image/upload-foto.png')) {
             alert('Anda belum upload Foto');
         } else if (this.state.FishId == '') {
             alert('Anda belum memilih Komoditas');
@@ -455,6 +453,7 @@ class RequestFormOrderFirstPage extends Component {
                                 isVisible={this.state.isDateTimePickerVisible}
                                 onConfirm={this._handleDatePicked}
                                 onCancel={this._hideDateTimePicker}
+                                minimumDate={new Date()}
                             />
                         </CardSectionRegistration>
 

@@ -21,7 +21,12 @@ class LoginFormPage extends Component {
 
     componentWillMount() {
         console.log(this.props.navigation.state.params.datas, 'Data Passing');
-        this.setState({ dataRedirect: this.props.navigation.state.params.datas })
+        this.setState({ dataRedirect: this.props.navigation.state.params.datas }) 
+        // if(this.props.navigation.state.params.datas != null || this.props.navigation.state.params.datas !== undefined) {
+        //     this.setState({ dataRedirect: this.props.navigation.state.params.datas })    
+        // } else {
+        //     this.setState({ dataRedirect: 'Home' })
+        // }
     }
 
     onButtonPress() {

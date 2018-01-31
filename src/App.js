@@ -4,6 +4,7 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import { TabNavigator, StackNavigator } from 'react-navigation';
+import numeral from 'numeral'
 
 /**
  *  List Page
@@ -27,6 +28,21 @@ import FormContractRevisionPage from './pages/FormContractRevisionPage'
  */
 import { HeaderHome } from './components/common';
 console.disableYellowBox = true;
+
+numeral.register('locale', 'id', {
+    delimiters: {
+      thousands: '.',
+      decimal: ','
+    },
+    ordinal: function (number) {
+        return number === 1 ? 'er' : 'ème';
+    },
+    currency: {
+        symbol: 'Rp'
+    }
+  })
+  numeral.locale('id')
+  
 
 class App extends React.Component {
     state = { loggedIn: false };
