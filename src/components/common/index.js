@@ -12,3 +12,4 @@ export * from './CardProduct';
 export * from './CardSectionProduct';
 export * from './ContainerSection';
 export * from './Container';
+export * from './InputChat';

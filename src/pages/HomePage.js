@@ -79,9 +79,11 @@ class HomePage extends Component {
     }
 
     isLogout() {
+        console.log('Logout Klik');
         AsyncStorage.getItem('loginCredential', (err, result) => {
             AsyncStorage.removeItem('loginCredential', () => {
                 alert('Berhasil Logout!');
+                console.log('Logout Klik Sukses');
             });
         });
     }

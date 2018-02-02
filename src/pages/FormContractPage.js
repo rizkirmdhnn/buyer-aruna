@@ -154,61 +154,83 @@ class FormContractPage extends Component {
     }
 
     onSubmit = () => {
-        console.log(this.state);
+        console.log(this.state.dpAmount,'', this.state.price);
 
-        const dataContract = {
-            "fishDescribe": this.state.dataMaster.Request.Transaction.describe,
-            "size": this.state.dataMaster.Request.Transaction.size,
-            "quantity": this.state.quantity,
-            "price": this.state.price,
-            "name": this.state.dataMaster.Request.Supplier.name,
-            "idNumber": this.state.dataMaster.Request.Supplier.idNumber,
-            "organization": this.state.dataMaster.Request.Supplier.organization,
-            "location": this.state.dataMaster.Request.Supplier.address,
-            "shippingMethod": 'JNE',
-            "locationOfreception": this.state.locationOfreception,
-            "dateOfReception": this.state.dateOfReception,
-            "dpAmount": this.state.dpAmount,
-            "dpDate": this.state.dpDate,
-            "fishReject": this.state.fishReject,
-            "maxFishReject": this.state.maxFishReject
-        }
-
-        const idTransaction = this.state.dataMaster.id;
-
-        AsyncStorage.getItem('loginCredential', (err, result) => {
-            const token = result;
-            console.log(token)
-            console.log(dataContract, 'Data Contrak');
-            console.log(idTransaction, 'ID Transaction');
-            axios.post(`${BASE_URL}/buyer/orders/${idTransaction}/contracts`,
-                dataContract
-                , {
-                    headers: {
-                        'token': token,
-                        'Content-Type': 'application/json',
-                    }
-                }).then(response => {
-                    res = response.data.data;
-                    console.log(response, 'RES');
-
-                    Alert.alert(
-                        '',
-                        'Data kontrak berhasil disimpan. Silahkan tunggu jawaban dari Nelayan',
-                        [
-                            { text: 'Ok', onPress: () => this.navigationRedirect() },
-                        ]
-                    )
+        // if (this.state.quantity == '') {
+        //     alert('Anda belum mengisi Kuantitas');
+        // } else if (this.state.price == '') {
+        //     alert('Anda belum mengisi Total Harga');
+        // } else if (this.state.dateNowPickPengiriman == '') {
+        //     alert('Anda belum menentukan Tanggal Pengiriman');
+        // } else if (this.state.locationOfreception == '') {
+        //     alert('Anda belum menentukan Lokasi Penerimaan');
+        // } else if (this.state.dpAmount == '') {
+        //     alert('Anda belum menentukan Nominal DP');
+        // } else if (this.state.dpAmount >= this.state.price ) {
+        //     alert('Nominal DP tidak boleh Sama dengan atau Melebihi Total Harga');
+        // } else if (this.state.fishReject == '') {
+        //     alert('Anda belum mengisi Deskripsi Reject');
+        // } else if (this.state.maxFishReject == '') {
+        //     alert('Anda belum menentukan Presentase Reject');
+        // }else {
+        //     console.log('LOLOS');
+        //     Keyboard.dismiss();
 
 
-                })
-                .catch(error => {
-                    console.log(error.message, 'Error nya');
-                    console.log(error.response, 'Error nya');
-                    console.log(error, 'Error nya');
-                    alert(error.message.data)
-                })
-        })
+            const dataContract = {
+                "fishDescribe": this.state.dataMaster.Request.Transaction.describe,
+                "size": this.state.dataMaster.Request.Transaction.size,
+                "quantity": this.state.quantity,
+                "price": this.state.price,
+                "name": this.state.dataMaster.Request.Supplier.name,
+                "idNumber": this.state.dataMaster.Request.Supplier.idNumber,
+                "organization": this.state.dataMaster.Request.Supplier.organization,
+                "location": this.state.dataMaster.Request.Supplier.address,
+                "shippingMethod": 'JNE',
+                "locationOfreception": this.state.locationOfreception,
+                "dateOfReception": this.state.dateOfReception,
+                "dpAmount": this.state.dpAmount,
+                "dpDate": this.state.dpDate,
+                "fishReject": this.state.fishReject,
+                "maxFishReject": this.state.maxFishReject
+            }
+
+            const idTransaction = this.state.dataMaster.id;
+
+            AsyncStorage.getItem('loginCredential', (err, result) => {
+                const token = result;
+                console.log(token)
+                console.log(dataContract, 'Data Contrak');
+                console.log(idTransaction, 'ID Transaction');
+                axios.post(`${BASE_URL}/buyer/orders/${idTransaction}/contracts`,
+                    dataContract
+                    , {
+                        headers: {
+                            'token': token,
+                            'Content-Type': 'application/json',
+                        }
+                    }).then(response => {
+                        res = response.data.data;
+                        console.log(response, 'RES');
+
+                        Alert.alert(
+                            '',
+                            'Data kontrak berhasil disimpan. Silahkan tunggu jawaban dari Nelayan',
+                            [
+                                { text: 'Ok', onPress: () => this.navigationRedirect() },
+                            ]
+                        )
+
+
+                    })
+                    .catch(error => {
+                        console.log(error.message, 'Error nya');
+                        console.log(error.response, 'Error nya');
+                        console.log(error, 'Error nya');
+                        alert(error.message.data)
+                    })
+            })
+        // }
     }
 
     navigationRedirect() {
@@ -241,9 +263,9 @@ class FormContractPage extends Component {
     }
 
     onChangeInput = (name, v) => {
-		this.setState({[name]: v})
-		console.log(v, 'Text Type');
-	}
+        this.setState({ [name]: v })
+        console.log(v, 'Text Type');
+    }
 
 
     renderAllData = () => {
@@ -312,8 +334,11 @@ class FormContractPage extends Component {
 
                         <InputRegistration
                             label="Kuantitas"
+                            placeholder='Kuantitas'
                             value={this.state.quantity}
+                            keyboardType="numeric"
                             style={styles.textArea}
+                            onChangeText={v => this.onChangeInput('quantity', v)}
                         />
                         <Text style={styles.unitStyle}> kg</Text>
 
@@ -333,8 +358,12 @@ class FormContractPage extends Component {
                             label="Total Harga"
                             placeholder='Total Harga'
                             value={price}
+                            keyboardType="numeric"
                             style={styles.textArea}
                             onChangeText={v => this.onChangeInput('price', v)}
+
+                            // value={dpAmount ? numeral(parseInt(dpAmount)).format('0,0') : ''}
+                            // onChangeText={v => this.onChangeInput('dpAmount', v.replace(/\./g, ''))}
                         />
                     </CardSectionRegistration>
 
@@ -400,6 +429,7 @@ class FormContractPage extends Component {
                             isVisible={this.state.tanggalPenggiriman}
                             onConfirm={this._handleDatePickedPengiriman}
                             onCancel={this._hideTanggalPengiriman}
+                            minimumDate={new Date()}
                         />
                     </CardSectionRegistration>
 
@@ -433,10 +463,12 @@ class FormContractPage extends Component {
 
                     <CardSectionRegistration>
                         <InputRegistration
-                            label="Harga/Kg"
-							keyboardType="numeric"
-							value={dpAmount ? numeral(parseInt(dpAmount)).format('0,0') : ''}
-							onChangeText={v => this.onChangeInput('dpAmount', v.replace(/\./g, ''))}
+                            label="Nominal Dp"
+                            keyboardType="numeric"
+                            value={dpAmount}
+                            onChangeText={v => this.onChangeInput('dpAmount', v)}
+                            // value={dpAmount ? numeral(parseInt(dpAmount)).format('0,0') : ''}
+                            // onChangeText={v => this.onChangeInput('dpAmount', v.replace(/\./g, ''))}
                         />
 
                         {/* <InputRegistration
@@ -465,6 +497,7 @@ class FormContractPage extends Component {
                             isVisible={this.state.tanggalDP}
                             onConfirm={this._handleDatePickedDP}
                             onCancel={this._hideTanggalDP}
+                            minimumDate={new Date()}
                         />
                     </CardSectionRegistration>
 
@@ -488,6 +521,7 @@ class FormContractPage extends Component {
                             label='Presentase Maksimal Komoditas Reject'
                             placeholder='Presentase Maksimal Komoditas Reject'
                             value={maxFishReject}
+                            keyboardType="numeric"
                             onChangeText={v => this.onChangeInput('maxFishReject', v)}
                         />
                     </CardSectionRegistration>

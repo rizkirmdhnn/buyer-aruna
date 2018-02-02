@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { ScrollView, View, Text, Image, TouchableOpacity, TouchableWithoutFeedback, Linking } from 'react-native'
+import { ScrollView, View, Text, Image, TouchableOpacity, TouchableWithoutFeedback, Linking, AsyncStorage } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
 import Modal from 'react-native-modal'
 import numeral from 'numeral'
@@ -10,35 +10,53 @@ import { Card, Button, CardSection, Container, ContainerSection, Spinner } from 
 import { BASE_URL } from './../shared/lb.config';
 
 class DetailTransactionPage extends Component {
-    static navigationOptions = {
-        title: 'Order 23049329',
+
+    isGoDiscuss() {
+        console.log(this.state.dataMaster, 'Data discuss');
+    }
+
+    static navigationOptions = ({ navigation, screenProps }) => ({
+        title: 'Detail Transaksi',
         headerStyle: { backgroundColor: '#006AAF' },
         headerTitleStyle: { color: '#FFFFFF' },
         headerRight:
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => { navigation.navigate('Message', { idData: navigation.state.params.datas }) }}>
                 <View>
                     <Icon style={{ marginRight: 20 }} size={30} name="md-chatboxes" />
                 </View>
             </TouchableOpacity>
-    }
+    });
 
     constructor(props) {
         super(props)
 
         this.state = {
             dataMaster: '',
+            dataTransaction: '',
+            survey: false,
+            sample: false,
+            dataSurvey: 0,
+            dataSample: 0,
 
             loading: null,
             checked: false,
             isModalVisible: false,
 
+            requestContainer: null,
+
+            contractContainer: null,
             contractDone: null,
             contractNotDone: null,
             contractRevision: null,
+            contractApproved: null,
+            contractPending: null,
 
-            requestContainer: null,
-            contractContainer: null,
             dpContainer: null,
+            dpPending: null,
+            dpApproved: null,
+            dpFailed: null,
+            dpNotYet: null,
+
             deliveryContainer: null,
             paidContainer: null,
             doneContainer: null,
@@ -53,7 +71,31 @@ class DetailTransactionPage extends Component {
     }
 
     componentWillMount() {
-        this.setState({ dataMaster: this.props.navigation.state.params.datas });
+        this.setState({ dataMaster: this.props.navigation.state.params.datas, loading: true });
+
+        const idTransaction = this.props.navigation.state.params.datas.id
+
+        AsyncStorage.getItem('loginCredential', (err, result) => {
+            const token = result;
+
+            axios.get(`${BASE_URL}/buyer/orders/${idTransaction}`, {
+                headers: { token }
+            })
+                .then(response => {
+                    console.log(response, 'Data Transaction');
+                    this.setState({ dataTransaction: response.data, loading: false });
+                })
+                .catch(error => {
+                    if (error.response) {
+                        alert(error.response.data.message)
+                    }
+                    else {
+                        alert('Koneksi internet bermasalah')
+                    }
+                    this.setState({ loading: false })
+                })
+
+        });
     }
 
     componentDidMount() {
@@ -69,33 +111,53 @@ class DetailTransactionPage extends Component {
                 doneContainer: false,
             })
         } else {
-            this.setState({
-                contractDone: true
-            })
-            if (this.state.dataMaster.Contract.Status.id === 4 && this.state.dataMaster.Contract.Status.id === 6) {
+            if (this.state.dataMaster.Contract.Status.id === 4) {
                 this.setState({
+                    contractDone: true,
+
+                    contractPending: true,
+                    contractRevision: false,
+                    contractApproved: false,
+
                     dpContainer: false,
-                    deliveryContainer: false,
-                    paidContainer: false,
-                    doneContainer: false,
-                })
-            } else if (this.state.dataMaster.Contract.Status.id === 5) {
-                this.setState({
-                    dpContainer: true,
-                    deliveryContainer: false,
-                    paidContainer: false,
-                    doneContainer: false,
-                })
-            } else if (this.state.dataMaster.Contract.Status.id === 6) {
-                this.setState({
-                    contractRevision: true,
-                    dpContainer: true,
                     deliveryContainer: false,
                     paidContainer: false,
                     doneContainer: false,
                 })
             }
 
+            if (this.state.dataMaster.Contract.Status.id === 5) {
+                this.setState({
+                    contractDone: true,
+
+                    contractPending: false,
+                    contractRevision: false,
+                    contractApproved: true,
+
+                    dpContainer: true,
+
+                    deliveryContainer: false,
+                    paidContainer: false,
+                    doneContainer: false,
+                })
+            }
+
+            if (this.state.dataMaster.Contract.Status.id === 6) {
+                this.setState({
+                    contractDone: true,
+
+                    contractPending: false,
+                    contractRevision: true,
+                    contractApproved: false,
+
+                    dpContainer: false,
+                    dpExpanded: false,
+
+                    deliveryContainer: false,
+                    paidContainer: false,
+                    doneContainer: false,
+                })
+            }
         }
     }
 
@@ -110,32 +172,80 @@ class DetailTransactionPage extends Component {
     }
 
     fetchDetail = () => {
-        let id = this.props.navigation.state.params.id
-        let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjo4LCJuYW1lIjoiYXJpZiIsImVtYWlsIjoiYXJpZi5mYXRodXNycm9zY2NjY21hbm5AZ21haWwuY29tIiwicGFzc3dvcmQiOiIxMjMxY3MyeDMiLCJwaG9uZSI6IjMzMjMyMzIyY2NzeDNjY3NjMjNjY2NjIiwicGhvdG8iOiJpa2FuLmpwZyIsImFkZHJlc3MiOiJhbGRpcm9uIiwicm9sZSI6InN1cHBsaWVyIiwicG9pbnRBbW91bnQiOjAsImlkTnVtYmVyIjoiMTIzM3MyY3MzY2NjY2NjY3gyMjMyIiwib3JnYW5pemF0aW9uVHlwZSI6InB0IiwibnB3cCI6ImtlbHVyYWhhbiIsInN1YkRpc3RyaWN0Ijoia2VjYW1hdGFuIiwidmlsbGFnZSI6ImtlbHVyYWhhbiIsImFjdGl2ZSI6ZmFsc2UsInZlcmlmaWVkIjpmYWxzZSwiY3JlYXRlZEF0IjoiMjAxOC0wMS0xNlQwNDo1MDo1Ni4wMDBaIiwidXBkYXRlZEF0IjoiMjAxOC0wMS0xNlQwNDo1MDo1Ni4wMDBaIiwiQ2l0eUlkIjoxfSwiaWF0IjoxNTE2MjEwMjY5LCJleHAiOjE1MTY4MTUwNjl9.np8CZKxqf6F88aRiKqoIKETl2gRAWie4Aec3GbXGG7s'
+        AsyncStorage.getItem('loginCredential', (err, result) => {
+            const token = result;
+            const id = this.props.navigation.state.params.id
 
-        axios.get(`${BASE_URL}/supplier/orders/${id}`, {
-            headers: { token }
-        })
-            .then(response => {
-                this.setState({ data: response.data.data, loading: false })
+            axios.get(`${BASE_URL}/supplier/orders/${id}`, {
+                headers: { token }
             })
-            .catch(error => {
-                if (error.response) {
-                    alert(error.response.data.message)
-                }
-                else {
-                    alert('Koneksi internet bermasalah')
-                }
-                this.setState({ loading: false })
-            })
+                .then(response => {
+                    this.setState({ data: response.data.data, loading: false })
+                })
+                .catch(error => {
+                    if (error.response) {
+                        alert(error.response.data.message)
+                    }
+                    else {
+                        alert('Koneksi internet bermasalah')
+                    }
+                    this.setState({ loading: false })
+                })
+        });
     }
 
     _toggleModal = () => {
         this.setState({ isModalVisible: !this.state.isModalVisible })
     }
 
+    checkBoxSample = () => {
+        this.setState({ sample: !this.state.sample });
+    }
+
+    checkBoxSurvey = () => {
+        this.setState({ survey: !this.state.survey });
+    }
+
+    sendRequest() {
+        AsyncStorage.getItem('loginCredential', (err, result) => {
+            const token = result;
+            const id = this.state.dataMaster.id;
+
+            const dataRequest = {
+                'survey': this.state.survey === true ? 1 : 0,
+                'sample': this.state.sample === true ? 1 : 0
+            }
+
+            axios.post(`${BASE_URL}/buyer/orders/${id}/samples`,
+                dataRequest
+                , {
+                    headers: {
+                        token
+                    },
+                })
+                .then(response => {
+                    console.log(response, 'Result')
+                    alert('Sukses Request permintaan Survei & Sample. Info lebih lanjut silahkan lakukan diskusi dengan nelayan.')
+                })
+                .catch(error => {
+                    console.log(error, 'Error');
+                    if (error.response) {
+                        alert(error.response.data.message)
+                    }
+                    else {
+                        alert('Koneksi internet bermasalah')
+                    }
+                })
+
+
+        });
+    }
+
+
     render() {
         const {
+            survey,
+            sample,
 
             requestExpanded,
             contractExpanded,
@@ -152,6 +262,12 @@ class DetailTransactionPage extends Component {
             contractDone,
             contractNotDone,
             contractRevision,
+            contractApproved,
+            contractPending,
+            dpPending,
+            dpApproved,
+            dpFailed,
+            dpNotYet,
             data } = this.state
 
         if (this.state.loading) {
@@ -199,11 +315,13 @@ class DetailTransactionPage extends Component {
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
                                             <CheckBox
                                                 title='Survei'
-                                                checked="true"
+                                                checked={survey}
+                                                onPress={() => this.checkBoxSurvey()}
                                             />
                                             <CheckBox
                                                 title='Sample'
-                                                checked="true"
+                                                checked={sample}
+                                                onPress={() => this.checkBoxSample()}
                                             />
                                         </View>
                                     </View>
@@ -260,30 +378,59 @@ class DetailTransactionPage extends Component {
                                 {
                                     contractDone ?
                                         <View style={{ flexDirection: 'column' }}>
-                                            <View>
-                                                <Text>Anda sudah mengisi formulir kontrak. Status : {this.state.dataMaster.Contract.Status.name}, Lakukan
-                                                    diskusi untuk mempercepat transaksi.
-                                                </Text>
-                                            </View>
-                                            <View style={{ height: 20 }} />
-                                            <View>
-                                                <TouchableOpacity onPress={() => Linking.openURL('http://komisiyudisial.go.id/downlot.php?file=Peraturan-KY-Nomor-2-Tahun-2015.pdf').catch(err => console.error('An error occurred', err))}>
-                                                    <View style={{ marginTop: 15, flexDirection: 'row' }}>
-                                                        <Text style={{ color: 'blue', marginLeft: 10 }}>fileDummyTest.pdf</Text>
-                                                        <Icon size={20} style={{ color: 'blue', marginLeft: 5 }} name="md-download" />
+                                            {
+                                                contractPending ?
+                                                    <View>
+                                                        <Text>Anda sudah mengisi formulir kontrak. Status : {this.state.dataMaster.Contract.Status.name}, Lakukan
+                                                            diskusi untuk mempercepat transaksi.
+                                                        </Text>
                                                     </View>
-                                                </TouchableOpacity>
-                                            </View>
+                                                    :
+                                                    <View />
+                                            }
                                             {
                                                 contractRevision ?
-                                                    <View style={{ marginTop: 10, flexDirection: 'row' }}>
-                                                        <View style={{ flex: 1 }}>
-                                                            <Button
-                                                                onPress={() => {
-                                                                    this.createContractRevision()
-                                                                }}>
-                                                                Edit Kontrak
-                                                    </Button>
+                                                    <View>
+                                                        <Text>Anda sudah mengisi formulir kontrak. Status : {this.state.dataMaster.Contract.Status.name}, Nelayan meminta
+                                                            revisi kontrak, lakukan diskusi untuk mempercepat transaksi.
+                                                        </Text>
+
+                                                        <View>
+                                                            <TouchableOpacity onPress={() => Linking.openURL('http://komisiyudisial.go.id/downlot.php?file=Peraturan-KY-Nomor-2-Tahun-2015.pdf').catch(err => console.error('An error occurred', err))}>
+                                                                <View style={{ marginTop: 15, flexDirection: 'row' }}>
+                                                                    <Text style={{ color: 'blue', marginLeft: 10 }}>fileDummyTest.pdf</Text>
+                                                                    <Icon size={20} style={{ color: 'blue', marginLeft: 5 }} name="md-download" />
+                                                                </View>
+                                                            </TouchableOpacity>
+                                                        </View>
+
+                                                        <View style={{ marginTop: 10, flexDirection: 'row' }}>
+                                                            <View style={{ flex: 1 }}>
+                                                                <Button
+                                                                    onPress={() => {
+                                                                        this.createContractRevision()
+                                                                    }}>
+                                                                    Revisi Kontrak
+                                                            </Button>
+                                                            </View>
+                                                        </View>
+                                                    </View>
+                                                    :
+                                                    <View />
+                                            }
+                                            {
+                                                contractApproved ?
+                                                    <View>
+                                                        <Text>Kontrak ada sudah disetujui oleh nelayan, Silahkan melanjutkan transaksi.
+                                                        </Text>
+
+                                                        <View>
+                                                            <TouchableOpacity onPress={() => Linking.openURL('http://komisiyudisial.go.id/downlot.php?file=Peraturan-KY-Nomor-2-Tahun-2015.pdf').catch(err => console.error('An error occurred', err))}>
+                                                                <View style={{ marginTop: 15, flexDirection: 'row' }}>
+                                                                    <Text style={{ color: 'blue', marginLeft: 10 }}>fileDummyTest.pdf</Text>
+                                                                    <Icon size={20} style={{ color: 'blue', marginLeft: 5 }} name="md-download" />
+                                                                </View>
+                                                            </TouchableOpacity>
                                                         </View>
                                                     </View>
                                                     :
@@ -297,7 +444,6 @@ class DetailTransactionPage extends Component {
                             :
                             <View />
                     }
-
                 </Card>
 
                 <Card>
@@ -320,16 +466,73 @@ class DetailTransactionPage extends Component {
                     {
                         dpExpanded ?
                             <CardSection>
-                                <View style={{ flexDirection: 'column' }}>
-                                    <View>
-                                        <Text>Pembeli telah melakukan pembayaran DP pada tanggal 27/07/18.</Text>
-                                        <Text>Total Biaya    	        Rp 4.000.000</Text>
-                                        <Text>Pembayaran DP		        Rp 2.500.000</Text>
-                                        <Text>Sisa Pembayaran	        Rp 1.500.000</Text>
-                                        <Text>Tanggal Pembayaran	    02/09/2018</Text>
-                                        <Text>Status            	    Pembayaran Diterima</Text>
-                                    </View>
-                                </View>
+                                {
+                                    dpNotYet ?
+
+                                        <View style={{ flexDirection: 'column' }}>
+                                            <View>
+                                                <Text>Pembeli telah melakukan pembayaran DP pada tanggal 27/07/18.</Text>
+                                                <Text>Total Biaya    	        Rp 4.000.000</Text>
+                                                <Text>Pembayaran DP		        Rp 2.500.000</Text>
+                                            </View>
+                                        </View>
+
+                                        :
+                                        <View />
+                                }
+                                {
+                                    dpPending ?
+
+                                        <View style={{ flexDirection: 'column' }}>
+                                            <View>
+                                                <Text>Pembeli telah melakukan pembayaran DP pada tanggal 27/07/18.</Text>
+                                                <Text>Total Biaya    	        Rp 4.000.000</Text>
+                                                <Text>Pembayaran DP		        Rp 2.500.000</Text>
+                                                <Text>Sisa Pembayaran	        Rp 1.500.000</Text>
+                                                <Text>Tanggal Pembayaran	    02/09/2018</Text>
+                                                <Text>Status            	    Diverifikasi Admin</Text>
+                                            </View>
+                                        </View>
+
+                                        :
+                                        <View />
+                                }
+                                {
+                                    dpFailed ?
+
+                                        <View style={{ flexDirection: 'column' }}>
+                                            <View>
+                                                <Text>Pembeli telah melakukan pembayaran DP pada tanggal 27/07/18.</Text>
+                                                <Text>Total Biaya    	        Rp 4.000.000</Text>
+                                                <Text>Pembayaran DP		        Rp 2.500.000</Text>
+                                                <Text>Sisa Pembayaran	        Rp 1.500.000</Text>
+                                                <Text>Tanggal Pembayaran	    02/09/2018</Text>
+                                                <Text>Status            	    Pembayaran Ditolak</Text>
+                                            </View>
+                                        </View>
+
+                                        :
+                                        <View />
+                                }
+
+                                {
+                                    dpApproved ?
+
+                                        <View style={{ flexDirection: 'column' }}>
+                                            <View>
+                                                <Text>Pembeli telah melakukan pembayaran DP pada tanggal 27/07/18.</Text>
+                                                <Text>Total Biaya    	        Rp 4.000.000</Text>
+                                                <Text>Pembayaran DP		        Rp 2.500.000</Text>
+                                                <Text>Sisa Pembayaran	        Rp 1.500.000</Text>
+                                                <Text>Tanggal Pembayaran	    02/09/2018</Text>
+                                                <Text>Status            	    Pembayaran Diterima</Text>
+                                            </View>
+                                        </View>
+
+                                        :
+                                        <View />
+                                }
+
                             </CardSection>
                             :
                             <View />

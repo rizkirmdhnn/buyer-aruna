@@ -63,7 +63,7 @@ class TransactionPage extends Component {
                 }
             }).then(response => {
                 const result = response.data.data;
-                console.log(result, 'Data Transaksi');
+                console.log(response, 'Data Transaksi');
                 this.setState({ dataTransaksi: result, loading: false });
             })
                 .catch(error => {
@@ -79,9 +79,7 @@ class TransactionPage extends Component {
     }
 
     renderData = (item) => {
-        console.log(item, 'Item Transaksi');
         return item.map((item, index) => {
-            console.log(item, 'Data Transaksi Map')
             const dateFormat = moment(item.Request.Transaction.updatedAt).format('DD/MM/YYYY');
             const timeFormat = moment(item.Request.Transaction.updatedAt).format('h:mm:ss');
             return (
