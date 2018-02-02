@@ -22,7 +22,8 @@ import FormProductRequestPage from './pages/FormProductRequestPage';
 import DetailRequestOrderPage from './pages/DetailRequestOrderPage';
 import DetailTransactionPage from './pages/DetailTransactionPage';
 import FormContractPage from './pages/FormContractPage';
-import FormContractRevisionPage from './pages/FormContractRevisionPage'
+import FormContractRevisionPage from './pages/FormContractRevisionPage';
+import MessagePage from './pages/MessagePage';
 /**
  *  List Component
  */
@@ -87,7 +88,8 @@ class App extends React.Component {
             DetailRequestOrder: { screen: DetailRequestOrderPage },
             DetailTransaction: { screen: DetailTransactionPage },
             FormContract: { screen: FormContractPage },
-            FormContractRevision: { screen: FormContractRevisionPage }
+            FormContractRevision: { screen: FormContractRevisionPage },
+            Message: { screen: MessagePage }
         }, {
             cardStyle: { backgroundColor: '#FFF' }
         });
