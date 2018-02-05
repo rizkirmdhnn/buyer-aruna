@@ -1,6 +1,16 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { ScrollView, View, Text, Image, TouchableOpacity, TouchableWithoutFeedback, Linking, AsyncStorage } from 'react-native'
+import {
+    ScrollView,
+    View,
+    Text,
+    Image,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Linking,
+    AsyncStorage,
+    Alert
+} from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
 import Modal from 'react-native-modal'
 import numeral from 'numeral'
@@ -8,7 +18,8 @@ import axios from 'axios'
 import { CheckBox, FormInput, Rating } from 'react-native-elements'
 import { Card, Button, CardSection, Container, ContainerSection, Spinner } from '../components/common'
 import { BASE_URL } from './../shared/lb.config';
-
+import ImagePicker from 'react-native-image-picker';
+import moment from 'moment';
 class DetailTransactionPage extends Component {
 
     isGoDiscuss() {
@@ -33,6 +44,9 @@ class DetailTransactionPage extends Component {
         this.state = {
             dataMaster: '',
             dataTransaction: '',
+            dataDetail: '',
+            photo: '',
+            tokenUser: '',
             survey: false,
             sample: false,
             dataSurvey: 0,
@@ -58,7 +72,19 @@ class DetailTransactionPage extends Component {
             dpNotYet: null,
 
             deliveryContainer: null,
+            deliveryPending: null,
+            deliveryRevision: null,
+            deliveryApproved: null,
+            deliveryApprovedAdminPending: null,
+            deliveryApprovedAdminRevision: null,
+
+
             paidContainer: null,
+            paidNotYet: null,
+            paidWaiting: null,
+            paidRevision: null,
+            paidApproved: null,
+
             doneContainer: null,
 
             requestExpanded: false,
@@ -77,91 +103,150 @@ class DetailTransactionPage extends Component {
 
         AsyncStorage.getItem('loginCredential', (err, result) => {
             const token = result;
-
+            this.setState({ tokenUser: token })
             axios.get(`${BASE_URL}/buyer/orders/${idTransaction}`, {
                 headers: { token }
             })
                 .then(response => {
                     console.log(response, 'Data Transaction');
-                    this.setState({ dataTransaction: response.data, loading: false });
+                    this.setState({ dataTransaction: response.data, dataDetail: response.data.data, loading: false });
+
+                    if (this.state.dataMaster.Contract == null) {
+                        this.setState({
+                            contractNotDone: true,
+                        })
+                    } else {
+                        if (this.state.dataMaster.Contract.Status.id === 4) {
+                            this.setState({
+                                contractDone: true,
+                                contractPending: true,
+                            })
+                        }
+
+                        if (this.state.dataMaster.Contract.Status.id === 5) {
+                            this.setState({
+                                contractDone: true,
+                                contractApproved: true
+                            })
+
+                            if (this.state.dataTransaction.downPayment == null) {
+                                this.setState({
+                                    dpContainer: true,
+                                    dpNotYet: true
+                                })
+                            }
+
+                            if (this.state.dataTransaction.downPayment.Status.id == 25) {
+                                this.setState({
+                                    dpContainer: true,
+                                    dpPending: true
+                                })
+                            }
+
+                            if (this.state.dataTransaction.downPayment.Status.id == 26) {
+                                this.setState({
+                                    dpContainer: true,
+                                    dpApproved: true
+                                })
+
+                                if (this.state.dataTransaction.shipping.Status.id == 28) {
+                                    this.setState({
+                                        deliveryContainer: true,
+                                        deliveryPending: true
+                                    })
+                                }
+                                if (this.state.dataTransaction.shipping.Status.id == 29) {
+                                    this.setState({
+                                        deliveryContainer: true,
+                                        deliveryApproved: true
+                                    })
+
+                                    if (this.state.dataTransaction.shippingDelivered.Status.id == 35) {
+                                        this.setState({
+                                            deliveryContainer: true,
+                                            deliveryApproved: null,
+                                            deliveryApprovedAdminPending: true
+                                        })
+                                    }
+
+                                    if (this.state.dataTransaction.shippingDelivered.Status.id == 36) {
+                                        this.setState({
+                                            deliveryContainer: true,
+                                            deliveryApproved: null,
+                                            deliveryApprovedAdminPending: null,
+                                            deliveryApprovedAdminApproved: true
+                                        })
+
+                                        if (this.state.dataTransaction.data.finalPayment == null) {
+                                            this.setState({
+                                                paidContainer: true,
+                                                paidNotYet: true
+                                            })
+                                        }
+
+                                        if(this.state.dataTransaction.finalPayment.Status.id == 25) {
+                                            this.setState({
+                                                paidContainer: true,
+                                                paidNotYet: null,
+                                                paidWaiting: true
+                                            })
+                                        }
+
+                                        if(this.state.dataTransaction.finalPayment.Status.id == 26) {
+                                            this.setState({
+                                                paidContainer: true,
+                                                paidNotYet: null,
+                                                paidWaiting: null,
+                                                paidApproved: true,
+                                                doneContainer: true,
+                                                doneExpanded: true
+                                            })
+                                        }
+                                        if(this.state.dataTransaction.finalPayment.Status.id == 27) {
+                                            this.setState({
+                                                paidContainer: true,
+                                                paidApproved: null,
+                                                paidRevision: true
+                                            })
+                                        }
+                                    }
+                                }
+                                if (this.state.dataTransaction.shipping.Status.id == 30) {
+                                    this.setState({
+                                        deliveryContainer: true,
+                                        deliveryRevision: true
+                                    })
+                                }
+                            }
+
+                            if (this.state.dataTransaction.downPayment.Status.id == 27) {
+                                this.setState({
+                                    dpContainer: true,
+                                    dpFailed: true
+                                })
+                            }
+                        }
+
+                        if (this.state.dataMaster.Contract.Status.id === 6) {
+                            this.setState({
+                                contractDone: true,
+                                contractRevision: true
+                            })
+                        }
+                    }
                 })
                 .catch(error => {
                     if (error.response) {
                         alert(error.response.data.message)
                     }
                     else {
-                        alert('Koneksi internet bermasalah')
+                        alert('Koneksi internet bermasalah Get All Data')
                     }
                     this.setState({ loading: false })
                 })
 
         });
     }
-
-    componentDidMount() {
-        console.log(this.state.dataMaster, 'DATA MASTER');
-
-        if (this.state.dataMaster.Contract == null) {
-            this.setState({
-                contractNotDone: true,
-                contractDone: false,
-                dpContainer: false,
-                deliveryContainer: false,
-                paidContainer: false,
-                doneContainer: false,
-            })
-        } else {
-            if (this.state.dataMaster.Contract.Status.id === 4) {
-                this.setState({
-                    contractDone: true,
-
-                    contractPending: true,
-                    contractRevision: false,
-                    contractApproved: false,
-
-                    dpContainer: false,
-                    deliveryContainer: false,
-                    paidContainer: false,
-                    doneContainer: false,
-                })
-            }
-
-            if (this.state.dataMaster.Contract.Status.id === 5) {
-                this.setState({
-                    contractDone: true,
-
-                    contractPending: false,
-                    contractRevision: false,
-                    contractApproved: true,
-
-                    dpContainer: true,
-
-                    deliveryContainer: false,
-                    paidContainer: false,
-                    doneContainer: false,
-                })
-            }
-
-            if (this.state.dataMaster.Contract.Status.id === 6) {
-                this.setState({
-                    contractDone: true,
-
-                    contractPending: false,
-                    contractRevision: true,
-                    contractApproved: false,
-
-                    dpContainer: false,
-                    dpExpanded: false,
-
-                    deliveryContainer: false,
-                    paidContainer: false,
-                    doneContainer: false,
-                })
-            }
-        }
-    }
-
-
 
     createContract() {
         this.props.navigation.navigate('FormContract', { datas: this.props.navigation.state.params.datas })
@@ -187,7 +272,7 @@ class DetailTransactionPage extends Component {
                         alert(error.response.data.message)
                     }
                     else {
-                        alert('Koneksi internet bermasalah')
+                        alert('Koneksi internet bermasalah Fetch Detail')
                     }
                     this.setState({ loading: false })
                 })
@@ -233,7 +318,7 @@ class DetailTransactionPage extends Component {
                         alert(error.response.data.message)
                     }
                     else {
-                        alert('Koneksi internet bermasalah')
+                        alert('Koneksi internet bermasalah Sample')
                     }
                 })
 
@@ -241,12 +326,575 @@ class DetailTransactionPage extends Component {
         });
     }
 
+    uploadDownPayment() {
+        const options = {
+            quality: 1.0,
+            maxWidth: 500,
+            maxHeight: 500,
+            storageOptions: {
+                skipBackup: true
+            }
+        };
+
+
+        ImagePicker.showImagePicker(options, (response) => {
+            console.log('Response = ', response);
+
+            if (response.didCancel) {
+                console.log('User cancelled photo picker');
+            }
+            else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            }
+            else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+            }
+            else {
+                const source = { uri: response.uri };
+                const dateVar = new Date();
+                const dateTemp = moment(dateVar).format('YYYY-MM-DD h:mm:ss');
+
+                this.setState({
+                    photo: source.uri
+                });
+
+                const id = this.state.dataMaster.id;
+                console.log(id, 'id nya');
+                const dataPhoto = new FormData();
+                dataPhoto.append('photo', {
+                    uri: this.state.photo,
+                    type: 'image/jpeg',
+                    name: 'downPayment.jpeg'
+                });
+
+                const { navigate } = this.props.navigation
+                axios.post(`${BASE_URL}/buyer/orders/${id}/payments`,
+                    dataPhoto,
+                    {
+                        headers: {
+                            'token': this.state.tokenUser,
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    })
+                    .then(response => {
+                        console.log('AIOSAIODAODISODIAD');
+                        console.log(response, 'Upload Payment');
+                        Alert.alert(
+                            '',
+                            'Bukti DP upload Sukses, Silahkan tunggu verifikasi admin.',
+                            [
+                                {
+                                    text: 'Ya', onPress: () => {
+                                        navigate('Home');
+                                        console.log('Ke Home');
+                                    }
+                                },
+                            ]
+                        )
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        if (error.response) {
+                            alert(error.response.data.message)
+                        }
+                        else {
+                            alert('Koneksi internet bermasalah')
+                        }
+                        this.setState({ loading: false })
+                    })
+            }
+        });
+    }
+
+    uploadReceiving() {
+        const options = {
+            quality: 1.0,
+            maxWidth: 500,
+            maxHeight: 500,
+            storageOptions: {
+                skipBackup: true
+            }
+        };
+
+
+        ImagePicker.showImagePicker(options, (response) => {
+            console.log('Response = ', response);
+
+            if (response.didCancel) {
+                console.log('User cancelled photo picker');
+            }
+            else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            }
+            else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+            }
+            else {
+                const source = { uri: response.uri };
+                const dateVar = new Date();
+                const dateTemp = moment(dateVar).format('YYYY-MM-DD h:mm:ss');
+
+                this.setState({
+                    photo: source.uri
+                });
+
+                const id = this.state.dataMaster.id;
+                console.log(id, 'id nya');
+                const dataPhoto = new FormData();
+                dataPhoto.append('photo', {
+                    uri: this.state.photo,
+                    type: 'image/jpeg',
+                    name: 'receivingKomoditas.jpeg'
+                });
+
+                const { navigate } = this.props.navigation
+                axios.post(`${BASE_URL}/buyer/orders/${id}/shippingsdelivered`,
+                    dataPhoto,
+                    {
+                        headers: {
+                            'token': this.state.tokenUser,
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    })
+                    .then(response => {
+                        console.log('AIOSAIODAODISODIAD');
+                        console.log(response, 'Upload Payment');
+                        Alert.alert(
+                            '',
+                            'Upload Bukti Penerimaan Sukses.',
+                            [
+                                {
+                                    text: 'Ya', onPress: () => {
+                                        navigate('Home');
+                                        console.log('Ke Home');
+                                    }
+                                },
+                            ]
+                        )
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        if (error.response) {
+                            alert(error.response.data.message)
+                        }
+                        else {
+                            alert('Koneksi internet bermasalah')
+                        }
+                        this.setState({ loading: false })
+                    })
+            }
+        });
+    }
+
+    uploadReceivingRevision() {
+        const options = {
+            quality: 1.0,
+            maxWidth: 500,
+            maxHeight: 500,
+            storageOptions: {
+                skipBackup: true
+            }
+        };
+
+
+        ImagePicker.showImagePicker(options, (response) => {
+            console.log('Response = ', response);
+
+            if (response.didCancel) {
+                console.log('User cancelled photo picker');
+            }
+            else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            }
+            else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+            }
+            else {
+                const source = { uri: response.uri };
+                const dateVar = new Date();
+                const dateTemp = moment(dateVar).format('YYYY-MM-DD h:mm:ss');
+
+                this.setState({
+                    photo: source.uri
+                });
+
+                const id = this.state.dataMaster.id;
+                console.log(id, 'id nya');
+                const dataPhoto = new FormData();
+                dataPhoto.append('photo', {
+                    uri: this.state.photo,
+                    type: 'image/jpeg',
+                    name: 'receivingKomoditasRevision.jpeg'
+                });
+
+                const { navigate } = this.props.navigation
+                axios.put(`${BASE_URL}/buyer/orders/${id}/shippingsdelivered`,
+                    dataPhoto,
+                    {
+                        headers: {
+                            'token': this.state.tokenUser,
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    })
+                    .then(response => {
+                        console.log('AIOSAIODAODISODIAD');
+                        console.log(response, 'Upload Payment');
+                        Alert.alert(
+                            '',
+                            'Upload Bukti Penerimaan Sukses.',
+                            [
+                                {
+                                    text: 'Ya', onPress: () => {
+                                        navigate('Home');
+                                        console.log('Ke Home');
+                                    }
+                                },
+                            ]
+                        )
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        if (error.response) {
+                            alert(error.response.data.message)
+                        }
+                        else {
+                            alert('Koneksi internet bermasalah Revision')
+                        }
+                        this.setState({ loading: false })
+                    })
+            }
+        });
+    }
+
+    finalPayments() {
+        const options = {
+            quality: 1.0,
+            maxWidth: 500,
+            maxHeight: 500,
+            storageOptions: {
+                skipBackup: true
+            }
+        };
+
+
+        ImagePicker.showImagePicker(options, (response) => {
+            console.log('Response = ', response);
+
+            if (response.didCancel) {
+                console.log('User cancelled photo picker');
+            }
+            else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            }
+            else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+            }
+            else {
+                const source = { uri: response.uri };
+                const dateVar = new Date();
+                const dateTemp = moment(dateVar).format('YYYY-MM-DD h:mm:ss');
+
+                this.setState({
+                    photo: source.uri
+                });
+
+                const id = this.state.dataMaster.id;
+                console.log(id, 'id nya');
+                const dataPhoto = new FormData();
+                dataPhoto.append('photo', {
+                    uri: this.state.photo,
+                    type: 'image/jpeg',
+                    name: 'downPayment.jpeg'
+                });
+
+                const { navigate } = this.props.navigation
+                axios.post(`${BASE_URL}/buyer/orders/${id}/finalpayments`,
+                    dataPhoto,
+                    {
+                        headers: {
+                            'token': this.state.tokenUser,
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    })
+                    .then(response => {
+                        console.log('AIOSAIODAODISODIAD');
+                        console.log(response, 'Upload Payment');
+                        Alert.alert(
+                            '',
+                            'Bukti DP upload Sukses, Silahkan tunggu verifikasi admin.',
+                            [
+                                {
+                                    text: 'Ya', onPress: () => {
+                                        navigate('Home');
+                                        console.log('Ke Home');
+                                    }
+                                },
+                            ]
+                        )
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        if (error.response) {
+                            alert(error.response.data.message)
+                        }
+                        else {
+                            alert('Koneksi internet bermasalah')
+                        }
+                        this.setState({ loading: false })
+                    })
+            }
+        });
+    }
+
+    revisionfinalPayments() {
+        const options = {
+            quality: 1.0,
+            maxWidth: 500,
+            maxHeight: 500,
+            storageOptions: {
+                skipBackup: true
+            }
+        };
+
+
+        ImagePicker.showImagePicker(options, (response) => {
+            console.log('Response = ', response);
+
+            if (response.didCancel) {
+                console.log('User cancelled photo picker');
+            }
+            else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            }
+            else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+            }
+            else {
+                const source = { uri: response.uri };
+                const dateVar = new Date();
+                const dateTemp = moment(dateVar).format('YYYY-MM-DD h:mm:ss');
+
+                this.setState({
+                    photo: source.uri
+                });
+
+                const id = this.state.dataMaster.id;
+                console.log(id, 'id nya');
+                const dataPhoto = new FormData();
+                dataPhoto.append('photo', {
+                    uri: this.state.photo,
+                    type: 'image/jpeg',
+                    name: 'downPayment.jpeg'
+                });
+
+                const { navigate } = this.props.navigation
+                axios.put(`${BASE_URL}/buyer/orders/${id}/finalpayments`,
+                    dataPhoto,
+                    {
+                        headers: {
+                            'token': this.state.tokenUser,
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    })
+                    .then(response => {
+                        console.log('AIOSAIODAODISODIAD');
+                        console.log(response, 'Upload Payment');
+                        Alert.alert(
+                            '',
+                            'Bukti DP upload Sukses, Silahkan tunggu verifikasi admin.',
+                            [
+                                {
+                                    text: 'Ya', onPress: () => {
+                                        navigate('Home');
+                                        console.log('Ke Home');
+                                    }
+                                },
+                            ]
+                        )
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        if (error.response) {
+                            alert(error.response.data.message)
+                        }
+                        else {
+                            alert('Koneksi internet bermasalah')
+                        }
+                        this.setState({ loading: false })
+                    })
+            }
+        });
+    }
+
+    renderReceivingPending() {
+        console.log(this.state.dataDetail, 'Data Detail');
+        const alamat = this.state.dataDetail.Contract.locationOfreception;
+        const name = this.state.dataDetail.Request.Buyer.name;
+        const phone = this.state.dataDetail.Request.Buyer.phone;
+        return (
+            <View style={{ flexDirection: 'row' }}>
+                <View style={{ flex: 1 }}>
+                    <Text>Nama Penerima</Text>
+                    <Text>No. Telp</Text>
+                    <Text>Alamat</Text>
+                    <Text>Status</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                    <Text>{name}</Text>
+                    <Text>{phone}</Text>
+                    <Text>{alamat}</Text>
+                    <Text>Telah dikirim oleh nelayan. Mohon tunggu verifikasi dari admin. Terimakasih.</Text>
+                </View>
+            </View>
+        )
+    }
+
+    renderReceivingRevision() {
+        console.log(this.state.dataDetail, 'Data Detail');
+        const alamat = this.state.dataDetail.Contract.locationOfreception;
+        const name = this.state.dataDetail.Request.Buyer.name;
+        const phone = this.state.dataDetail.Request.Buyer.phone;
+        return (
+            <View style={{ flexDirection: 'row' }}>
+                <View style={{ flex: 1 }}>
+                    <Text>Nama Penerima</Text>
+                    <Text>No. Telp</Text>
+                    <Text>Alamat</Text>
+                    <Text>Status</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                    <Text>{name}</Text>
+                    <Text>{phone}</Text>
+                    <Text>{alamat}</Text>
+                    <Text>Direvisi oleh admin, silahkan lakukan diskusi dengan nelayan agar proses menjadi cepat. Terimakasih.</Text>
+                </View>
+            </View>
+        )
+    }
+
+    renderReceivingApproved() {
+        console.log(this.state.dataDetail, 'Data Detail');
+        const alamat = this.state.dataDetail.Contract.locationOfreception;
+        const name = this.state.dataDetail.Request.Buyer.name;
+        const phone = this.state.dataDetail.Request.Buyer.phone;
+        return (
+            <View>
+                <View style={{ flexDirection: 'row' }}>
+                    <View style={{ flex: 1 }}>
+                        <Text>Nama Penerima</Text>
+                        <Text>No. Telp</Text>
+                        <Text>Alamat</Text>
+                        <Text>Status</Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <Text>{name}</Text>
+                        <Text>{phone}</Text>
+                        <Text>{alamat}</Text>
+                        <Text>Telah disetujui oleh admin, silahkan upload foto barang jika sudah sampai tempat tujuan. Terimakasih.</Text>
+                    </View>
+                </View>
+
+                <View style={{ marginTop: 10 }}>
+                    <Button
+                        onPress={() => {
+                            this.uploadReceiving()
+                        }}>
+                        Komoditas Telah diTerima
+                    </Button>
+                </View>
+            </View>
+        )
+    }
+
+    renderReceivingApprovedAdminPending() {
+        console.log(this.state.dataDetail, 'Data Detail');
+        const alamat = this.state.dataDetail.Contract.locationOfreception;
+        const name = this.state.dataDetail.Request.Buyer.name;
+        const phone = this.state.dataDetail.Request.Buyer.phone;
+        return (
+            <View style={{ flexDirection: 'row' }}>
+                <View style={{ flex: 1 }}>
+                    <Text>Nama Penerima</Text>
+                    <Text>No. Telp</Text>
+                    <Text>Alamat</Text>
+                    <Text>Status</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                    <Text>{name}</Text>
+                    <Text>{phone}</Text>
+                    <Text>{alamat}</Text>
+                    <Text>Penerimaan telah terkirim, silahkan tunggu verifikasi admin. Terimakasih.</Text>
+                </View>
+            </View>
+        )
+    }
+
+    renderReceivingApprovedAdminRevision() {
+        console.log(this.state.dataDetail, 'Data Detail');
+        const alamat = this.state.dataDetail.Contract.locationOfreception;
+        const name = this.state.dataDetail.Request.Buyer.name;
+        const phone = this.state.dataDetail.Request.Buyer.phone;
+        return (
+            <View>
+                <View style={{ flexDirection: 'row' }}>
+                    <View style={{ flex: 1 }}>
+                        <Text>Nama Penerima</Text>
+                        <Text>No. Telp</Text>
+                        <Text>Alamat</Text>
+                        <Text>Status</Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <Text>{name}</Text>
+                        <Text>{phone}</Text>
+                        <Text>{alamat}</Text>
+                        <Text>Penerimaan di revisi, silahkan lakukan revisi upload foto penerimaan. Terimakasih.</Text>
+                    </View>
+                </View>
+
+                <View style={{ marginTop: 10 }}>
+                    <Button
+                        onPress={() => {
+                            this.uploadReceivingRevision()
+                        }}>
+                        Revisi Upload Foto
+                    </Button>
+                </View>
+            </View>
+        )
+    }
+
+    renderReceivingApprovedAdminApproved() {
+        console.log(this.state.dataDetail, 'Data Detail');
+        const alamat = this.state.dataDetail.Contract.locationOfreception;
+        const name = this.state.dataDetail.Request.Buyer.name;
+        const phone = this.state.dataDetail.Request.Buyer.phone;
+        return (
+            <View style={{ flexDirection: 'row' }}>
+                <View style={{ flex: 1 }}>
+                    <Text>Nama Penerima</Text>
+                    <Text>No. Telp</Text>
+                    <Text>Alamat</Text>
+                    <Text>Status</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                    <Text>{name}</Text>
+                    <Text>{phone}</Text>
+                    <Text>{alamat}</Text>
+                    <Text>Penerimaan telah di approved admin. Terimakasih.</Text>
+                </View>
+            </View>
+        )
+    }
+    
+    giveComment() {
+        console.log('Ulasan');
+    }
 
     render() {
         const {
             survey,
             sample,
-
+            dataDetail,
             requestExpanded,
             contractExpanded,
             dpExpanded,
@@ -268,7 +916,18 @@ class DetailTransactionPage extends Component {
             dpApproved,
             dpFailed,
             dpNotYet,
-            data } = this.state
+            data,
+            deliveryPending,
+            deliveryRevision,
+            deliveryApproved,
+            deliveryApprovedAdminPending,
+            deliveryApprovedAdminRevision,
+            deliveryApprovedAdminApproved,
+            paidNotYet,
+            paidRevision,
+            paidApproved,
+            paidWaiting
+        } = this.state
 
         if (this.state.loading) {
             return <Spinner size='large' />
@@ -471,9 +1130,17 @@ class DetailTransactionPage extends Component {
 
                                         <View style={{ flexDirection: 'column' }}>
                                             <View>
-                                                <Text>Pembeli telah melakukan pembayaran DP pada tanggal 27/07/18.</Text>
+                                                <Text>Lakukan pembayaran DP sebelum tanggal 27/07/18.</Text>
                                                 <Text>Total Biaya    	        Rp 4.000.000</Text>
-                                                <Text>Pembayaran DP		        Rp 2.500.000</Text>
+                                                <Text>Pembayaran DP		        Rp 2.000.000</Text>
+                                            </View>
+                                            <View style={{ flex: 1 }}>
+                                                <Button
+                                                    onPress={() => {
+                                                        this.uploadDownPayment()
+                                                    }}>
+                                                    Unggah Bukti
+                                                </Button>
                                             </View>
                                         </View>
 
@@ -485,12 +1152,9 @@ class DetailTransactionPage extends Component {
 
                                         <View style={{ flexDirection: 'column' }}>
                                             <View>
-                                                <Text>Pembeli telah melakukan pembayaran DP pada tanggal 27/07/18.</Text>
                                                 <Text>Total Biaya    	        Rp 4.000.000</Text>
                                                 <Text>Pembayaran DP		        Rp 2.500.000</Text>
-                                                <Text>Sisa Pembayaran	        Rp 1.500.000</Text>
-                                                <Text>Tanggal Pembayaran	    02/09/2018</Text>
-                                                <Text>Status            	    Diverifikasi Admin</Text>
+                                                <Text>Status            	    Menunggu Verifikasi Admin</Text>
                                             </View>
                                         </View>
 
@@ -542,7 +1206,7 @@ class DetailTransactionPage extends Component {
                 <Card>
                     {
                         deliveryContainer ?
-                            <CardSection>
+                            <CardSection ction>
                                 <TouchableWithoutFeedback onPress={() => this.setState({ deliveryExpanded: !deliveryExpanded })}>
                                     <View style={{ flex: 1, flexDirection: 'row' }}>
                                         <Text style={{ flex: 1, fontSize: 20 }}>Penerimaan</Text>
@@ -557,33 +1221,67 @@ class DetailTransactionPage extends Component {
                     }
                     {
                         deliveryExpanded ?
-                            <CardSection>
-                                <View style={{ flexDirection: 'column', flex: 1 }}>
+                            <View>
+                                {
+                                    deliveryPending ?
 
-                                    <View style={{ flexDirection: 'row' }}>
-                                        <View style={{ flex: 1 }}>
-                                            <Text>Penerima</Text>
-                                            <Text>Nama</Text>
-                                            <Text>No. Telp</Text>
-                                            <Text>Alamat</Text>
+                                        <View>
+                                            {this.renderReceivingPending()}
                                         </View>
-                                        <View style={{ flex: 1 }}>
-                                            <Text>Penerima</Text>
-                                            <Text>Nama</Text>
-                                            <Text>No. Telp</Text>
-                                            <Text>Alamat</Text>
+                                        :
+                                        <View />
+                                }
+                                {
+                                    deliveryRevision ?
+
+                                        <View>
+                                            {this.renderReceivingRevision()}
                                         </View>
-                                    </View>
-                                    <View style={{ marginTop: 20 }}>
-                                        <Button
-                                            onPress={() => {
-                                                this.sendRequest()
-                                            }}>
-                                            Komoditas telah diterima
-                                        </Button>
-                                    </View>
-                                </View>
-                            </CardSection>
+                                        :
+                                        <View />
+                                }
+                                {
+                                    deliveryApproved ?
+
+                                        <View>
+                                            {this.renderReceivingApproved()}
+                                        </View>
+
+                                        :
+                                        <View />
+                                }
+                                {
+                                    deliveryApprovedAdminPending ?
+
+                                        <View>
+                                            {this.renderReceivingApprovedAdminPending()}
+                                        </View>
+
+                                        :
+                                        <View />
+                                }
+                                {
+                                    deliveryApprovedAdminRevision ?
+
+                                        <View>
+                                            {this.renderReceivingApprovedAdminRevision()}
+                                        </View>
+
+                                        :
+                                        <View />
+                                }
+                                {
+                                    deliveryApprovedAdminApproved ?
+
+                                        <View>
+                                            {this.renderReceivingApprovedAdminApproved()}
+                                        </View>
+
+                                        :
+                                        <View />
+                                }
+
+                            </View>
                             :
                             <View />
                     }
@@ -607,16 +1305,89 @@ class DetailTransactionPage extends Component {
                     }
                     {
                         paidExpanded ?
-                            <CardSection>
-                                <View style={{ flexDirection: 'column' }}>
-                                    <View>
-                                        <Text>Nominal Transfer       	Rp 4.000.000</Text>
-                                        <Text>Total Biaya	    	    Rp 2.500.000</Text>
-                                        <Text>Tanggal Pembayaran	    Rp 2.500.000</Text>
-                                        <Text>Status        	        Pembayaran Diterima</Text>
-                                    </View>
-                                </View>
-                            </CardSection>
+                            <View>
+                                {
+                                    paidNotYet ?
+                                        <View>
+                                            <View style={{ flexDirection: 'column' }}>
+                                                <View>
+                                                    <Text>Lakukan Pelunasan Tanggal 20/02/2018</Text>
+                                                    <Text>Total Biaya	    	    Rp 5.000.000</Text>
+                                                    <Text>Pembayaran DP      	    Rp 2.500.000</Text>
+                                                    <Text>Sisa Pembayaran           Rp. 2.500.000</Text>
+                                                </View>
+                                            </View>
+
+                                            <View style={{ marginTop: 10 }}>
+                                                <Button
+                                                    onPress={() => {
+                                                        this.finalPayments()
+                                                    }}>
+                                                    Upload Bukti
+                                                </Button>
+                                            </View>
+                                        </View>
+                                        :
+                                        <View />
+                                }
+                                 {
+                                    paidWaiting ?
+                                        <CardSection>
+                                            <View style={{ flexDirection: 'column' }}>
+                                                <View>
+                                                    <Text>Lakukan Pelunasan Tanggal 20/02/2018</Text>
+                                                    <Text>Total Biaya	    	    Rp 5.000.000</Text>
+                                                    <Text>Pembayaran DP      	    Rp 2.500.000</Text>
+                                                    <Text>Sisa Pembayaran           Rp. 2.500.000</Text>
+                                                    <Text>Status                    Menunggu Approved Admin</Text>
+                                                </View>
+                                            </View>
+                                        </CardSection>
+                                        :
+                                        <View />
+                                }
+                                {
+                                    paidRevision ?
+                                        <View>
+                                            <View style={{ flexDirection: 'column' }}>
+                                                <View>
+                                                    <Text>Lakukan Pelunasan Tanggal 20/02/2018</Text>
+                                                    <Text>Total Biaya	    	    Rp 5.000.000</Text>
+                                                    <Text>Pembayaran DP      	    Rp 2.500.000</Text>
+                                                    <Text>Sisa Pembayaran           Rp. 2.500.000</Text>
+                                                    <Text>Status                    Direvisi</Text>
+                                                </View>
+                                            </View>
+
+                                            <View style={{ marginTop: 10 }}>
+                                                <Button
+                                                    onPress={() => {
+                                                        this.revisionfinalPayments()
+                                                    }}>
+                                                    Revision Upload Bukti
+                                                </Button>
+                                            </View>
+                                        </View>
+                                        :
+                                        <View />
+                                }
+                                {
+                                    paidApproved ?
+                                        <CardSection>
+                                            <View style={{ flexDirection: 'column' }}>
+                                                <View>
+                                                    <Text>Lakukan Pelunasan Tanggal 20/02/2018</Text>
+                                                    <Text>Total Biaya	    	    Rp 5.000.000</Text>
+                                                    <Text>Pembayaran DP      	    Rp 2.500.000</Text>
+                                                    <Text>Sisa Pembayaran           Rp. 2.500.000</Text>
+                                                    <Text>Status                    Approved Admin</Text>
+                                                </View>
+                                            </View>
+                                        </CardSection>
+                                        :
+                                        <View />
+                                }
+                            </View>
                             :
                             <View />
                     }
@@ -651,7 +1422,7 @@ class DetailTransactionPage extends Component {
                                 </View> */}
                                 <Button
                                     onPress={() => {
-                                        this.sendRequest()
+                                        this.giveComment()
                                     }}>
                                     Beri Ulasan
                                 </Button>

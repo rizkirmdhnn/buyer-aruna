@@ -91,13 +91,13 @@ class RegistrationFormPage extends Component {
         dataPhoto.append('idPhoto', {
             uri: this.state.idPhoto.uri,
             type: 'image/jpeg',
-            name: 'ktpImage'
+            name: 'ktpImage.jpeg'
         });
         dataPhoto.append('npwp', this.state.npwp);
         dataPhoto.append('npwpPhoto', {
             uri: this.state.npwpPhoto.uri,
             type: 'image/jpeg',
-            name: 'npwpImage'
+            name: 'npwpImage.jpeg'
         });
 
         console.log(dataPhoto, 'Data formData');
