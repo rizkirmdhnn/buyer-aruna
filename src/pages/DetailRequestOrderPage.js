@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, FlatList, Image, ScrollView, AsyncStorage } from 'react-native';
+import { Text, View, FlatList, Image, ScrollView, AsyncStorage, TouchableWithoutFeedback } from 'react-native';
 import {
     CardRegistration,
     CardSectionRegistration,
@@ -27,7 +27,13 @@ class DetailRequestOrderPage extends Component {
             dataMaster: '',
             loading: null,
             idRequest: [],
-            tokenUser: ''
+            tokenUser: '',
+            checkedSelected: [],
+            checkedNotSelected: [],
+            supplierId: '',
+
+            checkedContainer: false,
+            unCheckedContainer: false
         };
     };
 
@@ -37,14 +43,16 @@ class DetailRequestOrderPage extends Component {
         AsyncStorage.getItem('loginCredential', (err, result) => {
             this.setState({
                 dataMaster: this.props.navigation.state.params.datas,
+                tokenUser: result,
+                checkedSelected: this.props.navigation.state.params.datas.Requests,
+                checkedContainer: true,
                 loading: false,
-                tokenUser: result
             })
         });
     }
 
     renderData = (item) => {
-        console.log(item, 'Item Detail Request');
+        console.log(item, 'TONGKOL')
         const dateFormat = moment(item.dueDate).format('DD/MM/YYYY');
         const timeFormat = moment(item.dueDate).format('h:mm:ss');
         return (
@@ -82,26 +90,40 @@ class DetailRequestOrderPage extends Component {
         }
     }
 
-    renderFlatListSupplier = () => {
+    renderFlatListSupplierChecked = () => {
         if (this.state.loading) {
             return <Spinner size="small" />
         } else {
             return (
                 <View>
                     <FlatList
-                        data={[this.state.dataMaster]}
-                        renderItem={({ item }) => this.renderSupplier(item)}
+                        data={[this.state.checkedSelected]}
+                        renderItem={({ item }) => this.renderSupplierChecked(item)}
                     />
                 </View>
             );
         }
     }
 
+    renderFlatListSupplierUnChecked = () => {
+        if (this.state.loading) {
+            return <Spinner size="small" />
+        } else {
+            return (
+                <View>
+                    <FlatList
+                        data={[this.state.checkedNotSelected]}
+                        renderItem={({ item }) => this.renderSupplierUnChecked(item)}
+                    />
+                </View>
+            );
+        }
+    }
 
-
-    renderSupplier = (item) => {
-        console.log(item.Requests, 'Render Supplier Detail')
-        return item.Requests.map((data) => {
+    renderSupplierChecked = (item) => {
+        console.log(item, '12312312331')
+        console.log(this.state.checkedNotSelected, 'Data Push Not Cek');
+        return item.map((data, index) => {
             return (
                 <View style={styles.itemContainerStyleSupplier}>
                     <View style={styles.thumbnailContainerStyle}>
@@ -111,14 +133,14 @@ class DetailRequestOrderPage extends Component {
                         />
                     </View>
                     <View style={styles.headerContentStyle}>
-                        <Text style={styles.hedaerTextStyle}>{data.SupplierId}</Text>
+                        <Text style={styles.hedaerTextStyle}>{data.Supplier.name}</Text>
                         <View style={{ flexDirection: 'row' }}>
                             <Text style={{ flex: 1, fontWeight: 'bold' }}>500 Kg </Text>
                             <Text style={{ flex: 1, fontWeight: 'bold' }}>Rp. 100.000 - Rp. 500.000</Text>
                             <View style={{ flex: 1 }}>
                                 <CheckBox
-                                    checked={true}
-                                // onPress={() => this.checkBox(data)}
+                                    onPress={() => this.checkItem(data)}
+                                    checked={this.state.checkedSelected.includes(data)}
                                 />
                             </View>
                         </View>
@@ -129,19 +151,73 @@ class DetailRequestOrderPage extends Component {
         })
     }
 
-    checkBox = (props) => {
-        const dataClick = props;
-        console.log(dataClick, 'Data Checked');
-        this.setState({ checked: !this.state.checked })
+    renderSupplierUnChecked = (item) => {
+        console.log(this.state.checkedNotSelected, 'Data Push Not Cek');
+        return item.map((data, index) => {
+            return (
+                <View style={styles.itemContainerStyleSupplier}>
+                    <View style={styles.thumbnailContainerStyle}>
+                        <Image
+                            style={styles.thumbnailStyle}
+                            source={require('./../assets/image/photo.png')}
+                        />
+                    </View>
+                    <View style={styles.headerContentStyle}>
+                        <Text style={styles.hedaerTextStyle}>{data.Supplier.name}</Text>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text style={{ flex: 1, fontWeight: 'bold' }}>500 Kg </Text>
+                            <Text style={{ flex: 1, fontWeight: 'bold' }}>Rp. 100.000 - Rp. 500.000</Text>
+                            <View style={{ flex: 1 }}>
+                                <CheckBox
+                                    onPress={() => this.unCheckItem(data)}
+                                    checked={this.state.checkedNotSelected.includes(data)}
+                                />
+                            </View>
+                        </View>
+                    </View>
+
+                </View>
+            )
+        })
     }
+
+    checkItem = data => {
+        const { checkedSelected, checkedNotSelected } = this.state;
+        if (!checkedSelected.includes(data)) {
+            this.setState({
+                checkedSelected: [...checkedSelected, data]
+            });
+        } else {
+            this.setState({
+                checkedSelected: checkedSelected.filter(a => a !== data),
+                checkedNotSelected: [...checkedNotSelected, data]
+            });
+        }
+    };
+
+    unCheckItem = data => {
+        const { checkedSelected, checkedNotSelected } = this.state;
+        if (!checkedNotSelected.includes(data)) {
+            this.setState({
+                checkedNotSelected: [...checkedNotSelected, data]
+            });
+        } else {
+            this.setState({
+                checkedNotSelected: checkedNotSelected.filter(a => a !== data),
+                checkedSelected: [...checkedSelected, data]
+            });
+        }
+    };
 
     endRequest = () => {
         console.log(this.state.dataMaster, 'End Request');
         this.setState({ loading: true });
         const { navigate } = this.props.navigation;
-        this.state.dataMaster.Requests.map((item, index) => {
+
+        this.state.checkedSelected.map((item, index) => {
             this.state.idRequest.push(item.id)
         })
+
         const dataId = {
             'RequestIds': this.state.idRequest
         }
@@ -181,22 +257,63 @@ class DetailRequestOrderPage extends Component {
         );
     }
 
+    viewCheck() {
+        this.setState({
+            checkedContainer: true,
+            unCheckedContainer: false
+        });
+    }
+
+    viewUnCheck() {
+        this.setState({
+            checkedContainer: false,
+            unCheckedContainer: true
+        });
+    }
+
 
     render(props) {
+        const { checkedContainer, unCheckedContainer } = this.state;
         return (
             <View>
                 {this.renderFlatListDetail()}
 
                 <View style={{ flexDirection: 'row' }}>
-                    <Text style={{ justifyContent: 'flex-start' }}> Nelayan Dipilih </Text>
-                    <Text style={{ justifyContent: 'flex-end' }}> Nelayan DiTolak (2) </Text>
+                    <TouchableWithoutFeedback onPress={() => this.viewCheck()}>
+                        <View style={{ flex: 1 }}>
+                            <Text> Nelayan Dipilih  ({this.state.checkedSelected.length}) </Text>
+                        </View>
+                    </TouchableWithoutFeedback>
+
+                    <TouchableWithoutFeedback onPress={() => this.viewUnCheck()}>
+                        <View style={{ flex: 1 }}>
+                            <Text> Nelayan DiTolak  ({this.state.checkedNotSelected.length}) </Text>
+                        </View>
+                    </TouchableWithoutFeedback>
                 </View>
 
-                <View style={styles.containerScroll}>
-                    <ScrollView>
-                        {this.renderFlatListSupplier()}
-                    </ScrollView>
-                </View>
+                {
+                    checkedContainer ?
+                        <View style={styles.containerScroll}>
+                            <ScrollView>
+                                {this.renderFlatListSupplierChecked()}
+                            </ScrollView>
+                        </View>
+                        :
+                        <View />
+                }
+
+
+                {
+                    unCheckedContainer ?
+                        <View style={styles.containerScroll}>
+                            <ScrollView>
+                                {this.renderFlatListSupplierUnChecked()}
+                            </ScrollView>
+                        </View>
+                        :
+                        <View />
+                }
 
                 <View>
                     {this.renderButton()}

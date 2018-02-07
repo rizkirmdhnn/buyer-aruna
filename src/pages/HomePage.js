@@ -131,23 +131,23 @@ class HomePage extends Component {
         });
     }
 
-    renderSupplierPopuler = (item) => {
-        return item.map((dataSupplier) => {
-            return (
-                <CardProduct style={styles.cardProductCard}>
-                    <TouchableWithoutFeedback onPress={() => this.goSupplier()}>
-                        <CardSectionProduct>
-                            <Image
-                                style={styles.productCardStyle}
-                                source={require('./../assets/image/photo.png')}
-                            />
-                            <Text>{dataSupplier.name}</Text>
-                        </CardSectionProduct>
-                    </TouchableWithoutFeedback>
-                </CardProduct>
-            )
-        })
-    }
+    // renderSupplierPopuler = (item) => {
+    //     return item.map((dataSupplier) => {
+    //         return (
+    //             <CardProduct style={styles.cardProductCard}>
+    //                 <TouchableWithoutFeedback onPress={() => this.goSupplier()}>
+    //                     <CardSectionProduct>
+    //                         <Image
+    //                             style={styles.productCardStyle}
+    //                             source={require('./../assets/image/photo.png')}
+    //                         />
+    //                         <Text>{dataSupplier.name}</Text>
+    //                     </CardSectionProduct>
+    //                 </TouchableWithoutFeedback>
+    //             </CardProduct>
+    //         )
+    //     })
+    // }
 
     renderComponentSupplier() {
         if (this.state.loading == true) {
@@ -156,24 +156,27 @@ class HomePage extends Component {
             return this.state.supplierList.map((dataSupplier) => {
                 return (
                     <CardProduct style={styles.cardProductCard}>
-                        <TouchableWithoutFeedback onPress={() => this.goSupplier()}>
-                            <CardSectionProduct>
+                        <CardSectionProduct>
+                            <TouchableWithoutFeedback onPress={() => {
+                                this.goSupplier()
+                            }}>
                                 <Image
                                     style={styles.productCardStyle}
                                     source={require('./../assets/image/photo.png')}
                                 />
-                                <Text style={{ marginLeft: 23, fontWeight: 'bold' }}>{dataSupplier.name}</Text>
-                            </CardSectionProduct>
-                        </TouchableWithoutFeedback>
+                            </TouchableWithoutFeedback>
+                            <Text style={{ marginLeft: 23, fontWeight: 'bold' }}>{dataSupplier.name}</Text>
+
+                        </CardSectionProduct>
                     </CardProduct>
                 )
             })
         }
     }
 
-    goSupplier = (props) => {
-        const dataSupplier = props;
-        this.props.navigation.navigate('ProfileSuplier', { datas: dataSupplier });
+    goSupplier() {
+        console.log('Profile Supplier');
+        this.props.navigation.navigate('ProfileSuplier', { datas: this.state.supplierList });
     }
 
     isLogin() {

@@ -364,6 +364,7 @@ class RequestFormOrderFirstPage extends Component {
                         <CardSectionRegistration>
                             <AutoComplete
                                 label="Nama Komoditas"
+                                placeholder="Nama Komoditas"
                                 suggestions={suggestions}
                                 onChangeText={text => this.querySuggestion(text)}
                                 value={value}

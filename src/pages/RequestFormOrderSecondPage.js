@@ -38,7 +38,7 @@ class RequestFormOrderSecondPage extends Component {
             dataSupplier: [{}],
             loading: null,
             loader: null,
-            checked: true,
+            checked: [],
             idSupplier: []
         };
     };
@@ -71,8 +71,8 @@ class RequestFormOrderSecondPage extends Component {
                     res = response.data.data;
                     console.log(res, 'RES')
                     const result = res;
-                    console.log(result, 'Result');
-                    this.setState({ dataSupplier: result, loading: false })
+                    console.log(result, 'Result Supplier nya');
+                    this.setState({ dataSupplier: result, checked: result, loading: false })
                 })
                 .catch(error => {
                     console.log(error.message, 'Error nya');
@@ -81,11 +81,18 @@ class RequestFormOrderSecondPage extends Component {
         });
     }
 
-    checkBox = (props) => {
-        const dataClick = props;
-        console.log(dataClick, 'Data Checked');
-        this.setState({ checked: !this.state.checked })
-    }
+    checkBox = data => {
+        const { checked } = this.state;
+        if (!checked.includes(data)) {
+            this.setState({
+                checked: [...checked, data]
+            });
+        } else {
+            this.setState({
+                checked: checked.filter(a => a !== data)
+            });
+        }
+    };
 
     renderLoading = () => {
         if (this.state.loading == true) {
@@ -118,7 +125,7 @@ class RequestFormOrderSecondPage extends Component {
 
             this.state.idSupplier.map((item, index) => {
                 console.log(item, ' ', index, 'MAPING');
-                dataRequest.append('SupplierIds[' + index + ']', item)
+                dataRequest.append('ProductIds[' + index + ']', item)
             })
 
             // dataRequest.append('SupplierIds', this.state.idSupplier);
@@ -181,8 +188,8 @@ class RequestFormOrderSecondPage extends Component {
     renderItem = (item) => {
         console.log(item, 'Item Data Supplier');
         return item.map((data) => {
-            console.log(data.User.id, 'ID Supplier');
-            this.state.idSupplier.push(data.User.id);
+            console.log(data, 'ID Supplier');
+            this.state.idSupplier.push(data.id);
             console.log(this.state.idSupplier, 'ID PUSH SUPPLIER')
             return (
                 <View style={styles.itemContainerStyleSupplier}>

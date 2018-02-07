@@ -71,9 +71,10 @@ class RequestOrderPage extends Component {
     }
 
     renderData = (item) => {
+        console.log(item, 'Data Request List');
         return item.map((datax) => {
-            const dateFormat = moment(datax.dueDate).format('DD/MM/YYYY');
-            const timeFormat = moment(datax.dueDate).format('h:mm:ss');
+            const dateFormat = moment(datax.expiredAt).format('DD/MM/YYYY');
+            const timeFormat = moment(datax.expiredAt).format('h:mm:ss');
             return (
                 <TouchableWithoutFeedback
                     onPress={() => this.detailOrder(datax)}
@@ -89,7 +90,7 @@ class RequestOrderPage extends Component {
                             <Text style={styles.headerTextStyle}>{datax.Fish.name}</Text>
                             <View style={{ flexDirection: 'column', flex: 1 }}>
                                 <Text style={{ fontSize: 13 }}>Batas Waktu: {dateFormat} Pukul: {timeFormat} </Text>
-                                <Text>5 Sanggup | 4 Menolak | 1 Menunggu</Text>
+                                <Text>{datax.sanggup} Sanggup | {datax.tidakSanggup} Menolak | {datax.menunggu} Menunggu</Text>
                             </View>
                         </View>
                     </View>

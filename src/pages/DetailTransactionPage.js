@@ -57,8 +57,6 @@ class DetailTransactionPage extends Component {
             isModalVisible: false,
 
             requestContainer: null,
-
-            contractContainer: null,
             contractDone: null,
             contractNotDone: null,
             contractRevision: null,
@@ -109,7 +107,7 @@ class DetailTransactionPage extends Component {
             })
                 .then(response => {
                     console.log(response, 'Data Transaction');
-                    this.setState({ dataTransaction: response.data, dataDetail: response.data.data, loading: false });
+                    this.setState({ dataTransaction: response.data.data, dataDetail: response.data.data, loading: false });
 
                     if (this.state.dataMaster.Contract == null) {
                         this.setState({
@@ -177,7 +175,7 @@ class DetailTransactionPage extends Component {
                                             deliveryApprovedAdminApproved: true
                                         })
 
-                                        if (this.state.dataTransaction.data.finalPayment == null) {
+                                        if (this.state.dataTransaction.finalPayment == null) {
                                             this.setState({
                                                 paidContainer: true,
                                                 paidNotYet: true
@@ -236,6 +234,7 @@ class DetailTransactionPage extends Component {
                     }
                 })
                 .catch(error => {
+                    console.log(error, 'error');
                     if (error.response) {
                         alert(error.response.data.message)
                     }
@@ -902,7 +901,6 @@ class DetailTransactionPage extends Component {
             paidExpanded,
             doneExpanded,
             requestContainer,
-            contractContainer,
             dpContainer,
             deliveryContainer,
             paidContainer,
