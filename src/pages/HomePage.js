@@ -155,7 +155,10 @@ class HomePage extends Component {
         } else if (this.state.loading == false) {
             return this.state.supplierList.map((dataSupplier) => {
                 return (
-                    <CardProduct style={styles.cardProductCard}>
+                    <CardProduct 
+                        style={styles.cardProductCard} 
+                        key={dataSupplier.id}
+                    >
                         <CardSectionProduct>
                             <TouchableWithoutFeedback onPress={() => {
                                 this.goSupplier()

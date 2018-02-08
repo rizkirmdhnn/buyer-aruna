@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, FlatList, View, Image, TouchableWithoutFeedback, AsyncStorage } from 'react-native';
+import { Text, FlatList, View, Image, TouchableWithoutFeedback, AsyncStorage, resizeMode } from 'react-native';
 import { Header, SearchBar, Icon } from 'react-native-elements';
 import { BASE_URL } from './../shared/lb.config';
 import axios from 'axios';
@@ -22,7 +22,9 @@ class RequestOrderPage extends Component {
         this.state = {
             loading: null,
             tokenUser: '',
-            dataReqOrder: ''
+            dataReqOrder: '',
+            expiredContainer: null,
+            NoExpiredContainer: null
         };
     };
 
@@ -71,43 +73,71 @@ class RequestOrderPage extends Component {
     }
 
     renderData = (item) => {
-        console.log(item, 'Data Request List');
         return item.map((datax) => {
             const dateFormat = moment(datax.expiredAt).format('DD/MM/YYYY');
             const timeFormat = moment(datax.expiredAt).format('h:mm:ss');
-            return (
-                <TouchableWithoutFeedback
-                    onPress={() => this.detailOrder(datax)}
-                >
-                    <View style={styles.itemContainerStyle}>
-                        <View style={styles.thumbnailContainerStyle}>
-                            <Image
-                                style={styles.thumbnailStyle}
-                                source={require('./../assets/image/gurame.jpg')}
-                            />
-                        </View>
-                        <View style={styles.headerContentStyle}>
-                            <Text style={styles.headerTextStyle}>{datax.Fish.name}</Text>
-                            <View style={{ flexDirection: 'column', flex: 1 }}>
-                                <Text style={{ fontSize: 13 }}>Batas Waktu: {dateFormat} Pukul: {timeFormat} </Text>
-                                <Text>{datax.sanggup} Sanggup | {datax.tidakSanggup} Menolak | {datax.menunggu} Menunggu</Text>
+            if (datax.Status.id == 19) {
+                if (datax.sanggup == 0) {
+                    return (
+                        <View
+                            style={styles.itemContainerStyle}
+                            key={datax.id}
+                        >
+                            <View style={styles.thumbnailContainerStyle}>
+                                <Image
+                                    style={styles.thumbnailStyle}
+                                    source={{ uri: `${BASE_URL}/images/${datax.Fish.photo}` }}
+                                />
+                            </View>
+                            <View style={styles.headerContentStyle}>
+                                <Text style={styles.headerTextStyle}>{datax.Fish.name}</Text>
+                                <View style={{ flexDirection: 'column', flex: 1 }}>
+                                    <Text style={{ fontSize: 13 }}>Batas Waktu: {dateFormat} Pukul: {timeFormat} </Text>
+                                    <Text style={{ color: 'red', fontWeight: 'bold' }}>Expired</Text>
+                                </View>
                             </View>
                         </View>
-                    </View>
-                </TouchableWithoutFeedback>
-            )
+                    );
+                }
+
+                if (datax.sanggup > 0) {
+                    return (
+                        <TouchableWithoutFeedback
+                            onPress={() => this.detailOrder(datax)}
+                            key={datax.id}
+                        >
+                            <View style={styles.itemContainerStyle}>
+                                <View style={styles.thumbnailContainerStyle}>
+                                    <Image
+                                        style={styles.thumbnailStyle}
+                                        source={{ uri: `${BASE_URL}/images/${datax.Fish.photo}` }}
+                                    />
+                                </View>
+                                <View style={styles.headerContentStyle}>
+                                    <Text style={styles.headerTextStyle}>{datax.Fish.name}</Text>
+                                    <View style={{ flexDirection: 'column', flex: 1 }}>
+                                        <Text style={{ fontSize: 13 }}>Batas Waktu: {dateFormat} Pukul: {timeFormat} </Text>
+                                        <Text>{datax.sanggup} Sanggup | {datax.tidakSanggup} Menolak | {datax.menunggu} Menunggu</Text>
+                                    </View>
+                                </View>
+                            </View>
+                        </TouchableWithoutFeedback>
+                    );
+                }
+            }
         })
     }
 
     renderFlatList = () => {
         if (this.state.loading) {
             return <Spinner size="small" />
-        } else{
+        } else {
             return (
                 <View>
                     <FlatList
                         data={[this.state.dataReqOrder]}
                         renderItem={({ item }) => this.renderData(item)}
+                        keyExtractor={(item, index) => index}
                     />
                 </View>
             );
@@ -124,7 +154,7 @@ class RequestOrderPage extends Component {
     render() {
         return (
             <View>
-               {this.renderFlatList()}
+                {this.renderFlatList()}
             </View>
         );
     }
@@ -144,9 +174,12 @@ const styles = {
         margin: 15,
     },
     thumbnailStyle: {
+        alignSelf: 'stretch',
         height: 50,
         width: 50,
-        borderRadius: 8
+        borderWidth: 1,
+        borderRadius: 75,
+        resizeMode: 'cover'
     },
     headerContentStyle: {
         flex: 1,

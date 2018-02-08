@@ -33,7 +33,10 @@ class DetailRequestOrderPage extends Component {
             supplierId: '',
 
             checkedContainer: false,
-            unCheckedContainer: false
+            unCheckedContainer: false,
+
+            disabledContainer: null,
+            NotDisabledContainer: null
         };
     };
 
@@ -52,7 +55,7 @@ class DetailRequestOrderPage extends Component {
     }
 
     renderData = (item) => {
-        console.log(item, 'TONGKOL')
+        console.log(item, 'Data Detail Request')
         const dateFormat = moment(item.dueDate).format('DD/MM/YYYY');
         const timeFormat = moment(item.dueDate).format('h:mm:ss');
         return (
@@ -84,6 +87,7 @@ class DetailRequestOrderPage extends Component {
                     <FlatList
                         data={[this.state.dataMaster]}
                         renderItem={({ item }) => this.renderData(item)}
+                        keyExtractor={(item, index) => index}
                     />
                 </View>
             );
@@ -99,6 +103,7 @@ class DetailRequestOrderPage extends Component {
                     <FlatList
                         data={[this.state.checkedSelected]}
                         renderItem={({ item }) => this.renderSupplierChecked(item)}
+                        keyExtractor={(item, index) => index}
                     />
                 </View>
             );
@@ -114,6 +119,7 @@ class DetailRequestOrderPage extends Component {
                     <FlatList
                         data={[this.state.checkedNotSelected]}
                         renderItem={({ item }) => this.renderSupplierUnChecked(item)}
+                        keyExtractor={(item, index) => index}
                     />
                 </View>
             );
@@ -121,8 +127,6 @@ class DetailRequestOrderPage extends Component {
     }
 
     renderSupplierChecked = (item) => {
-        console.log(item, '12312312331')
-        console.log(this.state.checkedNotSelected, 'Data Push Not Cek');
         return item.map((data, index) => {
             return (
                 <View style={styles.itemContainerStyleSupplier}>
@@ -152,7 +156,6 @@ class DetailRequestOrderPage extends Component {
     }
 
     renderSupplierUnChecked = (item) => {
-        console.log(this.state.checkedNotSelected, 'Data Push Not Cek');
         return item.map((data, index) => {
             return (
                 <View style={styles.itemContainerStyleSupplier}>
@@ -245,16 +248,40 @@ class DetailRequestOrderPage extends Component {
     }
 
     renderButton() {
+        const {
+            disabledContainer,
+            NotDisabledContainer
+        } = this.state;
+
         if (this.state.loading) {
             return <Spinner size="small" />
         }
-        return (
-            <Button
-                title="Lanjut Transaksi"
-                buttonStyle={styles.buttonStyle}
-                onPress={this.endRequest.bind(this)}
-            />
-        );
+        if (this.state.dataMaster.Status.id == 19) {
+            if (this.state.dataMaster.sanggup > 0) {
+                return (
+                    <View>
+                        <Button
+                            title="Lanjut Transaksi"
+                            buttonStyle={styles.buttonStyle}
+                            onPress={this.endRequest.bind(this)}
+                        />
+                    </View>
+                );
+            }
+        }
+        if (this.state.dataMaster.Status.id == 20) {
+            if (this.state.dataMaster.sanggup == 0) {
+                return (
+                    <View>
+                        <Button
+                            title="Lanjut Transaksi"
+                            buttonStyle={styles.buttonStyle}
+                            onPress={this.endRequest.bind(this)}
+                        />
+                    </View>
+                );
+            }
+        }
     }
 
     viewCheck() {
@@ -273,7 +300,12 @@ class DetailRequestOrderPage extends Component {
 
 
     render(props) {
-        const { checkedContainer, unCheckedContainer } = this.state;
+        const {
+            checkedContainer,
+            unCheckedContainer,
+            disabledContainer,
+            NotDisabledContainer
+        } = this.state;
         return (
             <View>
                 {this.renderFlatListDetail()}
