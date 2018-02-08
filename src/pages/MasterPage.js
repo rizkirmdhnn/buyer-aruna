@@ -15,7 +15,7 @@ class MasterPage extends Component {
     render() {
         return(
             <View>
-                <HomePage />
+                <Text> Profile Nelayan </Text>
             </View>
         );
     }

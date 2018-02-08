@@ -32,8 +32,8 @@ console.disableYellowBox = true;
 
 numeral.register('locale', 'id', {
     delimiters: {
-      thousands: '.',
-      decimal: ','
+        thousands: '.',
+        decimal: ','
     },
     ordinal: function (number) {
         return number === 1 ? 'er' : 'ème';
@@ -41,9 +41,9 @@ numeral.register('locale', 'id', {
     currency: {
         symbol: 'Rp'
     }
-  })
-  numeral.locale('id')
-  
+})
+numeral.locale('id')
+
 
 class App extends React.Component {
     state = { loggedIn: false };
@@ -64,22 +64,21 @@ class App extends React.Component {
             Request: { screen: RequestOrderPage },
             Transaction: { screen: TransactionPage }
         }, {
-            tabBarOptions: {
-                upperCaseLabel: false,
-                activeTintColor: 'white',
-                indicatorStyle: {
-                    borderBottomColor: '#ffffff',
-                    borderBottomWidth: 2,
-                  },
-                style: {
-                    backgroundColor: '#006AAF',
+                tabBarOptions: {
+                    upperCaseLabel: false,
+                    activeTintColor: 'white',
+                    indicatorStyle: {
+                        borderBottomColor: '#ffffff',
+                        borderBottomWidth: 2,
+                    },
+                    style: {
+                        backgroundColor: '#006AAF',
+                    }
                 }
-            }
-        });
+            });
 
         const SimpleApp = StackNavigator({
             Home: { screen: MainScreenNavigator },
-            ProfileSupplier: { screen: ProfileSupplierPage },
             FormProductRequest: { screen: FormProductRequestPage },
             RequestFormOrderFirst: { screen: RequestFormOrderFirstPage },
             RequestFormOrderSecond: { screen: RequestFormOrderSecondPage },
@@ -89,16 +88,15 @@ class App extends React.Component {
             DetailTransaction: { screen: DetailTransactionPage },
             FormContract: { screen: FormContractPage },
             FormContractRevision: { screen: FormContractRevisionPage },
-            Message: { screen: MessagePage }
+            Message: { screen: MessagePage },
+            ProfileSupplier: { screen: ProfileSupplierPage },
         }, {
             cardStyle: { backgroundColor: '#FFF' }
         });
 
         return (
             <View style={styles.container} >
-                {/* <HeaderHome /> */}
                 <SimpleApp />
-                {/* <LoginFormPage /> */}
             </View>
         );
     };
