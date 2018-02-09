@@ -9,29 +9,50 @@ import {
     ScrollView,
     Dimensions,
     TouchableWithoutFeedback,
+    TouchableOpacity,
     TouchableHighlight,
     AsyncStorage,
     FlatList
 } from 'react-native';
-import { Button, CardProduct, CardSectionProduct, Spinner } from './../components/common';
+import { Card, Button, CardSection, Container, ContainerSection, Spinner } from '../components/common'
 import AwesomeAlert from 'react-native-awesome-alerts';
-import { Header, SearchBar, Icon, SideMenu, List, ListItem } from 'react-native-elements';
+import { Header, SearchBar, SideMenu, List, ListItem } from 'react-native-elements';
 import axios from 'axios';
 import { BASE_URL } from './../shared/lb.config';
-
-
-const { width, height } = Dimensions.get('window');
-
-const equalWidth = (width / 2)
-
-/**
- *  Import Common
- */
-
-import { HeaderHome } from './../components/common';
-
+import Icon from 'react-native-vector-icons/Ionicons';
 
 class HomePage extends Component {
+
+    static navigationOptions = ({ navigation }) => ({
+        headerStyle: { backgroundColor: '#006AAF' },
+        header: (
+            <View>
+                <Header
+                    backgroundColor={'#006AAF'}
+                    containerStyle={{ backgroundColor: 'red' }}
+                    leftComponent={{ icon: 'menu', color: '#fff' }}
+                    centerComponent={{ text: 'Home', style: { color: '#EFF6F9' } }}
+                    rightComponent={
+                        <TouchableOpacity onPress={() => {
+                            const { params } = navigation.state;
+                            params.handleModal && params.handleModal()
+                        }
+                        }>
+                            <View>
+                                <Text style={{ color: 'white' }}>Filter</Text>
+                            </View>
+                        </TouchableOpacity>
+                    }
+                />
+                <SearchBar
+                    style={{ flex: 1 }}
+                    round
+                    lightTheme
+                    inputStyle={{ color: 'white' }}
+                    placeholder='Type Here...' />
+            </View>
+        )
+    })
 
     constructor(props) {
         super(props)
@@ -44,7 +65,7 @@ class HomePage extends Component {
         }
     }
 
-    showAlert = () => {
+   showAlert = () => {
         this.setState({
             showAlert: true
         });
@@ -96,28 +117,14 @@ class HomePage extends Component {
         });
     }
 
-
-    static navigationOptions = {
-        headerStyle: { backgroundColor: '#006AAF' },
-        header: (
-            <View>
-                <Header
-                    backgroundColor={'#006AAF'}
-                    containerStyle={{ backgroundColor: 'red' }}
-                    leftComponent={{ icon: 'menu', color: '#fff' }}
-                    centerComponent={{ text: 'Home', style: { color: '#EFF6F9' } }}
-                    rightComponent={{ icon: 'notifications', color: '#faa51a' }}
-                />
-                <SearchBar
-                    style={{ flex: 1 }}
-                    round
-                    lightTheme
-                    inputStyle={{ color: 'white' }}
-                    placeholder='Type Here...' />
-            </View>
-        )
+    componentDidMount() {
+        this.props.navigation.setParams({ handleModal: () => this.filterPage() });
     }
 
+    filterPage = () => {
+        const { navigate } = this.props.navigation;
+        navigate('Filter');
+    }
     componentWillMount() {
         this.setState({ loading: true })
         AsyncStorage.getItem('loginCredential', (err, result) => {
@@ -156,7 +163,7 @@ class HomePage extends Component {
     goSupplier = () => {
         console.log('Profile Supplier');
         console.log(this.props.navigation, 'Navi')
-        this.props.navigation.navigate('ProfileSuplier', { datas: this.state.supplierList });
+        this.props.navigation.navigate('ProfileSupplier', { datas: this.state.supplierList });
     }
 
     isLogin() {
@@ -218,7 +225,10 @@ class HomePage extends Component {
 
     render() {
         const { navigate } = this.props.navigation;
-        const { showAlert } = this.state;
+        const {
+            showAlert,
+            requestExpanded
+        } = this.state;
 
         return (
 
@@ -270,9 +280,6 @@ class HomePage extends Component {
                         />
                     </View>
 
-
-
-
                 </ScrollView>
 
                 <AwesomeAlert
@@ -310,9 +317,7 @@ const styles = {
         flexDirection: 'column',
     },
     container: {
-        flex: 1,
-        paddingTop: 10,
-        marginRight: 2
+        flex: 1
     },
     containerProductCard: {
         flex: 1,
@@ -360,7 +365,7 @@ const styles = {
         borderWidth: 1,
         borderColor: 'black',
         margin: 2
-    },
+    }
 }
 
 export default HomePage;

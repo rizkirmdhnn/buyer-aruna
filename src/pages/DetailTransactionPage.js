@@ -16,10 +16,11 @@ import Modal from 'react-native-modal'
 import numeral from 'numeral'
 import axios from 'axios'
 import { CheckBox, FormInput, Rating } from 'react-native-elements'
-import { Card, Button, CardSection, Container, ContainerSection, Spinner } from '../components/common'
+import { Card, Button, CardSection, Container, ContainerSection, Spinner, InputRegistration } from '../components/common'
 import { BASE_URL } from './../shared/lb.config';
 import ImagePicker from 'react-native-image-picker';
 import moment from 'moment';
+
 class DetailTransactionPage extends Component {
 
     isGoDiscuss() {
@@ -90,7 +91,10 @@ class DetailTransactionPage extends Component {
             dpExpanded: false,
             deliveryExpanded: false,
             paidExpanded: false,
-            doneExpanded: false
+            doneExpanded: false,
+
+
+            reviewKomentar: ''
         }
     }
 
@@ -182,7 +186,7 @@ class DetailTransactionPage extends Component {
                                             })
                                         }
 
-                                        if(this.state.dataTransaction.finalPayment.Status.id == 25) {
+                                        if (this.state.dataTransaction.finalPayment.Status.id == 25) {
                                             this.setState({
                                                 paidContainer: true,
                                                 paidNotYet: null,
@@ -190,7 +194,7 @@ class DetailTransactionPage extends Component {
                                             })
                                         }
 
-                                        if(this.state.dataTransaction.finalPayment.Status.id == 26) {
+                                        if (this.state.dataTransaction.finalPayment.Status.id == 26) {
                                             this.setState({
                                                 paidContainer: true,
                                                 paidNotYet: null,
@@ -200,7 +204,7 @@ class DetailTransactionPage extends Component {
                                                 doneExpanded: true
                                             })
                                         }
-                                        if(this.state.dataTransaction.finalPayment.Status.id == 27) {
+                                        if (this.state.dataTransaction.finalPayment.Status.id == 27) {
                                             this.setState({
                                                 paidContainer: true,
                                                 paidApproved: null,
@@ -245,6 +249,10 @@ class DetailTransactionPage extends Component {
                 })
 
         });
+    }
+
+    onChangeInput = (name, v) => {
+        this.setState({ [name]: v })
     }
 
     createContract() {
@@ -884,9 +892,34 @@ class DetailTransactionPage extends Component {
             </View>
         )
     }
-    
+
     giveComment() {
-        console.log('Ulasan');
+        console.log(this.state.reviewKomentar, 'data')
+        const idOrder = this.state.dataTransaction.id;
+        
+        const dataReviews = {
+            'rating': 4,
+            'comment': this.state.reviewKomentar
+        }
+        console.log(idOrder, '', dataReviews )
+        AsyncStorage.getItem('loginCredential', (err, result) => {
+            const token = result;
+            console.log(token, 'Token');
+            axios.post(`${BASE_URL}/buyer/orders/${idOrder}/reviews`, dataReviews, {
+                headers: { 
+                    'token': token,
+                    'Content-Type': 'application/json' 
+                }
+            })
+                .then(response => {
+                    console.log('sukses');
+                    alert('Sukses Kasih Review');
+                })
+                .catch(error => {
+                    console.log('Failed');
+                    console.log(error.response, 'Error')
+                });
+        });
     }
 
     render() {
@@ -924,7 +957,8 @@ class DetailTransactionPage extends Component {
             paidNotYet,
             paidRevision,
             paidApproved,
-            paidWaiting
+            paidWaiting,
+            reviewKomentar
         } = this.state
 
         if (this.state.loading) {
@@ -1328,7 +1362,7 @@ class DetailTransactionPage extends Component {
                                         :
                                         <View />
                                 }
-                                 {
+                                {
                                     paidWaiting ?
                                         <CardSection>
                                             <View style={{ flexDirection: 'column' }}>
@@ -1410,14 +1444,17 @@ class DetailTransactionPage extends Component {
                     {
                         doneExpanded ?
                             <CardSection>
-                                {/* <View style={{ alignItems: 'center', flex: 1 }}>
+                                <View style={{ alignItems: 'center', flex: 1 }}>
                                     <Rating
                                         imageSize={20}
-                                        readonly
                                         startingValue={3.5}
                                     />
-                                    <Text style={{ textAlign: 'center' }}>Ini isinya komentar yang dikasih pembeli buat nelayan. bisa suka bisa gasuka</Text>
-                                </View> */}
+                                    <InputRegistration
+                                        label='Komentar'
+                                        placeholder='Komentar'
+                                        value={reviewKomentar}
+                                        onChangeText={v => this.onChangeInput('reviewKomentar', v)}
+                                    /></View>
                                 <Button
                                     onPress={() => {
                                         this.giveComment()

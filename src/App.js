@@ -24,6 +24,7 @@ import DetailTransactionPage from './pages/DetailTransactionPage';
 import FormContractPage from './pages/FormContractPage';
 import FormContractRevisionPage from './pages/FormContractRevisionPage';
 import MessagePage from './pages/MessagePage';
+import FilterPage from './pages/FilterPage';
 /**
  *  List Component
  */
@@ -90,6 +91,7 @@ class App extends React.Component {
             FormContractRevision: { screen: FormContractRevisionPage },
             Message: { screen: MessagePage },
             ProfileSupplier: { screen: ProfileSupplierPage },
+            Filter: { screen: FilterPage }
         }, {
             cardStyle: { backgroundColor: '#FFF' }
         });
