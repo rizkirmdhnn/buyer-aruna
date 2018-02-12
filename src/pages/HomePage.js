@@ -23,6 +23,19 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 class HomePage extends Component {
 
+    constructor(props) {
+        super(props)
+        this.state = {
+            showAlert: false,
+            supplierList: '',
+            productList: '',
+            loading: null,
+            tokenUser: '',
+            searchItem: [],
+            dataItemSearch: ''
+        }
+    }
+
     static navigationOptions = ({ navigation }) => ({
         headerStyle: { backgroundColor: '#006AAF' },
         header: (
@@ -32,40 +45,58 @@ class HomePage extends Component {
                     containerStyle={{ backgroundColor: 'red' }}
                     leftComponent={{ icon: 'menu', color: '#fff' }}
                     centerComponent={{ text: 'Home', style: { color: '#EFF6F9' } }}
-                    rightComponent={
-                        <TouchableOpacity onPress={() => {
-                            const { params } = navigation.state;
-                            params.handleModal && params.handleModal()
-                        }
-                        }>
-                            <View>
-                                <Text style={{ color: 'white' }}>Filter</Text>
-                            </View>
-                        </TouchableOpacity>
-                    }
+                    rightComponent={{ icon: 'notifications', color: '#faa51a' }}
                 />
                 <SearchBar
-                    style={{ flex: 1 }}
                     round
                     lightTheme
+                    clearIcon={{ name: 'clear' }}
+                    onChangeText={(text) => {
+                        const { params } = navigation.state;
+                        params.handleModal && params.handleModal(text)
+                    }}
                     inputStyle={{ color: 'white' }}
-                    placeholder='Type Here...' />
+                    placeholder='Type Here...'
+                />
             </View>
         )
     })
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            showAlert: false,
-            supplierList: '',
-            productList: '',
-            loading: null,
-            tokenUser: ''
-        }
+    querySuggestion(text) {
+        console.log(text, 'Text');
+        axios.get(`${BASE_URL}/fishes/search?key=${text}`, {
+            headers: { 'x-access-token': this.state.tokenUser }
+        })
+            .then(response => {
+                res = response.data.data
+                this.setState({ searchItem: res })
+                console.log(res, 'Auto Complete Nya')
+            })
+            .catch(error => {
+                console.log(error, 'Error');
+                if (error.response) {
+                    alert(error.response.data.message)
+                }
+                else {
+                    alert('Koneksi internet bermasalah')
+                }
+            })
     }
 
-   showAlert = () => {
+    onItemSelected = (item) => {
+        console.log(item, 'Ikan terpilih');
+        this.setState({
+            dataItemSearch: item
+        })
+        this.props.navigation.navigate('Filter', { datas: item });
+    }
+
+
+    componentDidMount() {
+        this.props.navigation.setParams({ handleModal: (text) => this.querySuggestion(text) });
+    }
+
+    showAlert = () => {
         this.setState({
             showAlert: true
         });
@@ -117,17 +148,16 @@ class HomePage extends Component {
         });
     }
 
-    componentDidMount() {
-        this.props.navigation.setParams({ handleModal: () => this.filterPage() });
-    }
 
     filterPage = () => {
         const { navigate } = this.props.navigation;
         navigate('Filter');
     }
+
     componentWillMount() {
         this.setState({ loading: true })
         AsyncStorage.getItem('loginCredential', (err, result) => {
+            console.log(result);
             this.setState({ tokenUser: result });
             axios.get(`${BASE_URL}/suppliers/popular`, {
                 headers: {
@@ -208,6 +238,7 @@ class HomePage extends Component {
     }
 
     renderSupplierItem = (itemSupplier) => {
+        console.log(itemSupplier, 'Data Supplier');
         if (this.state.loading == true) {
             return <Spinner size="small" />
         }
@@ -216,7 +247,11 @@ class HomePage extends Component {
                 <TouchableWithoutFeedback onPress={() => {
                     this.goSupplier()
                 }}>
-                    <Image style={styles.item} source={{ uri: `${BASE_URL}/images/${itemSupplier.item.photo}` }} resizeMode='cover' />
+                    <Image
+                        style={styles.item}
+                        source={{ uri: `${BASE_URL}/images/${itemSupplier.item.photo}` }}
+                        resizeMode='cover'
+                    />
                 </TouchableWithoutFeedback>
             </View>
         )
@@ -227,13 +262,26 @@ class HomePage extends Component {
         const { navigate } = this.props.navigation;
         const {
             showAlert,
-            requestExpanded
+            requestExpanded,
+            searchItem
         } = this.state;
 
         return (
 
             <View style={styles.container}>
                 <ScrollView>
+                    {
+                        searchItem && searchItem.map(item =>
+                            <TouchableOpacity
+                                key={item.id}
+                                onPress={() => this.onItemSelected(item)}
+                            >
+                                <View style={styles.containerItemAutoSelect}>
+                                    <Text>{item.name}</Text>
+                                </View>
+                            </TouchableOpacity>
+                        )
+                    }
                     <Image
                         style={styles.imageStyle}
                         source={require('./../assets/image/fish_1.jpg')}

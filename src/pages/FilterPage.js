@@ -3,7 +3,16 @@
  */
 import React, { Component } from 'react';
 import { Text, View, TouchableWithoutFeedback, ScrollView, FlatList, AsyncStorage } from 'react-native';
-import { Card, Button, CardSection, Container, ContainerSection, Spinner } from '../components/common';
+import {
+    Card,
+    Button,
+    CardSection,
+    Container,
+    ContainerSection,
+    Spinner,
+    CardSectionRegistration,
+    InputRegistration
+} from '../components/common';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { CheckBox, FormInput, Rating } from 'react-native-elements';
 import axios from 'axios';
@@ -19,30 +28,30 @@ class FilterPage extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            provinsiContainer: false,
-            cityContainer: false,
+            provinsiContainer: true,
+            dataParsing: '',
             provinsiId: [],
-            cityId: [],
-            dataPush: [],
             loading: null,
             tokenUser: '',
             dataProvinsi: '',
-            dataCity: ''
+            minPrice: '0',
+            maxPrice: '0'
         }
     }
 
     componentWillMount() {
         this.setState({ loading: true });
+        this.setState({ dataParsing: this.props.navigation.state.params.datas })
         AsyncStorage.getItem('loginCredential', (err, resultToken) => {
             this.setState({ tokenUser: resultToken });
-            axios.get(`${BASE_URL}/provinces`, {
-                headers: { 'x-access-token': resultToken }
-            })
+            axios.get(`${BASE_URL}/provinces`)
                 .then(response => {
                     res = response.data.data;
                     this.setState({ dataProvinsi: res, loading: false });
+                    console.log(this.state.dataParsing, 'Data Parsing')
                 })
                 .catch(error => {
+                    console.log(error, 'error');
                     if (error.response) {
                         alert(error.response.data.message)
                     }
@@ -51,30 +60,6 @@ class FilterPage extends Component {
                     }
                 })
         });
-    }
-
-    renderFlatProvinsi = () => {
-        return (
-            <View>
-                <FlatList
-                    data={[this.state.dataProvinsi]}
-                    renderItem={({ item }) => this.renderDataProvinsi(item)}
-                    keyExtractor={(item, index) => index}
-                />
-            </View>
-        );
-    }
-
-    renderFlatCity = () => {
-        return (
-            <View>
-                <FlatList
-                    data={[this.state.dataCity]}
-                    renderItem={({ item }) => this.renderDataCity(item)}
-                    keyExtractor={(item, index) => index}
-                />
-            </View>
-        );
     }
 
     renderDataProvinsi = (item) => {
@@ -87,7 +72,7 @@ class FilterPage extends Component {
                         <CheckBox
                             title={data.name}
                             onPress={() => this.provinsiCheck(data)}
-                            checked={this.state.provinsiId.includes(data)}
+                            checked={this.state.provinsiId.includes(data.id)}
                         />
                     </View>
                 </View>
@@ -95,128 +80,116 @@ class FilterPage extends Component {
         })
     }
 
-    renderDataCity = (item) => {
-        console.log(item, 'Item City');
-
-        if (item === '') {
-            return (
-                <View>
-                    <Text>Pilih Provinsi Terlebih Dahulu</Text>
-                </View>
-            )
-        } else {
-            return item.map((data, index) => {
-                console.log(data, 'City Data');
-                return (
-                    <View key={data.id} style={styles.itemContainerStyle}>
-                        <View style={styles.headerContentStyle}>
-                            <CheckBox
-                                title={data.name}
-                                onPress={() => this.cityCheck(data)}
-                                checked={this.state.provinsiId.includes(data)}
-                            />
-                        </View>
-                    </View>
-                )
-            })
-        }
-    }
-
     provinsiCheck = data => {
         const { provinsiId, tokenUser } = this.state;
         console.log(data, 'Data');
         const idProvinsi = data.id;
-        if (!provinsiId.includes(data)) {
+        if (!provinsiId.includes(idProvinsi)) {
             this.setState({
-                provinsiId: [...provinsiId, data]
+                provinsiId: [...provinsiId, idProvinsi]
             });
+        } else {
+            this.setState({
+                provinsiId: provinsiId.filter(a => a !== idProvinsi)
+            });
+        }
+    };
 
-            axios.get(`${BASE_URL}/cities/search-province/${idProvinsi}`, {
-                headers: { 'x-access-token': tokenUser }
+    onSubmit = () => {
+        const { navigate } = this.props.navigation;
+        const { minPrice, maxPrice, tokenUser, provinsiId, dataParsing } = this.state;
+        axios.get(`${BASE_URL}/products?key=${dataParsing.name}&minPrice=/${minPrice}&maxPrice=${maxPrice}&ProvinceIds=${provinsiId}&page=0&pageSize=4&sorting=desc`, {
+            headers: { 'x-access-token': tokenUser }
+        })
+            .then(response => {
+                res = response.data.data;
+                this.props.navigation.navigate('ListSearchProduct', { datas: res });
             })
-                .then(response => {
-                    res = response.data.data
-                    this.setState({ dataCity: res, loading: false });
-                })
-                .catch(error => {
-                    if (error.response) {
-                        alert(error.response.data.message)
-                    }
-                    else {
-                        alert('Koneksi internet bermasalah Provinsi')
-                    }
-                })
+            .catch(error => {
+                if (error.response) {
+                    alert(error.response.data.message)
+                }
+                else {
+                    alert('Koneksi internet bermasalah Provinsi')
+                }
+            })
+    }
 
-        } else {
-            this.setState({
-                provinsiId: provinsiId.filter(a => a !== data)
-            });
-        }
-    };
-
-    cityCheck = data => {
-        const { cityId } = this.state;
-        if (!cityId.includes(data)) {
-            this.setState({
-                cityId: [...cityId, data]
-            });
-        } else {
-            this.setState({
-                cityId: cityId.filter(a => a !== data)
-            });
-        }
-    };
+    onChangeInput = (name, v) => {
+        this.setState({ [name]: v });
+        console.log(v);
+    }
 
     render() {
         const {
             provinsiContainer,
-            cityContainer
+            cityContainer,
+            loading,
+            minPrice,
+            maxPrice
         } = this.state
+        if (loading) {
+            return <Spinner size="large" />
+        }
         return (
             <ScrollView style={{ flex: 1 }}>
                 <Card style={{ flex: 1, margin: 5, padding: 5 }}>
                     <Text style={styles.hedaerTextStyle}>Pilih Area Lokasi :</Text>
                     <CardSection>
-                        <TouchableWithoutFeedback onPress={() => { this.setState({ provinsiContainer: !provinsiContainer }); console.log(this.state.provinsiContainer, 'Request Klik') }}>
-                            <View style={{ flex: 1, flexDirection: 'row' }}>
-                                <Text style={{ flex: 1, fontSize: 20 }}>Provinsi</Text>
-                                <View style={{ flex: 1 }}>
-                                    <Icon size={30} style={{ alignSelf: 'flex-end' }} name={provinsiContainer ? 'md-arrow-dropup' : 'md-arrow-dropdown'} />
-                                </View>
-                            </View>
-                        </TouchableWithoutFeedback>
+                        <View style={{ flex: 1, flexDirection: 'row' }}>
+                            <Text style={{ flex: 1, fontSize: 20 }}>Provinsi</Text>
+                        </View>
                     </CardSection>
                     {
                         provinsiContainer ?
                             <CardSection>
                                 <View>
-                                    {this.renderFlatProvinsi()}
+                                    <FlatList
+                                        data={[this.state.dataProvinsi]}
+                                        renderItem={({ item }) => this.renderDataProvinsi(item)}
+                                        keyExtractor={(item, index) => index}
+                                    />
                                 </View>
                             </CardSection>
                             :
                             <View />
                     }
 
+                    <Text style={styles.hedaerTextStyle}>Rentang Harga/Kg :</Text>
                     <CardSection>
-                        <TouchableWithoutFeedback onPress={() => { this.setState({ cityContainer: !cityContainer }); console.log(this.state.cityContainer, 'Request Klik') }}>
-                            <View style={{ flex: 1, flexDirection: 'row' }}>
-                                <Text style={{ flex: 1, fontSize: 20 }}>Kota / Kabupaten</Text>
-                                <View style={{ flex: 1 }}>
-                                    <Icon size={30} style={{ alignSelf: 'flex-end' }} name={cityContainer ? 'md-arrow-dropup' : 'md-arrow-dropdown'} />
-                                </View>
-                            </View>
-                        </TouchableWithoutFeedback>
+                        <View style={{ flex: 1, flexDirection: 'row' }}>
+                            <Text style={{ flex: 1, fontSize: 20 }}>Harga</Text>
+                        </View>
                     </CardSection>
                     {
-                        cityContainer ?
-                            <CardSection>
-                                <View>
-                                    {this.renderFlatCity()}
-                                </View>
-                            </CardSection>
+                        provinsiContainer ?
+                            <CardSectionRegistration>
+                                <InputRegistration
+                                    label='Harga Min'
+                                    value={minPrice}
+                                    onChangeText={v => this.onChangeInput('minPrice', v)}
+                                />
+                                <Text style={styles.unitStyle}> - </Text>
+
+                                <InputRegistration
+                                    label='Harga Maks'
+                                    value={maxPrice}
+                                    onChangeText={v => this.onChangeInput('maxPrice', v)}
+                                />
+                            </CardSectionRegistration>
                             :
                             <View />
                     }
+
+                    <View>
+                        <Button
+                            onPress={
+                                () => this.onSubmit()
+                            }
+                        >
+                            Terapkan
+                        </Button>
+                    </View>
                 </Card>
             </ScrollView>
         );

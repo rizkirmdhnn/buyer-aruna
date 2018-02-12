@@ -84,6 +84,7 @@ class TransactionPage extends Component {
             const timeFormat = moment(item.Request.Transaction.updatedAt).format('h:mm:ss');
             return (
                 <TouchableWithoutFeedback
+                    key={item.id}
                     onPress={() => this.detailTransaction(item)}
                 >
                     <View style={styles.itemContainerStyle}>

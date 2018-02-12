@@ -25,6 +25,7 @@ import FormContractPage from './pages/FormContractPage';
 import FormContractRevisionPage from './pages/FormContractRevisionPage';
 import MessagePage from './pages/MessagePage';
 import FilterPage from './pages/FilterPage';
+import ListSearchProductPage from './pages/ListSearchProductPage';
 /**
  *  List Component
  */
@@ -91,10 +92,11 @@ class App extends React.Component {
             FormContractRevision: { screen: FormContractRevisionPage },
             Message: { screen: MessagePage },
             ProfileSupplier: { screen: ProfileSupplierPage },
-            Filter: { screen: FilterPage }
+            Filter: { screen: FilterPage },
+            ListSearchProduct: { screen: ListSearchProductPage }
         }, {
-            cardStyle: { backgroundColor: '#FFF' }
-        });
+                cardStyle: { backgroundColor: '#FFF' }
+            });
 
         return (
             <View style={styles.container} >

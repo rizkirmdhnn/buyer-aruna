@@ -22,20 +22,13 @@ class LoginFormPage extends Component {
     componentWillMount() {
         console.log(this.props.navigation.state.params.datas, 'Data Passing');
         this.setState({ dataRedirect: this.props.navigation.state.params.datas }) 
-        // if(this.props.navigation.state.params.datas != null || this.props.navigation.state.params.datas !== undefined) {
-        //     this.setState({ dataRedirect: this.props.navigation.state.params.datas })    
-        // } else {
-        //     this.setState({ dataRedirect: 'Home' })
-        // }
     }
 
     onButtonPress() {
         console.log('Start');
         const { email, password } = this.state;
         this.setState({ error: '', loading: true });
-        const { navigate } = this.props.navigation
-        // 107 Raosan
-        // 111 Arif
+        const { navigate } = this.props.navigation;
         axios.post(`${BASE_URL}/login`, {
             'email': email,
             'password': password
