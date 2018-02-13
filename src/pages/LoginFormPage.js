@@ -3,8 +3,10 @@ import { Text, Image, View, TouchableOpacity, ScrollView, AsyncStorage } from 'r
 import { Card, CardSection, Input, Spinner } from './../components/common';
 import axios from 'axios';
 import { Button } from 'react-native-elements';
+import OneSignal from 'react-native-onesignal';
 import RegistrationFormPage from './../pages/RegistrationFormPage';
 import { BASE_URL } from './../shared/lb.config';
+import jwtDecode from 'jwt-decode';
 
 class LoginFormPage extends Component {
     static navigationOptions = {
@@ -21,7 +23,7 @@ class LoginFormPage extends Component {
 
     componentWillMount() {
         console.log(this.props.navigation.state.params.datas, 'Data Passing');
-        this.setState({ dataRedirect: this.props.navigation.state.params.datas }) 
+        this.setState({ dataRedirect: this.props.navigation.state.params.datas })
     }
 
     onButtonPress() {
@@ -39,6 +41,8 @@ class LoginFormPage extends Component {
             })
             .then(response => {
                 console.log('SUKSES', response);
+                const deco = jwtDecode(response.data.token);
+                console.log(deco, 'Result Decode Token');
                 AsyncStorage.setItem('loginCredential', response.data.token).then(() => {
                     this.setState({
                         email: '',
@@ -46,6 +50,10 @@ class LoginFormPage extends Component {
                         loading: false,
                         error: ''
                     });
+                    OneSignal.sendTags({ 'userid': deco.user.id });
+                });
+                OneSignal.getTags((receivedTags) => {
+                    console.log(receivedTags, 'Get Tag');
                 });
                 navigate(this.state.dataRedirect);
             })

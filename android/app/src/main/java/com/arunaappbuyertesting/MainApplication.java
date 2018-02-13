@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.imagepicker.ImagePickerPackage; // <-- add this import
+import com.geektime.rnonesignalandroid.ReactNativeOneSignalPackage;  // ADD THIS
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -27,7 +28,8 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
             new VectorIconsPackage(),
-              new ImagePickerPackage() 
+              new ImagePickerPackage(),
+                new ReactNativeOneSignalPackage() 
       );
     }
 
