@@ -66,9 +66,10 @@ class RegistrationFormPage extends Component {
     };
 
     static navigationOptions = {
-        title: 'Registration',
+        title: 'Pendaftaran Akun',
         headerStyle: { backgroundColor: '#006AAF' },
-        headerTitleStyle: { color: '#FFFFFF' }
+        headerTitleStyle: { color: '#FFFFFF', paddingLeft: 30 },
+        headerTintColor: 'white'
     }
 
     onChangeInput = (name, v) => {
@@ -225,9 +226,14 @@ class RegistrationFormPage extends Component {
                     )
                 }
             >
-                Simpan
+                Daftar
 			</Button>
         )
+    }
+
+    componentWillMount() {
+        this.setState({ pathNpwp: require('./../assets/images/foto-default.png') })
+        this.setState({ pathKtp: require('./../assets/images/foto-default.png') })
     }
 
 
@@ -239,7 +245,7 @@ class RegistrationFormPage extends Component {
         const { showAlert } = this.state;
 
         const {
-			organization,
+            organization,
             organizationType,
             addressInstitution,
             npwp,
@@ -255,7 +261,7 @@ class RegistrationFormPage extends Component {
 
             pathKtp,
             pathNpwp,
-		} = this.state
+        } = this.state
 
 
 
@@ -296,33 +302,33 @@ class RegistrationFormPage extends Component {
                         </CardSectionRegistration>
                         <CardSectionRegistration>
                             <InputRegistration
-                                label='Alamat Lembaga'
-                                placeholder='Alamat Lembaga'
-                                value={addressInstitution}
-                                onChangeText={v => this.onChangeInput('addressInstitution', v)}
-                            />
-                        </CardSectionRegistration>
-                        <CardSectionRegistration>
-                            <InputRegistration
-                                label='NPWP Lembaga'
+                                label='NPWP (Nomor Pokok Wajib Pajak)'
                                 placeholder='NPWP Lembaga'
                                 value={npwp}
                                 onChangeText={v => this.onChangeInput('npwp', v)}
                             />
                         </CardSectionRegistration>
                         <CardSectionRegistration>
-                            <Text>Upload Foto NPWP</Text>
+                            <Text>Unggah Foto NPWP</Text>
                         </CardSectionRegistration>
                         <CardSectionRegistration>
                             <View style={styles.container}>
                                 <TouchableOpacity onPress={this.selectPhotoTappedNPWP.bind(this)}>
-                                    <View style={[styles.avatar, styles.avatarContainer, { marginBottom: 20 }]}>
+                                    <View style={[styles.avatar, styles.avatarContainer]}>
                                         {this.state.pathNpwp === null ? <Text>Take a Picture NPWP</Text> :
                                             <Image style={styles.avatar} source={this.state.pathNpwp} />
                                         }
                                     </View>
                                 </TouchableOpacity>
                             </View>
+                        </CardSectionRegistration>
+                        <CardSectionRegistration>
+                            <InputRegistration
+                                label='Alamat'
+                                placeholder='Alamat'
+                                value={addressInstitution}
+                                onChangeText={v => this.onChangeInput('addressInstitution', v)}
+                            />
                         </CardSectionRegistration>
                     </CardRegistration>
 
@@ -342,14 +348,14 @@ class RegistrationFormPage extends Component {
                         </CardSectionRegistration>
                         <CardSectionRegistration>
                             <InputRegistration
-                                label='No. KTP'
-                                placeholder='contoh: 321317989029'
+                                label='No. KTP (Kartu Tanda Penduduk)'
+                                placeholder='10   50   3045   62356723'
                                 value={idNumber}
                                 onChangeText={v => this.onChangeInput('idNumber', v)}
                             />
                         </CardSectionRegistration>
                         <CardSectionRegistration>
-                            <Text>Upload Foto KTP</Text>
+                            <Text>Unggah Foto KTP</Text>
                         </CardSectionRegistration>
                         <CardSectionRegistration>
                             <View style={styles.container}>
@@ -375,8 +381,8 @@ class RegistrationFormPage extends Component {
                         </CardSectionRegistration>
                         <CardSectionRegistration>
                             <InputRegistration
-                                label='No. HP'
-                                placeholder='contoh: 085621017922'
+                                label='No. Telepon/Handphone'
+                                placeholder='+62852 1910 0674'
                                 value={phone}
                                 onChangeText={v => this.onChangeInput('phone', v)}
                             />
@@ -389,6 +395,15 @@ class RegistrationFormPage extends Component {
                                 onChangeText={v => this.onChangeInput('email', v)}
                             />
                         </CardSectionRegistration>
+                    </CardRegistration>
+
+                    <CardRegistration>
+                        <CardSectionRegistration>
+                            <Text style={styles.headerStyle}>
+                                Data Akun
+            				</Text>
+                        </CardSectionRegistration>
+
                         <CardSectionRegistration>
                             <InputRegistration
                                 label='Password'
@@ -418,17 +433,14 @@ class RegistrationFormPage extends Component {
 
 const styles = {
     headerStyle: {
-        marginLeft: 5
+        marginLeft: 5,
+        color: '#77A7F4',
+        fontWeight: 'bold'
     },
     pickerTextStyle: {
-        color: '#8e8e8e',
+        color: 'black',
         flex: 1,
         paddingLeft: 5
-    },
-    pickerTextStyle: {
-        color: '#8e8e8e',
-        paddingLeft: 5,
-        fontSize: 16
     },
     pickerContainer: {
         flex: 1,
@@ -446,18 +458,22 @@ const styles = {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#F5FCFF'
+        borderWidth: 1,
+        borderColor: 'black',
+        backgroundColor: 'white'
     },
     avatarContainer: {
-        borderColor: '#9B9B9B',
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: 'black',
         borderWidth: 1 / PixelRatio.get(),
         justifyContent: 'center',
         alignItems: 'center'
     },
     avatar: {
-        borderRadius: 75,
-        width: 150,
-        height: 150
+        resizeMode: 'stretch',
+        width: 320,
+        height: 130
     }
 }
 

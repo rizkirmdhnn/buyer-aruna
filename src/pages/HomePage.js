@@ -43,7 +43,16 @@ class HomePage extends Component {
                 <Header
                     backgroundColor={'#006AAF'}
                     containerStyle={{ backgroundColor: 'red' }}
-                    leftComponent={{ icon: 'menu', color: '#fff' }}
+                    leftComponent={<Icon
+                        name="md-menu"
+                        size={28}
+                        color="white"
+                        style={{ paddingLeft: 15, paddingTop: 200 }}
+                        onPress={() => {
+                            const { params } = navigation.state;
+                            params.handleDrawer && params.handleDrawer()
+                        }}
+                    />}
                     centerComponent={{ text: 'Home', style: { color: '#EFF6F9' } }}
                     rightComponent={{ icon: 'notifications', color: '#faa51a' }}
                 />
@@ -94,6 +103,12 @@ class HomePage extends Component {
 
     componentDidMount() {
         this.props.navigation.setParams({ handleModal: (text) => this.querySuggestion(text) });
+        this.props.navigation.setParams({ handleDrawer: () => this.renderDrawer() });
+    }
+
+    renderDrawer() {
+        const { navigate } = this.props.navigation;
+        navigate('DrawerOpen');
     }
 
     showAlert = () => {
@@ -237,8 +252,8 @@ class HomePage extends Component {
 
     renderSupplierItem = (itemSupplier) => {
         const number = parseInt(itemSupplier.index) + 1;
-        console.log(itemSupplier, ' ', itemSupplier.index, number,  'Data Supplier');
-    
+        console.log(itemSupplier, ' ', itemSupplier.index, number, 'Data Supplier');
+
         return (
             <TouchableWithoutFeedback onPress={() => {
                 this.goSupplier()
@@ -253,7 +268,7 @@ class HomePage extends Component {
                     <View style={styles.headerContentStyle}>
                         <Text style={styles.headerTextStyle}>{itemSupplier.item.name}</Text>
                         <View style={{ flexDirection: 'column', flex: 1 }}>
-                           <Text style={{ color: 'grey' }}>{itemSupplier.item.organization}</Text>
+                            <Text style={{ color: 'grey' }}>{itemSupplier.item.organization}</Text>
                         </View>
                     </View>
                     <View style={styles.thumbnailContainerStyle}>

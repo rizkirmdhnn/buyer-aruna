@@ -33,23 +33,23 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 
 import ImagePicker from 'react-native-image-picker';
-
+import Icon from 'react-native-vector-icons/Ionicons';
 class RequestFormOrderFirstPage extends Component {
 
 
 
 
     static navigationOptions = ({ navigation, screenProps }) => ({
-        title: 'Create Request Order',
+        title: 'Buat Permintaan',
         headerStyle: { backgroundColor: '#006AAF' },
-        headerTitleStyle: { color: '#FFFFFF' },
+        headerTitleStyle: { color: '#FFFFFF', paddingLeft: 30 },
         headerLeft:
             <TouchableOpacity
                 onPress={() => { navigation.navigate('Home') }}
             >
                 <Image
                     style={{ width: 20, height: 20, marginLeft: 30 }}
-                    source={require('./../assets/image/arr.png')} />
+                    source={require('./../assets/images/back.png')} />
             </TouchableOpacity>
     });
 
@@ -157,7 +157,7 @@ class RequestFormOrderFirstPage extends Component {
                     () => this.onSubmit()
                 }
             >
-                Next
+                Selanjutnya
 			</Button>
         )
     }
@@ -189,7 +189,7 @@ class RequestFormOrderFirstPage extends Component {
     }
 
     componentWillMount() {
-        this.setState({ photo: require('./../assets/image/upload-foto.png') })
+        this.setState({ photo: require('./../assets/images/foto-default.png') })
         console.log(this.state.photo, 'POTO DEFAULT');
         this.setState({ loading: true });
 
@@ -317,150 +317,172 @@ class RequestFormOrderFirstPage extends Component {
 
 
     renderAllData = () => {
-        if (this.state.loading == true) {
-            return <Spinner size="small" />
-        } else if (this.state.loading == false) {
-            const {
-                dataMapCity,
-                dataCity,
-                dataProvinsi,
-                suggestions,
-                value,
-                provinsiId,
-                cityId,
-                size,
-                quantity,
-                minBudget,
-                maxBudget,
-                deskripsi,
-                datePick,
-                dateNowPick,
-                photo
-            } = this.state
+        const {
+            dataMapCity,
+            dataCity,
+            dataProvinsi,
+            suggestions,
+            value,
+            provinsiId,
+            cityId,
+            size,
+            quantity,
+            minBudget,
+            maxBudget,
+            deskripsi,
+            datePick,
+            dateNowPick,
+            photo
+        } = this.state
 
-            return (
-                <ScrollView
-                    keyboardShouldPersistTaps="always"
-                >
-                    <Container>
+        return (
+            <ScrollView
+                keyboardShouldPersistTaps="always"
+            >
+                <Container>
 
-                        <CardSectionRegistration>
-                            <View style={styles.container}>
-                                <TouchableOpacity onPress={this.selectPhotoTapped.bind(this)}>
-                                    <View style={[styles.avatar, styles.avatarContainer]}>
-                                        {this.state.photo === null ? <Text>Take a Picture</Text> :
-                                            <Image style={styles.avatar} source={this.state.photo} />
-                                        }
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
-                        </CardSectionRegistration>
-
-                        <CardSectionRegistration>
-                            <Text style={styles.headerStyle}>
-                                INFORMASI KOMODITAS
-							</Text>
-                        </CardSectionRegistration>
-                        <CardSectionRegistration>
-                            <AutoComplete
-                                label="Nama Komoditas"
-                                placeholder="Nama Komoditas"
-                                suggestions={suggestions}
-                                onChangeText={text => this.querySuggestion(text)}
-                                value={value}
-                            >
-                                {
-                                    suggestions && suggestions.map(item =>
-                                        <TouchableOpacity
-                                            key={item.id}
-                                            onPress={() => this.onItemSelected(item)}
-                                        >
-                                            <View style={styles.containerItemAutoSelect}>
-                                                <Text>{item.name}</Text>
-                                            </View>
-                                        </TouchableOpacity>
-                                    )
-                                }
-                            </AutoComplete>
-                        </CardSectionRegistration>
-                        <CardSectionRegistration>
-                            <InputRegistration
-                                label='Ukuran Komoditas'
-                                placeholder='Ukuran'
-                                value={size}
-                                onChangeText={v => this.onChangeInput('size', v)}
-                            />
-                            <Text style={styles.unitStyle}>{this.state.unitFish}</Text>
-
-                            <InputRegistration
-                                label='Kuantitas Komoditas'
-                                placeholder='Jumlah'
-                                value={quantity}
-                                onChangeText={v => this.onChangeInput('quantity', v)}
-                            />
-                            <Text style={styles.unitStyle}> kg</Text>
-
-                        </CardSectionRegistration>
-
-                        <CardSectionRegistration>
-                            <InputRegistration
-                                placeholder='Deskripsi Komoditas'
-                                value={deskripsi}
-                                style={styles.textArea}
-                                onChangeText={v => this.onChangeInput('deskripsi', v)}
-                            />
-                        </CardSectionRegistration>
-
-                        <View>
-                            <Text style={styles.unitStyle}>Rentang Harga/kg</Text>
-                        </View>
-
-                        <CardSectionRegistration>
-                            <InputRegistration
-                                placeholder='Min'
-                                value={minBudget}
-                                onChangeText={v => this.onChangeInput('minBudget', v)}
-                            />
-                            <Text style={styles.unitStyles}>-</Text>
-
-                            <InputRegistration
-                                placeholder='Max'
-                                value={maxBudget}
-                                onChangeText={v => this.onChangeInput('maxBudget', v)}
-                            />
-
-                        </CardSectionRegistration>
-
-                        <CardSectionRegistration>
-                            <Text style={styles.headerStyle}>
-                                TUJUAN PENGIRIMAN
-							</Text>
-                        </CardSectionRegistration>
-
-                        <CardSectionRegistration>
-                            <InputRegistration
-                                placeholder='Tanggal Penerimaan'
-                                value={dateNowPick}
-                                onChangeText={v => this.onChangeInput('dateNowPick', v)}
-                                editable={false}
-                            />
-                            <TouchableOpacity onPress={this._showDateTimePicker}>
-                                <Image
-                                    style={{ marginTop: 10, width: 50, height: 50 }}
-                                    source={require('./../assets/image/date-icon.png')}
-                                />
+                    <CardSectionRegistration>
+                        <View style={styles.container}>
+                            <TouchableOpacity onPress={this.selectPhotoTapped.bind(this)}>
+                                <View style={[styles.avatar, styles.avatarContainer]}>
+                                    {this.state.photo === null ? <Text>Take a Picture</Text> :
+                                        <Image style={styles.avatar} source={this.state.photo} />
+                                    }
+                                </View>
                             </TouchableOpacity>
-                            <DateTimePicker
-                                isVisible={this.state.isDateTimePickerVisible}
-                                onConfirm={this._handleDatePicked}
-                                onCancel={this._hideDateTimePicker}
-                                minimumDate={new Date()}
-                            />
-                        </CardSectionRegistration>
+                        </View>
+                    </CardSectionRegistration>
 
-                        <ContainerSection>
-                            <View style={styles.pickerContainer}>
-                                <Text style={styles.pickerTextStyle}>Provinsi</Text>
+                    <CardSectionRegistration>
+                        <Text style={styles.headerStyle}>
+                            Informasi Komoditas
+							</Text>
+                    </CardSectionRegistration>
+                    <CardSectionRegistration>
+                        <AutoComplete
+                            label="Nama Komoditas"
+                            placeholder="Komoditas"
+                            suggestions={suggestions}
+                            onChangeText={text => this.querySuggestion(text)}
+                            value={value}
+                        >
+                            {
+                                suggestions && suggestions.map(item =>
+                                    <TouchableOpacity
+                                        key={item.id}
+                                        onPress={() => this.onItemSelected(item)}
+                                    >
+                                        <View style={styles.containerItemAutoSelect}>
+                                            <Text>{item.name}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                )
+                            }
+                        </AutoComplete>
+                    </CardSectionRegistration>
+                    <CardSectionRegistration>
+                        <InputRegistration
+                            label='Ukuran'
+                            placeholder='oo'
+                            value={size}
+                            onChangeText={v => this.onChangeInput('size', v)}
+                        />
+                        <Text style={styles.unitStyle}></Text>
+                        <InputRegistration
+                            editable={false}
+                            value={this.state.unitFish}
+                            onChangeText={v => this.onChangeInput('quantity', v)}
+                        />
+                    </CardSectionRegistration>
+
+                    <CardSectionRegistration>
+                        <InputRegistration
+                            label='Jumlah'
+                            placeholder='oo'
+                            value={quantity}
+                            onChangeText={v => this.onChangeInput('quantity', v)}
+                        />
+                        <Text style={styles.unitStyle}></Text>
+                        <InputRegistration
+                            editable={false}
+                            value='Kg'
+                            onChangeText={v => this.onChangeInput('quantity', v)}
+                        />
+                    </CardSectionRegistration>
+
+                    <CardSectionRegistration>
+                        <InputRegistration
+                            label='Deskripsi Komoditas'
+                            placeholder='Deskripsi'
+                            value={deskripsi}
+                            style={styles.textArea}
+                            onChangeText={v => this.onChangeInput('deskripsi', v)}
+                            maxLength={40}
+                            multiline={true}
+                            numberOfLines={4}
+                        />
+                    </CardSectionRegistration>
+
+                    <CardSectionRegistration>
+                        <InputRegistration
+                            label='Harga Minimal'
+                            placeholder='Rupiah/kg'
+                            value={minBudget}
+                            onChangeText={v => this.onChangeInput('minBudget', v)}
+                        />
+                    </CardSectionRegistration>
+                    <CardSectionRegistration>
+                        <InputRegistration
+                            label='Harga Maksimal'
+                            placeholder='Rupiah/kg'
+                            value={maxBudget}
+                            onChangeText={v => this.onChangeInput('maxBudget', v)}
+                        />
+                    </CardSectionRegistration>
+
+                    <CardSectionRegistration>
+                        <Text style={styles.headerStyle}>
+                            Informasi Pengiriman
+							</Text>
+                    </CardSectionRegistration>
+
+                    <CardSectionRegistration>
+                        <InputRegistration
+                            placeholder='00/00/18'
+                            value={dateNowPick}
+                            onChangeText={v => this.onChangeInput('dateNowPick', v)}
+                            editable={false}
+                            inlineImageLeft='search_icon'
+                        />
+                        <TouchableOpacity onPress={this._showDateTimePicker}>
+                            <Image
+                                style={{
+                                    flexDirection: 'row',
+                                    borderColor: '#555',
+                                    borderRadius: 3,
+                                    borderWidth: 1,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    backgroundColor: '#fff',
+                                    marginTop: 10,
+                                    width: 50,
+                                    height: 50
+                                }}
+                                source={require('./../assets/image/date-icon.png')}
+                            />
+                        </TouchableOpacity>
+                        <DateTimePicker
+                            isVisible={this.state.isDateTimePickerVisible}
+                            onConfirm={this._handleDatePicked}
+                            onCancel={this._hideDateTimePicker}
+                            minimumDate={new Date()}
+                        />
+                    </CardSectionRegistration>
+
+                    <ContainerSection>
+                        <View style={styles.pickerContainer}>
+                            <Text style={styles.pickerTextStyle}>Provinsi</Text>
+                            <View style={styles.pickerStyleBox}>
                                 <View style={styles.pickerStyle}>
                                     <Picker
                                         selectedValue={provinsiId}
@@ -471,11 +493,13 @@ class RequestFormOrderFirstPage extends Component {
                                     </Picker>
                                 </View>
                             </View>
-                        </ContainerSection>
+                        </View>
+                    </ContainerSection>
 
-                        <ContainerSection>
-                            <View style={styles.pickerContainer}>
-                                <Text style={styles.pickerTextStyle}>Kota/Kabupaten</Text>
+                    <ContainerSection>
+                        <View style={styles.pickerContainer}>
+                            <Text style={styles.pickerTextStyle}>Kota/Kabupaten</Text>
+                            <View style={styles.pickerStyleBox}>
                                 <View style={styles.pickerStyle}>
                                     <Picker
                                         selectedValue={cityId}
@@ -485,17 +509,17 @@ class RequestFormOrderFirstPage extends Component {
                                     </Picker>
                                 </View>
                             </View>
-                        </ContainerSection>
-
-                    </Container>
-
-                    <ContainerSection>
-                        {this.renderButton()}
+                        </View>
                     </ContainerSection>
 
-                </ScrollView>
-            )
-        }
+                </Container>
+
+                <ContainerSection>
+                    {this.renderButton()}
+                </ContainerSection>
+
+            </ScrollView >
+        )
     }
 
 
@@ -511,9 +535,13 @@ class RequestFormOrderFirstPage extends Component {
             minBudget,
             maxBudget,
             deskripsi,
-            datePick
+            datePick,
+            loading
         } = this.state
 
+        if (loading) {
+            return <Spinner size="large" />
+        }
         return (
             <View>
                 {this.renderAllData()}
@@ -525,7 +553,9 @@ class RequestFormOrderFirstPage extends Component {
 
 const styles = {
     headerStyle: {
-        marginLeft: 5
+        color: '#77A7F4',
+        fontWeight: 'bold',
+        fontFamily: 'muli',
     },
     pickerTextStyle: {
         color: '#8e8e8e',
@@ -549,13 +579,15 @@ const styles = {
         marginRight: 3,
         marginLeft: 3,
     },
-    // container: {
-    //     flex: 1,
-    //     marginLeft: 10,
-    //     marginRight: 10,
-    //     alignItems: "stretch",
-    //     justifyContent: "center"
-    // },
+    pickerStyleBox: {
+        flexDirection: 'row',
+        borderColor: '#555',
+        borderRadius: 3,
+        borderWidth: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+    },
     thumb: {
         width: 30,
         height: 30,
@@ -585,7 +617,8 @@ const styles = {
     },
     avatarContainer: {
         borderRadius: 10,
-        borderColor: '#9B9B9B',
+        borderWidth: 1,
+        borderColor: 'black',
         borderWidth: 1 / PixelRatio.get(),
         justifyContent: 'center',
         alignItems: 'center'

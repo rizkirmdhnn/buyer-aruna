@@ -4,22 +4,29 @@ import { Text, View, TextInput } from 'react-native'
 
 class InputRegistration extends Component {
 	render() {
-		const { label, value, onChangeText, placeholder, secureTextEntry, keyboardType, editable } = this.props
+		const { label, value, onChangeText, placeholder, inlineImageLeft, secureTextEntry, keyboardType, multiline, numberOfLines, editable, maxLength } = this.props
 		const { inputStyle, labelStyle, containerStyle } = styles
 
 		return (
 			<View style={containerStyle}>
 				<Text style={labelStyle}>{label}</Text>
-				<TextInput 
-					secureTextEntry={secureTextEntry}
-					placeholder={placeholder}
-					autoCorrect={false}
-					value={value}
-					onChangeText={onChangeText}
-					style={inputStyle}
-					keyboardType={keyboardType}
-					editable = {editable}
-				/>
+				<View style={styles.inputContainer}>
+					<TextInput
+						secureTextEntry={secureTextEntry}
+						placeholder={placeholder}
+						autoCorrect={false}
+						value={value}
+						onChangeText={onChangeText}
+						style={inputStyle}
+						keyboardType={keyboardType}
+						editable={editable}
+						maxLength={maxLength}
+						multiline={multiline}
+						numberOfLines={numberOfLines}
+						underlineColorAndroid='transparent'
+						inlineImageLeft={inlineImageLeft}
+					/>
+				</View>
 			</View>
 		)
 	}
@@ -34,16 +41,23 @@ const styles = {
 		flex: 1
 	},
 	labelStyle: {
-		color: 'black',
-		fontWeight: 'bold',
 		fontSize: 16,
-		paddingLeft: 5,
-		flex: 1
+		flex: 1,
+		color: 'black',
+		fontFamily: 'muli'
 	},
 	containerStyle: {
-		height: 60,
 		flex: 1,
-	}
+	},
+	inputContainer: {
+		flexDirection: 'row',
+		borderColor: '#555',
+		borderRadius: 3,
+		borderWidth: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: '#fff'
+	},
 }
 
 export { InputRegistration }

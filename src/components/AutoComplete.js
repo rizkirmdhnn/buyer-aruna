@@ -9,13 +9,16 @@ class AutoComplete extends Component {
 		return (
 			<View style={containerStyle}>
 				<Text style={labelStyle}>{label}</Text>
-				<TextInput 
-					placeholder={placeholder}
-					autoCorrect={false}
-					value={value}
-					onChangeText={onChangeText}
-					style={inputStyle}
-				/>
+				<View style={styles.inputContainer}>
+					<TextInput
+						placeholder={placeholder}
+						autoCorrect={false}
+						value={value}
+						onChangeText={onChangeText}
+						style={inputStyle}
+						underlineColorAndroid='transparent'
+					/>
+				</View>
 				<View style={containerSuggestion}>
 					{this.props.children}
 				</View>
@@ -32,11 +35,12 @@ const styles = {
 		paddingLeft: 5,
 		paddingRight: 5,
 		paddingBottom: 10,
-		fontSize: 16,
+		fontSize: 13,
 		flex: 1,
+		fontFamily: 'muli',
 	},
 	containerSuggestion: {
-		borderWidth: 1, 
+		borderWidth: 1,
 		borderRadius: 1,
 		borderColor: '#ddd',
 		borderBottomWidth: 0,
@@ -46,16 +50,23 @@ const styles = {
 		shadowOpacity: 0.1,
 		shadowRadius: 2,
 		elevation: 1,
-		marginLeft: 4,
-		marginRight: 4,
-		marginTop: -5
+		paddingTop: -10
 	},
 	labelStyle: {
 		fontSize: 16,
-		paddingLeft: 5,
 		flex: 1,
-		color: '#8e8e8e'
+		color: 'black',
+		fontFamily: 'muli'
 	},
+	inputContainer: {
+		flexDirection: 'row',
+		borderColor: '#555',
+		borderRadius: 3,
+		borderWidth: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: '#fff'
+	  },
 }
 
 export default AutoComplete

@@ -7,7 +7,7 @@ import RegistrationFormPage from './../pages/RegistrationFormPage';
 import { BASE_URL } from './../shared/lb.config';
 import jwtDecode from 'jwt-decode';
 
-class LoginFormPage extends Component {
+class LoginPage extends Component {
     static navigationOptions = {
         header: null
     }
@@ -18,11 +18,6 @@ class LoginFormPage extends Component {
         loading: false,
         dataRedirect: ''
     };
-
-    componentWillMount() {
-        console.log(this.props.navigation.state.params.datas, 'Data Passing');
-        this.setState({ dataRedirect: this.props.navigation.state.params.datas })
-    }
 
     onButtonPress() {
         console.log('Start');
@@ -53,7 +48,7 @@ class LoginFormPage extends Component {
                         console.log(receivedTags, 'Get Tag');
                     });
                 });
-                navigate(this.state.dataRedirect);
+                navigate('Home');
             })
             .catch(error => {
                 console.log(error.response)
@@ -143,7 +138,7 @@ class LoginFormPage extends Component {
                         <Text style={{ textAlign: 'center' }}>
                             Belum punya akun?
 					</Text>
-                        <TouchableOpacity onPress={() => navigate('RegistrationForm')}>
+                        <TouchableOpacity onPress={() => navigate('Register')}>
                             <Text style={{ color: 'green', fontWeight: 'bold' }}>
                                 {` Daftar`}
                             </Text>
@@ -174,4 +169,4 @@ const styles = {
 
 
 
-export default LoginFormPage;
+export default LoginPage;

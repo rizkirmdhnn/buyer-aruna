@@ -3,7 +3,7 @@
  */
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { TabNavigator, StackNavigator } from 'react-navigation';
+import { TabNavigator, StackNavigator, DrawerNavigator } from 'react-navigation';
 import numeral from 'numeral';
 import OneSignal from 'react-native-onesignal';
 
@@ -27,6 +27,7 @@ import FormContractRevisionPage from './pages/FormContractRevisionPage';
 import MessagePage from './pages/MessagePage';
 import FilterPage from './pages/FilterPage';
 import ListSearchProductPage from './pages/ListSearchProductPage';
+import LoginPage from './pages/LoginPage';
 /**
  *  List Component
  */
@@ -51,8 +52,8 @@ numeral.locale('id')
 class App extends React.Component {
     componentDidMount() {
         OneSignal.configure({});
-      }
-      
+    }
+
     componentWillMount() {
         OneSignal.addEventListener('received', this.onReceived);
         OneSignal.addEventListener('opened', this.onOpened);
@@ -120,14 +121,34 @@ class App extends React.Component {
             Message: { screen: MessagePage },
             ProfileSupplier: { screen: ProfileSupplierPage },
             Filter: { screen: FilterPage },
-            ListSearchProduct: { screen: ListSearchProductPage }
+            ListSearchProduct: { screen: ListSearchProductPage },
+            isLogin: { screen: LoginPage }
         }, {
                 cardStyle: { backgroundColor: '#FFF' }
             });
 
+        const DrawerSide = DrawerNavigator({
+            Home: {
+                screen: SimpleApp,
+                navigationOptions: {
+                    drawer: {
+                        label: 'Dashboard'
+                    }
+                }
+            },
+            isLogin: {
+                screen: LoginPage,
+                navigationOptions: {
+                    drawer: {
+                        label: 'Masuk/Daftar'
+                    },
+                }
+            }
+        })
+
         return (
             <View style={styles.container} >
-                <SimpleApp />
+                <DrawerSide />
             </View>
         );
     };
