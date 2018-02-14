@@ -59,7 +59,7 @@ class TransactionPage extends Component {
 
             axios.get(`${BASE_URL}/buyer/orders`, {
                 headers: {
-                    'token': this.state.tokenUser
+                    'token': result
                 }
             }).then(response => {
                 const result = response.data.data;
@@ -67,8 +67,9 @@ class TransactionPage extends Component {
                 this.setState({ dataTransaksi: result, loading: false });
             })
                 .catch(error => {
-                    console.log(error.message, 'Error nya');
-                    alert("Sorry, Something error!")
+                    console.log(error.response, 'Error nya');
+                    console.log('Error Transation Get Data');
+                    // alert("Sorry, Something error!")
                 })
         });
     }

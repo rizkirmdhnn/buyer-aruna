@@ -166,7 +166,7 @@ class HomePage extends Component {
             })
                 .then(response => {
                     const res = response.data.data;
-                    this.setState({ supplierList: res });
+                    this.setState({ supplierList: res, loading: false });
                     console.log(res, 'Data Supplier Popular');
 
                     axios.get(`${BASE_URL}/products/popular`, {
@@ -177,15 +177,16 @@ class HomePage extends Component {
                         .then(response => {
                             const res = response.data.data;
                             console.log(res, 'Data Product Popular');
-                            this.setState({ productList: res });
-                            this.setState({ loading: false })
+                            this.setState({ productList: res, loading: false });
                         })
                         .catch(error => {
-                            console.log('ERROR', error.message);
+                            this.setState({ loading: false })
+                            console.log('ERROR', error.response);
                         });
                 })
                 .catch(error => {
-                    console.log('ERROR', error.message);
+                    this.setState({ loading: false })
+                    console.log('ERROR', error.response);
                 });
         });
     }
@@ -223,9 +224,6 @@ class HomePage extends Component {
     _keyExtractor = (item, index) => item.id;
 
     renderProductItem = (itemProduct) => {
-        if (this.state.loading == true) {
-            return <Spinner size="small" />
-        }
         return (
             <View>
                 <TouchableWithoutFeedback onPress={() => {
@@ -238,22 +236,34 @@ class HomePage extends Component {
     }
 
     renderSupplierItem = (itemSupplier) => {
-        console.log(itemSupplier, 'Data Supplier');
-        if (this.state.loading == true) {
-            return <Spinner size="small" />
-        }
+        const number = parseInt(itemSupplier.index) + 1;
+        console.log(itemSupplier, ' ', itemSupplier.index, number,  'Data Supplier');
+    
         return (
-            <View>
-                <TouchableWithoutFeedback onPress={() => {
-                    this.goSupplier()
-                }}>
-                    <Image
-                        style={styles.item}
-                        source={{ uri: `${BASE_URL}/images/${itemSupplier.item.photo}` }}
-                        resizeMode='cover'
-                    />
-                </TouchableWithoutFeedback>
-            </View>
+            <TouchableWithoutFeedback onPress={() => {
+                this.goSupplier()
+            }}>
+                <View
+                    style={styles.itemContainerStyle}
+                    key={itemSupplier.index}
+                >
+                    <View style={styles.headerNumber}>
+                        <Text style={styles.headerTextStyleNumber}>{number}.</Text>
+                    </View>
+                    <View style={styles.headerContentStyle}>
+                        <Text style={styles.headerTextStyle}>{itemSupplier.item.name}</Text>
+                        <View style={{ flexDirection: 'column', flex: 1 }}>
+                           <Text style={{ color: 'grey' }}>{itemSupplier.item.organization}</Text>
+                        </View>
+                    </View>
+                    <View style={styles.thumbnailContainerStyle}>
+                        <Image
+                            style={styles.thumbnailStyle}
+                            source={{ uri: `${BASE_URL}/images/${itemSupplier.item.photo}` }}
+                        />
+                    </View>
+                </View>
+            </TouchableWithoutFeedback>
         )
     }
 
@@ -263,9 +273,13 @@ class HomePage extends Component {
         const {
             showAlert,
             requestExpanded,
-            searchItem
+            searchItem,
+            loading
         } = this.state;
 
+        if (loading) {
+            return <Spinner size="large" />
+        }
         return (
 
             <View style={styles.container}>
@@ -291,7 +305,7 @@ class HomePage extends Component {
                         onPress={() => {
                             this.credentialButton()
                         }}>
-                        Requests Now!
+                        Buat Permintaan
                     </Button>
 
                     <View>
@@ -299,29 +313,27 @@ class HomePage extends Component {
                     </View>
 
                     <View style={styles.containerTextProductCard}>
-                        <Text style={styles.textCard}>PRODUCT TERLARIS</Text>
+                        <Text style={styles.textCard}>Komoditas Favorit</Text>
                         <Text style={styles.textCardLink}>Lihat Semua</Text>
                     </View>
 
                     <View style={styles.containerFlatList}>
                         <FlatList
                             data={this.state.productList}
-                            numColumns={3}
-                            horizontal={false}
+                            horizontal={true}
                             keyExtractor={this._keyExtractor}
                             renderItem={this.renderProductItem.bind(this)}
                         />
                     </View>
 
                     <View style={styles.containerTextProductCard}>
-                        <Text style={styles.textCard}>PEMASOK POPULER</Text>
+                        <Text style={styles.textCard}>Supplier Popular</Text>
                         <Text style={styles.textCardLink}>Lihat Semua</Text>
                     </View>
 
-                    <View style={styles.containerFlatList}>
+                    <View style={styles.containerFlatListSupplier}>
                         <FlatList
                             data={this.state.supplierList}
-                            numColumns={3}
                             horizontal={false}
                             keyExtractor={this._keyExtractor}
                             renderItem={this.renderSupplierItem.bind(this)}
@@ -359,10 +371,34 @@ class HomePage extends Component {
 
 
 const styles = {
+    thumbnailStyle: {
+        alignSelf: 'stretch',
+        height: 100,
+        width: 100,
+        borderWidth: 1,
+        resizeMode: 'cover'
+    },
+    thumbnailContainerStyle: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 15,
+    },
+    itemContainerStyle: {
+        borderBottomWidth: 1,
+        padding: 5,
+        justifyContent: 'flex-start',
+        flexDirection: 'row',
+        borderColor: '#ddd',
+    },
     containerFlatList: {
         flex: 1,
         backgroundColor: '#F5FCFF',
         flexDirection: 'column',
+    },
+    containerFlatListSupplier: {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'space-between',
     },
     container: {
         flex: 1
@@ -412,7 +448,33 @@ const styles = {
         height: 116,
         borderWidth: 1,
         borderColor: 'black',
-        margin: 2
+        margin: 2,
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+    },
+    headerTextStyle: {
+        marginTop: 10,
+        fontSize: 15,
+        color: 'grey',
+    },
+    headerTextStyleNumber: {
+        marginTop: 10,
+        fontSize: 25,
+        color: 'black'
+    },
+    headerNumber: {
+        marginTop: 30,
+        marginRight: 30,
+        marginLeft: 30,
+        flexDirection: 'column',
+    },
+    headerContentStyle: {
+        flex: 1,
+        marginRight: 15,
+        marginTop: 30,
+        marginBottom: 10,
+        flexDirection: 'column',
+        justifyContent: 'space-around'
     }
 }
 

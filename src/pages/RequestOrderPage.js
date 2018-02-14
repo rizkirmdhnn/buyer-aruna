@@ -36,7 +36,7 @@ class RequestOrderPage extends Component {
 
             axios.get(`${BASE_URL}/buyer/requests`, {
                 headers: {
-                    'token': this.state.tokenUser
+                    'token': result
                 }
             }).then(response => {
                 res = response.data.data;
@@ -45,8 +45,9 @@ class RequestOrderPage extends Component {
                 this.setState({ loading: false });
             })
                 .catch(error => {
-                    console.log(error.message, 'Error nya');
-                    alert('Koneksi internet bermasalah');
+                    console.log(error.response, 'Error nya');
+                    console.log('Error Request Order Get Data');
+                    // alert('Koneksi internet bermasalah');
                 })
         })
     }

@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { Text, Image, View, TouchableOpacity, ScrollView, AsyncStorage } from 'react-native';
-import { Card, CardSection, Input, Spinner } from './../components/common';
+import { Text, Image, View, TouchableOpacity, ScrollView, AsyncStorage, resizeMode } from 'react-native';
+import { Card, CardSection, Input, Spinner, Container, ContainerSection, Button } from './../components/common';
 import axios from 'axios';
-import { Button } from 'react-native-elements';
 import OneSignal from 'react-native-onesignal';
 import RegistrationFormPage from './../pages/RegistrationFormPage';
 import { BASE_URL } from './../shared/lb.config';
@@ -10,14 +9,13 @@ import jwtDecode from 'jwt-decode';
 
 class LoginFormPage extends Component {
     static navigationOptions = {
-        headerLeft: null
+        header: null
     }
     state = {
         email: '',
         password: '',
         error: '',
         loading: false,
-
         dataRedirect: ''
     };
 
@@ -51,19 +49,23 @@ class LoginFormPage extends Component {
                         error: ''
                     });
                     OneSignal.sendTags({ 'userid': deco.user.id });
-                });
-                OneSignal.getTags((receivedTags) => {
-                    console.log(receivedTags, 'Get Tag');
+                    OneSignal.getTags((receivedTags) => {
+                        console.log(receivedTags, 'Get Tag');
+                    });
                 });
                 navigate(this.state.dataRedirect);
             })
             .catch(error => {
                 console.log(error.response)
-                // this.onLoginFail.bind(this)
-                this.setState({ error: 'Authentication Failed', loading: false });
+                this.setState({ error: 'Username & Kata Sandi tidak cocok. Silahkan coba lagi.', loading: false });
                 console.log('ERROR', error.message);
+                this.renderError.bind(this)
             });
 
+    }
+
+    onChange = (name, value) => {
+        this.setState({ [name]: value })
     }
 
     renderButton() {
@@ -72,11 +74,9 @@ class LoginFormPage extends Component {
         }
 
         return (
-            <Button
-                title="Login"
-                buttonStyle={styles.buttonStyle}
-                onPress={this.onButtonPress.bind(this)}
-            />
+            <Button onPress={this.onButtonPress.bind(this)}>
+                Login
+			</Button>
         );
     }
 
@@ -89,110 +89,89 @@ class LoginFormPage extends Component {
         });
         navigate('HomePage');
     }
-    static navigationOptions = {
-        // title: 'RegistrationForm',
-        headerStyle: { backgroundColor: '#006AAF' },
-        headerTitleStyle: { color: '#FFFFFF' }
-    }
 
+    renderError = () => {
+        return (
+            <Text style={styles.errorTextStyle}>
+                {this.state.error}
+            </Text>
+        )
+    }
 
     render() {
         const { navigate } = this.props.navigation
+        const { email, password } = this.state
+        console.log(this.state)
 
         return (
             <ScrollView>
-                <Card>
-                    <CardSection>
-                        <Image
-                            style={styles.imageStyle}
-                            source={require('./../assets/image/logo.png')}
-                        />
-                    </CardSection>
+                <View style={styles.container}>
+                    <Container>
+                        <ContainerSection>
+                            <View style={{ flex: 1, marginBottom: 30 }}>
+                                <Image
+                                    style={{ alignSelf: 'center' }}
+                                    source={require('./../assets/images/logo.png')}
+                                />
+                            </View>
+                        </ContainerSection>
 
-                    <CardSection>
-                        <Input
-                            placeholder="Username/email"
-                            label="Email"
-                            value={this.state.email}
-                            onChangeText={email => this.setState({ email })}
-                        />
-                    </CardSection>
+                        {this.renderError()}
 
-                    <CardSection>
-                        <Input
-                            secureTextEntry
-                            placeholder="Password"
-                            label="Password"
-                            value={this.state.password}
-                            onChangeText={password => this.setState({ password })}
-                        />
-                    </CardSection>
+                        <ContainerSection>
+                            <Input
+                                label='Email'
+                                onChangeText={val => this.onChange('email', val)}
+                                value={email}
+                            />
+                        </ContainerSection>
+                        <ContainerSection>
+                            <Input
+                                label='Password'
+                                secureTextEntry
+                                onChangeText={val => this.onChange('password', val)}
+                                value={password}
+                            />
+                        </ContainerSection>
 
-                    <Text style={styles.errorText}>
-                        {this.state.error}
-                    </Text>
+                        <ContainerSection>
+                            {this.renderButton()}
+                        </ContainerSection>
+                    </Container>
 
-                    <CardSection>
-                        {this.renderButton()}
-                    </CardSection>
-
-                    <CardSection>
-                        <Text style={styles.textBottom}>
-                            Belom memiliki akun?
-                        </Text>
-
-                        <TouchableOpacity onPress={() => navigate('RegistrationForm')}>
-                            <Text style={styles.textLinkSignUp}>Sign Up</Text>
+                    <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
+                        <Text style={{ textAlign: 'center' }}>
+                            Belum punya akun?
+					</Text>
+                        <TouchableOpacity onPress={() => navigate('Register')}>
+                            <Text style={{ color: 'green', fontWeight: 'bold' }}>
+                                {` Registrasi`}
+                            </Text>
                         </TouchableOpacity>
+                    </View>
 
-                    </CardSection>
-
-                    <CardSection>
-                        <Text style={styles.textLinkForgetPassword}>Lupa Password?</Text>
-                    </CardSection>
-                </Card>
+                    <TouchableOpacity onPress={() => this.props.navigation.navigate('ForgotPassword')}>
+                        <Text style={{ textAlign: 'center', marginTop: 10, color: 'green', fontWeight: 'bold' }}>
+                            Lupa Password?
+					</Text>
+                    </TouchableOpacity>
+                </View>
             </ScrollView>
-        );
+        )
     }
-};
-
+}
 
 const styles = {
-    buttonStyle: {
-        backgroundColor: '#006AAF',
-        width: 318,
-        height: 50,
-        margin: 5,
-        borderRadius: 5
+    container: {
+        marginTop: 100,
+        justifyContent: 'center'
     },
-    errorText: {
-        fontSize: 20,
-        alignSelf: 'center',
+    errorTextStyle: {
+        textAlign: 'center',
         color: 'red'
-    },
-    imageStyle: {
-        flex: 1,
-        marginTop: 80,
-        marginBottom: 80,
-        height: 70,
-        width: 500,
-        alignSelf: 'center'
-    },
-    textBottom: {
-        margin: 5,
-        marginLeft: 70,
-        color: 'black'
-    },
-    textLinkSignUp: {
-        margin: 5,
-        color: '#30B2EC'
-    },
-    textLinkForgetPassword: {
-        marginLeft: 120,
-        margin: 5,
-        color: '#30B2EC'
     }
-};
+}
+
 
 
 export default LoginFormPage;
