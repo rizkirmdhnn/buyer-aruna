@@ -26,9 +26,9 @@ import moment from 'moment';
 class RequestFormOrderSecondPage extends Component {
 
     static navigationOptions = {
-        title: 'Create Request Order',
+        title: 'Pilih Supplier',
         headerStyle: { backgroundColor: '#006AAF' },
-        headerTitleStyle: { color: '#FFFFFF' }
+        headerTitleStyle: { color: '#FFFFFF', paddingLeft: '25%' }
     }
 
     constructor(props) {
@@ -36,7 +36,7 @@ class RequestFormOrderSecondPage extends Component {
         this.state = {
             datax: [{}],
             dataSupplier: [{}],
-            loading: null,
+            loading: true,
             loader: null,
             checked: [],
             idSupplier: []
@@ -50,7 +50,6 @@ class RequestFormOrderSecondPage extends Component {
 
     componentDidMount() {
         console.log(this.state.datax, 'Data 2');
-        this.setState({ loading: true });
         AsyncStorage.getItem('loginCredential', (err, result) => {
 
             const token = result;
@@ -93,21 +92,6 @@ class RequestFormOrderSecondPage extends Component {
             });
         }
     };
-
-    renderLoading = () => {
-        if (this.state.loading == true) {
-            return <Spinner size="small" />
-        } else if (this.state.loading == false) {
-            return (
-                <View>
-                    <FlatList
-                        data={[this.state.dataSupplier]}
-                        renderItem={({ item }) => this.renderItem(item)}
-                    />
-                </View>
-            );
-        }
-    }
 
     onSubmit = () => {
         console.log('Submit Request');
@@ -164,10 +148,9 @@ class RequestFormOrderSecondPage extends Component {
 
     renderButton = () => {
         const { navigate } = this.props.navigation;
-        if (this.state.loading || this.state.loader) {
-            return <View style={styles.loadingStyle}><Spinner size='large' /></View>
+        if (this.state.loader) {
+            return <Spinner size='large' />
         }
-
         return (
             <Button
                 onPress={
@@ -196,13 +179,15 @@ class RequestFormOrderSecondPage extends Component {
                     <View style={styles.thumbnailContainerStyle}>
                         <Image
                             style={styles.thumbnailStyle}
-                            source={require('./../assets/image/photo.png')}
+                            source={{ uri: `${BASE_URL}/images/${data.User.photo}` }} 
+                            resizeMode='cover'
                         />
                     </View>
                     <View style={styles.headerContentStyle}>
                         <Text style={styles.hedaerTextStyle}>{data.User.name}</Text>
                         <View style={{ flexDirection: 'row' }}>
                             <Text style={{ flex: 1, fontWeight: 'bold' }}>500 Kg </Text>
+                            <Text style={{ flex: 1, fontWeight: 'bold' }}>{data.User.organization}</Text>
                             <Text style={{ flex: 1, fontWeight: 'bold' }}>{data.minBudget}</Text>
                             <Text style={{ flex: 1, fontWeight: 'bold' }}>{data.maxBudget} </Text>
                             <View style={{ flex: 1 }}>
@@ -220,50 +205,25 @@ class RequestFormOrderSecondPage extends Component {
 
     }
 
+    render() {
+        
+        if (this.state.loading) {
+            return <Spinner size="large" />
+        }
 
-    renderData = (item) => {
-        console.log(item, 'Item Data')
         return (
-            <View style={styles.itemContainerStyle}>
-                <View style={styles.thumbnailContainerStyle}>
-                    <Image
-                        style={styles.thumbnailStyle}
-                        source={{ uri: this.state.datax.photo.uri }}
+            <ScrollView>
+                <View>
+                    <FlatList
+                        data={[this.state.dataSupplier]}
+                        renderItem={({ item }) => this.renderItem(item)}
                     />
+
+                    <ContainerSection>
+                        {this.renderButton()}
+                    </ContainerSection>
                 </View>
-                <View style={styles.headerContentStyle}>
-                    <Text style={styles.headerTextStyle}>{item.value}</Text>
-                    <View style={{ flexDirection: 'column', flex: 1 }}>
-                        <Text style={styles.titleTextStyle}>{item.quantity} Kg</Text>
-                        <Text>Rp. {item.minBudget} - {item.maxBudget}</Text>
-                        {/* <Text>Batas Waktu: {item.datePick}</Text> */}
-                    </View>
-                </View>
-            </View>
-        )
-    }
-
-    render(props) {
-
-        return (
-            <View>
-                <FlatList
-                    data={[this.state.datax]}
-                    renderItem={({ item }) => this.renderData(item)}
-                    keyExtractor={(item, index) => item.cityId}
-                />
-                <View style={styles.containerScroll}>
-                    <ScrollView
-                    >
-                        {this.renderLoading()}
-                    </ScrollView>
-                </View>
-
-                <ContainerSection>
-                    {this.renderButton()}
-                </ContainerSection>
-
-            </View>
+            </ScrollView>
         );
     }
 };

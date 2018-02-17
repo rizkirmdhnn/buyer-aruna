@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, FlatList, View, Image, TouchableWithoutFeedback, AsyncStorage, resizeMode } from 'react-native';
+import { Text, FlatList, View, Image, TouchableWithoutFeedback, AsyncStorage, resizeMode, ScrollView } from 'react-native';
 import { Header, SearchBar, Icon } from 'react-native-elements';
 import { BASE_URL } from './../shared/lb.config';
 import axios from 'axios';
@@ -13,6 +13,7 @@ import {
     Spinner
 } from './../components/common';
 import moment from 'moment';
+import { Card } from 'react-native-elements';
 
 
 class RequestOrderPage extends Component {
@@ -28,28 +29,34 @@ class RequestOrderPage extends Component {
         };
     };
 
-    componentWillMount() {
-        this.setState({ loading: true });
+    async componentWillMount() {
+        try {
+            const value = await AsyncStorage.getItem('loginCredential');
+            if (value !== null) {
+                console.log(value, 'Storage Request');
+                this.setState({ tokenUser: value })
+                return this.getData();
+            }
+        } catch (error) {
+            console.log(error, 'Error Storage Request');
+        }
+    }
 
-        AsyncStorage.getItem('loginCredential', (err, result) => {
-            this.setState({ tokenUser: result });
-
-            axios.get(`${BASE_URL}/buyer/requests`, {
-                headers: {
-                    'token': result
-                }
-            }).then(response => {
-                res = response.data.data;
-                console.log(res, 'Data Request Order');
-                this.setState({ dataReqOrder: res });
-                this.setState({ loading: false });
-            })
-                .catch(error => {
-                    console.log(error.response, 'Error nya');
-                    console.log('Error Request Order Get Data');
-                    // alert('Koneksi internet bermasalah');
-                })
+    getData() {
+        axios.get(`${BASE_URL}/buyer/requests?key=to&page=0&pageSize=4&sorting=desc`, {
+            headers: {
+                'token': this.state.tokenUser
+            }
+        }).then(response => {
+            res = response.data.data;
+            console.log(res, 'Data Request Order');
+            this.setState({ dataReqOrder: res, loading: false });
         })
+            .catch(error => {
+                this.setState({ loading: false });
+                console.log(error.response, 'Error nya');
+                console.log('Error Request Order Get Data');
+            })
     }
 
     static navigationOptions = {
@@ -73,41 +80,36 @@ class RequestOrderPage extends Component {
         )
     }
 
+    refreshRequest() {
+        return this.getData();
+    }
+
     renderData = (item) => {
-        return item.map((datax) => {
+        console.log(item, 'Data ReQ');
+        if (item === '') {
+            return (
+                <View style={{ paddingTop: '50%' }}>
+                    <Text style={{ color: 'grey', paddingLeft: '25%' }}>
+                        Ups.. Your connection internet to slow!
+                </Text>
+                    <Button onPress={() => this.refreshRequest()}>
+                        Tap Tap Me Please!
+                </Button>
+                </View>
+            );
+        }
+
+        return item.map((datax, index) => {
             const dateFormat = moment(datax.expiredAt).format('DD/MM/YYYY');
             const timeFormat = moment(datax.expiredAt).format('h:mm:ss');
             if (datax.Status.id == 19) {
                 if (datax.sanggup == 0) {
                     return (
-                        <View
-                            style={styles.itemContainerStyle}
-                            key={datax.id}
-                        >
-                            <View style={styles.thumbnailContainerStyle}>
-                                <Image
-                                    style={styles.thumbnailStyle}
-                                    source={{ uri: `${BASE_URL}/images/${datax.Fish.photo}` }}
-                                />
-                            </View>
-                            <View style={styles.headerContentStyle}>
-                                <Text style={styles.headerTextStyle}>{datax.Fish.name}</Text>
-                                <View style={{ flexDirection: 'column', flex: 1 }}>
-                                    <Text style={{ fontSize: 13 }}>Batas Waktu: {dateFormat} Pukul: {timeFormat} </Text>
-                                    <Text style={{ color: 'red', fontWeight: 'bold' }}>Expired</Text>
-                                </View>
-                            </View>
-                        </View>
-                    );
-                }
-
-                if (datax.sanggup > 0) {
-                    return (
-                        <TouchableWithoutFeedback
-                            onPress={() => this.detailOrder(datax)}
-                            key={datax.id}
-                        >
-                            <View style={styles.itemContainerStyle}>
+                        <Card>
+                            <View
+                                style={styles.itemContainerStyle}
+                                key={datax.id}
+                            >
                                 <View style={styles.thumbnailContainerStyle}>
                                     <Image
                                         style={styles.thumbnailStyle}
@@ -118,10 +120,37 @@ class RequestOrderPage extends Component {
                                     <Text style={styles.headerTextStyle}>{datax.Fish.name}</Text>
                                     <View style={{ flexDirection: 'column', flex: 1 }}>
                                         <Text style={{ fontSize: 13 }}>Batas Waktu: {dateFormat} Pukul: {timeFormat} </Text>
-                                        <Text>{datax.sanggup} Sanggup | {datax.tidakSanggup} Menolak | {datax.menunggu} Menunggu</Text>
+                                        <Text style={{ color: 'red', fontWeight: 'bold' }}>Expired</Text>
                                     </View>
                                 </View>
                             </View>
+                        </Card>
+                    );
+                }
+
+                if (datax.sanggup > 0) {
+                    return (
+                        <TouchableWithoutFeedback
+                            onPress={() => this.detailOrder(datax)}
+                            key={datax.id}
+                        >
+                            <Card>
+                                <View style={styles.itemContainerStyle}>
+                                    <View style={styles.thumbnailContainerStyle}>
+                                        <Image
+                                            style={styles.thumbnailStyle}
+                                            source={{ uri: `${BASE_URL}/images/${datax.Fish.photo}` }}
+                                        />
+                                    </View>
+                                    <View style={styles.headerContentStyle}>
+                                        <Text style={styles.headerTextStyle}>{datax.Fish.name}</Text>
+                                        <View style={{ flexDirection: 'column', flex: 1 }}>
+                                            <Text style={{ fontSize: 13 }}>Batas Waktu: {dateFormat} Pukul: {timeFormat} </Text>
+                                            <Text>{datax.sanggup} Sanggup | {datax.tidakSanggup} Menolak | {datax.menunggu} Menunggu</Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            </Card>
                         </TouchableWithoutFeedback>
                     );
                 }
@@ -130,19 +159,15 @@ class RequestOrderPage extends Component {
     }
 
     renderFlatList = () => {
-        if (this.state.loading) {
-            return <Spinner size="small" />
-        } else {
-            return (
-                <View>
-                    <FlatList
-                        data={[this.state.dataReqOrder]}
-                        renderItem={({ item }) => this.renderData(item)}
-                        keyExtractor={(item, index) => index}
-                    />
-                </View>
-            );
-        }
+        return (
+            <View>
+                <FlatList
+                    data={[this.state.dataReqOrder]}
+                    renderItem={({ item }) => this.renderData(item)}
+                    keyExtractor={(item, index) => index}
+                />
+            </View>
+        );
     }
 
 
@@ -153,21 +178,24 @@ class RequestOrderPage extends Component {
 
 
     render() {
+        if (this.state.loading) {
+            return <Spinner size="large" />
+        }
         return (
-            <View>
-                {this.renderFlatList()}
-            </View>
+            <ScrollView>
+                <View>
+                    {this.renderFlatList()}
+                </View>
+            </ScrollView>
         );
     }
 };
 
 const styles = {
     itemContainerStyle: {
-        borderBottomWidth: 1,
         padding: 5,
         justifyContent: 'flex-start',
-        flexDirection: 'row',
-        borderColor: '#ddd',
+        flexDirection: 'row'
     },
     thumbnailContainerStyle: {
         justifyContent: 'center',

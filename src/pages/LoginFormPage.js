@@ -25,10 +25,9 @@ class LoginFormPage extends Component {
     }
 
     onButtonPress() {
-        console.log('Start');
-        const { email, password } = this.state;
         this.setState({ error: '', loading: true });
-        const { navigate } = this.props.navigation;
+
+        const { email, password } = this.state;
         axios.post(`${BASE_URL}/login`, {
             'email': email,
             'password': password
@@ -37,23 +36,25 @@ class LoginFormPage extends Component {
                     'Content-Type': 'application/json',
                 }
             })
-            .then(response => {
-                console.log('SUKSES', response);
+            .then(async response => {
+                console.log('SUKSES', response.data.token);
                 const deco = jwtDecode(response.data.token);
                 console.log(deco, 'Result Decode Token');
-                AsyncStorage.setItem('loginCredential', response.data.token).then(() => {
-                    this.setState({
-                        email: '',
-                        password: '',
-                        loading: false,
-                        error: ''
-                    });
+                this.setState({
+                    email: '',
+                    password: '',
+                    loading: false,
+                    error: ''
+                });
+                AsyncStorage.setItem('loginCredential', response.data.token, () => {
+                    console.log('Sukses');
                     OneSignal.sendTags({ 'userid': deco.user.id });
                     OneSignal.getTags((receivedTags) => {
                         console.log(receivedTags, 'Get Tag');
                     });
+                    const { navigate } = this.props.navigation;
+                    navigate(this.state.dataRedirect);
                 });
-                navigate(this.state.dataRedirect);
             })
             .catch(error => {
                 console.log(error.response)
@@ -61,7 +62,6 @@ class LoginFormPage extends Component {
                 console.log('ERROR', error.message);
                 this.renderError.bind(this)
             });
-
     }
 
     onChange = (name, value) => {
@@ -74,7 +74,7 @@ class LoginFormPage extends Component {
         }
 
         return (
-            <Button onPress={this.onButtonPress.bind(this)}>
+            <Button onPress={() => this.onButtonPress()}>
                 Login
 			</Button>
         );
@@ -108,9 +108,9 @@ class LoginFormPage extends Component {
                 <View style={styles.container}>
                     <Container>
                         <ContainerSection>
-                            <View style={{ flex: 1, marginBottom: 30, width: 100}}>
+                            <View style={{ flex: 1, marginBottom: 30, width: 100 }}>
                                 <Image
-                                    style={{ alignSelf: 'center'  }}
+                                    style={{ alignSelf: 'center' }}
                                     source={require('./../assets/images/logo.png')}
                                 />
                             </View>

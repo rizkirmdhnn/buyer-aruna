@@ -311,10 +311,12 @@ class HomePage extends Component {
                             </TouchableOpacity>
                         )
                     }
-                    <Image
-                        style={styles.imageStyle}
-                        source={require('./../assets/image/fish_1.jpg')}
-                    />
+                    <View style={{ flex: 1 }}>
+                        <Image
+                            style={styles.imageStyle}
+                            source={require('./../assets/image/fish_1.jpg')}
+                        />
+                    </View>
 
                     <Button
                         onPress={() => {
@@ -451,8 +453,8 @@ const styles = {
         marginTop: 8
     },
     imageStyle: {
-        width: 380,
-        height: 180
+        width: 500,
+        height: 200
     },
     productCardStyle: {
         width: 93,

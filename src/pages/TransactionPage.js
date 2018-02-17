@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { 
-    Text, 
-    View, 
-    AsyncStorage, 
-    FlatList, 
-    Image, 
-    TouchableWithoutFeedback 
+import {
+    Text,
+    View,
+    AsyncStorage,
+    FlatList,
+    Image,
+    TouchableWithoutFeedback,
+    ScrollView
 } from 'react-native';
 import { Header, SearchBar, Icon } from 'react-native-elements';
 import axios from 'axios';
@@ -16,9 +17,11 @@ import {
     InputRegistration,
     ContainerSection,
     Container,
-    Spinner
+    Spinner,
+    Button
 } from './../components/common';
 import moment from 'moment';
+import { Card } from 'react-native-elements';
 
 class TransactionPage extends Component {
     static navigationOptions = {
@@ -52,26 +55,35 @@ class TransactionPage extends Component {
     };
 
 
-    componentDidMount() {
-        this.setState({ loading: true });
-        AsyncStorage.getItem('loginCredential', (err, result) => {
-            this.setState({ tokenUser: result });
+    async componentWillMount() {
+        try {
+            const value = await AsyncStorage.getItem('loginCredential');
+            if (value !== null) {
+                console.log(value, 'Storage Request');
+                this.setState({ tokenUser: value })
+                return this.getData();
+            }
+        } catch (error) {
+            console.log(error, 'Error Storage Request');
+        }
+    }
 
-            axios.get(`${BASE_URL}/buyer/orders`, {
-                headers: {
-                    'token': result
-                }
-            }).then(response => {
-                const result = response.data.data;
-                console.log(response, 'Data Transaksi');
-                this.setState({ dataTransaksi: result, loading: false });
+    getData() {
+        console.log('API FIRE!')
+        axios.get(`${BASE_URL}/buyer/orders?page=0&pageSize=10&sorting=DESC`, {
+            headers: {
+                'token': this.state.tokenUser
+            }
+        }).then(response => {
+            const result = response.data.data;
+            console.log(response, 'Data Transaksi');
+            this.setState({ dataTransaksi: result, loading: false });
+        })
+            .catch(error => {
+                this.setState({ loading: false });
+                console.log(error.response, 'Error nya');
+                console.log('Error Transation Get Data');
             })
-                .catch(error => {
-                    console.log(error.response, 'Error nya');
-                    console.log('Error Transation Get Data');
-                    // alert("Sorry, Something error!")
-                })
-        });
     }
 
     detailTransaction = (props) => {
@@ -79,7 +91,24 @@ class TransactionPage extends Component {
         this.props.navigation.navigate('DetailTransaction', { datas: dataTransaction })
     }
 
+    refreshRequest() {
+        return this.getData();
+    }
+
     renderData = (item) => {
+        console.log(item, 'Data Trans');
+        if (item.length === 0) {
+            return (
+                <View style={{ paddingTop: '50%' }}>
+                    <Text style={{ color: 'grey', paddingLeft: '25%' }}>
+                        Ups.. Your connection internet to slow!
+                    </Text>
+                    <Button onPress={() => this.refreshRequest()}>
+                        Tap Tap Me Please!
+                    </Button>
+                </View>
+            );
+        }
         return item.map((item, index) => {
             const dateFormat = moment(item.Request.Transaction.updatedAt).format('DD/MM/YYYY');
             const timeFormat = moment(item.Request.Transaction.updatedAt).format('h:mm:ss');
@@ -88,48 +117,50 @@ class TransactionPage extends Component {
                     key={item.id}
                     onPress={() => this.detailTransaction(item)}
                 >
-                    <View style={styles.itemContainerStyle}>
-                        <View style={styles.thumbnailContainerStyle}>
-                            <Image
-                                style={styles.thumbnailStyle}
-                                source={{ uri: `${BASE_URL}/images/${item.Request.Transaction.photo}` }}
-                            />
-                        </View>
-                        <View style={{ flexDirection: 'column', flex: 1 }}>
+                    <Card>
+                        <View style={styles.itemContainerStyle}>
+                            <View style={styles.thumbnailContainerStyle}>
+                                <Image
+                                    style={styles.thumbnailStyle}
+                                    source={{ uri: `${BASE_URL}/images/${item.Request.Transaction.photo}` }}
+                                />
+                            </View>
+                            <View style={{ flexDirection: 'column', flex: 1 }}>
+                                <View>
+                                    <Text style={styles.headerTextStyle}>{item.Request.Transaction.Fish.name} - {item.Request.Transaction.size} Kg</Text>
+                                    <Text style={styles.titleTextStyle}>{item.Request.Supplier.name}</Text>
+                                </View>
+
+                                <View style={{ flexDirection: 'row', flex: 1 }}>
+                                    <Image
+                                        style={styles.trackingImage}
+                                        source={require('./../assets/image/ts1.png')}
+                                    />
+                                    <Image
+                                        style={styles.trackingImage}
+                                        source={require('./../assets/image/ts2.png')}
+                                    />
+                                    <Image
+                                        style={styles.trackingImage}
+                                        source={require('./../assets/image/ts3.png')}
+                                    />
+                                    <Image
+                                        style={styles.trackingImage}
+                                        source={require('./../assets/image/ts4.png')}
+                                    />
+                                    <Image
+                                        style={styles.trackingImage}
+                                        source={require('./../assets/image/ts5.png')}
+                                    />
+                                </View>
+                            </View>
+
                             <View>
-                                <Text style={styles.headerTextStyle}>{item.Request.Transaction.Fish.name} - {item.Request.Transaction.size} Kg</Text>
-                                <Text style={styles.titleTextStyle}>{item.Request.Supplier.name}</Text>
-                            </View>
-
-                            <View style={{ flexDirection: 'row', flex: 1 }}>
-                                <Image
-                                    style={styles.trackingImage}
-                                    source={require('./../assets/image/ts1.png')}
-                                />
-                                <Image
-                                    style={styles.trackingImage}
-                                    source={require('./../assets/image/ts2.png')}
-                                />
-                                <Image
-                                    style={styles.trackingImage}
-                                    source={require('./../assets/image/ts3.png')}
-                                />
-                                <Image
-                                    style={styles.trackingImage}
-                                    source={require('./../assets/image/ts4.png')}
-                                />
-                                <Image
-                                    style={styles.trackingImage}
-                                    source={require('./../assets/image/ts5.png')}
-                                />
+                                <Text>DP Dibayar</Text>
+                                <Text>{dateFormat}</Text>
                             </View>
                         </View>
-
-                        <View>
-                            <Text>DP Dibayar</Text>
-                            <Text>{dateFormat}</Text>
-                        </View>
-                    </View>
+                    </Card>
                 </TouchableWithoutFeedback>
             )
         })
@@ -154,9 +185,11 @@ class TransactionPage extends Component {
 
     render() {
         return (
-            <View>
-                {this.renderTransaksi()}
-            </View>
+            <ScrollView>
+                <View>
+                    {this.renderTransaksi()}
+                </View>
+            </ScrollView>
         );
     }
 };
@@ -170,11 +203,9 @@ const styles = {
         borderRadius: 8
     },
     itemContainerStyle: {
-        borderBottomWidth: 1,
         padding: 5,
         justifyContent: 'flex-start',
-        flexDirection: 'row',
-        borderColor: '#ddd',
+        flexDirection: 'row'
     },
     thumbnailContainerStyle: {
         justifyContent: 'center',

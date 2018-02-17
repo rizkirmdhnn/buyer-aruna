@@ -42,7 +42,7 @@ class RequestFormOrderFirstPage extends Component {
     static navigationOptions = ({ navigation, screenProps }) => ({
         title: 'Buat Permintaan',
         headerStyle: { backgroundColor: '#006AAF' },
-        headerTitleStyle: { color: '#FFFFFF', paddingLeft: 30 },
+        headerTitleStyle: { color: '#FFFFFF', paddingLeft: '25%' },
         headerLeft:
             <TouchableOpacity
                 onPress={() => { navigation.navigate('Home') }}
@@ -613,7 +613,8 @@ const styles = {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#F5FCFF'
+        backgroundColor: 'orange',
+        width: 500
     },
     avatarContainer: {
         borderRadius: 10,
@@ -625,8 +626,8 @@ const styles = {
     },
     avatar: {
         resizeMode: 'stretch',
-        width: 320,
-        height: 130
+        width: 450,
+        height: 180
     }
 }
 

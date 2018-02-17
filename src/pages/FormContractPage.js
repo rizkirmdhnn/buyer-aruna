@@ -154,7 +154,7 @@ class FormContractPage extends Component {
     }
 
     onSubmit = () => {
-        console.log(this.state.dpAmount,'', this.state.price);
+        console.log(this.state.dpAmount, '', this.state.price);
 
         // if (this.state.quantity == '') {
         //     alert('Anda belum mengisi Kuantitas');
@@ -177,59 +177,59 @@ class FormContractPage extends Component {
         //     Keyboard.dismiss();
 
 
-            const dataContract = {
-                "fishDescribe": this.state.dataMaster.Request.Transaction.describe,
-                "size": this.state.dataMaster.Request.Transaction.size,
-                "quantity": this.state.quantity,
-                "price": this.state.price,
-                "name": this.state.dataMaster.Request.Supplier.name,
-                "idNumber": this.state.dataMaster.Request.Supplier.idNumber,
-                "organization": this.state.dataMaster.Request.Supplier.organization,
-                "location": this.state.dataMaster.Request.Supplier.address,
-                "shippingMethod": 'JNE',
-                "locationOfreception": this.state.locationOfreception,
-                "dateOfReception": this.state.dateOfReception,
-                "dpAmount": this.state.dpAmount,
-                "dpDate": this.state.dpDate,
-                "fishReject": this.state.fishReject,
-                "maxFishReject": this.state.maxFishReject
-            }
+        const dataContract = {
+            "fishDescribe": this.state.dataMaster.Request.Transaction.describe,
+            "size": this.state.dataMaster.Request.Transaction.size,
+            "quantity": this.state.quantity,
+            "price": this.state.price,
+            "name": this.state.dataMaster.Request.Supplier.name,
+            "idNumber": this.state.dataMaster.Request.Supplier.idNumber,
+            "organization": this.state.dataMaster.Request.Supplier.organization,
+            "location": this.state.dataMaster.Request.Supplier.address,
+            "shippingMethod": 'JNE',
+            "locationOfreception": this.state.locationOfreception,
+            "dateOfReception": this.state.dateOfReception,
+            "dpAmount": this.state.dpAmount,
+            "dpDate": this.state.dpDate,
+            "fishReject": this.state.fishReject,
+            "maxFishReject": this.state.maxFishReject
+        }
 
-            const idTransaction = this.state.dataMaster.id;
+        const idTransaction = this.state.dataMaster.id;
 
-            AsyncStorage.getItem('loginCredential', (err, result) => {
-                const token = result;
-                console.log(token)
-                console.log(dataContract, 'Data Contrak');
-                console.log(idTransaction, 'ID Transaction');
-                axios.post(`${BASE_URL}/buyer/orders/${idTransaction}/contracts`,
-                    dataContract
-                    , {
-                        headers: {
-                            'token': token,
-                            'Content-Type': 'application/json',
-                        }
-                    }).then(response => {
-                        res = response.data.data;
-                        console.log(response, 'RES');
+        AsyncStorage.getItem('loginCredential', (err, result) => {
+            const token = result;
+            console.log(token)
+            console.log(dataContract, 'Data Contrak');
+            console.log(idTransaction, 'ID Transaction');
+            axios.post(`${BASE_URL}/buyer/orders/${idTransaction}/contracts`,
+                dataContract
+                , {
+                    headers: {
+                        'token': token,
+                        'Content-Type': 'application/json',
+                    }
+                }).then(response => {
+                    res = response.data.data;
+                    console.log(response, 'RES');
 
-                        Alert.alert(
-                            '',
-                            'Data kontrak berhasil disimpan. Silahkan tunggu jawaban dari Nelayan',
-                            [
-                                { text: 'Ok', onPress: () => this.navigationRedirect() },
-                            ]
-                        )
+                    Alert.alert(
+                        '',
+                        'Data kontrak berhasil disimpan. Silahkan tunggu jawaban dari Nelayan',
+                        [
+                            { text: 'Ok', onPress: () => this.navigationRedirect() },
+                        ]
+                    )
 
 
-                    })
-                    .catch(error => {
-                        console.log(error.message, 'Error nya');
-                        console.log(error.response, 'Error nya');
-                        console.log(error, 'Error nya');
-                        alert(error.message.data)
-                    })
-            })
+                })
+                .catch(error => {
+                    console.log(error.message, 'Error nya');
+                    console.log(error.response, 'Error nya');
+                    console.log(error, 'Error nya');
+                    alert(error.message.data)
+                })
+        })
         // }
     }
 
@@ -257,7 +257,7 @@ class FormContractPage extends Component {
                     )
                 }
             >
-                Selanjutnya
+                Buat Kontrak
 			</Button>
         )
     }
@@ -291,7 +291,7 @@ class FormContractPage extends Component {
             dpDate,
             fishReject,
             maxFishReject
-            } = this.state
+        } = this.state
         console.log(dpAmount, 'Dp Amount');
         const sizeConvert = { uri: `${BASE_URL}/images/${this.state.dataMaster.Request.Transaction.photo}` };
         return (
@@ -302,16 +302,8 @@ class FormContractPage extends Component {
 
                     <CardSectionRegistration>
                         <Text style={styles.headerStyle}>
-                            INFORMASI KOMODITAS
+                            Informasi Komoditas
 							</Text>
-                    </CardSectionRegistration>
-
-                    <CardSectionRegistration>
-                        <View style={styles.container}>
-                            <View style={[styles.avatar, styles.avatarContainer]}>
-                                <Image style={styles.avatar} source={sizeConvert} />
-                            </View>
-                        </View>
                     </CardSectionRegistration>
 
                     <CardSectionRegistration>
@@ -330,50 +322,59 @@ class FormContractPage extends Component {
                             style={styles.textArea}
                             editable={false}
                         />
-                        <Text style={styles.unitStyle}> kg/pcs</Text>
-
+                        <Text style={styles.unitStyle}></Text>
                         <InputRegistration
-                            label="Kuantitas"
-                            placeholder='Kuantitas'
-                            value={this.state.quantity}
-                            keyboardType="numeric"
-                            style={styles.textArea}
+                            editable={false}
+                            value={this.state.dataMaster.Request.Transaction.Fish.unit.toString()}
                             onChangeText={v => this.onChangeInput('quantity', v)}
                         />
-                        <Text style={styles.unitStyle}> kg</Text>
-
                     </CardSectionRegistration>
 
                     <CardSectionRegistration>
                         <InputRegistration
+                            label="Jumlah"
+                            value={this.state.dataMaster.Request.Transaction.quantity.toString()}
+                            keyboardType="numeric"
+                            style={styles.textArea}
+                            onChangeText={v => this.onChangeInput('quantity', v)}
+                            editable={false}
+                        />
+                        <Text style={styles.unitStyle}></Text>
+                        <InputRegistration
+                            editable={false}
+                            value='Kg'
+                            onChangeText={v => this.onChangeInput('quantity', v)}
+                        />
+                    </CardSectionRegistration>
+
+                    <CardSectionRegistration>
+                        <InputRegistration
+                            label='Deskripsi Komoditas'
                             value={this.state.dataMaster.Request.Transaction.describe}
                             style={styles.textArea}
+                            onChangeText={v => this.onChangeInput('deskripsi', v)}
+                            maxLength={40}
+                            multiline={true}
+                            numberOfLines={4}
                             editable={false}
                         />
                     </CardSectionRegistration>
 
-
                     <CardSectionRegistration>
                         <InputRegistration
-                            label="Total Harga"
-                            placeholder='Total Harga'
-                            value={price}
-                            keyboardType="numeric"
-                            style={styles.textArea}
-                            onChangeText={v => this.onChangeInput('price', v)}
-
-                            // value={dpAmount ? numeral(parseInt(dpAmount)).format('0,0') : ''}
-                            // onChangeText={v => this.onChangeInput('dpAmount', v.replace(/\./g, ''))}
+                            label='Harga Maksimal'
+                            value={this.state.dataMaster.Request.Transaction.maxBudget}
+                            editable={false}
                         />
                     </CardSectionRegistration>
 
                     <View>
-                        <Text style={styles.unitStyle}>IDENTITAS NELAYAN</Text>
+                        <Text style={styles.headerStyle}>Identitas Nelayan</Text>
                     </View>
 
                     <CardSectionRegistration>
                         <InputRegistration
-                            label="Nama"
+                            label="Nama Lengkap"
                             value={this.state.dataMaster.Request.Supplier.name}
                             editable={false}
                         />
@@ -381,7 +382,7 @@ class FormContractPage extends Component {
 
                     <CardSectionRegistration>
                         <InputRegistration
-                            label="Nomor KTP"
+                            label="No. KTP (Kartu Tanda Penduduk)"
                             value={this.state.dataMaster.Request.Supplier.idNumber}
                             editable={false}
                         />
@@ -405,37 +406,10 @@ class FormContractPage extends Component {
                         />
                     </CardSectionRegistration>
 
-                    <CardSectionRegistration>
-                        <Text style={styles.headerStyle}>
-                            DESKRIPSI PENGIRIMAN
-							</Text>
-                    </CardSectionRegistration>
-
-                    <CardSectionRegistration>
-                        <InputRegistration
-                            label='Tanggal Pengiriman'
-                            placeholder='Tanggal Pengiriman'
-                            value={dateNowPickPengiriman}
-                            onChangeText={v => this.onChangeInput('dateNowPickPengiriman', v)}
-                            editable={false}
-                        />
-                        <TouchableOpacity onPress={this._showTanggalPengiriman}>
-                            <Image
-                                style={{ marginTop: 10, width: 50, height: 50 }}
-                                source={require('./../assets/image/date-icon.png')}
-                            />
-                        </TouchableOpacity>
-                        <DateTimePicker
-                            isVisible={this.state.tanggalPenggiriman}
-                            onConfirm={this._handleDatePickedPengiriman}
-                            onCancel={this._hideTanggalPengiriman}
-                            minimumDate={new Date()}
-                        />
-                    </CardSectionRegistration>
 
                     <CardSectionRegistration>
                         <Text style={styles.headerStyle}>
-                            LOKASI PENERIMA KOMODITAS
+                            Lokasi Penerima Komoditas
 							</Text>
                     </CardSectionRegistration>
 
@@ -449,47 +423,54 @@ class FormContractPage extends Component {
                     <CardSectionRegistration>
                         <InputRegistration
                             label='Lokasi Penerimaan'
-                            placeholder='Lokasi Lengkap'
+                            placeholder='Lokasi Penerimaan'
                             value={locationOfreception}
+                            style={styles.textArea}
                             onChangeText={v => this.onChangeInput('locationOfreception', v)}
+                            maxLength={40}
+                            multiline={true}
+                            numberOfLines={4}
                         />
                     </CardSectionRegistration>
 
                     <CardSectionRegistration>
                         <Text style={styles.headerStyle}>
-                            DESKRIPSI PENERIMAAN
+                            Deskripsi Pengiriman
 							</Text>
                     </CardSectionRegistration>
 
                     <CardSectionRegistration>
                         <InputRegistration
                             label="Nominal Dp"
+                            placeholder='oo'
                             keyboardType="numeric"
                             value={dpAmount}
                             onChangeText={v => this.onChangeInput('dpAmount', v)}
-                            // value={dpAmount ? numeral(parseInt(dpAmount)).format('0,0') : ''}
-                            // onChangeText={v => this.onChangeInput('dpAmount', v.replace(/\./g, ''))}
                         />
-
-                        {/* <InputRegistration
-                            label='Nominal DP'
-                            placeholder='Nominal DP'
-                            value={dpAmount}
-                            onChangeText={v => this.onChangeInput('dpAmount', v)}
-                        /> */}
                     </CardSectionRegistration>
 
                     <CardSectionRegistration>
                         <InputRegistration
                             label='Tanggal DP'
-                            placeholder='Tanggal DP'
+                            placeholder='00/00/18'
                             value={dateNowPickDP}
                             onChangeText={v => this.onChangeInput('dateNowPickDP', v)}
                             editable={false}
                         />
                         <TouchableOpacity onPress={this._showTanggalDP}>
                             <Image
-                                style={{ marginTop: 10, width: 50, height: 50 }}
+                                style={{
+                                    flexDirection: 'row',
+                                    borderColor: '#555',
+                                    borderRadius: 3,
+                                    borderWidth: 1,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    backgroundColor: '#fff',
+                                    marginTop: 23,
+                                    width: 50,
+                                    height: 50
+                                }}
                                 source={require('./../assets/image/date-icon.png')}
                             />
                         </TouchableOpacity>
@@ -503,7 +484,7 @@ class FormContractPage extends Component {
 
                     <CardSectionRegistration>
                         <Text style={styles.headerStyle}>
-                            KOMODITAS REJECT
+                            Komoditas Reject
 							</Text>
                     </CardSectionRegistration>
 
@@ -550,8 +531,9 @@ class FormContractPage extends Component {
 
 const styles = {
     headerStyle: {
-        marginLeft: 5,
-        fontWeight: 'bold'
+        color: '#77A7F4',
+        fontWeight: 'bold',
+        fontFamily: 'muli',
     },
     pickerTextStyle: {
         color: '#8e8e8e',
