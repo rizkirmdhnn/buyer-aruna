@@ -105,10 +105,9 @@ class RequestOrderPage extends Component {
             if (datax.Status.id == 19) {
                 if (datax.sanggup == 0) {
                     return (
-                        <Card>
+                        <Card key={datax.id}>
                             <View
                                 style={styles.itemContainerStyle}
-                                key={datax.id}
                             >
                                 <View style={styles.thumbnailContainerStyle}>
                                     <Image

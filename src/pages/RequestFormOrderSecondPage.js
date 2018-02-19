@@ -22,6 +22,7 @@ import { BASE_URL } from './../shared/lb.config';
 import axios from 'axios';
 import { CheckBox } from 'react-native-elements';
 import moment from 'moment';
+import { Card } from 'react-native-elements';
 
 class RequestFormOrderSecondPage extends Component {
 
@@ -139,7 +140,7 @@ class RequestFormOrderSecondPage extends Component {
                     console.log(error.message, 'Error nya');
                     console.log(error.response, 'Error nya');
                     console.log(error, 'Error nya');
-                    alert(error.message.data)
+                    alert(error.message)
                     this.setState({ loader: true });
                 })
         });
@@ -175,38 +176,38 @@ class RequestFormOrderSecondPage extends Component {
             this.state.idSupplier.push(data.id);
             console.log(this.state.idSupplier, 'ID PUSH SUPPLIER')
             return (
-                <View style={styles.itemContainerStyleSupplier}>
-                    <View style={styles.thumbnailContainerStyle}>
-                        <Image
-                            style={styles.thumbnailStyle}
-                            source={{ uri: `${BASE_URL}/images/${data.User.photo}` }} 
-                            resizeMode='cover'
-                        />
-                    </View>
-                    <View style={styles.headerContentStyle}>
-                        <Text style={styles.hedaerTextStyle}>{data.User.name}</Text>
+                <Card>
+                    <View style={styles.itemContainerStyleSupplier}>
+                        <View style={styles.thumbnailContainerStyle}>
+                            <Image
+                                style={styles.thumbnailStyle}
+                                source={{ uri: `${BASE_URL}/images/${data.User.photo}` }}
+                                resizeMode='cover'
+                            />
+                        </View>
+                        <View style={styles.headerContentStyle}>
+                            <Text style={{ flex: 1, fontWeight: 'bold', color: 'blue'}}>{data.User.name}</Text>
+                            <Text style={{ flex: 1 }}>500 Kg </Text>
+                            <Text style={{ flex: 1 }}>{data.User.organization}</Text>
+                            <Text style={{ flex: 1 }}>{data.minBudget}</Text>
+                            <Text style={{ flex: 1 }}>{data.maxBudget} </Text>
+                        </View>
                         <View style={{ flexDirection: 'row' }}>
-                            <Text style={{ flex: 1, fontWeight: 'bold' }}>500 Kg </Text>
-                            <Text style={{ flex: 1, fontWeight: 'bold' }}>{data.User.organization}</Text>
-                            <Text style={{ flex: 1, fontWeight: 'bold' }}>{data.minBudget}</Text>
-                            <Text style={{ flex: 1, fontWeight: 'bold' }}>{data.maxBudget} </Text>
-                            <View style={{ flex: 1 }}>
-                                <CheckBox
-                                    checked={this.state.checked}
-                                    onPress={() => this.checkBox(data)}
-                                />
-                            </View>
+                            <CheckBox
+                                center
+                                checked={this.state.checked}
+                                onPress={() => this.checkBox(data)}
+                            />
                         </View>
                     </View>
-
-                </View>
+                </Card>
             )
         })
 
     }
 
     render() {
-        
+
         if (this.state.loading) {
             return <Spinner size="large" />
         }
@@ -238,11 +239,9 @@ const styles = {
         borderColor: '#ddd',
     },
     itemContainerStyleSupplier: {
-        borderBottomWidth: 1,
         padding: 5,
         justifyContent: 'flex-start',
-        flexDirection: 'row',
-        borderColor: '#ddd',
+        flexDirection: 'row'
     },
     thumbnailContainerStyle: {
         justifyContent: 'center',
@@ -250,9 +249,9 @@ const styles = {
         margin: 15,
     },
     thumbnailStyle: {
-        height: 50,
-        width: 50,
-        borderRadius: 8
+        height: 100,
+        width: 100,
+        borderRadius: 75
     },
     headerContentStyle: {
         flex: 1,
@@ -260,7 +259,6 @@ const styles = {
         marginTop: 5,
         marginBottom: 10,
         flexDirection: 'column',
-        justifyContent: 'space-around'
     },
     headerTextStyle: {
         fontSize: 20,

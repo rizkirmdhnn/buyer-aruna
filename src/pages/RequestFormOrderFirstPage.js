@@ -226,7 +226,7 @@ class RequestFormOrderFirstPage extends Component {
 
     renderProvinceCity = () => {
         const dataProvCity = this.state.dataProvinsi;
-        return dataProvCity.map((data) => {
+        return dataProvCity.map(data => {
             return <Picker.Item label={data.name} value={data.id} />
         })
     }
@@ -344,7 +344,7 @@ class RequestFormOrderFirstPage extends Component {
                     <CardSectionRegistration>
                         <View style={styles.container}>
                             <TouchableOpacity onPress={this.selectPhotoTapped.bind(this)}>
-                                <View style={[styles.avatar, styles.avatarContainer]}>
+                                <View style={{ resizeMode: 'stretch' }[styles.avatar, styles.avatarContainer]}>
                                     {this.state.photo === null ? <Text>Take a Picture</Text> :
                                         <Image style={styles.avatar} source={this.state.photo} />
                                     }
@@ -625,7 +625,6 @@ const styles = {
         alignItems: 'center'
     },
     avatar: {
-        resizeMode: 'stretch',
         width: 450,
         height: 180
     }
