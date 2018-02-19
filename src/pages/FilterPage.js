@@ -2,9 +2,8 @@
  *  Import Component
  */
 import React, { Component } from 'react';
-import { Text, View, TouchableWithoutFeedback, ScrollView, FlatList, AsyncStorage } from 'react-native';
+import { Text, Image, View, TouchableWithoutFeedback, ScrollView, FlatList, AsyncStorage } from 'react-native';
 import {
-    Card,
     Button,
     CardSection,
     Container,
@@ -14,9 +13,11 @@ import {
     InputRegistration
 } from '../components/common';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { CheckBox, FormInput, Rating } from 'react-native-elements';
+import { CheckBox } from 'react-native-elements';
 import axios from 'axios';
 import { BASE_URL } from './../shared/lb.config';
+import { Card } from 'react-native-elements';
+import Modal from 'react-native-modal'
 
 class FilterPage extends Component {
     static navigationOptions = {
@@ -28,30 +29,34 @@ class FilterPage extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            provinsiContainer: true,
+            isModalVisible: false,
+            provinsiContainer: false,
+            dataProvince: '',
             dataParsing: '',
             provinsiId: [],
-            loading: null,
+            loading: true,
             tokenUser: '',
-            dataProvinsi: '',
+            dataSupplier: '',
             minPrice: '0',
             maxPrice: '0'
         }
     }
 
-    componentWillMount() {
-        this.setState({ loading: true });
-        this.setState({ dataParsing: this.props.navigation.state.params.datas })
-        AsyncStorage.getItem('loginCredential', (err, resultToken) => {
-            this.setState({ tokenUser: resultToken });
-            axios.get(`${BASE_URL}/provinces`)
+    componentDidMount() {
+        AsyncStorage.getItem('loginCredential', (err, result) => {
+            const token = result;
+            axios.get(`${BASE_URL}/provinces`, {
+                headers: {
+                    'token': result
+                }
+            })
                 .then(response => {
+                    console.log(response.data.data, 'Data Provinsi');
                     res = response.data.data;
-                    this.setState({ dataProvinsi: res, loading: false });
-                    console.log(this.state.dataParsing, 'Data Parsing')
+                    this.setState({ dataProvince: res });
                 })
                 .catch(error => {
-                    console.log(error, 'error');
+                    console.log(error.response, 'error');
                     if (error.response) {
                         alert(error.response.data.message)
                     }
@@ -62,35 +67,66 @@ class FilterPage extends Component {
         });
     }
 
-    renderDataProvinsi = (item) => {
-        console.log(this.state.provinsiId, 'ID Provinsi');
+    componentWillMount() {
+        this.setState({ dataParsing: this.props.navigation.state.params.datas });
+        const nameFish = this.props.navigation.state.params.datas.name;
+        axios.get(`${BASE_URL}/products?key=${nameFish}`)
+            .then(response => {
+                console.log(response.data.data, 'Data Supplier');
+                res = response.data.data;
+                this.setState({ dataSupplier: res, loading: false });
+                console.log(this.state.dataParsing, 'Data Parsing')
+            })
+            .catch(error => {
+                console.log(error.response, 'error');
+                if (error.response) {
+                    alert(error.response.data.message)
+                }
+                else {
+                    alert('Koneksi internet bermasalah Provinsi')
+                }
+            })
+    }
+
+    renderDataSupplier = (item) => {
         return item.map((data, index) => {
-            console.log(data, 'Provinsi Data');
             return (
-                <View key={data.id} style={styles.itemContainerStyle}>
-                    <View style={styles.headerContentStyle}>
-                        <CheckBox
-                            title={data.name}
-                            onPress={() => this.provinsiCheck(data)}
-                            checked={this.state.provinsiId.includes(data.id)}
-                        />
+                <Card
+                    key={data.id}
+                >
+                    <View style={styles.itemContainerStyle}>
+                        <View style={styles.thumbnailContainerStyle}>
+                            <Image
+                                style={styles.thumbnailStyles}
+                                source={{ uri: `${BASE_URL}/images/${data.Fish.photo}` }}
+                            />
+                        </View>
+                        <View style={styles.headerContentStyle}>
+                            <Text style={styles.headerTextStyle}>{data.Fish.name}</Text>
+                            <View style={{ flex: 1 }}></View>
+                            <View style={{ flex: 1 }}></View>
+                            <View style={{ flex: 1 }}></View>
+                            <View style={{ flexDirection: 'row', flex: 1 }}>
+                                <Text>{data.User.name}</Text>
+                            </View>
+                        </View>
                     </View>
-                </View>
+                </Card>
             )
         })
     }
 
-    provinsiCheck = data => {
+    provinsiCheck = datax => {
         const { provinsiId, tokenUser } = this.state;
-        console.log(data, 'Data');
-        const idProvinsi = data.id;
-        if (!provinsiId.includes(idProvinsi)) {
+        const idProvinsi = datax.id;
+        console.log(idProvinsi, 'ID PROVINSI')
+        if (!provinsiId.includes(datax)) {
             this.setState({
-                provinsiId: [...provinsiId, idProvinsi]
+                provinsiId: [...provinsiId, datax]
             });
         } else {
             this.setState({
-                provinsiId: provinsiId.filter(a => a !== idProvinsi)
+                provinsiId: provinsiId.filter(a => a !== datax)
             });
         }
     };
@@ -115,9 +151,27 @@ class FilterPage extends Component {
             })
     }
 
+    renderItemProvince = (item) => {
+
+        return item.map((datax, index) => {
+            console.log(datax, 'HAHAHHAHAHAHAHA');
+            <View style={{ height: 55 }}>
+                <CheckBox
+                    title={datax.name}
+                    checked={this.state.provinsiId.includes(datax.id)}
+                    onPress={() => this.provinsiCheck(datax)}
+                />
+            </View>
+        });
+    }
+
     onChangeInput = (name, v) => {
         this.setState({ [name]: v });
         console.log(v);
+    }
+
+    _toggleModal = () => {
+        this.setState({ isModalVisible: !this.state.isModalVisible })
     }
 
     render() {
@@ -132,73 +186,161 @@ class FilterPage extends Component {
             return <Spinner size="large" />
         }
         return (
-            <ScrollView style={{ flex: 1 }}>
-                <Card style={{ flex: 1, margin: 5, padding: 5 }}>
-                    <Text style={styles.hedaerTextStyle}>Pilih Area Lokasi :</Text>
-                    <CardSection>
-                        <View style={{ flex: 1, flexDirection: 'row' }}>
-                            <Text style={{ flex: 1, fontSize: 20 }}>Provinsi</Text>
-                        </View>
-                    </CardSection>
-                    {
-                        provinsiContainer ?
-                            <CardSection>
-                                <View>
-                                    <FlatList
-                                        data={[this.state.dataProvinsi]}
-                                        renderItem={({ item }) => this.renderDataProvinsi(item)}
-                                        keyExtractor={(item, index) => index}
-                                    />
-                                </View>
-                            </CardSection>
-                            :
-                            <View />
-                    }
-
-                    <Text style={styles.hedaerTextStyle}>Rentang Harga/Kg :</Text>
-                    <CardSection>
-                        <View style={{ flex: 1, flexDirection: 'row' }}>
-                            <Text style={{ flex: 1, fontSize: 20 }}>Harga</Text>
-                        </View>
-                    </CardSection>
-                    {
-                        provinsiContainer ?
-                            <CardSectionRegistration>
-                                <InputRegistration
-                                    label='Harga Min'
-                                    value={minPrice}
-                                    onChangeText={v => this.onChangeInput('minPrice', v)}
-                                />
-                                <Text style={styles.unitStyle}> - </Text>
-
-                                <InputRegistration
-                                    label='Harga Maks'
-                                    value={maxPrice}
-                                    onChangeText={v => this.onChangeInput('maxPrice', v)}
-                                />
-                            </CardSectionRegistration>
-                            :
-                            <View />
-                    }
-
+            <View style={{ flex: 1 }}>
+                <View style={{ height: 55 }}>
+                    <Button
+                        onPress={() => this._toggleModal()}>
+                        Filter
+                    </Button>
+                </View>
+                <ScrollView>
                     <View>
-                        <Button
-                            onPress={
-                                () => this.onSubmit()
-                            }
-                        >
-                            Terapkan
-                        </Button>
+                        <FlatList
+                            data={[this.state.dataSupplier]}
+                            renderItem={({ item }) => this.renderDataSupplier(item)}
+                            keyExtractor={(item, index) => index}
+                        />
                     </View>
-                </Card>
-            </ScrollView>
+                </ScrollView>
+
+                <Modal
+                    isVisible={this.state.isModalVisible}
+                    onBackdropPress={() => this.setState({ isModalVisible: false })}
+                >
+                    <View style={{ backgroundColor: 'white' }}>
+                        <View>
+                            <Card>
+                                <TouchableWithoutFeedback
+                                    onPress={() => {
+                                        this.setState({ provinsiContainer: !provinsiContainer });
+                                        console.log(provinsiContainer, 'Request Klik')
+                                    }}>
+
+                                    <View style={{ flexDirection: 'row' }}>
+                                        <Text style={{ fontSize: 20 }}>Kota / Provinsi</Text>
+                                        <View style={{ flex: 1 }}>
+                                            <Icon size={30} style={{ alignSelf: 'flex-end' }} name={provinsiContainer ? 'md-arrow-dropup' : 'md-arrow-dropdown'} />
+                                        </View>
+                                    </View>
+                                </TouchableWithoutFeedback>
+                                {
+                                    provinsiContainer ?
+                                        <View style={{ height: 55 }}>
+                                            <FlatList
+                                                data={[this.state.dataProvince]}
+                                                renderItem={({ item }) => this.renderItemProvince(item)}
+                                            />
+                                        </View>
+                                        :
+                                        <View />
+                                }
+                            </Card>
+                        </View>
+
+                        <View style={{ height: 55 }}>
+                            <Button
+                                onPress={() => {
+                                    this.filterApi()
+                                }}>
+                                Terapkan
+                            </Button>
+                        </View>
+                    </View>
+                </Modal>
+            </View>
         );
     }
 };
 
 
 const styles = {
-
+    itemContainerStyle: {
+        borderBottomWidth: 1,
+        padding: 5,
+        justifyContent: 'flex-start',
+        flexDirection: 'row',
+        borderColor: '#ddd',
+    },
+    thumbnailContainerStyle: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 15,
+    },
+    thumbnailStyle: {
+        height: 100,
+        width: 100,
+        borderRadius: 100
+    },
+    thumbnailStyles: {
+        height: 100,
+        width: 100,
+        resizeMode: 'stretch',
+    },
+    headerContentStyle: {
+        flex: 1,
+        marginRight: 15,
+        marginTop: 5,
+        marginBottom: 10,
+        flexDirection: 'column',
+        justifyContent: 'space-around'
+    },
+    headerTextStyle: {
+        fontSize: 20,
+        fontWeight: 'bold'
+    },
+    titleTextStyle: {
+        fontSize: 15,
+        fontWeight: 'bold'
+    },
+    itemContainerStyle: {
+        padding: 5,
+        justifyContent: 'flex-start',
+        flexDirection: 'row'
+    },
+    itemContainerStyleSupplier: {
+        padding: 5,
+        justifyContent: 'flex-start',
+        flexDirection: 'row',
+    },
+    headerTextStyle: {
+        fontSize: 20,
+        fontWeight: 'bold'
+    },
+    titleTextStyle: {
+        fontSize: 15,
+        fontWeight: 'bold'
+    },
+    loadingStyle: {
+        marginTop: 30
+    },
+    containerScroll: {
+        // padding: 5,
+        marginTop: 50,
+        height: 200,
+        borderTopWidth: 2,
+        borderRightWidth: 2,
+        borderLeftWidth: 2,
+        borderBottomWidth: 2
+    },
+    buttonStyle: {
+        backgroundColor: '#006AAF',
+        width: 318,
+        height: 50,
+        margin: 5,
+        borderRadius: 5
+    },
+    buttonStyles: {
+        backgroundColor: '#009AD3',
+        width: 200,
+        height: 50,
+        margin: 5,
+    },
+    buttonStylees: {
+        backgroundColor: '#006AAF',
+        width: 200,
+        height: 50,
+        margin: 5,
+    },
 }
 
 export default FilterPage;

@@ -59,8 +59,8 @@ class RequestFormOrderSecondPage extends Component {
                 'FishId': this.state.datax.FishId,
                 'ProvinceId': this.state.datax.provinsiId,
                 'CityId': this.state.datax.cityId,
-                'minBudget': this.state.datax.minBudget,
-                'maxBudget': this.state.datax.maxBudget
+                // 'minBudget': this.state.datax.minBudget,
+                'maxPrice': this.state.datax.maxBudget
             }, {
                     headers: {
                         'token': token,

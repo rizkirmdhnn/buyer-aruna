@@ -206,10 +206,8 @@ class HomePage extends Component {
         });
     }
 
-    goSupplier = () => {
-        console.log('Profile Supplier');
-        console.log(this.props.navigation, 'Navi')
-        this.props.navigation.navigate('ProfileSupplier', { datas: this.state.supplierList });
+    goSupplier = (event) => {
+        this.props.navigation.navigate('ProfileSupplier', { datas: event });
     }
 
     isLogin() {
@@ -244,7 +242,11 @@ class HomePage extends Component {
                 <TouchableWithoutFeedback onPress={() => {
                     this.goSupplier()
                 }}>
-                    <Image style={styles.item} source={{ uri: `${BASE_URL}/images/${itemProduct.item.Fish.photo}` }} resizeMode='cover' />
+                    <Image
+                        style={styles.item}
+                        source={{ uri: `${BASE_URL}/images/${itemProduct.item.Fish.photo}` }}
+                        resizeMode='cover'
+                    />
                 </TouchableWithoutFeedback>
             </View>
         )
@@ -256,7 +258,7 @@ class HomePage extends Component {
 
         return (
             <TouchableWithoutFeedback onPress={() => {
-                this.goSupplier()
+                this.goSupplier(itemSupplier)
             }}>
                 <View
                     style={styles.itemContainerStyle}

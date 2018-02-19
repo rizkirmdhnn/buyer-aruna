@@ -202,12 +202,12 @@ const styles = {
         margin: 15,
     },
     thumbnailStyle: {
-        alignSelf: 'stretch',
+        // alignSelf: 'stretch',
         height: 50,
         width: 50,
         borderWidth: 1,
-        borderRadius: 75,
-        resizeMode: 'cover'
+        borderRadius: 100,
+        // resizeMode: 'cover'
     },
     headerContentStyle: {
         flex: 1,

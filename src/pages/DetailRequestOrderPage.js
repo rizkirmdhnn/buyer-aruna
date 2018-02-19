@@ -6,19 +6,22 @@ import {
     InputRegistration,
     ContainerSection,
     Container,
-    Spinner
+    Spinner,
+    Button
 } from './../components/common';
 import { CheckBox } from 'react-native-elements';
 import moment from 'moment';
-import { Button } from 'react-native-elements';
+// import { Button } from 'react-native-elements';
 import { BASE_URL } from './../shared/lb.config';
 import axios from 'axios';
+import { Card } from 'react-native-elements';
 
 class DetailRequestOrderPage extends Component {
     static navigationOptions = {
         title: 'Detail Permintaan',
         headerStyle: { backgroundColor: '#006AAF' },
-        headerTitleStyle: { color: '#FFFFFF' }
+        headerTitleStyle: { color: '#FFFFFF', paddingLeft: '20%' },
+        headerTintColor: 'white'
     }
 
     constructor(props) {
@@ -59,39 +62,28 @@ class DetailRequestOrderPage extends Component {
         const dateFormat = moment(item.dueDate).format('DD/MM/YYYY');
         const timeFormat = moment(item.dueDate).format('h:mm:ss');
         return (
-            <View style={styles.itemContainerStyle}>
-                <View style={styles.thumbnailContainerStyle}>
-                    <Image
-                        style={styles.thumbnailStyle}
-                        source={require('./../assets/image/gurame.jpg')}
-                    />
-                </View>
-                <View style={styles.headerContentStyle}>
-                    <Text style={styles.headerTextStyle}>{item.Fish.name}</Text>
-                    <Text style={styles.headerTextStyle}>{item.size}</Text>
-                    <View style={{ flexDirection: 'column', flex: 1 }}>
-                        <Text>Rp. {item.minBudget} - Rp. {item.maxBudget}</Text>
-                        <Text>Batas Waktu: {dateFormat} Pukul: {timeFormat}</Text>
+            <Card>
+                <View style={styles.itemContainerStyle}>
+                    <View style={styles.thumbnailContainerStyle}>
+                        <Image
+                            style={styles.thumbnailStyles}
+                            source={{ uri: `${BASE_URL}/images/${item.Fish.photo}` }}
+                        />
+                    </View>
+                    <View style={styles.headerContentStyle}>
+                        <Text style={styles.headerTextStyle}>{item.Fish.name}</Text>
+                        <Text style={styles.headerTextStyle}>{item.size} Kg</Text>
+                        <View style={{ flex: 1 }}></View>
+                        <View style={{ flex: 1 }}></View>
+                        <View style={{ flex: 1 }}></View>
+                        <View style={{ flexDirection: 'column', flex: 1 }}>
+                            <Text>Sampai Tanggal: {dateFormat}</Text>
+                            <Text>Pukul: {timeFormat}</Text>
+                        </View>
                     </View>
                 </View>
-            </View>
+            </Card>
         )
-    }
-
-    renderFlatListDetail = () => {
-        if (this.state.loading) {
-            return <Spinner size="small" />
-        } else {
-            return (
-                <View>
-                    <FlatList
-                        data={[this.state.dataMaster]}
-                        renderItem={({ item }) => this.renderData(item)}
-                        keyExtractor={(item, index) => index}
-                    />
-                </View>
-            );
-        }
     }
 
     renderFlatListSupplierChecked = () => {
@@ -129,28 +121,35 @@ class DetailRequestOrderPage extends Component {
     renderSupplierChecked = (item) => {
         return item.map((data, index) => {
             return (
-                <View style={styles.itemContainerStyleSupplier}>
-                    <View style={styles.thumbnailContainerStyle}>
-                        <Image
-                            style={styles.thumbnailStyle}
-                            source={require('./../assets/image/photo.png')}
-                        />
-                    </View>
-                    <View style={styles.headerContentStyle}>
-                        <Text style={styles.hedaerTextStyle}>{data.Supplier.name}</Text>
-                        <View style={{ flexDirection: 'row' }}>
-                            <Text style={{ flex: 1, fontWeight: 'bold' }}>500 Kg </Text>
-                            <Text style={{ flex: 1, fontWeight: 'bold' }}>Rp. 100.000 - Rp. 500.000</Text>
-                            <View style={{ flex: 1 }}>
-                                <CheckBox
-                                    onPress={() => this.checkItem(data)}
-                                    checked={this.state.checkedSelected.includes(data)}
-                                />
+                <Card key={data.id}>
+                    <View style={styles.itemContainerStyleSupplier}>
+                        <View style={styles.thumbnailContainerStyle}>
+                            <Image
+                                style={styles.thumbnailStyle}
+                                source={{ uri: `${BASE_URL}/images/${data.Supplier.photo}` }}
+                            />
+                        </View>
+                        <View style={styles.headerContentStyle}>
+                            <View style={{ flexDirection: 'row' }}>
+                                <View style={{ flex: 1 }}>
+                                    <Text style={{ fontWeight: 'bold', color: '#009AD3' }}>{data.Supplier.name}</Text>
+                                </View>
+                                <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+                                    <CheckBox
+                                        containerStyle={{ backgroundColor: 'transparent' }}
+                                        onPress={() => this.checkItem(data)}
+                                        checked={this.state.checkedSelected.includes(data)}
+                                    />
+                                </View>
+                            </View>
+                            <View style={{ flexDirection: 'column' }}>
+                                <Text style={{ flex: 1 }}>{data.Supplier.organization} </Text>
+                                <Text style={{ flex: 1 }}>500 Kg </Text>
+                                <Text style={{ flex: 1 }}>Rp. 100.000 - Rp. 500.000</Text>
                             </View>
                         </View>
                     </View>
-
-                </View>
+                </Card>
             )
         })
     }
@@ -158,28 +157,30 @@ class DetailRequestOrderPage extends Component {
     renderSupplierUnChecked = (item) => {
         return item.map((data, index) => {
             return (
-                <View style={styles.itemContainerStyleSupplier}>
-                    <View style={styles.thumbnailContainerStyle}>
-                        <Image
-                            style={styles.thumbnailStyle}
-                            source={require('./../assets/image/photo.png')}
-                        />
-                    </View>
-                    <View style={styles.headerContentStyle}>
-                        <Text style={styles.hedaerTextStyle}>{data.Supplier.name}</Text>
-                        <View style={{ flexDirection: 'row' }}>
-                            <Text style={{ flex: 1, fontWeight: 'bold' }}>500 Kg </Text>
-                            <Text style={{ flex: 1, fontWeight: 'bold' }}>Rp. 100.000 - Rp. 500.000</Text>
-                            <View style={{ flex: 1 }}>
+                <Card>
+                    <View style={styles.itemContainerStyleSupplier}>
+                        <View style={styles.thumbnailContainerStyle}>
+                            <Image
+                                style={styles.thumbnailStyle}
+                                source={{ uri: `${BASE_URL}/images/${data.Supplier.photo}` }}
+                            />
+                        </View>
+                        <View style={styles.headerContentStyle}>
+                            <View style={{ flex: 1, }}>
+                                <Text style={{ fontWeight: 'bold', color: '#009AD3' }}>{data.Supplier.name}</Text>
                                 <CheckBox
+                                    containerStyle={{ backgroundColor: 'transparent' }}
                                     onPress={() => this.unCheckItem(data)}
                                     checked={this.state.checkedNotSelected.includes(data)}
                                 />
                             </View>
+                            <View style={{ flexDirection: 'row' }}>
+                                <Text style={{ flex: 1, fontWeight: 'bold' }}>500 Kg </Text>
+                                <Text style={{ flex: 1, fontWeight: 'bold' }}>Rp. 100.000 - Rp. 500.000</Text>
+                            </View>
                         </View>
                     </View>
-
-                </View>
+                </Card>
             )
         })
     }
@@ -259,12 +260,12 @@ class DetailRequestOrderPage extends Component {
         if (this.state.dataMaster.Status.id == 19) {
             if (this.state.dataMaster.sanggup > 0) {
                 return (
-                    <View>
+                    <View style={{ flex: 1 }}>
                         <Button
-                            title="Lanjut Transaksi"
-                            buttonStyle={styles.buttonStyle}
                             onPress={this.endRequest.bind(this)}
-                        />
+                        >
+                            Lanjut Transaksi
+                        </Button>
                     </View>
                 );
             }
@@ -272,12 +273,12 @@ class DetailRequestOrderPage extends Component {
         if (this.state.dataMaster.Status.id == 20) {
             if (this.state.dataMaster.sanggup == 0) {
                 return (
-                    <View>
+                    <View style={{ flex: 1 }}>
                         <Button
-                            title="Lanjut Transaksi"
-                            buttonStyle={styles.buttonStyle}
                             onPress={this.endRequest.bind(this)}
-                        />
+                        >
+                            Lanjut Transaksi
+                        </Button>
                     </View>
                 );
             }
@@ -299,58 +300,77 @@ class DetailRequestOrderPage extends Component {
     }
 
 
-    render(props) {
+    render() {
         const {
             checkedContainer,
             unCheckedContainer,
             disabledContainer,
-            NotDisabledContainer
+            NotDisabledContainer,
+            loading
         } = this.state;
+
+        if (loading) {
+            return <Spinner size="large" />
+        }
+
         return (
-            <View>
-                {this.renderFlatListDetail()}
+            <ScrollView>
+                <View style={{ flex: 1 }}>
+                    <View>
+                        <FlatList
+                            data={[this.state.dataMaster]}
+                            renderItem={({ item }) => this.renderData(item)}
+                            keyExtractor={(item, index) => index}
+                        />
 
-                <View style={{ flexDirection: 'row' }}>
-                    <TouchableWithoutFeedback onPress={() => this.viewCheck()}>
+                        <View style={{ marginTop: '2%', flex: 1, flexDirection: 'row' }}>
+                            <Button
+                                onPress={() => this.viewCheck()}
+                            >
+                                Supplier Dipilih ({this.state.checkedSelected.length})
+                            </Button>
+                            <Button
+                                onPress={() => this.viewUnCheck()}
+                            >
+                                Supplier Ditolak ({this.state.checkedNotSelected.length})
+                            </Button>
+                        </View>
+                    </View>
+
+                    <View style={{ marginTop: '2%' }}>
+
+                        {
+                            checkedContainer ?
+                                <View>
+                                    <FlatList
+                                        data={[this.state.checkedSelected]}
+                                        renderItem={({ item }) => this.renderSupplierChecked(item)}
+                                        keyExtractor={(item, index) => index}
+                                    />
+                                </View>
+                                :
+                                <View />
+                        }
+
+
+                        {
+                            unCheckedContainer ?
+                                <View>
+                                    <FlatList
+                                        data={[this.state.checkedNotSelected]}
+                                        renderItem={({ item }) => this.renderSupplierUnChecked(item)}
+                                        keyExtractor={(item, index) => index}
+                                    />
+                                </View>
+                                :
+                                <View />
+                        }
                         <View style={{ flex: 1 }}>
-                            <Text> Nelayan Dipilih  ({this.state.checkedSelected.length}) </Text>
+                            {this.renderButton()}
                         </View>
-                    </TouchableWithoutFeedback>
-
-                    <TouchableWithoutFeedback onPress={() => this.viewUnCheck()}>
-                        <View style={{ flex: 1 }}>
-                            <Text> Nelayan DiTolak  ({this.state.checkedNotSelected.length}) </Text>
-                        </View>
-                    </TouchableWithoutFeedback>
+                    </View>
                 </View>
-
-                {
-                    checkedContainer ?
-                        <View style={styles.containerScroll}>
-                            <ScrollView>
-                                {this.renderFlatListSupplierChecked()}
-                            </ScrollView>
-                        </View>
-                        :
-                        <View />
-                }
-
-
-                {
-                    unCheckedContainer ?
-                        <View style={styles.containerScroll}>
-                            <ScrollView>
-                                {this.renderFlatListSupplierUnChecked()}
-                            </ScrollView>
-                        </View>
-                        :
-                        <View />
-                }
-
-                <View>
-                    {this.renderButton()}
-                </View>
-            </View>
+            </ScrollView>
         );
     }
 
@@ -370,9 +390,14 @@ const styles = {
         margin: 15,
     },
     thumbnailStyle: {
-        height: 50,
-        width: 50,
-        borderRadius: 8
+        height: 100,
+        width: 100,
+        borderRadius: 100
+    },
+    thumbnailStyles: {
+        height: 100,
+        width: 100,
+        resizeMode: 'stretch',
     },
     headerContentStyle: {
         flex: 1,
@@ -391,36 +416,14 @@ const styles = {
         fontWeight: 'bold'
     },
     itemContainerStyle: {
-        borderBottomWidth: 1,
         padding: 5,
         justifyContent: 'flex-start',
-        flexDirection: 'row',
-        borderColor: '#ddd',
+        flexDirection: 'row'
     },
     itemContainerStyleSupplier: {
-        borderBottomWidth: 1,
         padding: 5,
         justifyContent: 'flex-start',
         flexDirection: 'row',
-        borderColor: '#ddd',
-    },
-    thumbnailContainerStyle: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        margin: 15,
-    },
-    thumbnailStyle: {
-        height: 50,
-        width: 50,
-        borderRadius: 8
-    },
-    headerContentStyle: {
-        flex: 1,
-        marginRight: 15,
-        marginTop: 5,
-        marginBottom: 10,
-        flexDirection: 'column',
-        justifyContent: 'space-around'
     },
     headerTextStyle: {
         fontSize: 20,
@@ -434,7 +437,8 @@ const styles = {
         marginTop: 30
     },
     containerScroll: {
-        padding: 5,
+        // padding: 5,
+        marginTop: 50,
         height: 200,
         borderTopWidth: 2,
         borderRightWidth: 2,
@@ -447,6 +451,18 @@ const styles = {
         height: 50,
         margin: 5,
         borderRadius: 5
+    },
+    buttonStyles: {
+        backgroundColor: '#009AD3',
+        width: 200,
+        height: 50,
+        margin: 5,
+    },
+    buttonStylees: {
+        backgroundColor: '#006AAF',
+        width: 200,
+        height: 50,
+        margin: 5,
     },
 }
 
