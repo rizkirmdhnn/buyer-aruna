@@ -21,14 +21,18 @@ before_script:
   - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "android-sdk-linux/licenses/android-sdk-license"
   - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "android-sdk-linux/licenses/android-sdk-preview-license"
 
-stages:
-  - build_aruna
-
 build:
-  stage: build_aruna
+  tags:
+    - build_rendy
+
+  only:
+    - /^release/.*$/
+    - dev
+
+    allow_failure: true
+
   script:
-    - ./gradlew --stacktrace clean assembleDebug
-    - ./gradlew --stacktrace clean assembleRelease
+    - gradlew assembleRelease
   artifacts:
     paths:
     - app/build/outputs/
