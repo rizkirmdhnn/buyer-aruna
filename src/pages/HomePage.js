@@ -219,6 +219,10 @@ class HomePage extends Component {
         if (this.state.tokenUser !== null) {
             return (
                 <View />
+                // <Button
+                //     onPress={() => this.isLogout()}>
+                //     Logout
+                // </Button>
             )
         } else if (this.state.tokenUser == null) {
             return (
