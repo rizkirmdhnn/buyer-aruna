@@ -25,7 +25,7 @@ tags:
     - build_rendy
 
 stages:
-    - build
+    - build_android
 
 allow_failure: true
 
@@ -34,7 +34,7 @@ build:
 
   only:
   - dev
-  - tags
+  - build_rendy
 
   script:
     - gradlew assembleRelease
