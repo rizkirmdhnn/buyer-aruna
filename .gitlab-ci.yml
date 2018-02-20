@@ -38,9 +38,10 @@ build_android:
   script:
     - gradlew assembleRelease
 
-    
-allow_failure: true
-
   artifacts:
     paths:
     - app/build/outputs/
+
+
+
+allow_failure: true
