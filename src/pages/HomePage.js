@@ -218,10 +218,7 @@ class HomePage extends Component {
     renderButton = () => {
         if (this.state.tokenUser !== null) {
             return (
-                <Button
-                    onPress={() => this.isLogout()}>
-                    Logout
-                </Button>
+                <View />
             )
         } else if (this.state.tokenUser == null) {
             return (
