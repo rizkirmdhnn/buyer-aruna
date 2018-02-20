@@ -34,6 +34,7 @@ build_android:
 
   only:
   - dev
+  allow_failure: true
 
   script:
     - gradlew assembleRelease
@@ -41,7 +42,3 @@ build_android:
   artifacts:
     paths:
     - app/build/outputs/
-
-
-
-allow_failure: true
