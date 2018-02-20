@@ -54,7 +54,7 @@ class RequestOrderPage extends Component {
         })
             .catch(error => {
                 this.setState({ loading: false });
-                console.log(error.response, 'Error nya');
+                console.log(error.response, 'Erroor nya');
                 console.log('Error Request Order Get Data');
             })
     }
