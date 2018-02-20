@@ -6,6 +6,8 @@ import { View, Text } from 'react-native';
 import { TabNavigator, StackNavigator, DrawerNavigator } from 'react-navigation';
 import numeral from 'numeral';
 import OneSignal from 'react-native-onesignal';
+import { COLOR } from './shared/lb.config';
+
 
 /**
  *  List Page
@@ -28,6 +30,8 @@ import MessagePage from './pages/MessagePage';
 import FilterPage from './pages/FilterPage';
 import ListSearchProductPage from './pages/ListSearchProductPage';
 import LoginPage from './pages/LoginPage';
+import ResetPassword from './pages/ResetPassword';
+import ForgotPassword from './pages/ForgotPassword';
 /**
  *  List Component
  */
@@ -89,26 +93,10 @@ class App extends React.Component {
 
     render() {
 
-        const MainScreenNavigator = TabNavigator({
+        const Routes = StackNavigator({
             Home: { screen: HomePage },
             Request: { screen: RequestOrderPage },
-            Transaction: { screen: TransactionPage }
-        }, {
-                tabBarOptions: {
-                    upperCaseLabel: false,
-                    activeTintColor: 'white',
-                    indicatorStyle: {
-                        borderBottomColor: '#ffffff',
-                        borderBottomWidth: 2,
-                    },
-                    style: {
-                        backgroundColor: '#006AAF',
-                    }
-                }
-            });
-
-        const SimpleApp = StackNavigator({
-            Home: { screen: MainScreenNavigator },
+            Transaction: { screen: TransactionPage },
             FormProductRequest: { screen: FormProductRequestPage },
             RequestFormOrderFirst: { screen: RequestFormOrderFirstPage },
             RequestFormOrderSecond: { screen: RequestFormOrderSecondPage },
@@ -122,33 +110,29 @@ class App extends React.Component {
             ProfileSupplier: { screen: ProfileSupplierPage },
             Filter: { screen: FilterPage },
             ListSearchProduct: { screen: ListSearchProductPage },
-            isLogin: { screen: LoginPage }
+            isLogin: { screen: LoginPage },
+            ResetPassword: { screen: ResetPassword },
+            ForgotPassword: { screen: ForgotPassword }
         }, {
-                cardStyle: { backgroundColor: '#FFF' }
-            });
-
-        const DrawerSide = DrawerNavigator({
-            Home: {
-                screen: SimpleApp,
+                cardStyle: { backgroundColor: '#fafafa' },
                 navigationOptions: {
-                    drawer: {
-                        label: 'Dashboard'
-                    }
-                }
-            },
-            isLogin: {
-                screen: LoginPage,
-                navigationOptions: {
-                    drawer: {
-                        label: 'Masuk/Daftar'
+                    headerTitleStyle: {
+                        alignSelf: 'center',
+                        color: '#fff',
+                        fontFamily: 'Muli-Bold',
+                        fontWeight: '300',
                     },
+                    headerStyle: {
+                        backgroundColor: COLOR.secondary_a,
+                    },
+                    headerTintColor: '#fff',
                 }
-            }
-        })
+            })
+
 
         return (
             <View style={styles.container} >
-                <DrawerSide />
+                <Routes />
             </View>
         );
     };

@@ -2,7 +2,7 @@
  *  Import Component
  */
 import React, { Component } from 'react';
-import { Text, Image, View, TouchableWithoutFeedback, ScrollView, FlatList, AsyncStorage } from 'react-native';
+import { Text, Image, View, ListView, TouchableWithoutFeedback, ScrollView, FlatList, AsyncStorage } from 'react-native';
 import {
     Button,
     CardSection,
@@ -30,7 +30,7 @@ class FilterPage extends Component {
         super(props)
         this.state = {
             isModalVisible: false,
-            provinsiContainer: false,
+            provinsiContainer: true,
             dataProvince: '',
             dataParsing: '',
             provinsiId: [],
@@ -152,16 +152,23 @@ class FilterPage extends Component {
     }
 
     renderItemProvince = (item) => {
-
         return item.map((datax, index) => {
-            console.log(datax, 'HAHAHHAHAHAHAHA');
-            <View style={{ height: 55 }}>
-                <CheckBox
-                    title={datax.name}
-                    checked={this.state.provinsiId.includes(datax.id)}
-                    onPress={() => this.provinsiCheck(datax)}
-                />
+            console.log(datax.name, 'HAHAHHAHAHAHAHA');
+
+            <View style={{ flex: 1 }}>
+                <Text>ASDAASDASDASD</Text>
             </View>
+            // <View>
+            {/* <Text style={{ height: 200, color: 'black' }}>{datax.name}</Text>
+                    <View style={{ flexDirection: 'column' }}>
+                        <Text>{datax.name}</Text>
+                        <CheckBox
+                            title={datax.name}
+                            checked={this.state.provinsiId.includes(datax.id)}
+                            onPress={() => this.provinsiCheck(datax)}
+                        />
+                    </View> */}
+            // </View>
         });
     }
 
@@ -207,25 +214,25 @@ class FilterPage extends Component {
                     isVisible={this.state.isModalVisible}
                     onBackdropPress={() => this.setState({ isModalVisible: false })}
                 >
-                    <View style={{ backgroundColor: 'white' }}>
+                    <View style={{ flex: 1, backgroundColor: 'white', height: 500 }}>
                         <View>
                             <Card>
-                                <TouchableWithoutFeedback
+                                {/* <TouchableWithoutFeedback
                                     onPress={() => {
                                         this.setState({ provinsiContainer: !provinsiContainer });
                                         console.log(provinsiContainer, 'Request Klik')
-                                    }}>
+                                    }}> */}
 
-                                    <View style={{ flexDirection: 'row' }}>
-                                        <Text style={{ fontSize: 20 }}>Kota / Provinsi</Text>
-                                        <View style={{ flex: 1 }}>
-                                            <Icon size={30} style={{ alignSelf: 'flex-end' }} name={provinsiContainer ? 'md-arrow-dropup' : 'md-arrow-dropdown'} />
-                                        </View>
+                                <View style={{ flexDirection: 'row' }}>
+                                    <Text style={{ fontSize: 20 }}>Kota / Provinsi</Text>
+                                    <View style={{ flex: 1 }}>
+                                        <Icon size={30} style={{ alignSelf: 'flex-end' }} name={provinsiContainer ? 'md-arrow-dropup' : 'md-arrow-dropdown'} />
                                     </View>
-                                </TouchableWithoutFeedback>
+                                </View>
+                                {/* </TouchableWithoutFeedback> */}
                                 {
                                     provinsiContainer ?
-                                        <View style={{ height: 55 }}>
+                                        <View style={{ flex: 1, height: 200, width: 300 }}>
                                             <FlatList
                                                 data={[this.state.dataProvince]}
                                                 renderItem={({ item }) => this.renderItemProvince(item)}
@@ -237,14 +244,14 @@ class FilterPage extends Component {
                             </Card>
                         </View>
 
-                        <View style={{ height: 55 }}>
+                        {/* <View style={{ height: 55 }}>
                             <Button
                                 onPress={() => {
                                     this.filterApi()
                                 }}>
                                 Terapkan
                             </Button>
-                        </View>
+                        </View> */}
                     </View>
                 </Modal>
             </View>

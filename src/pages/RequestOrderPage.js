@@ -61,23 +61,7 @@ class RequestOrderPage extends Component {
 
     static navigationOptions = {
         title: 'Permintaan',
-        header: (
-            <View>
-                <Header
-                    backgroundColor={'#006AAF'}
-                    containerStyle={{ backgroundColor: 'red' }}
-                    leftComponent={{ icon: 'menu', color: '#fff' }}
-                    centerComponent={{ text: 'Home', style: { color: '#EFF6F9' } }}
-                    rightComponent={{ icon: 'notifications', color: '#faa51a' }}
-                />
-                <SearchBar
-                    style={{ flex: 1 }}
-                    round
-                    lightTheme
-                    inputStyle={{ color: 'white' }}
-                    placeholder='Type Here...' />
-            </View>
-        )
+        headerRight: <View />
     }
 
     refreshRequest() {

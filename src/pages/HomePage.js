@@ -12,64 +12,36 @@ import {
     TouchableOpacity,
     TouchableHighlight,
     AsyncStorage,
-    FlatList
+    FlatList,
+    DrawerLayoutAndroid,
+    TouchableNativeFeedback
 } from 'react-native';
-import { Card, Button, CardSection, Container, ContainerSection, Spinner } from '../components/common'
-import AwesomeAlert from 'react-native-awesome-alerts';
+import { Card, Button, CardSection, Container, ContainerSection, Spinner, Input } from '../components/common'
+
 import { Header, SearchBar, SideMenu, List, ListItem } from 'react-native-elements';
 import axios from 'axios';
 import { BASE_URL } from './../shared/lb.config';
+import { COLOR } from './../shared/lb.config';
 import Icon from 'react-native-vector-icons/Ionicons';
 
+
+import Dashboard from './Dashboard';
+import RequestOrderPage from './RequestOrderPage';
+import TransactionPage from './TransactionPage';
 class HomePage extends Component {
+
+    static navigationOptions = {
+        header: null
+    }
 
     constructor(props) {
         super(props)
         this.state = {
-            showAlert: false,
-            supplierList: '',
-            productList: '',
-            loading: null,
-            tokenUser: '',
+            screen: 'Dashboard',
             searchItem: [],
             dataItemSearch: ''
         }
     }
-
-    static navigationOptions = ({ navigation }) => ({
-        headerStyle: { backgroundColor: '#006AAF' },
-        header: (
-            <View>
-                <Header
-                    backgroundColor={'#006AAF'}
-                    containerStyle={{ backgroundColor: 'red' }}
-                    leftComponent={<Icon
-                        name="md-menu"
-                        size={28}
-                        color="white"
-                        style={{ paddingLeft: 15, paddingTop: 200 }}
-                        onPress={() => {
-                            const { params } = navigation.state;
-                            params.handleDrawer && params.handleDrawer()
-                        }}
-                    />}
-                    centerComponent={{ text: 'Home', style: { color: '#EFF6F9' } }}
-                    rightComponent={{ icon: 'notifications', color: '#faa51a' }}
-                />
-                <SearchBar
-                    round
-                    lightTheme
-                    clearIcon={{ name: 'clear' }}
-                    onChangeText={(text) => {
-                        const { params } = navigation.state;
-                        params.handleModal && params.handleModal(text)
-                    }}
-                    inputStyle={{ color: 'white' }}
-                    placeholder='Type Here...'
-                />
-            </View>
-        )
-    })
 
     querySuggestion(text) {
         console.log(text, 'Text');
@@ -103,205 +75,182 @@ class HomePage extends Component {
 
     componentDidMount() {
         this.props.navigation.setParams({ handleModal: (text) => this.querySuggestion(text) });
-        this.props.navigation.setParams({ handleDrawer: () => this.renderDrawer() });
-    }
-
-    renderDrawer() {
-        const { navigate } = this.props.navigation;
-        navigate('DrawerOpen');
-    }
-
-    showAlert = () => {
-        this.setState({
-            showAlert: true
-        });
-    };
-
-    hideAlert = () => {
-        this.setState({
-            showAlert: false
-        });
-    };
-
-    credentialButton() {
-        const { navigate } = this.props.navigation;
-        AsyncStorage.getItem('loginCredential', (err, result) => {
-            console.log(result, 'Token');
-            if (result !== null) {
-                navigate('RequestFormOrderFirst');
-            } else if (result == null) {
-                this.setState({
-                    showAlert: true
-                });
-            }
-        });
-    }
-
-    credentialProduct() {
-        const { navigate } = this.props.navigation;
-        AsyncStorage.getItem('loginCredential', (err, result) => {
-            console.log(result, 'Token');
-            if (result !== null) {
-                navigate('FormProductRequest');
-            } else if (result == null) {
-                this.setState({
-                    showAlert: true
-                });
-            }
-        });
-    }
-
-    isLogout() {
-        const { navigate } = this.props.navigation;
-        console.log('Logout Klik');
-        AsyncStorage.getItem('loginCredential', (err, result) => {
-            AsyncStorage.removeItem('loginCredential', () => {
-                alert('Berhasil Logout!');
-                console.log('Logout Klik Sukses');
-                navigate('Home');
-            });
-        });
     }
 
 
-    filterPage = () => {
-        const { navigate } = this.props.navigation;
-        navigate('Filter');
-    }
 
-    componentWillMount() {
-        this.setState({ loading: true })
-        AsyncStorage.getItem('loginCredential', (err, result) => {
-            console.log(result);
-            this.setState({ tokenUser: result });
-            axios.get(`${BASE_URL}/suppliers/popular`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-                .then(response => {
-                    const res = response.data.data;
-                    this.setState({ supplierList: res, loading: false });
-                    console.log(res, 'Data Supplier Popular');
 
-                    axios.get(`${BASE_URL}/products/popular`, {
-                        headers: {
-                            'Content-Type': 'application/json',
-                        }
-                    })
-                        .then(response => {
-                            const res = response.data.data;
-                            console.log(res, 'Data Product Popular');
-                            this.setState({ productList: res, loading: false });
-                        })
-                        .catch(error => {
-                            this.setState({ loading: false })
-                            console.log('ERROR', error.response);
-                        });
-                })
-                .catch(error => {
-                    this.setState({ loading: false })
-                    console.log('ERROR', error.response);
-                });
-        });
-    }
-
-    goSupplier = (event) => {
-        this.props.navigation.navigate('ProfileSupplier', { datas: event });
-    }
-
-    isLogin() {
-        const { navigate } = this.props.navigation;
-        this.props.navigation.navigate('Login', { datas: 'Home' });
-    }
-
-    renderButton = () => {
-        if (this.state.tokenUser !== null) {
-            return (
-                <View />
-                // <Button
-                //     onPress={() => this.isLogout()}>
-                //     Logout
-                // </Button>
-            )
-        } else if (this.state.tokenUser == null) {
-            return (
-                <Button
-                    onPress={() => this.isLogin()}>
-                    Login
-                </Button>
-            )
-
+    renderScreen = () => {
+        if (this.state.screen === 'RequestOrderPage') {
+            return <RequestOrderPage navi={this.props.navigation} />
         }
-    }
+        if (this.state.screen === 'TransactionPage') {
+            return <TransactionPage navi={this.props.navigation} />
+        }
 
-    _keyExtractor = (item, index) => item.id;
-
-    renderProductItem = (itemProduct) => {
-        return (
-            <View>
-                <TouchableWithoutFeedback onPress={() => {
-                    this.goSupplier()
-                }}>
-                    <Image
-                        style={styles.item}
-                        source={{ uri: `${BASE_URL}/images/${itemProduct.item.Fish.photo}` }}
-                        resizeMode='cover'
-                    />
-                </TouchableWithoutFeedback>
-            </View>
-        )
-    }
-
-    renderSupplierItem = (itemSupplier) => {
-        const number = parseInt(itemSupplier.index) + 1;
-        console.log(itemSupplier, ' ', itemSupplier.index, number, 'Data Supplier');
-
-        return (
-            <TouchableWithoutFeedback onPress={() => {
-                this.goSupplier(itemSupplier)
-            }}>
-                <View
-                    style={styles.itemContainerStyle}
-                    key={itemSupplier.index}
-                >
-                    <View style={styles.headerNumber}>
-                        <Text style={styles.headerTextStyleNumber}>{number}.</Text>
-                    </View>
-                    <View style={styles.headerContentStyle}>
-                        <Text style={styles.headerTextStyle}>{itemSupplier.item.name}</Text>
-                        <View style={{ flexDirection: 'column', flex: 1 }}>
-                            <Text style={{ color: 'grey' }}>{itemSupplier.item.organization}</Text>
-                        </View>
-                    </View>
-                    <View style={styles.thumbnailContainerStyle}>
-                        <Image
-                            style={styles.thumbnailStyle}
-                            source={{ uri: `${BASE_URL}/images/${itemSupplier.item.photo}` }}
-                        />
-                    </View>
-                </View>
-            </TouchableWithoutFeedback>
-        )
+        return <Dashboard navi={this.props.navigation} />
     }
 
 
     render() {
         const { navigate } = this.props.navigation;
         const {
-            showAlert,
             requestExpanded,
             searchItem,
-            loading
+            loading,
+            screen
         } = this.state;
+
+        const {
+            containerStyle, headerHomeStyle, menuContainerStyle,
+            profileImageContainer, profileImage, profileName, coin, point, tabContainer, tabContainerActive, tabText, tabTextActive
+        } = styles;
 
         if (loading) {
             return <Spinner size="large" />
         }
-        return (
 
+        const menus = [
+            {
+                label: 'Beranda',
+                icon: require('./../assets/images/ic_beranda_white.png'),
+                screen: 'Home'
+            },
+            {
+                label: 'Profile',
+                icon: require('./../assets/images/ic_profile.png'),
+                screen: 'Home'
+            },
+            {
+                label: 'Permintaan (PO)',
+                icon: require('./../assets/images/ic_po.png'),
+                screen: 'Request'
+            },
+            {
+                label: 'Transaksi',
+                icon: require('./../assets/images/ic_transaksi.png'),
+                screen: 'Transaction'
+            },
+            {
+                label: 'Diskusi',
+                icon: require('./../assets/images/ic_diskusi.png'),
+                screen: 'Message'
+            }
+        ]
+
+
+        const menuDrawer = (
+            <View style={{ flex: 1, backgroundColor: COLOR.secondary_a }}>
+                <View style={{ padding: 30 }}>
+                    <ContainerSection>
+                        <View style={{ flexDirection: 'row', flex: 1 }}>
+                            <Text style={styles.drawerItemText}>Marketplace Aruna</Text>
+                            <View style={{ flex: 1 }}>
+                                <TouchableOpacity onPress={() => this.refs.drawer.closeDrawer()}>
+                                    <View>
+                                        <Icon style={{ color: '#fff', alignSelf: 'flex-end' }} st name="md-arrow-back" size={24} />
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </ContainerSection>
+                    <View style={{ borderTopWidth: 1, borderColor: '#fff', width: '70%', marginLeft: 5, marginRight: 5, marginBottom: 20, marginTop: 10 }} />
+                    {
+                        menus.map((item, index) =>
+                            <TouchableOpacity
+                                key={index}
+                                onPress={() => this.props.navigation.navigate(item.screen)}
+                            >
+                                <View style={{ marginBottom: 20 }}>
+                                    <ContainerSection>
+                                        <Image
+                                            style={styles.menuIcon}
+                                            source={item.icon}
+                                        />
+                                        <Text style={styles.drawerItemText}>{item.label}</Text>
+                                    </ContainerSection>
+                                </View>
+                            </TouchableOpacity>
+                        )
+                    }
+                    <View style={{ borderTopWidth: 1, borderColor: '#fff', width: '70%', marginLeft: 5, marginRight: 5, marginBottom: 20, marginTop: 10 }} />
+                    <TouchableOpacity onPress={() => this.props.navigation.navigate('Help')}>
+                        <View style={{ marginBottom: 20 }}>
+                            <ContainerSection>
+                                <Image
+                                    style={styles.menuIcon}
+                                    source={require('./../assets/images/ic_pusatbantuan_white.png')}
+                                />
+                                <Text style={styles.drawerItemText}>Pusat Bantuan</Text>
+                            </ContainerSection>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => this.props.logout(() => {
+                            const resetAction = NavigationActions.reset({
+                                index: 0,
+                                actions: [
+                                    NavigationActions.navigate({ routeName: 'Login' })
+                                ]
+                            })
+                            this.props.navigation.dispatch(resetAction)
+                        })}
+                    >
+                        <View style={{ marginBottom: 20 }}>
+                            <ContainerSection>
+                                <Image
+                                    style={styles.menuIcon}
+                                    source={require('./../assets/images/ic_keluar_white.png')}
+                                />
+                                <Text style={styles.drawerItemText}>Keluar</Text>
+                            </ContainerSection>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        )
+
+
+
+
+        return (
             <View style={styles.container}>
-                <ScrollView>
+                <DrawerLayoutAndroid
+                    ref="drawer"
+                    drawerWidth={300}
+                    drawerPosition={DrawerLayoutAndroid.positions.Left}
+                    renderNavigationView={() => menuDrawer}
+                >
+                    <View style={styles.header}>
+                        <View style={{ padding: 15 }}>
+                            <TouchableOpacity onPress={() => this.refs.drawer.openDrawer()}>
+                                <Icon size={25} name="md-menu" color="#fff" />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.headerText}>
+                            <Input
+                                onChangeText={(text) => {
+                                    this.querySuggestion(text);
+                                }}
+                                placeholder="Cari Komoditas..."
+                                icon="ic_search"
+                            />
+                        </View>
+                        <View style={{ padding: 15 }}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate('NotificationList')}>
+                                <Image
+                                    style={{ height: 20, width: 15 }}
+                                    source={
+                                        // this.props.user.unreadNotif > 0 ?
+                                        //     require('./../assets/images/ic_notification_on.png')
+                                        //     :
+                                        require('./../assets/images/ic_notification.png')
+                                    }
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+
                     {
                         searchItem && searchItem.map(item =>
                             <TouchableOpacity
@@ -314,76 +263,34 @@ class HomePage extends Component {
                             </TouchableOpacity>
                         )
                     }
-                    <View style={{ flex: 1 }}>
-                        <Image
-                            style={styles.imageStyle}
-                            source={require('./../assets/image/fish_1.jpg')}
-                        />
+
+                    <View style={menuContainerStyle}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <View style={{ flex: 1 }}>
+                                <TouchableNativeFeedback onPress={() => this.setState({ screen: 'Dashboard' })}>
+                                    <View style={screen === 'Dashboard' ? tabContainerActive : tabContainer}>
+                                        <Text style={screen === 'Dashboard' ? tabTextActive : tabText}>Menu</Text>
+                                    </View>
+                                </TouchableNativeFeedback>
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <TouchableNativeFeedback onPress={() => this.setState({ screen: 'RequestOrderPage' })}>
+                                    <View style={screen === 'RequestOrderPage' ? tabContainerActive : tabContainer}>
+                                        <Text style={screen === 'RequestOrderPage' ? tabTextActive : tabText}>Permintaan</Text>
+                                    </View>
+                                </TouchableNativeFeedback>
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <TouchableNativeFeedback onPress={() => this.setState({ screen: 'TransactionPage' })}>
+                                    <View style={screen === 'TransactionPage' ? tabContainerActive : tabContainer}>
+                                        <Text style={screen === 'TransactionPage' ? tabTextActive : tabText}>Transaksi</Text>
+                                    </View>
+                                </TouchableNativeFeedback>
+                            </View>
+                        </View>
+                        {this.renderScreen()}
                     </View>
-
-                    <Button
-                        onPress={() => {
-                            this.credentialButton()
-                        }}>
-                        Buat Permintaan
-                    </Button>
-
-                    <View>
-                        {this.renderButton()}
-                    </View>
-
-                    <View style={styles.containerTextProductCard}>
-                        <Text style={styles.textCard}>Komoditas Favorit</Text>
-                        <Text style={styles.textCardLink}>Lihat Semua</Text>
-                    </View>
-
-                    <View style={styles.containerFlatList}>
-                        <FlatList
-                            data={this.state.productList}
-                            horizontal={true}
-                            keyExtractor={this._keyExtractor}
-                            renderItem={this.renderProductItem.bind(this)}
-                        />
-                    </View>
-
-                    <View style={styles.containerTextProductCard}>
-                        <Text style={styles.textCard}>Supplier Popular</Text>
-                        <Text style={styles.textCardLink}>Lihat Semua</Text>
-                    </View>
-
-                    <View style={styles.containerFlatListSupplier}>
-                        <FlatList
-                            data={this.state.supplierList}
-                            horizontal={false}
-                            keyExtractor={this._keyExtractor}
-                            renderItem={this.renderSupplierItem.bind(this)}
-                        />
-                    </View>
-
-                </ScrollView>
-
-                <AwesomeAlert
-                    show={showAlert}
-                    showProgress={false}
-                    title=""
-                    message="Anda belum log in ?"
-                    closeOnTouchOutside={true}
-                    closeOnHardwareBackPress={false}
-                    showCancelButton={true}
-                    showConfirmButton={true}
-                    cancelText="Daftar Akun"
-                    confirmText="Log in"
-                    confirmButtonColor="#006AAF"
-                    onCancelPressed={() => {
-                        this.hideAlert();
-                        navigate('RegistrationForm');
-                    }}
-                    onConfirmPressed={() => {
-                        this.hideAlert();
-                        this.props.navigation.navigate('Login', { datas: 'RequestFormOrderFirst' })
-                    }}
-                />
-
+                </DrawerLayoutAndroid>
             </View>
         );
     }
@@ -495,6 +402,93 @@ const styles = {
         marginBottom: 10,
         flexDirection: 'column',
         justifyContent: 'space-around'
+    },
+    containerStyle: {
+        flex: 1
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        backgroundColor: COLOR.secondary_a,
+        height: 60,
+        shadowColor: '#000',
+        shadowOffset: { width: 10, height: 20 },
+        alignItems: 'center',
+        shadowOpacity: 0.2,
+        width: '100%',
+        elevation: 3
+    },
+    headerText: {
+        flex: 1,
+        paddingTop: 5
+    },
+    headerHomeStyle: {
+        paddingTop: 20,
+        paddingBottom: 10,
+        flex: 2,
+        justifyContent: 'center',
+        alignSelf: 'center',
+        backgroundColor: COLOR.secondary_a,
+        width: '100%'
+    },
+    menuContainerStyle: {
+        flex: 4
+    },
+    profileImageContainer: {
+        height: 90,
+        width: 90,
+        alignSelf: 'center',
+    },
+    profileImage: {
+        height: 90,
+        width: 90,
+        borderRadius: 50,
+    },
+    profileName: {
+        textAlign: 'center',
+        marginTop: 5,
+        color: '#fff',
+        fontSize: 20,
+        fontFamily: 'Muli-Bold'
+    },
+    coin: {
+        height: 24,
+        width: 24,
+        alignSelf: 'center'
+    },
+    point: {
+        marginTop: 1,
+        marginLeft: 5,
+        fontSize: 15,
+    },
+    tabContainer: {
+        backgroundColor: COLOR.element_a3,
+        height: 50,
+        justifyContent: 'center'
+    },
+    tabContainerActive: {
+        backgroundColor: COLOR.element_a4,
+        height: 50,
+        justifyContent: 'center'
+    },
+    tabText: {
+        color: '#eaeaea',
+        textAlign: 'center',
+        fontSize: 18
+    },
+    tabTextActive: {
+        color: '#fff',
+        textAlign: 'center',
+        fontSize: 18
+    },
+    drawerItemText: {
+        color: '#fff',
+        fontSize: 14
+    },
+    menuIcon: {
+        height: 20,
+        width: 20,
+        marginRight: 20
     }
 }
 
