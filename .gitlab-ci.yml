@@ -28,7 +28,7 @@ stages:
 build:
   stage: build
   script:
-    - cd android && gradlew assembleRelease
+    - cd android && ./gradlew assembleRelease
   artifacts:
     paths:
     - app/build/outputs/
