@@ -24,14 +24,19 @@ before_script:
 tags:
     - build_rendy
 
-  only:
-    - /^release/.*$/
-    - dev
+stages:
+    - build
 
-    allow_failure: true
+allow_failure: true
 
 build:
-  tag: build_rendy
+  stages: build_android
+  
+  only:
+  - /^release/.*$/
+  - dev
+  - tags
+
   script:
     - gradlew assembleRelease
   artifacts:
