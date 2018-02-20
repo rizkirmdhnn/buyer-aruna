@@ -21,23 +21,26 @@ before_script:
   - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "android-sdk-linux/licenses/android-sdk-license"
   - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "android-sdk-linux/licenses/android-sdk-preview-license"
 
-tags:
-    - build_rendy
 
 stages:
     - build_android
 
-allow_failure: true
 
-build:
+build_android:
   stages: build_android
+  
+  tags:
+      - build_rendy
 
   only:
   - dev
-  - build_rendy
 
   script:
     - gradlew assembleRelease
+
+    
+allow_failure: true
+
   artifacts:
     paths:
     - app/build/outputs/
