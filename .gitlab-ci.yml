@@ -1,4 +1,6 @@
 image: java:openjdk-8-jdk
+image: node:8.9.4
+
 variables:
   ANDROID_SDK_TOOLS: "24.4.1"
   ANDROID_TARGET_SDK: "26"
@@ -27,6 +29,9 @@ stages:
 #Cek release apk
 build:
   stage: build
+  before_script: 
+    - npm install
+    - yarn install
   script:
     - cd android && ./gradlew assembleRelease
   artifacts:
