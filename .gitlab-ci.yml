@@ -27,8 +27,6 @@ stages:
 #Cek release apk
 build:
   stage: build
-  before_script:
-    - npm install
   script:
     - cd android && gradlew assembleRelease
   artifacts:
