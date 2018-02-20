@@ -31,9 +31,8 @@ allow_failure: true
 
 build:
   stages: build_android
-  
+
   only:
-  - /^release/.*$/
   - dev
   - tags
 
