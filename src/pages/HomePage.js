@@ -16,7 +16,7 @@ import {
     DrawerLayoutAndroid,
     TouchableNativeFeedback
 } from 'react-native';
-import { Card, Button, CardSection, Container, ContainerSection, Spinner, Input } from '../components/common'
+import { Card, Button, CardSection, Container, ContainerSection, Spinner, Input, InputSearch } from '../components/common'
 import { NavigationActions } from 'react-navigation';
 import { Header, SearchBar, SideMenu, List, ListItem } from 'react-native-elements';
 import axios from 'axios';
@@ -292,7 +292,7 @@ class HomePage extends Component {
                             </TouchableOpacity>
                         </View>
                         <View style={styles.headerText}>
-                            <Input
+                            <InputSearch
                                 onChangeText={(text) => {
                                     this.querySuggestion(text);
                                 }}
@@ -333,7 +333,7 @@ class HomePage extends Component {
                             <View style={{ flex: 1 }}>
                                 <TouchableNativeFeedback onPress={() => this.setState({ screen: 'Dashboard' })}>
                                     <View style={screen === 'Dashboard' ? tabContainerActive : tabContainer}>
-                                        <Text style={screen === 'Dashboard' ? tabTextActive : tabText}>Menu</Text>
+                                        <Text style={screen === 'Dashboard' ? tabTextActive : tabText}>Beranda</Text>
                                     </View>
                                 </TouchableNativeFeedback>
                             </View>
