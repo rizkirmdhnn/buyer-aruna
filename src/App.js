@@ -32,6 +32,7 @@ import ListSearchProductPage from './pages/ListSearchProductPage';
 import LoginPage from './pages/LoginPage';
 import ResetPassword from './pages/ResetPassword';
 import ForgotPassword from './pages/ForgotPassword';
+import Help from './pages/Help';
 /**
  *  List Component
  */
@@ -112,7 +113,8 @@ class App extends React.Component {
             ListSearchProduct: { screen: ListSearchProductPage },
             isLogin: { screen: LoginPage },
             ResetPassword: { screen: ResetPassword },
-            ForgotPassword: { screen: ForgotPassword }
+            ForgotPassword: { screen: ForgotPassword },
+            Help: { screen: Help }
         }, {
                 cardStyle: { backgroundColor: '#fafafa' },
                 navigationOptions: {
