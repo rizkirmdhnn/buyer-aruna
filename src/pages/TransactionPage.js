@@ -71,7 +71,8 @@ class TransactionPage extends Component {
 
     detailTransaction = (props) => {
         const dataTransaction = props;
-        this.props.navigation.navigate('DetailTransaction', { datas: dataTransaction })
+        // const { navigate } = this.props.navi.navigate;
+        this.props.navi.navigate('DetailTransaction', { datas: dataTransaction })
     }
 
     refreshRequest() {

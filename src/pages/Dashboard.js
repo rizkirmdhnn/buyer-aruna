@@ -5,7 +5,11 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import { Card, Button, CardSection, Container, ContainerSection, Spinner } from '../components/common';
 import axios from 'axios';
 import { BASE_URL } from './../shared/lb.config';
+import Swiper from 'react-native-swiper';
 class Dashboard extends Component {
+    static navigationOptions = {
+        header: null
+    }
 
     constructor(props) {
         super(props)
@@ -32,7 +36,8 @@ class Dashboard extends Component {
     };
 
     credentialButton() {
-        const { navigate } = this.props.navigation;
+        const { navigate } = this.props.navi.navigate;
+        console.log(this.props.navi.navigate, 'Navigate');
         AsyncStorage.getItem('loginCredential', (err, result) => {
             console.log(result, 'Token');
             if (result !== null) {
@@ -46,7 +51,7 @@ class Dashboard extends Component {
     }
 
     credentialProduct() {
-        const { navigate } = this.props.navigation;
+        const { navigate } = this.props.navi.navigate;
         AsyncStorage.getItem('loginCredential', (err, result) => {
             console.log(result, 'Token');
             if (result !== null) {
@@ -59,21 +64,9 @@ class Dashboard extends Component {
         });
     }
 
-    isLogout() {
-        const { navigate } = this.props.navigation;
-        console.log('Logout Klik');
-        AsyncStorage.getItem('loginCredential', (err, result) => {
-            AsyncStorage.removeItem('loginCredential', () => {
-                alert('Berhasil Logout!');
-                console.log('Logout Klik Sukses');
-                navigate('Home');
-            });
-        });
-    }
-
 
     filterPage = () => {
-        const { navigate } = this.props.navigation;
+        const { navigate } = this.props.navi.navigate;
         navigate('Filter');
     }
 
@@ -115,31 +108,11 @@ class Dashboard extends Component {
     }
 
     goSupplier = (event) => {
-        this.props.navigation.navigate('ProfileSupplier', { datas: event });
+        this.props.navi.navigate('ProfileSupplier', { datas: event });
     }
 
     isLogin() {
-        const { navigate } = this.props.navigation;
-        this.props.navigation.navigate('Login', { datas: 'Home' });
-    }
-
-    renderButton = () => {
-        if (this.state.tokenUser !== null) {
-            return (
-                <Button
-                    onPress={() => this.isLogout()}>
-                    Logout
-                </Button>
-            )
-        } else if (this.state.tokenUser == null) {
-            return (
-                <Button
-                    onPress={() => this.isLogin()}>
-                    Login
-                </Button>
-            )
-
-        }
+        this.props.navi.navigate('Login', { datas: 'Home' });
     }
 
     _keyExtractor = (item, index) => item.id;
@@ -148,7 +121,8 @@ class Dashboard extends Component {
         return (
             <View>
                 <TouchableWithoutFeedback onPress={() => {
-                    this.goSupplier()
+                    // this.goSupplier()
+                    console.log('Item Popular');
                 }}>
                     <Image
                         style={styles.item}
@@ -200,29 +174,53 @@ class Dashboard extends Component {
         } = styles;
 
         const {
-           showAlert
+            showAlert
         } = this.state;
 
         return (
-            <View>
-                <ScrollView>
-                    <View style={{ flex: 1 }}>
-                        <Image
-                            style={styles.imageStyle}
-                            source={require('./../assets/image/fish_1.jpg')}
-                        />
-                    </View>
+            <View style={{ flex: 1 }}>
+                <View style={{ width: 480, height: 200 }}>
+                    <Swiper style={styles.wrapper} showsButtons={true} autoplay={true}>
+                        <View style={styles.slide1}>
+                            <Image
+                                style={styles.imageStyle}
+                                source={require('./../assets/images/banner-5.jpg')}
+                            />
+                        </View>
+                        <View style={styles.slide2}>
+                            <Image
+                                style={styles.imageStyle}
+                                source={require('./../assets/images/banner-4.png')}
+                            />
+                        </View>
+                        <View style={styles.slide3}>
+                            <Image
+                                style={styles.imageStyle}
+                                source={require('./../assets/images/banner-3.jpg')}
+                            />
+                        </View>
+                        <View style={styles.slide3}>
+                            <Image
+                                style={styles.imageStyle}
+                                source={require('./../assets/images/banner-2.png')}
+                            />
+                        </View>
+                        <View style={styles.slide3}>
+                            <Image
+                                style={styles.imageStyle}
+                                source={require('./../assets/images/banner-1.jpg')}
+                            />
+                        </View>
+                    </Swiper>
+                </View>
 
+                <ScrollView>
                     <Button
                         onPress={() => {
                             this.credentialButton()
                         }}>
                         Buat Permintaan
                     </Button>
-
-                    <View>
-                        {this.renderButton()}
-                    </View>
 
                     <View style={styles.containerTextProductCard}>
                         <Text style={styles.textCard}>Komoditas Favorit</Text>
@@ -268,11 +266,12 @@ class Dashboard extends Component {
                     confirmButtonColor="#006AAF"
                     onCancelPressed={() => {
                         this.hideAlert();
-                        navigate('RegistrationForm');
+                        console.log(this.props.navi.navigate, 'Navigate')
+                        this.props.navi.navigate('RegistrationForm');
                     }}
                     onConfirmPressed={() => {
                         this.hideAlert();
-                        this.props.navigation.navigate('Login', { datas: 'RequestFormOrderFirst' })
+                        this.props.navi.navigate('Login', { datas: 'RequestFormOrderFirst' })
                     }}
                 />
             </View>
@@ -474,7 +473,29 @@ const styles = {
         height: 20,
         width: 20,
         marginRight: 20
-    }
+    },
+    wrapper: {
+        backgroundColor: '#9DD6EB',
+    },
+    slide1: {
+        flex: 1,
+        height: 70,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'orange',
+    },
+    slide2: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        // backgroundColor: '#97CAE5',
+    },
+    slide3: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        // backgroundColor: '#92BBD9',
+    },
 }
 
 

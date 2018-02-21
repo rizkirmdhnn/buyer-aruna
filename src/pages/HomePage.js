@@ -17,7 +17,7 @@ import {
     TouchableNativeFeedback
 } from 'react-native';
 import { Card, Button, CardSection, Container, ContainerSection, Spinner, Input } from '../components/common'
-
+import { NavigationActions } from 'react-navigation';
 import { Header, SearchBar, SideMenu, List, ListItem } from 'react-native-elements';
 import axios from 'axios';
 import { BASE_URL } from './../shared/lb.config';
@@ -39,7 +39,10 @@ class HomePage extends Component {
         this.state = {
             screen: 'Dashboard',
             searchItem: [],
-            dataItemSearch: ''
+            dataItemSearch: '',
+            loading: true,
+            menuLoginExpanded: false,
+            menuLogoutExpanded: false
         }
     }
 
@@ -72,9 +75,15 @@ class HomePage extends Component {
         this.props.navigation.navigate('Filter', { datas: item });
     }
 
-
-    componentDidMount() {
-        this.props.navigation.setParams({ handleModal: (text) => this.querySuggestion(text) });
+    componentWillMount() {
+        AsyncStorage.getItem('loginCredential', (err, result) => {
+            if (result) {
+                this.setState({ menuLoginExpanded: true, loading: false });
+            }
+            if (!result) {
+                this.setState({ menuLogoutExpanded: true, loading: false });
+            }
+        })
     }
 
 
@@ -91,6 +100,23 @@ class HomePage extends Component {
         return <Dashboard navi={this.props.navigation} />
     }
 
+    isLogout() {
+        console.log('Logout Klik');
+        AsyncStorage.getItem('loginCredential', (err, result) => {
+            AsyncStorage.removeItem('loginCredential', () => {
+                alert('Berhasil Logout!');
+                console.log('Logout Klik Sukses');
+                const resetAction = NavigationActions.reset({
+                    index: 0,
+                    actions: [
+                        NavigationActions.navigate({ routeName: 'Home' })
+                    ]
+                })
+                this.props.navigation.dispatch(resetAction)
+            });
+        });
+    }
+
 
     render() {
         const { navigate } = this.props.navigation;
@@ -98,7 +124,8 @@ class HomePage extends Component {
             requestExpanded,
             searchItem,
             loading,
-            screen
+            screen,
+            menuLoginExpanded
         } = this.state;
 
         const {
@@ -110,7 +137,7 @@ class HomePage extends Component {
             return <Spinner size="large" />
         }
 
-        const menus = [
+        const menuLogin = [
             {
                 label: 'Beranda',
                 icon: require('./../assets/images/ic_beranda_white.png'),
@@ -138,6 +165,14 @@ class HomePage extends Component {
             }
         ]
 
+        const menuLogout = [
+            {
+                label: 'Masuk/Daftar',
+                icon: require('./../assets/images/ic_profile.png'),
+                screen: 'isLogin'
+            }
+        ]
+
 
         const menuDrawer = (
             <View style={{ flex: 1, backgroundColor: COLOR.secondary_a }}>
@@ -156,56 +191,85 @@ class HomePage extends Component {
                     </ContainerSection>
                     <View style={{ borderTopWidth: 1, borderColor: '#fff', width: '70%', marginLeft: 5, marginRight: 5, marginBottom: 20, marginTop: 10 }} />
                     {
-                        menus.map((item, index) =>
-                            <TouchableOpacity
-                                key={index}
-                                onPress={() => this.props.navigation.navigate(item.screen)}
-                            >
-                                <View style={{ marginBottom: 20 }}>
-                                    <ContainerSection>
-                                        <Image
-                                            style={styles.menuIcon}
-                                            source={item.icon}
-                                        />
-                                        <Text style={styles.drawerItemText}>{item.label}</Text>
-                                    </ContainerSection>
-                                </View>
-                            </TouchableOpacity>
-                        )
+                        menuLoginExpanded ?
+                            menuLogin.map((item, index) =>
+                                <TouchableOpacity
+                                    key={index}
+                                    onPress={() => this.props.navigation.navigate(item.screen)}
+                                >
+                                    <View style={{ marginBottom: 20 }}>
+                                        <ContainerSection>
+                                            <Image
+                                                style={styles.menuIcon}
+                                                source={item.icon}
+                                            />
+                                            <Text style={styles.drawerItemText}>{item.label}</Text>
+                                        </ContainerSection>
+                                    </View>
+                                </TouchableOpacity>
+                            )
+                            :
+                            menuLogout.map((item, index) =>
+                                <TouchableOpacity
+                                    key={index}
+                                    onPress={() => this.props.navigation.navigate(item.screen)}
+                                >
+                                    <View style={{ marginBottom: 20 }}>
+                                        <ContainerSection>
+                                            <Image
+                                                style={styles.menuIcon}
+                                                source={item.icon}
+                                            />
+                                            <Text style={styles.drawerItemText}>{item.label}</Text>
+                                        </ContainerSection>
+                                    </View>
+                                </TouchableOpacity>
+                            )
                     }
                     <View style={{ borderTopWidth: 1, borderColor: '#fff', width: '70%', marginLeft: 5, marginRight: 5, marginBottom: 20, marginTop: 10 }} />
-                    <TouchableOpacity onPress={() => this.props.navigation.navigate('Help')}>
-                        <View style={{ marginBottom: 20 }}>
-                            <ContainerSection>
-                                <Image
-                                    style={styles.menuIcon}
-                                    source={require('./../assets/images/ic_pusatbantuan_white.png')}
-                                />
-                                <Text style={styles.drawerItemText}>Pusat Bantuan</Text>
-                            </ContainerSection>
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => this.props.logout(() => {
-                            const resetAction = NavigationActions.reset({
-                                index: 0,
-                                actions: [
-                                    NavigationActions.navigate({ routeName: 'Login' })
-                                ]
-                            })
-                            this.props.navigation.dispatch(resetAction)
-                        })}
-                    >
-                        <View style={{ marginBottom: 20 }}>
-                            <ContainerSection>
-                                <Image
-                                    style={styles.menuIcon}
-                                    source={require('./../assets/images/ic_keluar_white.png')}
-                                />
-                                <Text style={styles.drawerItemText}>Keluar</Text>
-                            </ContainerSection>
-                        </View>
-                    </TouchableOpacity>
+                    {
+                        menuLoginExpanded ?
+                            <View>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('Help')}>
+                                    <View style={{ marginBottom: 20 }}>
+                                        <ContainerSection>
+                                            <Image
+                                                style={styles.menuIcon}
+                                                source={require('./../assets/images/ic_pusatbantuan_white.png')}
+                                            />
+                                            <Text style={styles.drawerItemText}>Pusat Bantuan</Text>
+                                        </ContainerSection>
+                                    </View>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => this.isLogout()}
+                                >
+                                    <View style={{ marginBottom: 20 }}>
+                                        <ContainerSection>
+                                            <Image
+                                                style={styles.menuIcon}
+                                                source={require('./../assets/images/ic_keluar_white.png')}
+                                            />
+                                            <Text style={styles.drawerItemText}>Keluar</Text>
+                                        </ContainerSection>
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+                            :
+                            <View>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('Help')}>
+                                    <View style={{ marginBottom: 20 }}>
+                                        <ContainerSection>
+                                            <Image
+                                                style={styles.menuIcon}
+                                                source={require('./../assets/images/ic_pusatbantuan_white.png')}
+                                            />
+                                            <Text style={styles.drawerItemText}>Pusat Bantuan</Text>
+                                        </ContainerSection>
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+                    }
                 </View>
             </View>
         )

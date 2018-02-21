@@ -156,7 +156,7 @@ class RequestOrderPage extends Component {
 
     detailOrder = (props) => {
         const listData = props;
-        this.props.navigation.navigate('DetailRequestOrder', { datas: listData })
+        this.props.navi.navigate('DetailRequestOrder', { datas: listData })
     }
 
 
