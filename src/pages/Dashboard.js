@@ -475,26 +475,23 @@ const styles = {
         marginRight: 20
     },
     wrapper: {
-        backgroundColor: '#9DD6EB',
+        
     },
     slide1: {
         flex: 1,
         height: 70,
         justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'orange',
+        alignItems: 'center'
     },
     slide2: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center',
-        // backgroundColor: '#97CAE5',
+        alignItems: 'center'
     },
     slide3: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center',
-        // backgroundColor: '#92BBD9',
+        alignItems: 'center'
     },
 }
 

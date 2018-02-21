@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { View, Text, Image } from 'react-native'
 import { Container, ContainerSection, Input, Button, Spinner } from '../components/common'
 
-class Help extends Component {
+class HelpPage extends Component {
 	static navigationOptions = {
 		title: 'Pusat Bantuan',
 		headerRight: <View />
@@ -33,4 +33,4 @@ class Help extends Component {
 	}
 }
 
-export default Help
+export default HelpPage

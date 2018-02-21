@@ -161,7 +161,7 @@ class HomePage extends Component {
             {
                 label: 'Diskusi',
                 icon: require('./../assets/images/ic_diskusi.png'),
-                screen: 'Message'
+                screen: 'MessageList'
             }
         ]
 
