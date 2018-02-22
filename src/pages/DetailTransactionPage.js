@@ -117,142 +117,148 @@ class DetailTransactionPage extends Component {
                     console.log(this.state.dataMaster, 'DATA MASTER');
                     console.log(this.state.dataTransaction, 'DATA TRANSACTION');
 
-                    if (this.state.dataTransaction.ContractId === null) {
-                        this.setState({
-                            contractNotDone: true,
-                        })
-                    } else {
-                        console.log(this.state.dataTransaction.Contract.Status.id, 'STATUS KONTRAK');
-                        if (this.state.dataTransaction.Contract.Status.id === 4) {
-                            this.setState({
-                                contractDone: true,
-                                contractPending: true,
-                            })
-                        }
-
-                        if (this.state.dataTransaction.Contract.Status.id === 5) {
-                            this.setState({
-                                contractDone: true,
-                                contractApproved: true
-                            })
-
-                            if (this.state.dataTransaction.downPayment == null) {
-                                this.setState({
-                                    dpContainer: true,
-                                    dpNotYet: true
-                                })
-                            }
-
-                            if (this.state.dataTransaction.downPayment.Status.id == 25) {
-                                this.setState({
-                                    dpContainer: true,
-                                    dpPending: true
-                                })
-                            }
-
-                            if (this.state.dataTransaction.downPayment.Status.id == 26) {
-                                this.setState({
-                                    dpContainer: true,
-                                    dpApproved: true
-                                })
-
-                                if (this.state.dataTransaction.shipping.Status.id == 28) {
-                                    this.setState({
-                                        deliveryContainer: true,
-                                        deliveryPending: true
-                                    })
-                                }
-                                if (this.state.dataTransaction.shipping.Status.id == 29) {
-                                    this.setState({
-                                        deliveryContainer: true,
-                                        deliveryApproved: true
-                                    })
-
-                                    if (this.state.dataTransaction.shippingDelivered.Status.id == 35) {
-                                        this.setState({
-                                            deliveryContainer: true,
-                                            deliveryApproved: null,
-                                            deliveryApprovedAdminPending: true
-                                        })
-                                    }
-
-                                    if (this.state.dataTransaction.shippingDelivered.Status.id == 36) {
-                                        this.setState({
-                                            deliveryContainer: true,
-                                            deliveryApproved: null,
-                                            deliveryApprovedAdminPending: null,
-                                            deliveryApprovedAdminApproved: true
-                                        })
-
-                                        if (this.state.dataTransaction.finalPayment == null) {
-                                            this.setState({
-                                                paidContainer: true,
-                                                paidNotYet: true
-                                            })
-                                        }
-
-                                        if (this.state.dataTransaction.finalPayment.Status.id == 25) {
-                                            this.setState({
-                                                paidContainer: true,
-                                                paidNotYet: null,
-                                                paidWaiting: true
-                                            })
-                                        }
-
-                                        if (this.state.dataTransaction.finalPayment.Status.id == 26) {
-                                            this.setState({
-                                                paidContainer: true,
-                                                paidNotYet: null,
-                                                paidWaiting: null,
-                                                paidApproved: true,
-                                                doneContainer: true,
-                                                doneExpanded: true
-                                            })
-                                        }
-                                        if (this.state.dataTransaction.finalPayment.Status.id == 27) {
-                                            this.setState({
-                                                paidContainer: true,
-                                                paidApproved: null,
-                                                paidRevision: true
-                                            })
-                                        }
-                                    }
-                                }
-                                if (this.state.dataTransaction.shipping.Status.id == 30) {
-                                    this.setState({
-                                        deliveryContainer: true,
-                                        deliveryRevision: true
-                                    })
-                                }
-                            }
-
-                            if (this.state.dataTransaction.downPayment.Status.id == 27) {
-                                this.setState({
-                                    dpContainer: true,
-                                    dpFailed: true
-                                })
-                            }
-                        }
-                    }
-                    if (this.state.dataTransaction.Contract.Status.id === 6) {
-                        this.setState({
-                            contractDone: true,
-                            contractRevision: true
-                        })
-                    }
+                    this.logicContainer();
                 })
                 .catch(error => {
                     console.log(error, 'error');
-                    if (error.response) {
-                        alert(error.response.data.message)
-                    }
-                    else {
-                        alert('Koneksi internet bermasalah Get All Data')
-                    }
+                    // if (error.response) {
+                    //     alert(error.response.data.message)
+                    // }
+                    // else {
+                    //     alert('Koneksi internet bermasalah Get All Data')
+                    // }
                     this.setState({ loading: false })
                 })
-
         });
+    }
+
+
+    logicContainer() {
+        //=================================================== LOGIC CONTAINER BOS ============================================
+        if (this.state.dataTransaction.ContractId === null) {
+            this.setState({
+                contractNotDone: true,
+            })
+        } else {
+            console.log(this.state.dataTransaction.Contract.Status.id, 'STATUS KONTRAK');
+            if (this.state.dataTransaction.Contract.Status.id === 4) {
+                this.setState({
+                    contractDone: true,
+                    contractPending: true,
+                })
+            }
+
+            if (this.state.dataTransaction.Contract.Status.id === 5) {
+                this.setState({
+                    contractDone: true,
+                    contractApproved: true
+                })
+
+                if (this.state.dataTransaction.downPayment == null) {
+                    this.setState({
+                        dpContainer: true,
+                        dpNotYet: true
+                    })
+                }
+
+                if (this.state.dataTransaction.downPayment.Status.id == 25) {
+                    this.setState({
+                        dpContainer: true,
+                        dpPending: true
+                    })
+                }
+
+                if (this.state.dataTransaction.downPayment.Status.id == 26) {
+                    this.setState({
+                        dpContainer: true,
+                        dpApproved: true
+                    })
+
+                    if (this.state.dataTransaction.shipping.Status.id == 28) {
+                        this.setState({
+                            deliveryContainer: true,
+                            deliveryPending: true
+                        })
+                    }
+                    if (this.state.dataTransaction.shipping.Status.id == 29) {
+                        this.setState({
+                            deliveryContainer: true,
+                            deliveryApproved: true
+                        })
+
+                        if (this.state.dataTransaction.shippingDelivered.Status.id == 35) {
+                            this.setState({
+                                deliveryContainer: true,
+                                deliveryApproved: null,
+                                deliveryApprovedAdminPending: true
+                            })
+                        }
+
+                        if (this.state.dataTransaction.shippingDelivered.Status.id == 36) {
+                            this.setState({
+                                deliveryContainer: true,
+                                deliveryApproved: null,
+                                deliveryApprovedAdminPending: null,
+                                deliveryApprovedAdminApproved: true
+                            })
+
+                            if (this.state.dataTransaction.finalPayment == null) {
+                                this.setState({
+                                    paidContainer: true,
+                                    paidNotYet: true
+                                })
+                            }
+
+                            if (this.state.dataTransaction.finalPayment.Status.id == 25) {
+                                this.setState({
+                                    paidContainer: true,
+                                    paidNotYet: null,
+                                    paidWaiting: true
+                                })
+                            }
+
+                            if (this.state.dataTransaction.finalPayment.Status.id == 26) {
+                                this.setState({
+                                    paidContainer: true,
+                                    paidNotYet: null,
+                                    paidWaiting: null,
+                                    paidApproved: true,
+                                    doneContainer: true,
+                                    doneExpanded: true
+                                })
+                            }
+                            if (this.state.dataTransaction.finalPayment.Status.id == 27) {
+                                this.setState({
+                                    paidContainer: true,
+                                    paidApproved: null,
+                                    paidRevision: true
+                                })
+                            }
+                        }
+                    }
+                    if (this.state.dataTransaction.shipping.Status.id == 30) {
+                        this.setState({
+                            deliveryContainer: true,
+                            deliveryRevision: true
+                        })
+                    }
+                }
+
+                if (this.state.dataTransaction.downPayment.Status.id == 27) {
+                    this.setState({
+                        dpContainer: true,
+                        dpFailed: true
+                    })
+                }
+            }
+        }
+        if (this.state.dataTransaction.Contract.Status.id === 6) {
+            this.setState({
+                contractDone: true,
+                contractRevision: true
+            })
+        }
+        //=================================================== END LOGIC CONTAINER BOS ========================================
     }
 
     onChangeInput = (name, v) => {
@@ -1164,7 +1170,6 @@ class DetailTransactionPage extends Component {
 
                                                     <View style={{ flexDirection: 'column' }}>
                                                         <View>
-                                                            <Text>Lakukan pembayaran DP sebelum tanggal 27/07/18.</Text>
                                                             <Text>Total Biaya    	        Rp 4.000.000</Text>
                                                             <Text>Pembayaran DP		        Rp 2.000.000</Text>
                                                         </View>
@@ -1200,7 +1205,6 @@ class DetailTransactionPage extends Component {
 
                                                     <View style={{ flexDirection: 'column' }}>
                                                         <View>
-                                                            <Text>Pembeli telah melakukan pembayaran DP pada tanggal 27/07/18.</Text>
                                                             <Text>Total Biaya    	        Rp 4.000.000</Text>
                                                             <Text>Pembayaran DP		        Rp 2.500.000</Text>
                                                             <Text>Sisa Pembayaran	        Rp 1.500.000</Text>
@@ -1218,7 +1222,6 @@ class DetailTransactionPage extends Component {
 
                                                     <View style={{ flexDirection: 'column' }}>
                                                         <View>
-                                                            <Text>Pembeli telah melakukan pembayaran DP pada tanggal 27/07/18.</Text>
                                                             <Text>Total Biaya    	        Rp 4.000.000</Text>
                                                             <Text>Pembayaran DP		        Rp 2.500.000</Text>
                                                             <Text>Sisa Pembayaran	        Rp 1.500.000</Text>
@@ -1354,7 +1357,6 @@ class DetailTransactionPage extends Component {
                                                     <View>
                                                         <View style={{ flexDirection: 'column' }}>
                                                             <View>
-                                                                <Text>Lakukan Pelunasan Tanggal 20/02/2018</Text>
                                                                 <Text>Total Biaya	    	    Rp 5.000.000</Text>
                                                                 <Text>Pembayaran DP      	    Rp 2.500.000</Text>
                                                                 <Text>Sisa Pembayaran           Rp. 2.500.000</Text>
@@ -1378,7 +1380,6 @@ class DetailTransactionPage extends Component {
                                                     <CardSection>
                                                         <View style={{ flexDirection: 'column' }}>
                                                             <View>
-                                                                <Text>Lakukan Pelunasan Tanggal 20/02/2018</Text>
                                                                 <Text>Total Biaya	    	    Rp 5.000.000</Text>
                                                                 <Text>Pembayaran DP      	    Rp 2.500.000</Text>
                                                                 <Text>Sisa Pembayaran           Rp. 2.500.000</Text>
@@ -1394,7 +1395,6 @@ class DetailTransactionPage extends Component {
                                                     <View>
                                                         <View style={{ flexDirection: 'column' }}>
                                                             <View>
-                                                                <Text>Lakukan Pelunasan Tanggal 20/02/2018</Text>
                                                                 <Text>Total Biaya	    	    Rp 5.000.000</Text>
                                                                 <Text>Pembayaran DP      	    Rp 2.500.000</Text>
                                                                 <Text>Sisa Pembayaran           Rp. 2.500.000</Text>
@@ -1419,7 +1419,6 @@ class DetailTransactionPage extends Component {
                                                     <CardSection>
                                                         <View style={{ flexDirection: 'column' }}>
                                                             <View>
-                                                                <Text>Lakukan Pelunasan Tanggal 20/02/2018</Text>
                                                                 <Text>Total Biaya	    	    Rp 5.000.000</Text>
                                                                 <Text>Pembayaran DP      	    Rp 2.500.000</Text>
                                                                 <Text>Sisa Pembayaran           Rp. 2.500.000</Text>
