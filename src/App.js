@@ -8,6 +8,7 @@ import numeral from 'numeral';
 import OneSignal from 'react-native-onesignal';
 import { COLOR } from './shared/lb.config';
 import codePush from "react-native-code-push";
+import { setCustomText } from 'react-native-global-props';
 
 /**
  *  List Page
@@ -43,115 +44,122 @@ import { HeaderHome } from './components/common';
 console.disableYellowBox = true;
 
 numeral.register('locale', 'id', {
-    delimiters: {
-        thousands: '.',
-        decimal: ','
-    },
-    ordinal: function (number) {
-        return number === 1 ? 'er' : 'ème';
-    },
-    currency: {
-        symbol: 'Rp'
-    }
+  delimiters: {
+    thousands: '.',
+    decimal: ','
+  },
+  ordinal: function (number) {
+    return number === 1 ? 'er' : 'ème';
+  },
+  currency: {
+    symbol: 'Rp'
+  }
 })
 numeral.locale('id')
 
+// font
+const customTextProps = { 
+  style: { 
+    fontFamily: 'Muli-Regular'
+  }
+}
+setCustomText(customTextProps)
 
 class App extends React.Component {
-    componentDidMount() {
-        OneSignal.configure({});
-    }
+  componentDidMount() {
+    OneSignal.configure({});
+  }
 
-    componentWillMount() {
-        OneSignal.addEventListener('received', this.onReceived);
-        OneSignal.addEventListener('opened', this.onOpened);
-        OneSignal.addEventListener('registered', this.onRegistered);
-        OneSignal.addEventListener('ids', this.onIds);
-    }
+  componentWillMount() {
+    OneSignal.addEventListener('received', this.onReceived);
+    OneSignal.addEventListener('opened', this.onOpened);
+    OneSignal.addEventListener('registered', this.onRegistered);
+    OneSignal.addEventListener('ids', this.onIds);
+  }
 
-    componentWillUnmount() {
-        OneSignal.removeEventListener('received', this.onReceived);
-        OneSignal.removeEventListener('opened', this.onOpened);
-        OneSignal.removeEventListener('registered', this.onRegistered);
-        OneSignal.removeEventListener('ids', this.onIds);
-    }
+  componentWillUnmount() {
+    OneSignal.removeEventListener('received', this.onReceived);
+    OneSignal.removeEventListener('opened', this.onOpened);
+    OneSignal.removeEventListener('registered', this.onRegistered);
+    OneSignal.removeEventListener('ids', this.onIds);
+  }
 
-    onReceived(notification) {
-        console.log("Notification received: ", notification);
-    }
+  onReceived(notification) {
+    console.log("Notification received: ", notification);
+  }
 
-    onOpened(openResult) {
-        console.log('Message: ', openResult.notification.payload.body);
-        console.log('Data: ', openResult.notification.payload.additionalData);
-        console.log('isActive: ', openResult.notification.isAppInFocus);
-        console.log('openResult: ', openResult);
-    }
+  onOpened(openResult) {
+    console.log('Message: ', openResult.notification.payload.body);
+    console.log('Data: ', openResult.notification.payload.additionalData);
+    console.log('isActive: ', openResult.notification.isAppInFocus);
+    console.log('openResult: ', openResult);
+  }
 
-    onRegistered(notifData) {
-        console.log("Device had been registered for push notifications!", notifData);
-    }
+  onRegistered(notifData) {
+    console.log("Device had been registered for push notifications!", notifData);
+  }
 
-    onIds(device) {
-        console.log('Device info: ', device);
-    }
+  onIds(device) {
+    console.log('Device info: ', device);
+  }
 
-    render() {
+  render() {
 
-        const Routes = StackNavigator({
-            Home: { screen: HomePage },
-            Request: { screen: RequestOrderPage },
-            Transaction: { screen: TransactionPage },
-            FormProductRequest: { screen: FormProductRequestPage },
-            RequestFormOrderFirst: { screen: RequestFormOrderFirstPage },
-            RequestFormOrderSecond: { screen: RequestFormOrderSecondPage },
-            RegistrationForm: { screen: RegistrationFormPage },
-            Login: { screen: LoginFormPage },
-            DetailRequestOrder: { screen: DetailRequestOrderPage },
-            DetailTransaction: { screen: DetailTransactionPage },
-            FormContract: { screen: FormContractPage },
-            FormContractRevision: { screen: FormContractRevisionPage },
-            Message: { screen: MessagePage },
-            ProfileSupplier: { screen: ProfileSupplierPage },
-            Filter: { screen: FilterPage },
-            ListSearchProduct: { screen: ListSearchProductPage },
-            isLogin: { screen: LoginPage },
-            ResetPassword: { screen: ResetPassword },
-            ForgotPassword: { screen: ForgotPassword },
-            Help: { screen: HelpPage },
-            MessageList: { screen: MessageListPage },
-            ProfileBuyer: { screen: ProfileBuyerPage },
-            ProfileBuyerEdit: { screen: ProfileBuyerEditPage }
-        }, {
-                cardStyle: { backgroundColor: '#fafafa' },
-                navigationOptions: {
-                    headerTitleStyle: {
-                        alignSelf: 'center',
-                        color: '#fff',
-                        fontFamily: 'Muli-Bold',
-                        fontWeight: '300',
-                    },
-                    headerStyle: {
-                        backgroundColor: COLOR.secondary_a,
-                    },
-                    headerTintColor: '#fff',
-                }
-            })
+    const Routes = StackNavigator({
+      Home: { screen: HomePage },
+      Request: { screen: RequestOrderPage },
+      Transaction: { screen: TransactionPage },
+      FormProductRequest: { screen: FormProductRequestPage },
+      RequestFormOrderFirst: { screen: RequestFormOrderFirstPage },
+      RequestFormOrderSecond: { screen: RequestFormOrderSecondPage },
+      RegistrationForm: { screen: RegistrationFormPage },
+      Login: { screen: LoginFormPage },
+      DetailRequestOrder: { screen: DetailRequestOrderPage },
+      DetailTransaction: { screen: DetailTransactionPage },
+      FormContract: { screen: FormContractPage },
+      FormContractRevision: { screen: FormContractRevisionPage },
+      Message: { screen: MessagePage },
+      ProfileSupplier: { screen: ProfileSupplierPage },
+      Filter: { screen: FilterPage },
+      ListSearchProduct: { screen: ListSearchProductPage },
+      isLogin: { screen: LoginPage },
+      ResetPassword: { screen: ResetPassword },
+      ForgotPassword: { screen: ForgotPassword },
+      Help: { screen: HelpPage },
+      MessageList: { screen: MessageListPage },
+      ProfileBuyer: { screen: ProfileBuyerPage },
+      ProfileBuyerEdit: { screen: ProfileBuyerEditPage }
+    }, {
+        cardStyle: { backgroundColor: '#fafafa' },
+        navigationOptions: {
+          headerTitleStyle: {
+            alignSelf: 'center',
+            color: '#fff',
+            fontFamily: 'Muli-Bold',
+            fontWeight: '300',
+          },
+          headerStyle: {
+            backgroundColor: COLOR.secondary_a,
+          },
+          headerTintColor: '#fff',
+        }
+      })
 
 
-        return (
-            <View style={styles.container} >
-                <Routes />
-            </View>
-        );
-    };
+    return (
+      <View style={styles.container} >
+        <Routes />
+      </View>
+    );
+  };
 };
 
 
 const styles = {
-    container: {
-        flex: 1,
-        backgroundColor: '#FFF'
-    }
+  container: {
+    flex: 1,
+    backgroundColor: '#FFF'
+  }
 }
 
 App = codePush({ checkFrequency: codePush.CheckFrequency.ON_APP_RESUME, installMode: codePush.InstallMode.ON_NEXT_RESUME })(App)

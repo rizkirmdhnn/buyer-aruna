@@ -66,7 +66,7 @@ class InputSearch extends Component {
 					/>
                     
                     {
-						icon ? <Image source={this.imageIcon(icon)} style={{width: 24, height: 24}} /> : <View />
+						icon ? <Image source={this.imageIcon(icon)} style={{width: 20, height: 20, marginRight: 10}} /> : <View />
 					}
 				</View>
 			</View>
