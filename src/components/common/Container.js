@@ -14,8 +14,8 @@ class Container extends Component {
 const styles = {
 	containerStyle: {
 		elevation: 1,
-		marginLeft: 15,
-		marginRight: 15,
+		marginLeft: 25,
+		marginRight: 25,
 		marginTop: 10
 	}
 }
