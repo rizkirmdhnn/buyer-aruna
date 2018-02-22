@@ -103,7 +103,10 @@ class FormContractPage extends Component {
             dataMaster: this.props.navigation.state.params.datas
         });
 
-        console.log(this.props.navigation.state.params.datas, 'Data Master');
+
+        this.setState({ quantity: this.props.navigation.state.params.datas.Request.Transaction.quantity.toString() });
+
+        console.log(this.props.navigation.state.params.datas.Request.Transaction.quantity, '123123');
     }
 
 
@@ -117,12 +120,13 @@ class FormContractPage extends Component {
 
     _hideTanggalPengiriman = () => this.setState({ tanggalPenggiriman: false });
 
-    _handleDatePickedPengiriman = (date) => {
-        console.log(date, 'Date Nya')
-        const dateTemp = moment(date).format('YYYY-MM-DD h:mm:ss');
-        const dateNow = moment(date).format('DD/MM/YYYY');
-        this.setState({ dateOfReception: dateTemp, dateNowPickPengiriman: dateNow })
+    _handleDatePickedPengiriman = (dateReceive) => {
+        console.log(dateReceive, 'Date Nya Penerimaan')
+        const dateTemps = moment(dateReceive).format('YYYY-MM-DD h:mm:ss');
+        const dateNow = moment(dateReceive).format('DD/MM/YYYY');
+        this.setState({ dateOfReception: dateTemps, dateNowPickPengiriman: dateNow })
         this._hideTanggalPengiriman();
+        console.log(dateTemps, 'penerimaan tanggal');
     };
 
     _showTanggalDP = () => this.setState({ tanggalDP: true });
@@ -130,7 +134,7 @@ class FormContractPage extends Component {
     _hideTanggalDP = () => this.setState({ tanggalDP: false });
 
     _handleDatePickedDP = (date) => {
-        console.log(date, 'Date Nya')
+        console.log(date, 'Date Nya DP')
         const dateTemp = moment(date).format('YYYY-MM-DD h:mm:ss');
         const dateNow = moment(date).format('DD/MM/YYYY');
         this.setState({ dpDate: dateTemp, dateNowPickDP: dateNow })
@@ -154,7 +158,7 @@ class FormContractPage extends Component {
     }
 
     onSubmit = () => {
-        console.log(this.state.dpAmount, '', this.state.price);
+        console.log(this.state.dpAmount, '', this.state.dateOfReception);
 
         // if (this.state.quantity == '') {
         //     alert('Anda belum mengisi Kuantitas');
@@ -174,9 +178,7 @@ class FormContractPage extends Component {
         //     alert('Anda belum menentukan Presentase Reject');
         // }else {
         //     console.log('LOLOS');
-        //     Keyboard.dismiss();
-        this.state.dataMaster.Request.Transaction.quantity
-
+        //     Keyboard.dismiss();\
         const dataContract = {
             "fishDescribe": this.state.fishDescribe,
             "size": this.state.dataMaster.Request.Transaction.size,
@@ -198,15 +200,13 @@ class FormContractPage extends Component {
         const idTransaction = this.state.dataMaster.id;
 
         AsyncStorage.getItem('loginCredential', (err, result) => {
-            const token = result;
-            console.log(token)
             console.log(dataContract, 'Data Contrak');
             console.log(idTransaction, 'ID Transaction');
             axios.post(`${BASE_URL}/buyer/orders/${idTransaction}/contracts`,
                 dataContract
                 , {
                     headers: {
-                        'token': token,
+                        'token': result,
                         'Content-Type': 'application/json',
                     }
                 }).then(response => {
@@ -220,8 +220,6 @@ class FormContractPage extends Component {
                             { text: 'Ok', onPress: () => this.navigationRedirect() },
                         ]
                     )
-
-
                 })
                 .catch(error => {
                     console.log(error.message, 'Error nya');
@@ -230,7 +228,6 @@ class FormContractPage extends Component {
                     alert(error.message.data)
                 })
         })
-        // }
     }
 
     navigationRedirect() {
@@ -362,6 +359,7 @@ class FormContractPage extends Component {
                     <CardSectionRegistration>
                         <InputRegistration
                             label='Harga'
+                            placeholder='Harga'
                             value={price}
                             keyboardType="numeric"
                             onChangeText={v => this.onChangeInput('price', v)}
@@ -478,6 +476,39 @@ class FormContractPage extends Component {
                             isVisible={this.state.tanggalDP}
                             onConfirm={this._handleDatePickedDP}
                             onCancel={this._hideTanggalDP}
+                            minimumDate={new Date()}
+                        />
+                    </CardSectionRegistration>
+
+                    <CardSectionRegistration>
+                        <InputRegistration
+                            label='Tanggal Penerimaan'
+                            placeholder='00/00/18'
+                            value={dateNowPickPengiriman}
+                            onChangeText={v => this.onChangeInput('dateNowPickPengiriman', v)}
+                            editable={false}
+                        />
+                        <TouchableOpacity onPress={this._showTanggalPengiriman}>
+                            <Image
+                                style={{
+                                    flexDirection: 'row',
+                                    borderColor: '#555',
+                                    borderRadius: 3,
+                                    borderWidth: 1,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    backgroundColor: '#fff',
+                                    marginTop: 23,
+                                    width: 50,
+                                    height: 50
+                                }}
+                                source={require('./../assets/image/date-icon.png')}
+                            />
+                        </TouchableOpacity>
+                        <DateTimePicker
+                            isVisible={this.state.tanggalPenggiriman}
+                            onConfirm={this._handleDatePickedPengiriman}
+                            onCancel={this._hideTanggalPengiriman}
                             minimumDate={new Date()}
                         />
                     </CardSectionRegistration>
