@@ -38,49 +38,49 @@ class FilterPage extends Component {
             tokenUser: '',
             dataSupplier: '',
             minPrice: '0',
-            maxPrice: '0'
+            maxPrice: '0',
+            nameFish: '',
+            buttonExpanded: false
         }
     }
 
-    componentDidMount() {
-        AsyncStorage.getItem('loginCredential', (err, result) => {
-            const token = result;
-            axios.get(`${BASE_URL}/provinces`, {
-                headers: {
-                    'token': result
-                }
-            })
-                .then(response => {
-                    console.log(response.data.data, 'Data Provinsi');
-                    res = response.data.data;
-                    this.setState({ dataProvince: res });
-                })
-                .catch(error => {
-                    console.log(error.response, 'error');
-                    if (error.response) {
-                        alert(error.response.data.message)
-                    }
-                    else {
-                        alert('Koneksi internet bermasalah Provinsi')
-                    }
-                })
-        });
-    }
-
-    componentWillMount() {
-        this.setState({ dataParsing: this.props.navigation.state.params.datas });
-        const nameFish = this.props.navigation.state.params.datas.name;
-        axios.get(`${BASE_URL}/products?key=${nameFish}`)
+    getProvinces() {
+        axios.get(`${BASE_URL}/provinces`)
             .then(response => {
-                console.log(response.data.data, 'Data Supplier');
+                console.log(response.data.data, 'Data Provinsi');
                 res = response.data.data;
-                this.setState({ dataSupplier: res, loading: false });
-                console.log(this.state.dataParsing, 'Data Parsing')
+                this.setState({ dataProvince: res });
             })
             .catch(error => {
                 console.log(error.response, 'error');
                 if (error.response) {
-                    alert(error.response.data.message)
+                    alert(error.response.data.message + 'DidMount Filter Page');
+                }
+                else {
+                    alert('Koneksi internet bermasalah Provinsi')
+                }
+            })
+    }
+
+    componentWillMount() {
+        this.setState({ dataParsing: this.props.navigation.state.params.datas });
+        this.setState({ nameFish: this.props.navigation.state.params.datas.name });
+        const searchFish = this.props.navigation.state.params.datas.name;
+        axios.get(`${BASE_URL}/products?key=${searchFish}`)
+            .then(response => {
+                console.log(response.data.data, 'Data Supplier');
+                res = response.data.data;
+                if (res.length > 0) {
+                    this.setState({ buttonExpanded: true })
+                }
+                this.setState({ dataSupplier: res, loading: false });
+                console.log(this.state.dataParsing, 'Data Parsing')
+                this.getProvinces();
+            })
+            .catch(error => {
+                console.log(error.response, 'error');
+                if (error.response) {
+                    alert(error.response.data.message + 'WIllMount Filter Page');
                 }
                 else {
                     alert('Koneksi internet bermasalah Provinsi')
@@ -89,31 +89,43 @@ class FilterPage extends Component {
     }
 
     renderDataSupplier = (item) => {
-        return item.map((data, index) => {
-            return (
-                <Card
-                    key={data.id}
-                >
-                    <View style={styles.itemContainerStyle}>
-                        <View style={styles.thumbnailContainerStyle}>
-                            <Image
-                                style={styles.thumbnailStyles}
-                                source={{ uri: `${BASE_URL}/images/${data.Fish.photo}` }}
-                            />
-                        </View>
-                        <View style={styles.headerContentStyle}>
-                            <Text style={styles.headerTextStyle}>{data.Fish.name}</Text>
-                            <View style={{ flex: 1 }}></View>
-                            <View style={{ flex: 1 }}></View>
-                            <View style={{ flex: 1 }}></View>
-                            <View style={{ flexDirection: 'row', flex: 1 }}>
-                                <Text>{data.User.name}</Text>
+        console.log(item, 'Data SUpplier maping');
+        if (item.length > 0) {
+            console.log('Ada Data');
+            return item.map((data, index) => {
+                return (
+                    <Card
+                        key={data.id}
+                    >
+                        <View style={styles.itemContainerStyle}>
+                            <View style={styles.thumbnailContainerStyle}>
+                                <Image
+                                    style={styles.thumbnailStyles}
+                                    source={{ uri: `${BASE_URL}/images/${data.Fish.photo}` }}
+                                />
+                            </View>
+                            <View style={styles.headerContentStyle}>
+                                <Text style={styles.headerTextStyle}>{data.Fish.name}</Text>
+                                <View style={{ flex: 1 }}></View>
+                                <View style={{ flex: 1 }}></View>
+                                <View style={{ flex: 1 }}></View>
+                                <View style={{ flexDirection: 'row', flex: 1 }}>
+                                    <Text>{data.User.name}</Text>
+                                </View>
                             </View>
                         </View>
-                    </View>
-                </Card>
+                    </Card>
+                )
+            })
+        }
+
+        if (item.length == 0) {
+            return (
+                <View>
+                    <Text style={{ textAlign: 'center', marginTop: '45%' }}>Belum ada nelayan yang tersedia untuk ikan {this.state.nameFish} .</Text>
+                </View>
             )
-        })
+        }
     }
 
     provinsiCheck = datax => {
@@ -134,9 +146,7 @@ class FilterPage extends Component {
     onSubmit = () => {
         const { navigate } = this.props.navigation;
         const { minPrice, maxPrice, tokenUser, provinsiId, dataParsing } = this.state;
-        axios.get(`${BASE_URL}/products?key=${dataParsing.name}&minPrice=/${minPrice}&maxPrice=${maxPrice}&ProvinceIds=${provinsiId}&page=0&pageSize=4&sorting=desc`, {
-            headers: { 'x-access-token': tokenUser }
-        })
+        axios.get(`${BASE_URL}/products?key=${dataParsing.name}&minPrice=/${minPrice}&maxPrice=${maxPrice}&ProvinceIds=${provinsiId}&page=0&pageSize=4&sorting=desc`)
             .then(response => {
                 res = response.data.data;
                 this.props.navigation.navigate('ListSearchProduct', { datas: res });
@@ -187,19 +197,25 @@ class FilterPage extends Component {
             cityContainer,
             loading,
             minPrice,
-            maxPrice
+            maxPrice,
+            buttonExpanded
         } = this.state
         if (loading) {
             return <Spinner size="large" />
         }
         return (
             <View style={{ flex: 1 }}>
-                <View style={{ height: 55 }}>
-                    <Button
-                        onPress={() => this._toggleModal()}>
-                        Filter
+                {
+                    buttonExpanded ?
+                        <View style={{ height: 55 }}>
+                            <Button
+                                onPress={() => this._toggleModal()}>
+                                Filter
                     </Button>
-                </View>
+                        </View>
+                        :
+                        <View />
+                }
                 <ScrollView>
                     <View>
                         <FlatList

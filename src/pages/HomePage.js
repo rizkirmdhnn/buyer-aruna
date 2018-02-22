@@ -48,9 +48,7 @@ class HomePage extends Component {
 
     querySuggestion(text) {
         console.log(text, 'Text');
-        axios.get(`${BASE_URL}/fishes/search?key=${text}`, {
-            headers: { 'x-access-token': this.state.tokenUser }
-        })
+        axios.get(`${BASE_URL}/fishes/search?key=${text}`)
             .then(response => {
                 res = response.data.data
                 this.setState({ searchItem: res })

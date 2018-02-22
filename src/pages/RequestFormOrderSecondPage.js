@@ -59,7 +59,6 @@ class RequestFormOrderSecondPage extends Component {
                 'FishId': this.state.datax.FishId,
                 'ProvinceId': this.state.datax.provinsiId,
                 'CityId': this.state.datax.cityId,
-                // 'minBudget': this.state.datax.minBudget,
                 'maxPrice': this.state.datax.maxBudget
             }, {
                     headers: {
@@ -127,7 +126,7 @@ class RequestFormOrderSecondPage extends Component {
                 , {
                     headers: {
                         'Content-Type': 'multipart/form-data',
-                        'token': token
+                        'token': result
                     }
                 }).then(response => {
                     res = response.data.data;

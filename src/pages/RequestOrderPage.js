@@ -85,7 +85,7 @@ class RequestOrderPage extends Component {
                                 <View style={styles.thumbnailContainerStyle}>
                                     <Image
                                         style={styles.thumbnailStyle}
-                                        source={{ uri: `${BASE_URL}/images/${datax.Fish.photo}` }}
+                                        source={{ uri: `${BASE_URL}/images/${datax.photo}` }}
                                     />
                                 </View>
                                 <View style={styles.headerContentStyle}>
@@ -111,7 +111,7 @@ class RequestOrderPage extends Component {
                                     <View style={styles.thumbnailContainerStyle}>
                                         <Image
                                             style={styles.thumbnailStyle}
-                                            source={{ uri: `${BASE_URL}/images/${datax.Fish.photo}` }}
+                                            source={{ uri: `${BASE_URL}/images/${datax.photo}` }}
                                         />
                                     </View>
                                     <View style={styles.headerContentStyle}>
@@ -139,7 +139,7 @@ class RequestOrderPage extends Component {
                                 <View style={styles.thumbnailContainerStyle}>
                                     <Image
                                         style={styles.thumbnailStyle}
-                                        source={{ uri: `${BASE_URL}/images/${datax.Fish.photo}` }}
+                                        source={{ uri: `${BASE_URL}/images/${datax.photo}` }}
                                     />
                                 </View>
                                 <View style={styles.headerContentStyle}>

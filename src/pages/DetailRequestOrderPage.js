@@ -39,21 +39,38 @@ class DetailRequestOrderPage extends Component {
             unCheckedContainer: false,
 
             disabledContainer: null,
-            NotDisabledContainer: null
+            NotDisabledContainer: null,
+            buttonExpanded: false
         };
     };
 
     componentWillMount() {
+        const idOrder = this.props.navigation.state.params.datas.id;
         this.setState({ loading: true });
-
         AsyncStorage.getItem('loginCredential', (err, result) => {
-            this.setState({
-                dataMaster: this.props.navigation.state.params.datas,
-                tokenUser: result,
-                checkedSelected: this.props.navigation.state.params.datas.Requests,
-                checkedContainer: true,
-                loading: false,
+            axios.get(`${BASE_URL}/buyer/requests/${idOrder}`, {
+                headers: {
+                    'token': result
+                }
+            }).then(response => {
+                res = response.data.data;
+                console.log(res, 'ARIP LUKAMAN');
+                if (res.Requests.length > 0) {
+                    this.setState({ buttonExpanded: true });
+                }
+                this.setState({
+                    dataMaster: this.props.navigation.state.params.datas,
+                    tokenUser: result,
+                    checkedSelected: res.Requests,
+                    checkedContainer: true,
+                    loading: false,
+                })
             })
+                .catch(error => {
+                    this.setState({ loading: false });
+                    console.log(error.response, 'Erroor nya');
+                    console.log('Error Request Order Get Data');
+                })
         });
     }
 
@@ -67,7 +84,7 @@ class DetailRequestOrderPage extends Component {
                     <View style={styles.thumbnailContainerStyle}>
                         <Image
                             style={styles.thumbnailStyles}
-                            source={{ uri: `${BASE_URL}/images/${item.Fish.photo}` }}
+                            source={{ uri: `${BASE_URL}/images/${item.photo}` }}
                         />
                     </View>
                     <View style={styles.headerContentStyle}>
@@ -84,22 +101,6 @@ class DetailRequestOrderPage extends Component {
                 </View>
             </Card>
         )
-    }
-
-    renderFlatListSupplierChecked = () => {
-        if (this.state.loading) {
-            return <Spinner size="small" />
-        } else {
-            return (
-                <View>
-                    <FlatList
-                        data={[this.state.checkedSelected]}
-                        renderItem={({ item }) => this.renderSupplierChecked(item)}
-                        keyExtractor={(item, index) => index}
-                    />
-                </View>
-            );
-        }
     }
 
     renderFlatListSupplierUnChecked = () => {
@@ -119,70 +120,95 @@ class DetailRequestOrderPage extends Component {
     }
 
     renderSupplierChecked = (item) => {
-        return item.map((data, index) => {
-            return (
-                <Card key={data.id}>
-                    <View style={styles.itemContainerStyleSupplier}>
-                        <View style={styles.thumbnailContainerStyle}>
-                            <Image
-                                style={styles.thumbnailStyle}
-                                source={{ uri: `${BASE_URL}/images/${data.Supplier.photo}` }}
-                            />
-                        </View>
-                        <View style={styles.headerContentStyle}>
-                            <View style={{ flexDirection: 'row' }}>
-                                <View style={{ flex: 1 }}>
-                                    <Text style={{ fontWeight: 'bold', color: '#009AD3' }}>{data.Supplier.name}</Text>
-                                </View>
-                                <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-                                    <CheckBox
-                                        containerStyle={{ backgroundColor: 'transparent' }}
-                                        onPress={() => this.checkItem(data)}
-                                        checked={this.state.checkedSelected.includes(data)}
+        console.log(item, 'DATA SUPPLIER CHECK');
+        if (item.length > 0) {
+            console.log('Ada Data');
+            return item.map((data, index) => {
+                return (
+                    <View key={index}>
+                        <Card key={data.id}>
+                            <View style={styles.itemContainerStyleSupplier}>
+                                <View style={styles.thumbnailContainerStyle}>
+                                    <Image
+                                        style={styles.thumbnailStyle}
+                                        source={{ uri: `${BASE_URL}/images/${data.Supplier.photo}` }}
                                     />
                                 </View>
+                                <View style={styles.headerContentStyle}>
+                                    <View style={{ flexDirection: 'row' }}>
+                                        <View style={{ flex: 1 }}>
+                                            <Text style={{ fontWeight: 'bold', color: '#009AD3' }}>{data.Supplier.name}</Text>
+                                        </View>
+                                        <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+                                            <CheckBox
+                                                containerStyle={{ backgroundColor: 'transparent' }}
+                                                onPress={() => this.checkItem(data)}
+                                                checked={this.state.checkedSelected.includes(data)}
+                                            />
+                                        </View>
+                                    </View>
+                                    <View style={{ flexDirection: 'column' }}>
+                                        <Text style={{ flex: 1 }}>{data.Supplier.organization} </Text>
+                                        <Text style={{ flex: 1 }}>500 Kg </Text>
+                                        <Text style={{ flex: 1 }}>Rp. 100.000 - Rp. 500.000</Text>
+                                    </View>
+                                </View>
                             </View>
-                            <View style={{ flexDirection: 'column' }}>
-                                <Text style={{ flex: 1 }}>{data.Supplier.organization} </Text>
-                                <Text style={{ flex: 1 }}>500 Kg </Text>
-                                <Text style={{ flex: 1 }}>Rp. 100.000 - Rp. 500.000</Text>
-                            </View>
-                        </View>
+                        </Card>
                     </View>
-                </Card>
+                )
+            })
+        }
+        if (item.length == 0) {
+            return (
+                <View>
+                    <Text style={{ textAlign: 'center', marginTop: '45%' }}>Belum ada nelayan yang menyanggupi.</Text>
+                </View>
             )
-        })
+        }
     }
 
     renderSupplierUnChecked = (item) => {
-        return item.map((data, index) => {
-            return (
-                <Card>
-                    <View style={styles.itemContainerStyleSupplier}>
-                        <View style={styles.thumbnailContainerStyle}>
-                            <Image
-                                style={styles.thumbnailStyle}
-                                source={{ uri: `${BASE_URL}/images/${data.Supplier.photo}` }}
-                            />
-                        </View>
-                        <View style={styles.headerContentStyle}>
-                            <View style={{ flex: 1, }}>
-                                <Text style={{ fontWeight: 'bold', color: '#009AD3' }}>{data.Supplier.name}</Text>
-                                <CheckBox
-                                    containerStyle={{ backgroundColor: 'transparent' }}
-                                    onPress={() => this.unCheckItem(data)}
-                                    checked={this.state.checkedNotSelected.includes(data)}
+        if (item.length > 0) {
+            console.log('Ada Data');
+            return item.map((data, index) => {
+                return (
+                    <Card>
+                        <View style={styles.itemContainerStyleSupplier}>
+                            <View style={styles.thumbnailContainerStyle}>
+                                <Image
+                                    style={styles.thumbnailStyle}
+                                    source={{ uri: `${BASE_URL}/images/${data.Supplier.photo}` }}
                                 />
                             </View>
-                            <View style={{ flexDirection: 'row' }}>
-                                <Text style={{ flex: 1, fontWeight: 'bold' }}>500 Kg </Text>
-                                <Text style={{ flex: 1, fontWeight: 'bold' }}>Rp. 100.000 - Rp. 500.000</Text>
+                            <View style={styles.headerContentStyle}>
+                                <View style={{ flex: 1, }}>
+                                    <Text style={{ fontWeight: 'bold', color: '#009AD3' }}>{data.Supplier.name}</Text>
+                                    <CheckBox
+                                        containerStyle={{ backgroundColor: 'transparent' }}
+                                        onPress={() => this.unCheckItem(data)}
+                                        checked={this.state.checkedNotSelected.includes(data)}
+                                    />
+                                </View>
+                                <View style={{ flexDirection: 'row' }}>
+                                    <Text style={{ flex: 1, fontWeight: 'bold' }}>500 Kg </Text>
+                                    <Text style={{ flex: 1, fontWeight: 'bold' }}>Rp. 100.000 - Rp. 500.000</Text>
+                                </View>
                             </View>
                         </View>
-                    </View>
-                </Card>
+                    </Card>
+                )
+            })
+        }
+
+        if (item.length == 0) {
+            console.log('Tidak Ada Data');
+            return (
+                <View>
+                    <Text style={{ textAlign: 'center', marginTop: '45%' }}>Anda belum menolak supplier.</Text>
+                </View>
             )
-        })
+        }
     }
 
     checkItem = data => {
@@ -304,6 +330,7 @@ class DetailRequestOrderPage extends Component {
         const {
             checkedContainer,
             unCheckedContainer,
+            buttonExpanded,
             disabledContainer,
             NotDisabledContainer,
             loading
@@ -347,6 +374,14 @@ class DetailRequestOrderPage extends Component {
                                         renderItem={({ item }) => this.renderSupplierChecked(item)}
                                         keyExtractor={(item, index) => index}
                                     />
+                                    {
+                                        buttonExpanded ?
+                                            <View style={{ flex: 1 }}>
+                                                {this.renderButton()}
+                                            </View>
+                                            :
+                                            <View />
+                                    }
                                 </View>
                                 :
                                 <View />
@@ -365,9 +400,6 @@ class DetailRequestOrderPage extends Component {
                                 :
                                 <View />
                         }
-                        <View style={{ flex: 1 }}>
-                            {this.renderButton()}
-                        </View>
                     </View>
                 </View>
             </ScrollView>

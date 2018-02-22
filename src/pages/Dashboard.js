@@ -221,7 +221,6 @@ class Dashboard extends Component {
 
                     <View style={styles.containerTextProductCard}>
                         <Text style={styles.textCard}>Komoditas Favorit</Text>
-                        <Text style={styles.textCardLink}>Lihat Semua</Text>
                     </View>
 
                     <View style={styles.containerFlatList}>
@@ -235,7 +234,6 @@ class Dashboard extends Component {
 
                     <View style={styles.containerTextProductCard}>
                         <Text style={styles.textCard}>Supplier Popular</Text>
-                        <Text style={styles.textCardLink}>Lihat Semua</Text>
                     </View>
 
                     <View style={styles.containerFlatListSupplier}>
