@@ -122,10 +122,6 @@ class RequestFormOrderFirstPage extends Component {
       alert('anda belum memilih Provinsi');
     } else if (this.state.cityId == '') {
       alert('Anda belum memilih Kota')
-    } else if (this.state.maxBudget < this.state.minBudget) {
-      alert('Harga Max tidak bisa lebih kecil dari Harga Min')
-    } else if (this.state.quantity < this.state.size) {
-      alert('Kuantitas Komoditas tidak bisa lebih kecil dari Ukuran Komoditas')
     } else {
       console.log('LOLOS');
       Keyboard.dismiss();

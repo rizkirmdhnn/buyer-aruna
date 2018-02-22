@@ -109,7 +109,7 @@ class RequestFormOrderSecondPage extends Component {
 
             this.state.checkedSelected.map((item, index) => {
                 console.log(item.id, ' ', index, 'MAPING');
-                dataRequest.append('ProductIds[' + index + ']', item)
+                dataRequest.append('ProductIds[' + index + ']', item.id)
             })
 
             dataRequest.append('photo', {
