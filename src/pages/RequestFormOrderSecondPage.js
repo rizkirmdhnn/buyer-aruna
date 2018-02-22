@@ -39,7 +39,7 @@ class RequestFormOrderSecondPage extends Component {
             dataSupplier: [{}],
             loading: true,
             loader: null,
-            checked: [],
+            checkedSelected: [],
             idSupplier: []
         };
     };
@@ -71,7 +71,7 @@ class RequestFormOrderSecondPage extends Component {
                     console.log(res, 'RES')
                     const result = res;
                     console.log(result, 'Result Supplier nya');
-                    this.setState({ dataSupplier: result, checked: result, loading: false })
+                    this.setState({ dataSupplier: result, checkedSelected: result, loading: false })
                 })
                 .catch(error => {
                     console.log(error.message, 'Error nya');
@@ -80,15 +80,15 @@ class RequestFormOrderSecondPage extends Component {
         });
     }
 
-    checkBox = data => {
-        const { checked } = this.state;
-        if (!checked.includes(data)) {
+    checkItem = data => {
+        const { checkedSelected } = this.state;
+        if (!checkedSelected.includes(data)) {
             this.setState({
-                checked: [...checked, data]
+                checkedSelected: [...checkedSelected, data]
             });
         } else {
             this.setState({
-                checked: checked.filter(a => a !== data)
+                checkedSelected: checkedSelected.filter(a => a !== data)
             });
         }
     };
@@ -107,8 +107,8 @@ class RequestFormOrderSecondPage extends Component {
 
             console.log(this.state.idSupplier, 'Submit Request');
 
-            this.state.idSupplier.map((item, index) => {
-                console.log(item, ' ', index, 'MAPING');
+            this.state.checkedSelected.map((item, index) => {
+                console.log(item.id, ' ', index, 'MAPING');
                 dataRequest.append('ProductIds[' + index + ']', item)
             })
 
@@ -168,12 +168,13 @@ class RequestFormOrderSecondPage extends Component {
 
     renderItem = (item) => {
         console.log(item, 'Item Data Supplier');
-        return item.map((data) => {
+        return item.map((data, index) => {
             console.log(data, 'ID Supplier');
-            this.state.idSupplier.push(data.id);
-            console.log(this.state.idSupplier, 'ID PUSH SUPPLIER')
+            // this.state.idSupplier.push(data.id);
+            // console.log(this.state.idSupplier, 'ID PUSH SUPPLIER');
+            console.log(this.state.checkedSelected, 'HOHOHOHOHOHOOOOO');
             return (
-                <Card>
+                <Card key={index}>
                     <View style={styles.itemContainerStyleSupplier}>
                         <View style={styles.thumbnailContainerStyle}>
                             <Image
@@ -192,8 +193,8 @@ class RequestFormOrderSecondPage extends Component {
                         <View style={{ flexDirection: 'row' }}>
                             <CheckBox
                                 center
-                                checked={this.state.checked}
-                                onPress={() => this.checkBox(data)}
+                                onPress={() => this.checkItem(data)}
+                                checked={this.state.checkedSelected.includes(data)}
                             />
                         </View>
                     </View>
