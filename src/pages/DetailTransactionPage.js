@@ -9,7 +9,8 @@ import {
     TouchableWithoutFeedback,
     Linking,
     AsyncStorage,
-    Alert
+    Alert,
+    Card
 } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
 import Modal from 'react-native-modal'
@@ -18,7 +19,6 @@ import axios from 'axios'
 import { CheckBox, FormInput, Rating } from 'react-native-elements'
 import { Cards, Button, CardSection, Container, ContainerSection, Spinner, InputRegistration } from '../components/common'
 import { BASE_URL } from './../shared/lb.config';
-import { Card } from 'react-native-elements';
 import ImagePicker from 'react-native-image-picker';
 import moment from 'moment';
 

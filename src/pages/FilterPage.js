@@ -10,13 +10,13 @@ import {
     ContainerSection,
     Spinner,
     CardSectionRegistration,
-    InputRegistration
+    InputRegistration,
+    Card
 } from '../components/common';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { CheckBox } from 'react-native-elements';
 import axios from 'axios';
 import { BASE_URL } from './../shared/lb.config';
-import { Card } from 'react-native-elements';
 import Modal from 'react-native-modal'
 
 class FilterPage extends Component {

@@ -7,14 +7,14 @@ import {
     ContainerSection,
     Container,
     Spinner,
-    Button
+    Button,
+    Card
 } from './../components/common';
 import { CheckBox } from 'react-native-elements';
 import moment from 'moment';
 // import { Button } from 'react-native-elements';
 import { BASE_URL } from './../shared/lb.config';
 import axios from 'axios';
-import { Card } from 'react-native-elements';
 
 class DetailRequestOrderPage extends Component {
     static navigationOptions = {

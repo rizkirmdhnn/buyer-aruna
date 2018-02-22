@@ -14,8 +14,6 @@ import {
     Card
 } from './../components/common';
 import moment from 'moment';
-// import { Card } from 'react-native-elements';
-
 
 class RequestOrderPage extends Component {
 

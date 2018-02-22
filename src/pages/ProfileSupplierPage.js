@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { Text, View, AsyncStorage, FlatList, Image, ScrollView } from 'react-native';
 import { BASE_URL } from './../shared/lb.config';
 import axios from 'axios';
-import { Spinner, Container, ContainerSection } from '../components/common';
-import { Card } from 'react-native-elements';
+import { Spinner, Container, ContainerSection, Card } from '../components/common';
 import moment from 'moment';
 
 class ProfileSupplierPage extends Component {

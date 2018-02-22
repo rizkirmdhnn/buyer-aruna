@@ -18,10 +18,10 @@ import {
     ContainerSection,
     Container,
     Spinner,
-    Button
+    Button,
+    Card
 } from './../components/common';
 import moment from 'moment';
-import { Card } from 'react-native-elements';
 
 class TransactionPage extends Component {
     static navigationOptions = {
