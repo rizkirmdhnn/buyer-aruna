@@ -78,9 +78,7 @@ class RequestOrderPage extends Component {
         if (datax.sanggup == 0) {
           return (
             <Card>
-              <View
-                style={styles.itemContainerStyle}
-              >
+              <View style={styles.itemContainerStyle}>
                 <View style={styles.thumbnailContainerStyle}>
                   <Image
                     style={styles.thumbnailStyle}
@@ -192,21 +190,20 @@ class RequestOrderPage extends Component {
 
 const styles = {
   itemContainerStyle: {
-    padding: 5,
     justifyContent: 'flex-start',
-    flexDirection: 'row'
+    flexDirection: 'row',
+    backgroundColor: '#fff'
   },
   thumbnailContainerStyle: {
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 15,
+    margin: 10,
   },
   thumbnailStyle: {
     // alignSelf: 'stretch',
-    height: 50,
-    width: 50,
+    height: 100,
+    width: 100,
     borderWidth: 1,
-    borderRadius: 100,
     // resizeMode: 'cover'
   },
   headerContentStyle: {
