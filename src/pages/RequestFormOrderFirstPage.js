@@ -388,11 +388,7 @@ class RequestFormOrderFirstPage extends Component {
                             onChangeText={v => this.onChangeInput('size', v)}
                         />
                         <Text style={styles.unitStyle}></Text>
-                        <InputRegistration
-                            editable={false}
-                            value={this.state.unitFish}
-                            onChangeText={v => this.onChangeInput('quantity', v)}
-                        />
+                        <Text style={styles.unitStyle}>{this.state.unitFish}</Text>
                     </CardSectionRegistration>
 
                     <CardSectionRegistration>
@@ -403,11 +399,7 @@ class RequestFormOrderFirstPage extends Component {
                             onChangeText={v => this.onChangeInput('quantity', v)}
                         />
                         <Text style={styles.unitStyle}></Text>
-                        <InputRegistration
-                            editable={false}
-                            value='Kg'
-                            onChangeText={v => this.onChangeInput('quantity', v)}
-                        />
+                        <Text style={styles.unitStyle}>Kg</Text>
                     </CardSectionRegistration>
 
                     <CardSectionRegistration>
@@ -423,14 +415,6 @@ class RequestFormOrderFirstPage extends Component {
                         />
                     </CardSectionRegistration>
 
-                    <CardSectionRegistration>
-                        <InputRegistration
-                            label='Harga Minimal'
-                            placeholder='Rupiah/kg'
-                            value={minBudget}
-                            onChangeText={v => this.onChangeInput('minBudget', v)}
-                        />
-                    </CardSectionRegistration>
                     <CardSectionRegistration>
                         <InputRegistration
                             label='Harga Maksimal'
