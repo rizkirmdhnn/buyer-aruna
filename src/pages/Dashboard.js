@@ -115,17 +115,24 @@ class Dashboard extends Component {
   _keyExtractor = (item, index) => item.id;
 
   renderProductItem = (itemProduct) => {
+    const number = parseInt(itemProduct.index) + 1;
+
     return (
       <View>
         <TouchableWithoutFeedback onPress={() => {
           // this.goSupplier()
           console.log('Item Popular');
         }}>
-          <Image
-            style={styles.item}
-            source={{ uri: `${BASE_URL}/images/${itemProduct.item.Fish.photo}` }}
-            resizeMode='cover'
-          />
+          <View>
+            <Image
+              style={styles.item}
+              source={{ uri: `${BASE_URL}/images/${itemProduct.item.Fish.photo}` }}
+              resizeMode='cover'
+            />
+            <Text style={{textAlign: 'center', marginLeft: -10}}>
+              {`${number}. ${itemProduct.item.Fish.name}`}
+            </Text>
+          </View>
         </TouchableWithoutFeedback>
       </View>
     )
@@ -149,7 +156,9 @@ class Dashboard extends Component {
           <View style={styles.headerContentStyle}>
             <Text style={styles.headerTextStyle}>{itemSupplier.item.name}</Text>
             <View style={{ flexDirection: 'column', flex: 1 }}>
-              <Text style={{ color: 'grey' }}>{itemSupplier.item.organization}</Text>
+              <Text style={{ fontSize: 12 }}>
+                {itemSupplier.item.organizationType} {itemSupplier.item.organization}
+              </Text>
             </View>
           </View>
           <View style={styles.thumbnailContainerStyle}>
@@ -176,7 +185,7 @@ class Dashboard extends Component {
 
     return (
       <View style={{ flex: 1 }}>
-        <View style={{ width: 480, height: 200 }}>
+        <View style={{ height: 140 }}>
           <Swiper style={styles.wrapper} showsButtons={true} autoplay={true}>
             <View style={styles.slide1}>
               <Image
@@ -212,39 +221,45 @@ class Dashboard extends Component {
         </View>
 
         <ScrollView>
-          <Button
-            onPress={() => {
-              this.credentialButton()
-            }}>
-            Buat Permintaan
-          </Button>
-
-          <View style={styles.containerTextProductCard}>
-            <Text style={styles.textCard}>Komoditas Favorit</Text>
-            <Text style={styles.textCardLink}>Lihat Semua</Text>
+          <View style={{padding: 15}}>
+            <Button
+              onPress={() => {
+                this.credentialButton()
+              }}>
+              Buat Permintaan
+            </Button>
           </View>
 
-          <View style={styles.containerFlatList}>
-            <FlatList
-              data={this.state.productList}
-              horizontal={true}
-              keyExtractor={this._keyExtractor}
-              renderItem={this.renderProductItem.bind(this)}
-            />
+          <View style={{padding: 15, paddingTop: 10, backgroundColor: '#fff'}}>
+            <View style={styles.containerTextProductCard}>
+              <Text style={styles.textCard}>Komoditas Favorit</Text>
+            </View>
+
+            <View style={styles.containerFlatList}>
+              <FlatList
+                data={this.state.productList}
+                horizontal={true}
+                keyExtractor={this._keyExtractor}
+                renderItem={this.renderProductItem.bind(this)}
+              />
+            </View>
           </View>
 
-          <View style={styles.containerTextProductCard}>
-            <Text style={styles.textCard}>Supplier Popular</Text>
-            <Text style={styles.textCardLink}>Lihat Semua</Text>
-          </View>
+          <View style={{height: 10, backgroundColor: '#fafafa'}} />
 
-          <View style={styles.containerFlatListSupplier}>
-            <FlatList
-              data={this.state.supplierList}
-              horizontal={false}
-              keyExtractor={this._keyExtractor}
-              renderItem={this.renderSupplierItem.bind(this)}
-            />
+          <View style={{padding: 15, paddingTop: 10, backgroundColor: '#fff'}}>
+            <View style={styles.containerTextProductCard}>
+              <Text style={styles.textCard}>Supplier Populer</Text>
+            </View>
+
+            <View style={styles.containerFlatListSupplier}>
+              <FlatList
+                data={this.state.supplierList}
+                horizontal={false}
+                keyExtractor={this._keyExtractor}
+                renderItem={this.renderSupplierItem.bind(this)}
+              />
+            </View>
           </View>
 
         </ScrollView>
@@ -279,10 +294,10 @@ class Dashboard extends Component {
 const styles = {
   thumbnailStyle: {
     alignSelf: 'stretch',
-    height: 100,
-    width: 100,
-    borderWidth: 1,
-    resizeMode: 'cover'
+    height: 80,
+    width: 80,
+    resizeMode: 'cover',
+    borderRadius: 4
   },
   thumbnailContainerStyle: {
     justifyContent: 'center',
@@ -290,15 +305,14 @@ const styles = {
     margin: 15,
   },
   itemContainerStyle: {
-    borderBottomWidth: 1,
-    padding: 5,
+    // borderBottomWidth: 1,
+    // padding: 5,
     justifyContent: 'flex-start',
     flexDirection: 'row',
-    borderColor: '#ddd',
+    // borderColor: '#ddd',
   },
   containerFlatList: {
     flex: 1,
-    backgroundColor: '#F5FCFF',
     flexDirection: 'column',
   },
   containerFlatListSupplier: {
@@ -321,14 +335,12 @@ const styles = {
   containerTextProductCard: {
     flex: 1,
     flexDirection: 'row',
-    marginLeft: 20,
-    marginTop: 20
+    marginBottom: 10
   },
   textCard: {
     flex: 1,
     flexDirection: 'row',
     fontSize: 17,
-    fontWeight: 'bold'
   },
   textCardLink: {
     color: '#5D9FE2',
@@ -350,18 +362,17 @@ const styles = {
     height: 93
   },
   item: {
-    width: 116,
-    height: 116,
-    borderWidth: 1,
-    borderColor: 'black',
-    margin: 2,
+    width: 100,
+    height: 100,
+    marginRight: 10,
+    marginBottom: 10,
     flexDirection: 'row',
     justifyContent: 'flex-end',
   },
   headerTextStyle: {
     marginTop: 10,
-    fontSize: 15,
-    color: 'grey',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   headerTextStyleNumber: {
     marginTop: 10,
@@ -369,16 +380,14 @@ const styles = {
     color: 'black'
   },
   headerNumber: {
-    marginTop: 30,
-    marginRight: 30,
-    marginLeft: 30,
+    margin: 20,
+    marginRight: 5,
     flexDirection: 'column',
   },
   headerContentStyle: {
     flex: 1,
-    marginRight: 15,
-    marginTop: 30,
-    marginBottom: 10,
+    // marginRight: 15,
+    margin: 20,
     flexDirection: 'column',
     justifyContent: 'space-around'
   },

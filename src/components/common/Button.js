@@ -1,35 +1,53 @@
-import React from 'react';
-import { Text, TouchableOpacity } from 'react-native';
+import React, { Component } from 'react'
+import { Text, View, TouchableNativeFeedback } from 'react-native'
 import { COLOR } from '../../shared/lb.config';
 
-const Button = ({onPress, children}) => {
-  
-  const { buttonStyle, textStyle } = styles;
+class Button extends Component {
+  render() {
+    const { secondary, style } = this.props
 
-  return (
-    <TouchableOpacity onPress={onPress} style={buttonStyle}>
-      <Text style={textStyle}>{children}</Text>
-    </TouchableOpacity>
-  );
-};
-
+    return (
+      <TouchableNativeFeedback
+        onPress={this.props.onPress}
+        background={TouchableNativeFeedback.SelectableBackground()}
+      >
+        <View style={[secondary ? styles.secondaryButtonStyle : styles.primaryButtonStyle, style]}>
+          <Text style={secondary ? styles.secondaryTextStyle : styles.primaryTextStyle}>{this.props.children}</Text>
+        </View>
+      </TouchableNativeFeedback>
+    )
+  }
+}
 
 const styles = {
-  textStyle: {
+  primaryTextStyle: {
     alignSelf: 'center',
-    color: '#FFF',
+    color: '#fff',
     fontSize: 16,
     paddingTop: 12,
     paddingBottom: 12,
     fontFamily: 'Muli-Bold'
-
   },
-  buttonStyle: {
+  secondaryTextStyle: {
+    alignSelf: 'center',
+    color: COLOR.secondary_a,
+    fontSize: 16,
+    paddingTop: 12,
+    paddingBottom: 12,
+    fontFamily: 'Muli-Bold'
+  },
+  primaryButtonStyle: {
     flex: 1,
     alignSelf: 'stretch',
     backgroundColor: COLOR.secondary_a,
     borderRadius: 8,
+  },
+  secondaryButtonStyle: {
+    flex: 1,
+    alignSelf: 'stretch',
+    backgroundColor: '#fff',
+    borderRadius: 8,
   }
-};
+}
 
-export { Button };
+export { Button }
