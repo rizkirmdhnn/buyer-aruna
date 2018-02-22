@@ -117,11 +117,12 @@ class DetailTransactionPage extends Component {
                     console.log(this.state.dataMaster, 'DATA MASTER');
                     console.log(this.state.dataTransaction, 'DATA TRANSACTION');
 
-                    if (this.state.dataMaster.ContractId == null) {
+                    if (this.state.dataTransaction.ContractId === null) {
                         this.setState({
                             contractNotDone: true,
                         })
                     } else {
+                        console.log(this.state.dataTransaction.Contract.Status.id, 'STATUS KONTRAK');
                         if (this.state.dataTransaction.Contract.Status.id === 4) {
                             this.setState({
                                 contractDone: true,
@@ -232,13 +233,12 @@ class DetailTransactionPage extends Component {
                                 })
                             }
                         }
-
-                        if (this.state.dataTransaction.Contract.Status.id === 6) {
-                            this.setState({
-                                contractDone: true,
-                                contractRevision: true
-                            })
-                        }
+                    }
+                    if (this.state.dataTransaction.Contract.Status.id === 6) {
+                        this.setState({
+                            contractDone: true,
+                            contractRevision: true
+                        })
                     }
                 })
                 .catch(error => {
@@ -1050,7 +1050,7 @@ class DetailTransactionPage extends Component {
                                         contractNotDone ?
                                             <View style={{ flexDirection: 'column' }}>
                                                 <View>
-                                                    <Text>Lakukan Kontrak sebelum tanggal 02/02/2018, Lakukan diskusi untuk mempercepat transaksi</Text>
+                                                    <Text>Lakukan diskusi untuk mempercepat transaksi</Text>
                                                 </View>
                                                 <View style={{ height: 20 }} />
                                                 <View style={{ marginTop: 10, flexDirection: 'row' }}>
@@ -1073,7 +1073,7 @@ class DetailTransactionPage extends Component {
                                                 {
                                                     contractPending ?
                                                         <View>
-                                                            <Text>Anda sudah mengisi formulir kontrak. Status : {this.state.dataMaster.Contract.Status.name}, Lakukan
+                                                            <Text>Anda sudah mengisi formulir kontrak. Status : {this.state.dataTransaction.Contract.Status.name}, Lakukan
                                                                 diskusi untuk mempercepat transaksi.
                                                         </Text>
                                                         </View>
@@ -1083,7 +1083,7 @@ class DetailTransactionPage extends Component {
                                                 {
                                                     contractRevision ?
                                                         <View>
-                                                            <Text>Anda sudah mengisi formulir kontrak. Status : {this.state.dataMaster.Contract.Status.name}, Nelayan meminta
+                                                            <Text>Anda sudah mengisi formulir kontrak. Status : {this.state.dataTransaction.Contract.Status.name}, Nelayan meminta
                                                                 revisi kontrak, lakukan diskusi untuk mempercepat transaksi.
                                                         </Text>
 
