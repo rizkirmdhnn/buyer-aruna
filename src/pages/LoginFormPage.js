@@ -146,7 +146,7 @@ class LoginFormPage extends Component {
                     <Text style={{ textAlign: 'center' }}>
                         Belum punya akun?
 					</Text>
-                    <TouchableOpacity onPress={() => navigate('Register')}>
+                    <TouchableOpacity onPress={() => navigate('RegistrationForm')}>
                         <Text style={{ color: COLOR.secondary_a }}>
                             {` Daftar`}
                         </Text>
