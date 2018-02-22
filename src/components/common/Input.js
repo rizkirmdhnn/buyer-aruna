@@ -25,11 +25,11 @@ class Input extends Component {
 	imageIcon = (icon) => {
 		switch (icon) {
 			case 'ic_user':
-				return require('./../../assets/images/ic_user.png')
+				return require('../../assets/images/ic_user.png')
 					case 'ic_search':
-						return require('./../../assets/images/ic_search.png')
+						return require('../../assets/images/ic_search.png')
 			default:
-				return require('./../../assets/images/ic_password.png')
+				return require('../../assets/images/ic_password.png')
 		}
 	}
 
@@ -79,7 +79,7 @@ const styles = {
 		justifyContent: 'center',
 		borderWidth: 1,
 		borderColor: '#a9a9a9',
-		borderRadius: 5,
+		borderRadius: 4,
 		paddingLeft: 7,
 		backgroundColor: '#fff'
 	},
