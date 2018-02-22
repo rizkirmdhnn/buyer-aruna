@@ -34,6 +34,8 @@ import ResetPassword from './pages/ResetPassword';
 import ForgotPassword from './pages/ForgotPassword';
 import HelpPage from './pages/HelpPage';
 import MessageListPage from './pages/MessageListPage';
+import ProfileBuyerPage from './pages/ProfileBuyerPage';
+import ProfileBuyerEditPage from './pages/ProfileBuyerEditPage';
 /**
  *  List Component
  */
@@ -116,7 +118,9 @@ class App extends React.Component {
             ResetPassword: { screen: ResetPassword },
             ForgotPassword: { screen: ForgotPassword },
             Help: { screen: HelpPage },
-            MessageList: { screen: MessageListPage }
+            MessageList: { screen: MessageListPage },
+            ProfileBuyer: { screen: ProfileBuyerPage },
+            ProfileBuyerEdit: { screen: ProfileBuyerEditPage }
         }, {
                 cardStyle: { backgroundColor: '#fafafa' },
                 navigationOptions: {

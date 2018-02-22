@@ -95,25 +95,24 @@ class RequestFormOrderSecondPage extends Component {
     };
 
     onSubmit = () => {
-        console.log('Submit Request');
-        this.setState({ loader: true });
+
         AsyncStorage.getItem('loginCredential', (err, result) => {
             const token = result;
             const { navigate } = this.props.navigation;
             const dataRequest = new FormData();
             dataRequest.append('FishId', this.state.datax.FishId);
-            dataRequest.append('minBudget', this.state.datax.minBudget);
             dataRequest.append('maxBudget', this.state.datax.maxBudget);
             dataRequest.append('dueDate', this.state.datax.datePick);
             dataRequest.append('quantity', this.state.datax.quantity);
             dataRequest.append('size', this.state.datax.size);
+
+            console.log(this.state.idSupplier, 'Submit Request');
 
             this.state.idSupplier.map((item, index) => {
                 console.log(item, ' ', index, 'MAPING');
                 dataRequest.append('ProductIds[' + index + ']', item)
             })
 
-            // dataRequest.append('SupplierIds', this.state.idSupplier);
             dataRequest.append('photo', {
                 uri: this.state.datax.photo.uri,
                 type: 'image/jpeg',
@@ -134,17 +133,16 @@ class RequestFormOrderSecondPage extends Component {
                     res = response.data.data;
                     console.log(response, 'RES');
                     navigate('Request');
-                    this.setState({ loader: true });
+                    this.setState({ loader: false });
                 })
                 .catch(error => {
                     console.log(error.message, 'Error nya');
                     console.log(error.response, 'Error nya');
                     console.log(error, 'Error nya');
                     alert(error.message)
-                    this.setState({ loader: true });
+                    this.setState({ loader: false });
                 })
         });
-
     }
 
     renderButton = () => {
@@ -186,7 +184,7 @@ class RequestFormOrderSecondPage extends Component {
                             />
                         </View>
                         <View style={styles.headerContentStyle}>
-                            <Text style={{ flex: 1, fontWeight: 'bold', color: 'blue'}}>{data.User.name}</Text>
+                            <Text style={{ flex: 1, fontWeight: 'bold', color: 'blue' }}>{data.User.name}</Text>
                             <Text style={{ flex: 1 }}>500 Kg </Text>
                             <Text style={{ flex: 1 }}>{data.User.organization}</Text>
                             <Text style={{ flex: 1 }}>{data.minBudget}</Text>

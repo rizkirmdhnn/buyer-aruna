@@ -31,7 +31,7 @@ class TransactionPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            loading: null,
+            loading: true,
             tokenUser: '',
             dataTransaksi: []
         };
@@ -53,7 +53,7 @@ class TransactionPage extends Component {
 
     getData() {
         console.log('API FIRE!')
-        axios.get(`${BASE_URL}/buyer/orders?page=0&pageSize=10&sorting=DESC`, {
+        axios.get(`${BASE_URL}/buyer/orders?page=0&pageSize=50&sorting=DESC`, {
             headers: {
                 'token': this.state.tokenUser
             }
@@ -71,7 +71,6 @@ class TransactionPage extends Component {
 
     detailTransaction = (props) => {
         const dataTransaction = props;
-        // const { navigate } = this.props.navi.navigate;
         this.props.navi.navigate('DetailTransaction', { datas: dataTransaction })
     }
 
@@ -111,7 +110,7 @@ class TransactionPage extends Component {
                             </View>
                             <View style={{ flexDirection: 'column', flex: 1 }}>
                                 <View>
-                                    <Text style={styles.headerTextStyle}>{item.Request.Transaction.Fish.name} - {item.Request.Transaction.size} Kg</Text>
+                                    <Text style={styles.headerTextStyle}>{item.Request.Transaction.Fish.name} - {item.Request.Transaction.quantity} Kg</Text>
                                     <Text style={styles.titleTextStyle}>{item.Request.Supplier.name}</Text>
                                 </View>
 
@@ -151,27 +150,17 @@ class TransactionPage extends Component {
     }
 
 
-    renderTransaksi = () => {
+    render() {
         if (this.state.loading) {
-            return <Spinner size="small" />
-        } else {
-            return (
+            return <Spinner size="large" />
+        }
+        return (
+            <ScrollView>
                 <View>
                     <FlatList
                         data={[this.state.dataTransaksi]}
                         renderItem={({ item }) => this.renderData(item)}
                     />
-                </View>
-            );
-        }
-    }
-
-
-    render() {
-        return (
-            <ScrollView>
-                <View>
-                    {this.renderTransaksi()}
                 </View>
             </ScrollView>
         );

@@ -21,7 +21,7 @@ class RequestOrderPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            loading: null,
+            loading: true,
             tokenUser: '',
             dataReqOrder: '',
             expiredContainer: null,
@@ -43,7 +43,7 @@ class RequestOrderPage extends Component {
     }
 
     getData() {
-        axios.get(`${BASE_URL}/buyer/requests?key=to&page=0&pageSize=4&sorting=desc`, {
+        axios.get(`${BASE_URL}/buyer/requests?key=to&page=0&pageSize=30&sorting=desc`, {
             headers: {
                 'token': this.state.tokenUser
             }
@@ -70,20 +70,9 @@ class RequestOrderPage extends Component {
 
     renderData = (item) => {
         console.log(item, 'Data ReQ');
-        if (item === '') {
-            return (
-                <View style={{ paddingTop: '50%' }}>
-                    <Text style={{ color: 'grey', paddingLeft: '25%' }}>
-                        Ups.. Your connection internet to slow!
-                </Text>
-                    <Button onPress={() => this.refreshRequest()}>
-                        Tap Tap Me Please!
-                </Button>
-                </View>
-            );
-        }
 
         return item.map((datax, index) => {
+            console.log(datax, 'Data Maping Request');
             const dateFormat = moment(datax.expiredAt).format('DD/MM/YYYY');
             const timeFormat = moment(datax.expiredAt).format('h:mm:ss');
             if (datax.Status.id == 19) {
@@ -137,6 +126,33 @@ class RequestOrderPage extends Component {
                         </TouchableWithoutFeedback>
                     );
                 }
+            }
+
+            if (datax.Status.id === 20) {
+                return (
+                    <TouchableWithoutFeedback
+                        onPress={() => this.detailOrder(datax)}
+                        key={datax.id}
+                    >
+                        <Card>
+                            <View style={styles.itemContainerStyle}>
+                                <View style={styles.thumbnailContainerStyle}>
+                                    <Image
+                                        style={styles.thumbnailStyle}
+                                        source={{ uri: `${BASE_URL}/images/${datax.Fish.photo}` }}
+                                    />
+                                </View>
+                                <View style={styles.headerContentStyle}>
+                                    <Text style={styles.headerTextStyle}>{datax.Fish.name}</Text>
+                                    <View style={{ flexDirection: 'column', flex: 1 }}>
+                                        <Text style={{ fontSize: 13 }}>Batas Waktu: {dateFormat} Pukul: {timeFormat} </Text>
+                                        <Text>{datax.sanggup} Sanggup | {datax.tidakSanggup} Menolak | {datax.menunggu} Menunggu</Text>
+                                    </View>
+                                </View>
+                            </View>
+                        </Card>
+                    </TouchableWithoutFeedback>
+                );
             }
         })
     }

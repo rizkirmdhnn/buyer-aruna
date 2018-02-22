@@ -36,12 +36,10 @@ class Dashboard extends Component {
     };
 
     credentialButton() {
-        const { navigate } = this.props.navi.navigate;
-        console.log(this.props.navi.navigate, 'Navigate');
         AsyncStorage.getItem('loginCredential', (err, result) => {
             console.log(result, 'Token');
             if (result !== null) {
-                navigate('RequestFormOrderFirst');
+                this.props.navi.navigate('RequestFormOrderFirst');
             } else if (result == null) {
                 this.setState({
                     showAlert: true
@@ -51,11 +49,10 @@ class Dashboard extends Component {
     }
 
     credentialProduct() {
-        const { navigate } = this.props.navi.navigate;
         AsyncStorage.getItem('loginCredential', (err, result) => {
             console.log(result, 'Token');
             if (result !== null) {
-                navigate('FormProductRequest');
+                this.props.navi.navigate('FormProductRequest');
             } else if (result == null) {
                 this.setState({
                     showAlert: true

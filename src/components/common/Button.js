@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, TouchableOpacity } from 'react-native';
+import { COLOR } from './../../shared/lb.config';
 
 const Button = ({onPress, children}) => {
     
@@ -25,10 +26,8 @@ const styles = {
     buttonStyle: {
         flex: 1,
         alignSelf: 'stretch',
-        backgroundColor: '#006AAF',
+        backgroundColor: COLOR.secondary_a,
         borderRadius: 5,
-        borderWidth: 1,
-        borderColor: '#007AFF',
         marginLeft: 5,
         marginRight: 5,
         marginTop: 5

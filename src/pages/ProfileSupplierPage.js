@@ -39,7 +39,7 @@ class ProfileSupplierPage extends Component {
                     console.log(res, 'Profile')
                 })
                 .catch(error => {
-                    console.log(error, 'Error');
+                    console.log(error.response, 'Error');
                     if (error.response) {
                         alert(error.response.data.message)
                     }
@@ -52,7 +52,7 @@ class ProfileSupplierPage extends Component {
 
     renderData = (item) => {
         return item.map((datax, index) => {
-            console.log(datax.Fish.photo, 'Data Ikan');
+            console.log(datax.Fish, 'Data Ikan');
             const dateFish = moment(datax.updatedAt).format('DD/MM/YYYY');
             <Card>
                 {/* <View style={styles.itemContainerStyle}> */}

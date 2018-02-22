@@ -146,7 +146,7 @@ class HomePage extends Component {
             {
                 label: 'Profile',
                 icon: require('./../assets/images/ic_profile.png'),
-                screen: 'Home'
+                screen: 'ProfileBuyer'
             },
             {
                 label: 'Permintaan (PO)',

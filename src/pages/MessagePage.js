@@ -29,7 +29,8 @@ class MessagePage extends Component {
 			loading: true,
 			datas: {},
 			text: '',
-			decoded: ''
+			decoded: '',
+			tokenUser: ''
 		}
 	}
 
@@ -44,10 +45,34 @@ class MessagePage extends Component {
 		this.props.navigation.setParams({
 			refresh: this.fetchMessage
 		})
+
+		setInterval(() => {
+			this.loadNewMessage();
+		}, 5000)
 	}
 
 	onChangeInput = (name, v) => {
 		this.setState({ [name]: v })
+	}
+
+	loadNewMessage() {
+		console.log('Load New Message');
+		const id = this.props.navigation.state.params.idData.id;
+		axios.get(`${BASE_URL}/orders/${id}/messages`, {
+			headers: { 'token': this.state.tokenUser }
+		})
+			.then(response => {
+				console.log(response, 'Data Fetch');
+				this.setState({ datas: response.data.data })
+			})
+			.catch(error => {
+				if (error.response) {
+					alert(error.response.data.message)
+				}
+				else {
+					alert('Koneksi internet bermasalah')
+				}
+			})
 	}
 
 	fetchMessage = () => {
@@ -56,6 +81,7 @@ class MessagePage extends Component {
 		const id = this.props.navigation.state.params.idData.id;
 		AsyncStorage.getItem('loginCredential', (err, result) => {
 			const token = result;
+			this.setState({ tokenUser: token });
 			console.log(token, 'Token');
 			axios.get(`${BASE_URL}/orders/${id}/messages`, {
 				headers: { token }
@@ -77,30 +103,35 @@ class MessagePage extends Component {
 	}
 
 	postMessage = () => {
-		AsyncStorage.getItem('loginCredential', (err, result) => {
-			const id = this.props.navigation.state.params.idData.id
-			const token = result;
+		console.log(this.state.text, 'ISI PESAN');
+		if (this.state.text == '') {
+			alert('Pesan tidak boleh kosong')
+		} else {
+			AsyncStorage.getItem('loginCredential', (err, result) => {
+				const id = this.props.navigation.state.params.idData.id
+				const token = result;
 
-			const formData = new FormData()
-			formData.append('text', this.state.text)
+				const formData = new FormData()
+				formData.append('text', this.state.text)
 
-			axios.post(`${BASE_URL}/orders/${id}/messages`, formData, {
-				headers: { token }
-			})
-				.then(response => {
-					this.setState({ text: '' })
-					this.fetchMessage()
+				axios.post(`${BASE_URL}/orders/${id}/messages`, formData, {
+					headers: { token }
 				})
-				.catch(error => {
-					console.log(error, 'Error');
-					if (error.response) {
-						alert(error.response.data.message)
-					}
-					else {
-						alert('Koneksi internet bermasalah')
-					}
-				})
-		});
+					.then(response => {
+						this.setState({ text: '' })
+						this.fetchMessage()
+					})
+					.catch(error => {
+						console.log(error, 'Error');
+						if (error.response) {
+							alert(error.response.data.message)
+						}
+						else {
+							alert('Koneksi internet bermasalah')
+						}
+					})
+			});
+		}
 	}
 
 	render() {

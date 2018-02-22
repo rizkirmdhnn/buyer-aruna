@@ -981,7 +981,7 @@ class DetailTransactionPage extends Component {
                             <View style={{ justifyContent: 'space-around', flex: 2 }}>
                                 <Text style={styles.buyerName}>{this.state.dataMaster.Request.Transaction.Fish.name}</Text>
                                 <Text>{this.state.dataMaster.Request.Supplier.name}</Text>
-                                <Text>{this.state.dataMaster.Request.Transaction.size} Kg</Text>
+                                <Text>{this.state.dataMaster.Request.Transaction.quantity} Kg</Text>
                                 <Text>Rp {numeral(this.state.dataMaster.Request.Transaction.minBudget).format('0,0')} - {numeral(this.state.dataMaster.Request.Transaction.maxBudget).format('0,0')},-/Kg</Text>
                             </View>
                         </ContainerSection>
