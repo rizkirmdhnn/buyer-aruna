@@ -333,6 +333,7 @@ class FormContractPage extends Component {
                         <InputRegistration
                             label="Jumlah"
                             value={quantity}
+                            placeholder="Jumlah"
                             keyboardType="numeric"
                             style={styles.textArea}
                             onChangeText={v => this.onChangeInput('quantity', v)}
@@ -351,7 +352,7 @@ class FormContractPage extends Component {
                             placeholder='Ikan Segar'
                             value={fishDescribe}
                             style={styles.textArea}
-                            onChangeText={v => this.onChangeInput('deskripsi', v)}
+                            onChangeText={v => this.onChangeInput('fishDescribe', v)}
                             maxLength={40}
                             multiline={true}
                             numberOfLines={4}
