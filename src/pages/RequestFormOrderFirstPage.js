@@ -14,12 +14,9 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
   Image,
-  Input
 } from 'react-native';
 import {
-  CardRegistration,
-  CardSectionRegistration,
-  InputRegistration,
+  Input,
   Button,
   ContainerSection,
   Container,
@@ -27,7 +24,7 @@ import {
 } from './../components/common';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import AutoComplete from '../components/AutoComplete';
-import { BASE_URL } from './../shared/lb.config';
+import { BASE_URL, COLOR } from '../shared/lb.config';
 import axios from 'axios';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
@@ -35,14 +32,8 @@ import moment from 'moment';
 import ImagePicker from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
 class RequestFormOrderFirstPage extends Component {
-
-
-
-
   static navigationOptions = ({ navigation, screenProps }) => ({
     title: 'Buat Permintaan',
-    headerStyle: { backgroundColor: '#006AAF' },
-    headerTitleStyle: { color: '#FFFFFF', paddingLeft: '25%' },
     headerLeft:
       <TouchableOpacity
         onPress={() => { navigation.navigate('Home') }}
@@ -50,7 +41,8 @@ class RequestFormOrderFirstPage extends Component {
         <Image
           style={{ width: 20, height: 20, marginLeft: 30 }}
           source={require('./../assets/images/back.png')} />
-      </TouchableOpacity>
+      </TouchableOpacity>,
+    headerRight: <View />
   });
 
   goBack() {
@@ -186,7 +178,6 @@ class RequestFormOrderFirstPage extends Component {
   }
 
   componentWillMount() {
-    this.setState({ photo: require('./../assets/images/foto-default.png') })
     console.log(this.state.photo, 'POTO DEFAULT');
     this.setState({ loading: true });
 
@@ -311,9 +302,7 @@ class RequestFormOrderFirstPage extends Component {
     });
   }
 
-
-
-  renderAllData = () => {
+  render() {
     const {
       dataMapCity,
       dataCity,
@@ -329,33 +318,48 @@ class RequestFormOrderFirstPage extends Component {
       deskripsi,
       datePick,
       dateNowPick,
-      photo
+      photo,
+      loading
     } = this.state
 
+    if (loading) {
+      return <Spinner size="large" />
+    }
     return (
       <ScrollView
         keyboardShouldPersistTaps="always"
       >
         <Container>
 
-          <CardSectionRegistration>
-            <View style={styles.container}>
+          <ContainerSection>
+            <Text style={styles.headerStyle}>
+              Unggah Foto Ikan
+            </Text>
+          </ContainerSection>
+
+          <ContainerSection>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginBottom: 20 }}>
               <TouchableOpacity onPress={this.selectPhotoTapped.bind(this)}>
-                <View style={{ resizeMode: 'stretch' }[styles.avatar, styles.avatarContainer]}>
-                  {this.state.photo === null ? <Text>Take a Picture</Text> :
-                    <Image style={styles.avatar} source={this.state.photo} />
+                <View>
+                  {this.state.photo === null ? 
+                    <Image
+                      source={require('../assets/images/ic_add_a_photo.png')}
+                    />
+                    :
+                    <Image style={{ height: 200, width: 300 }} source={this.state.photo} />
                   }
                 </View>
               </TouchableOpacity>
             </View>
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <Text style={styles.headerStyle}>
               Informasi Komoditas
-              </Text>
-          </CardSectionRegistration>
-          <CardSectionRegistration>
+            </Text>
+          </ContainerSection>
+
+          <ContainerSection>
             <AutoComplete
               label="Nama Komoditas"
               placeholder="Komoditas"
@@ -376,94 +380,85 @@ class RequestFormOrderFirstPage extends Component {
                 )
               }
             </AutoComplete>
-          </CardSectionRegistration>
-          <CardSectionRegistration>
-            <InputRegistration
+          </ContainerSection>
+          <ContainerSection>
+            <Input
               label='Ukuran'
-              placeholder='oo'
+              placeholder=''
+              keyboardType="numeric"
               value={size}
               onChangeText={v => this.onChangeInput('size', v)}
             />
-            <Text style={styles.unitStyle}></Text>
-            <Text style={styles.unitStyle}>{this.state.unitFish}</Text>
-          </CardSectionRegistration>
+            <View style={{flex: 1, paddingTop: 50, paddingLeft: 10}}>
+              <Text>{this.state.unitFish}</Text>
+            </View>
+          </ContainerSection>
 
-          <CardSectionRegistration>
-            <InputRegistration
+          <ContainerSection>
+            <Input
+              keyboardType="numeric"
               label='Jumlah'
-              placeholder='oo'
+              placeholder=''
               value={quantity}
               onChangeText={v => this.onChangeInput('quantity', v)}
             />
-            <Text style={styles.unitStyle}></Text>
-            <Text style={styles.unitStyle}>Kg</Text>
-          </CardSectionRegistration>
+            <View style={{flex: 1, paddingTop: 50, paddingLeft: 10}}>
+              <Text>Kg</Text>
+            </View>
+          </ContainerSection>
 
-          <CardSectionRegistration>
-            <InputRegistration
+          <ContainerSection>
+            <Input
               label='Deskripsi Komoditas'
               placeholder='Deskripsi'
               value={deskripsi}
               style={styles.textArea}
               onChangeText={v => this.onChangeInput('deskripsi', v)}
               maxLength={40}
-              multiline={true}
-              numberOfLines={4}
+              multiline
+              textAlignVertical="top"
+              lines={4}
             />
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
-            <InputRegistration
+          <ContainerSection>
+            <Input
+              keyboardType="numeric"
               label='Harga Maksimal'
               placeholder='Rupiah/kg'
               value={maxBudget}
               onChangeText={v => this.onChangeInput('maxBudget', v)}
             />
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <Text style={styles.headerStyle}>
               Informasi Pengiriman
-              </Text>
-          </CardSectionRegistration>
+            </Text>
+          </ContainerSection>
 
-          <CardSectionRegistration>
-            <InputRegistration
-              placeholder='00/00/18'
-              value={dateNowPick}
-              onChangeText={v => this.onChangeInput('dateNowPick', v)}
-              editable={false}
-              inlineImageLeft='search_icon'
-            />
-            <TouchableOpacity onPress={this._showDateTimePicker}>
-              <Image
-                style={{
-                  flexDirection: 'row',
-                  borderColor: '#555',
-                  borderRadius: 3,
-                  borderWidth: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: '#fff',
-                  marginTop: 10,
-                  width: 50,
-                  height: 50
-                }}
-                source={require('./../assets/image/date-icon.png')}
+          <TouchableOpacity onPress={this._showDateTimePicker}>
+            <ContainerSection>
+              <Input
+                label="Tanggal Pengiriman"
+                value={dateNowPick}
+                onChangeText={v => this.onChangeInput('dateNowPick', v)}
+                editable={false}
+                onPress={this._showDateTimePicker}
+                style={{width: '100%'}}
               />
-            </TouchableOpacity>
-            <DateTimePicker
-              isVisible={this.state.isDateTimePickerVisible}
-              onConfirm={this._handleDatePicked}
-              onCancel={this._hideDateTimePicker}
-              minimumDate={new Date()}
-            />
-          </CardSectionRegistration>
+            </ContainerSection>
+          </TouchableOpacity>
+          <DateTimePicker
+            isVisible={this.state.isDateTimePickerVisible}
+            onConfirm={this._handleDatePicked}
+            onCancel={this._hideDateTimePicker}
+            minimumDate={new Date()}
+          />
 
           <ContainerSection>
             <View style={styles.pickerContainer}>
               <Text style={styles.pickerTextStyle}>Provinsi</Text>
-              <View style={styles.pickerStyleBox}>
                 <View style={styles.pickerStyle}>
                   <Picker
                     selectedValue={provinsiId}
@@ -473,7 +468,6 @@ class RequestFormOrderFirstPage extends Component {
                     {this.renderProvinceCity()}
                   </Picker>
                 </View>
-              </View>
             </View>
           </ContainerSection>
 
@@ -493,81 +487,43 @@ class RequestFormOrderFirstPage extends Component {
             </View>
           </ContainerSection>
 
+          <View style={{ marginTop: 20, marginBottom: 20 }}>
+            <ContainerSection>
+              {this.renderButton()}
+            </ContainerSection>
+          </View>
+
         </Container>
-
-        <ContainerSection>
-          {this.renderButton()}
-        </ContainerSection>
-
       </ScrollView >
     )
-  }
-
-
-
-  render() {
-    const {
-      dataProvinsi,
-      suggestions,
-      provinsiId,
-      cityId,
-      size,
-      quantity,
-      minBudget,
-      maxBudget,
-      deskripsi,
-      datePick,
-      loading
-    } = this.state
-
-    if (loading) {
-      return <Spinner size="large" />
-    }
-    return (
-      <View>
-        {this.renderAllData()}
-      </View>
-    );
   }
 };
 
 
 const styles = {
   headerStyle: {
-    color: '#77A7F4',
-    fontWeight: 'bold',
-    fontFamily: 'muli',
-  },
-  pickerTextStyle: {
-    color: '#8e8e8e',
-    flex: 1,
-    paddingLeft: 5
+    color: COLOR.secondary_a,
+    fontSize: 18,
   },
   pickerContainer: {
-    flex: 1,
-    height: 65,
+    flex: 1, 
     marginBottom: 5
   },
-  pickerTextStyle: {
-    color: '#8e8e8e',
-    paddingLeft: 5,
-    fontSize: 16
-  },
   pickerStyle: {
-    flex: 1,
-    borderBottomWidth: 1,
-    borderColor: '#716c6c',
-    marginRight: 3,
-    marginLeft: 3,
-  },
-  pickerStyleBox: {
-    flexDirection: 'row',
-    borderColor: '#555',
-    borderRadius: 3,
+    borderColor: '#a9a9a9',
+    borderRadius: 5,
+    paddingLeft: 7,
     borderWidth: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+  },
+  pickerTextStyle: {
+    color: '#5e5e5e',
+    fontSize: 14,
+    flex: 1,
+    marginTop: 10,
+    marginBottom: 10
+  },
+  containerItemAutoSelect: {
+    padding: 10,
   },
   thumb: {
     width: 30,
