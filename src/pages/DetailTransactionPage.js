@@ -1179,7 +1179,7 @@ class DetailTransactionPage extends Component {
                                                                     this.uploadDownPayment()
                                                                 }}>
                                                                 Unggah Bukti
-                                                </Button>
+                                                            </Button>
                                                         </View>
                                                     </View>
 
@@ -1210,6 +1210,14 @@ class DetailTransactionPage extends Component {
                                                             <Text>Sisa Pembayaran	        Rp 1.500.000</Text>
                                                             <Text>Tanggal Pembayaran	    02/09/2018</Text>
                                                             <Text>Status            	    Pembayaran Ditolak</Text>
+                                                            <View style={{ flex: 1 }}>
+                                                                <Button
+                                                                    onPress={() => {
+                                                                        this.uploadDownPayment()
+                                                                    }}>
+                                                                    Unggah Bukti Ulang
+                                                            </Button>
+                                                            </View>
                                                         </View>
                                                     </View>
 
@@ -1369,7 +1377,7 @@ class DetailTransactionPage extends Component {
                                                                     this.finalPayments()
                                                                 }}>
                                                                 Upload Bukti
-                                                </Button>
+                                                            </Button>
                                                         </View>
                                                     </View>
                                                     :
