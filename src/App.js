@@ -7,7 +7,7 @@ import { TabNavigator, StackNavigator, DrawerNavigator } from 'react-navigation'
 import numeral from 'numeral';
 import OneSignal from 'react-native-onesignal';
 import { COLOR } from './shared/lb.config';
-
+import codePush from "react-native-code-push";
 
 /**
  *  List Page
@@ -153,5 +153,7 @@ const styles = {
         backgroundColor: '#FFF'
     }
 }
+
+App = codePush({ checkFrequency: codePush.CheckFrequency.ON_APP_RESUME, installMode: codePush.InstallMode.ON_NEXT_RESUME })(App)
 
 export default App;
