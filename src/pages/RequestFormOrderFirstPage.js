@@ -14,11 +14,8 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
   Image,
-  Input
 } from 'react-native';
 import {
-  CardRegistration,
-  CardSectionRegistration,
   InputRegistration,
   Button,
   ContainerSection,
@@ -27,7 +24,7 @@ import {
 } from './../components/common';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import AutoComplete from '../components/AutoComplete';
-import { BASE_URL } from './../shared/lb.config';
+import { BASE_URL, COLOR } from '../shared/lb.config';
 import axios from 'axios';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
@@ -35,14 +32,8 @@ import moment from 'moment';
 import ImagePicker from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
 class RequestFormOrderFirstPage extends Component {
-
-
-
-
   static navigationOptions = ({ navigation, screenProps }) => ({
     title: 'Buat Permintaan',
-    headerStyle: { backgroundColor: '#006AAF' },
-    headerTitleStyle: { color: '#FFFFFF', paddingLeft: '25%' },
     headerLeft:
       <TouchableOpacity
         onPress={() => { navigation.navigate('Home') }}
@@ -50,7 +41,8 @@ class RequestFormOrderFirstPage extends Component {
         <Image
           style={{ width: 20, height: 20, marginLeft: 30 }}
           source={require('./../assets/images/back.png')} />
-      </TouchableOpacity>
+      </TouchableOpacity>,
+    headerRight: <View />
   });
 
   goBack() {
@@ -338,7 +330,7 @@ class RequestFormOrderFirstPage extends Component {
       >
         <Container>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <View style={styles.container}>
               <TouchableOpacity onPress={this.selectPhotoTapped.bind(this)}>
                 <View style={{ resizeMode: 'stretch' }[styles.avatar, styles.avatarContainer]}>
@@ -348,14 +340,14 @@ class RequestFormOrderFirstPage extends Component {
                 </View>
               </TouchableOpacity>
             </View>
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <Text style={styles.headerStyle}>
               Informasi Komoditas
-              </Text>
-          </CardSectionRegistration>
-          <CardSectionRegistration>
+            </Text>
+          </ContainerSection>
+          <ContainerSection>
             <AutoComplete
               label="Nama Komoditas"
               placeholder="Komoditas"
@@ -376,8 +368,8 @@ class RequestFormOrderFirstPage extends Component {
                 )
               }
             </AutoComplete>
-          </CardSectionRegistration>
-          <CardSectionRegistration>
+          </ContainerSection>
+          <ContainerSection>
             <InputRegistration
               label='Ukuran'
               placeholder='oo'
@@ -386,9 +378,9 @@ class RequestFormOrderFirstPage extends Component {
             />
             <Text style={styles.unitStyle}></Text>
             <Text style={styles.unitStyle}>{this.state.unitFish}</Text>
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <InputRegistration
               label='Jumlah'
               placeholder='oo'
@@ -397,9 +389,9 @@ class RequestFormOrderFirstPage extends Component {
             />
             <Text style={styles.unitStyle}></Text>
             <Text style={styles.unitStyle}>Kg</Text>
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <InputRegistration
               label='Deskripsi Komoditas'
               placeholder='Deskripsi'
@@ -410,24 +402,24 @@ class RequestFormOrderFirstPage extends Component {
               multiline={true}
               numberOfLines={4}
             />
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <InputRegistration
               label='Harga Maksimal'
               placeholder='Rupiah/kg'
               value={maxBudget}
               onChangeText={v => this.onChangeInput('maxBudget', v)}
             />
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <Text style={styles.headerStyle}>
               Informasi Pengiriman
               </Text>
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <InputRegistration
               placeholder='00/00/18'
               value={dateNowPick}
@@ -458,7 +450,7 @@ class RequestFormOrderFirstPage extends Component {
               onCancel={this._hideDateTimePicker}
               minimumDate={new Date()}
             />
-          </CardSectionRegistration>
+          </ContainerSection>
 
           <ContainerSection>
             <View style={styles.pickerContainer}>
@@ -534,9 +526,8 @@ class RequestFormOrderFirstPage extends Component {
 
 const styles = {
   headerStyle: {
-    color: '#77A7F4',
-    fontWeight: 'bold',
-    fontFamily: 'muli',
+    color: COLOR.secondary_a,
+    fontSize: 18,
   },
   pickerTextStyle: {
     color: '#8e8e8e',
