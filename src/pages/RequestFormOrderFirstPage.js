@@ -122,8 +122,6 @@ class RequestFormOrderFirstPage extends Component {
       alert('Anda belum menentukan Kuantitas');
     } else if (this.state.deskripsi == '') {
       alert('Anda belum menentukan Deskripsi Komoditas');
-    } else if (this.state.minBudget == '') {
-      alert('Anda belum menentukan min Harga');
     } else if (this.state.maxBudget == '') {
       alert('Anda belum menentukan max Harga')
     } else if (this.state.dateNowPick == '') {
@@ -144,7 +142,6 @@ class RequestFormOrderFirstPage extends Component {
       this.props.navigation.navigate('RequestFormOrderSecond', { datas: data })
     }
   }
-
 
   renderButton = () => {
     if (this.state.loadButton) {

@@ -13,7 +13,7 @@ import {
   Alert
 } from 'react-native';
 import axios from 'axios';
-
+import { NavigationActions } from 'react-navigation'
 /**
  *  Import Common
  */
@@ -82,6 +82,7 @@ class RegistrationFormPage extends Component {
     const dataPhoto = new FormData();
     dataPhoto.append('name', this.state.name);
     dataPhoto.append('email', this.state.email);
+    dataPhoto.append('username', this.state.username);
     dataPhoto.append('password', this.state.password);
     dataPhoto.append('phone', this.state.phone);
     dataPhoto.append('organization', this.state.organization);
@@ -110,8 +111,17 @@ class RegistrationFormPage extends Component {
         console.log(response.status)
         this.setState({ loading: false })
         navigate('Home');
+
+        const resetAction = NavigationActions.reset({
+          index: 0,
+          actions: [
+            NavigationActions.navigate({ routeName: 'Home' })
+          ]
+        })
+        this.props.navigation.dispatch(resetAction)
       })
       .catch(error => {
+        console.log(error, 'error aja')
         console.log(error.response, 'Error');
         alert(error.response.data.message);
         this.setState({ loading: false })
@@ -298,18 +308,18 @@ class RegistrationFormPage extends Component {
                 onChangeText={v => this.onChangeInput('npwp', v)}
               />
             </ContainerSection>
-            
-            <Text style={[styles.pickerTextStyle, {marginLeft: 5, marginTop: 10}]}>Unggah Foto NPWP</Text>
+
+            <Text style={[styles.pickerTextStyle, { marginLeft: 5, marginTop: 10 }]}>Unggah Foto NPWP</Text>
             <ContainerSection>
-              <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <TouchableOpacity onPress={this.selectPhotoTappedNPWP.bind(this)}>
                   <View>
-                    {this.state.pathNpwp === null ? 
+                    {this.state.pathNpwp === null ?
                       <Image
-                        source={require('../assets/images/ic_add_a_photo.png')} 
+                        source={require('../assets/images/ic_add_a_photo.png')}
                       />
                       :
-                      <Image style={{height: 200, width: 300}} source={this.state.pathNpwp} />
+                      <Image style={{ height: 200, width: 300 }} source={this.state.pathNpwp} />
                     }
                   </View>
                 </TouchableOpacity>
@@ -347,19 +357,19 @@ class RegistrationFormPage extends Component {
                 onChangeText={v => this.onChangeInput('idNumber', v)}
               />
             </ContainerSection>
-            
-            <Text style={[styles.pickerTextStyle, {marginLeft: 5, marginTop: 10}]}>Unggah Foto KTP</Text>
+
+            <Text style={[styles.pickerTextStyle, { marginLeft: 5, marginTop: 10 }]}>Unggah Foto KTP</Text>
             <ContainerSection>
-              <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <TouchableOpacity onPress={this.selectPhotoTappedKTP.bind(this)}>
                   <View>
-                    {this.state.pathKtp === null ? 
+                    {this.state.pathKtp === null ?
                       <Image
-                        source={require('../assets/images/ic_add_a_photo.png')} 
+                        source={require('../assets/images/ic_add_a_photo.png')}
                       />
                       :
                       <Image
-                        style={{height: 200, width: 300}}
+                        style={{ height: 200, width: 300 }}
                         source={this.state.pathKtp}
                       />
                     }
@@ -402,6 +412,14 @@ class RegistrationFormPage extends Component {
 
             <ContainerSection>
               <Input
+                label='Username'
+                placeholder='contoh: esta'
+                value={username}
+                onChangeText={v => this.onChangeInput('username', v)}
+              />
+            </ContainerSection>
+            <ContainerSection>
+              <Input
                 label='Password'
                 placeholder='minimal 6 karakter'
                 secureTextEntry
@@ -416,14 +434,14 @@ class RegistrationFormPage extends Component {
                 onChangeText={v => this.onChangeInput('password', v)}
               />
             </ContainerSection>
-            
-            <View style={{marginTop: 20, marginBottom: 20}}>
+
+            <View style={{ marginTop: 20, marginBottom: 20 }}>
               <ContainerSection>
                 {this.renderButton()}
               </ContainerSection>
             </View>
           </Container>
-          
+
         </ScrollView>
       </View>
     )
@@ -436,7 +454,7 @@ const styles = {
     fontSize: 18
   },
   pickerContainer: {
-    flex: 1, 
+    flex: 1,
     marginBottom: 5
   },
   pickerStyle: {
