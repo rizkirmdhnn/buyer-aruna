@@ -302,9 +302,7 @@ class RequestFormOrderFirstPage extends Component {
     });
   }
 
-
-
-  renderAllData = () => {
+  render() {
     const {
       dataMapCity,
       dataCity,
@@ -320,9 +318,13 @@ class RequestFormOrderFirstPage extends Component {
       deskripsi,
       datePick,
       dateNowPick,
-      photo
+      photo,
+      loading
     } = this.state
 
+    if (loading) {
+      return <Spinner size="large" />
+    }
     return (
       <ScrollView
         keyboardShouldPersistTaps="always"
@@ -435,39 +437,24 @@ class RequestFormOrderFirstPage extends Component {
             </Text>
           </ContainerSection>
 
-          <ContainerSection>
-            <Input
-              label="Tanggal Pengiriman"
-              placeholder='00/00/18'
-              value={dateNowPick}
-              onChangeText={v => this.onChangeInput('dateNowPick', v)}
-              editable={false}
-              inlineImageLeft='search_icon'
-            />
-            <TouchableOpacity onPress={this._showDateTimePicker}>
-              <Image
-                style={{
-                  flexDirection: 'row',
-                  borderColor: '#555',
-                  borderRadius: 3,
-                  borderWidth: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: '#fff',
-                  marginTop: 10,
-                  width: 50,
-                  height: 50
-                }}
-                source={require('./../assets/image/date-icon.png')}
+          <TouchableOpacity onPress={this._showDateTimePicker}>
+            <ContainerSection>
+              <Input
+                label="Tanggal Pengiriman"
+                value={dateNowPick}
+                onChangeText={v => this.onChangeInput('dateNowPick', v)}
+                editable={false}
+                onPress={this._showDateTimePicker}
+                style={{width: '100%'}}
               />
-            </TouchableOpacity>
-            <DateTimePicker
-              isVisible={this.state.isDateTimePickerVisible}
-              onConfirm={this._handleDatePicked}
-              onCancel={this._hideDateTimePicker}
-              minimumDate={new Date()}
-            />
-          </ContainerSection>
+            </ContainerSection>
+          </TouchableOpacity>
+          <DateTimePicker
+            isVisible={this.state.isDateTimePickerVisible}
+            onConfirm={this._handleDatePicked}
+            onCancel={this._hideDateTimePicker}
+            minimumDate={new Date()}
+          />
 
           <ContainerSection>
             <View style={styles.pickerContainer}>
@@ -500,41 +487,15 @@ class RequestFormOrderFirstPage extends Component {
             </View>
           </ContainerSection>
 
+          <View style={{ marginTop: 20, marginBottom: 20 }}>
+            <ContainerSection>
+              {this.renderButton()}
+            </ContainerSection>
+          </View>
+
         </Container>
-
-        <ContainerSection>
-          {this.renderButton()}
-        </ContainerSection>
-
       </ScrollView >
     )
-  }
-
-
-
-  render() {
-    const {
-      dataProvinsi,
-      suggestions,
-      provinsiId,
-      cityId,
-      size,
-      quantity,
-      minBudget,
-      maxBudget,
-      deskripsi,
-      datePick,
-      loading
-    } = this.state
-
-    if (loading) {
-      return <Spinner size="large" />
-    }
-    return (
-      <View>
-        {this.renderAllData()}
-      </View>
-    );
   }
 };
 
