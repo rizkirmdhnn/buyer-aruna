@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ScrollView, View, Text, TouchableOpacity, AsyncStorage } from 'react-native';
+import { ScrollView, View, Text, TouchableOpacity, AsyncStorage, ToastAndroid } from 'react-native';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -12,14 +12,7 @@ import jwtDecode from 'jwt-decode'
 class MessagePage extends Component {
 	static navigationOptions = ({ navigation }) => ({
 		title: 'Diskusi',
-		headerStyle: { backgroundColor: '#006AAF' },
-		headerTitleStyle: { color: '#FFFFFF' },
-		headerRight:
-			<TouchableOpacity onPress={navigation.state.params.refresh}>
-				<View>
-					<Icon style={{ marginRight: 20 }} size={30} name="md-refresh" />
-				</View>
-			</TouchableOpacity>
+		headerRight: <View />
 	})
 
 	constructor(props) {
@@ -41,65 +34,41 @@ class MessagePage extends Component {
 			this.setState({ decoded: deco });
 		});
 		this.fetchMessage()
-
-		this.props.navigation.setParams({
-			refresh: this.fetchMessage
-		})
-
-		setInterval(() => {
-			this.loadNewMessage();
-		}, 5000)
 	}
 
 	onChangeInput = (name, v) => {
 		this.setState({ [name]: v })
 	}
 
-	loadNewMessage() {
-		console.log('Load New Message');
-		const id = this.props.navigation.state.params.idData.id;
-		axios.get(`${BASE_URL}/orders/${id}/messages`, {
-			headers: { 'token': this.state.tokenUser }
-		})
-			.then(response => {
-				console.log(response, 'Data Fetch');
-				this.setState({ datas: response.data.data })
-			})
-			.catch(error => {
-				if (error.response) {
-					alert(error.response.data.message)
-				}
-				else {
-					alert('Koneksi internet bermasalah')
-				}
-			})
-	}
-
 	fetchMessage = () => {
-		this.setState({ loading: true })
-
+		console.log('masuk rekursif')
 		const id = this.props.navigation.state.params.idData.id;
 		AsyncStorage.getItem('loginCredential', (err, result) => {
 			const token = result;
 			this.setState({ tokenUser: token });
-			console.log(token, 'Token');
 			axios.get(`${BASE_URL}/orders/${id}/messages`, {
 				headers: { token }
 			})
-				.then(response => {
-					console.log(response, 'Data Fetch');
-					this.setState({ datas: response.data.data, loading: false })
-				})
-				.catch(error => {
-					if (error.response) {
-						alert(error.response.data.message)
-					}
-					else {
-						alert('Koneksi internet bermasalah')
-					}
-					this.setState({ loading: false })
-				})
+			.then(response => {
+				console.log(response, 'Data Fetch');
+				this.setState({ datas: response.data.data, loading: false })
+			})
+			.catch(error => {
+				if (error.response) {
+					ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
+				}
+				else {
+					ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
+				}
+				this.setState({ loading: false })
+			})
 		});
+
+		this.timer = setTimeout(() => this.fetchMessage(), 5000)
+	}
+
+	componentWillUnmount() {
+	 clearTimeout(this.timer);
 	}
 
 	postMessage = () => {
@@ -124,10 +93,10 @@ class MessagePage extends Component {
 					.catch(error => {
 						console.log(error, 'Error');
 						if (error.response) {
-							alert(error.response.data.message)
+							ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
 						}
 						else {
-							alert('Koneksi internet bermasalah')
+							ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
 						}
 					})
 			});
