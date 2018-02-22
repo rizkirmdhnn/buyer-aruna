@@ -16,7 +16,7 @@ import {
   Image,
 } from 'react-native';
 import {
-  InputRegistration,
+  Input,
   Button,
   ContainerSection,
   Container,
@@ -178,7 +178,6 @@ class RequestFormOrderFirstPage extends Component {
   }
 
   componentWillMount() {
-    this.setState({ photo: require('./../assets/images/foto-default.png') })
     console.log(this.state.photo, 'POTO DEFAULT');
     this.setState({ loading: true });
 
@@ -331,11 +330,21 @@ class RequestFormOrderFirstPage extends Component {
         <Container>
 
           <ContainerSection>
-            <View style={styles.container}>
+            <Text style={styles.headerStyle}>
+              Unggah Foto Ikan
+            </Text>
+          </ContainerSection>
+
+          <ContainerSection>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginBottom: 20 }}>
               <TouchableOpacity onPress={this.selectPhotoTapped.bind(this)}>
-                <View style={{ resizeMode: 'stretch' }[styles.avatar, styles.avatarContainer]}>
-                  {this.state.photo === null ? <Text>Take a Picture</Text> :
-                    <Image style={styles.avatar} source={this.state.photo} />
+                <View>
+                  {this.state.photo === null ? 
+                    <Image
+                      source={require('../assets/images/ic_add_a_photo.png')}
+                    />
+                    :
+                    <Image style={{ height: 200, width: 300 }} source={this.state.photo} />
                   }
                 </View>
               </TouchableOpacity>
@@ -347,6 +356,7 @@ class RequestFormOrderFirstPage extends Component {
               Informasi Komoditas
             </Text>
           </ContainerSection>
+
           <ContainerSection>
             <AutoComplete
               label="Nama Komoditas"
@@ -370,42 +380,48 @@ class RequestFormOrderFirstPage extends Component {
             </AutoComplete>
           </ContainerSection>
           <ContainerSection>
-            <InputRegistration
+            <Input
               label='Ukuran'
-              placeholder='oo'
+              placeholder=''
+              keyboardType="numeric"
               value={size}
               onChangeText={v => this.onChangeInput('size', v)}
             />
-            <Text style={styles.unitStyle}></Text>
-            <Text style={styles.unitStyle}>{this.state.unitFish}</Text>
+            <View style={{flex: 1, paddingTop: 50, paddingLeft: 10}}>
+              <Text>{this.state.unitFish}</Text>
+            </View>
           </ContainerSection>
 
           <ContainerSection>
-            <InputRegistration
+            <Input
+              keyboardType="numeric"
               label='Jumlah'
-              placeholder='oo'
+              placeholder=''
               value={quantity}
               onChangeText={v => this.onChangeInput('quantity', v)}
             />
-            <Text style={styles.unitStyle}></Text>
-            <Text style={styles.unitStyle}>Kg</Text>
+            <View style={{flex: 1, paddingTop: 50, paddingLeft: 10}}>
+              <Text>Kg</Text>
+            </View>
           </ContainerSection>
 
           <ContainerSection>
-            <InputRegistration
+            <Input
               label='Deskripsi Komoditas'
               placeholder='Deskripsi'
               value={deskripsi}
               style={styles.textArea}
               onChangeText={v => this.onChangeInput('deskripsi', v)}
               maxLength={40}
-              multiline={true}
-              numberOfLines={4}
+              multiline
+              textAlignVertical="top"
+              lines={4}
             />
           </ContainerSection>
 
           <ContainerSection>
-            <InputRegistration
+            <Input
+              keyboardType="numeric"
               label='Harga Maksimal'
               placeholder='Rupiah/kg'
               value={maxBudget}
@@ -416,11 +432,12 @@ class RequestFormOrderFirstPage extends Component {
           <ContainerSection>
             <Text style={styles.headerStyle}>
               Informasi Pengiriman
-              </Text>
+            </Text>
           </ContainerSection>
 
           <ContainerSection>
-            <InputRegistration
+            <Input
+              label="Tanggal Pengiriman"
               placeholder='00/00/18'
               value={dateNowPick}
               onChangeText={v => this.onChangeInput('dateNowPick', v)}
@@ -455,7 +472,6 @@ class RequestFormOrderFirstPage extends Component {
           <ContainerSection>
             <View style={styles.pickerContainer}>
               <Text style={styles.pickerTextStyle}>Provinsi</Text>
-              <View style={styles.pickerStyleBox}>
                 <View style={styles.pickerStyle}>
                   <Picker
                     selectedValue={provinsiId}
@@ -465,7 +481,6 @@ class RequestFormOrderFirstPage extends Component {
                     {this.renderProvinceCity()}
                   </Picker>
                 </View>
-              </View>
             </View>
           </ContainerSection>
 
@@ -529,36 +544,25 @@ const styles = {
     color: COLOR.secondary_a,
     fontSize: 18,
   },
-  pickerTextStyle: {
-    color: '#8e8e8e',
-    flex: 1,
-    paddingLeft: 5
-  },
   pickerContainer: {
-    flex: 1,
-    height: 65,
+    flex: 1, 
     marginBottom: 5
   },
-  pickerTextStyle: {
-    color: '#8e8e8e',
-    paddingLeft: 5,
-    fontSize: 16
-  },
   pickerStyle: {
-    flex: 1,
-    borderBottomWidth: 1,
-    borderColor: '#716c6c',
-    marginRight: 3,
-    marginLeft: 3,
-  },
-  pickerStyleBox: {
-    flexDirection: 'row',
-    borderColor: '#555',
-    borderRadius: 3,
+    borderColor: '#a9a9a9',
+    borderRadius: 5,
+    paddingLeft: 7,
     borderWidth: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+  },
+  pickerTextStyle: {
+    color: '#5e5e5e',
+    fontSize: 14,
+    flex: 1,
+    marginTop: 10,
+    marginBottom: 10
+  },
+  containerItemAutoSelect: {
+    padding: 10,
   },
   thumb: {
     width: 30,
