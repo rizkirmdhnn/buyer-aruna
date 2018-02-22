@@ -6,6 +6,7 @@ import {
   FlatList,
   Image,
   TouchableWithoutFeedback,
+  TouchableNativeFeedback,
   ScrollView
 } from 'react-native';
 import { Header, SearchBar, Icon } from 'react-native-elements';
@@ -22,6 +23,7 @@ import {
   Card
 } from './../components/common';
 import moment from 'moment';
+import { COLOR } from './../shared/lb.config';
 
 class TransactionPage extends Component {
   static navigationOptions = {
@@ -78,6 +80,40 @@ class TransactionPage extends Component {
     return this.getData();
   }
 
+  imageIcon = (item, index) => {
+    if (index <= item.StatusHistories.length) {
+      switch (index) {
+        case 1:
+          return require('../assets/images/status1f.png')
+        case 2:
+          return require('../assets/images/status2f.png')
+        case 3:
+          return require('../assets/images/status3f.png')
+        case 4:
+          return require('../assets/images/status4f.png')
+        case 5:
+          return require('../assets/images/status5f.png')
+        default:
+          return require('../assets/images/status1f.png')
+      }
+    }
+    
+    switch (index) {
+      case 1:
+        return require('../assets/images/status1.png')
+      case 2:
+        return require('../assets/images/status2.png')
+      case 3:
+        return require('../assets/images/status3.png')
+      case 4:
+        return require('../assets/images/status4.png')
+      case 5:
+        return require('../assets/images/status5.png')
+      default:
+        return require('../assets/images/status1.png')
+    }
+  }
+
   renderData = (item) => {
     console.log(item, 'Data Trans');
     if (item.length === 0) {
@@ -92,62 +128,52 @@ class TransactionPage extends Component {
         </View>
       );
     }
-    return item.map((item, index) => {
-      const dateFormat = moment(item.Request.Transaction.updatedAt).format('DD/MM/YYYY');
-      const timeFormat = moment(item.Request.Transaction.updatedAt).format('h:mm:ss');
-      return (
-        
-        <Card>
-          <TouchableWithoutFeedback
-            key={item.id}
-            onPress={() => this.detailTransaction(item)}
-          >
-            <View style={styles.itemContainerStyle}>
-              <View style={styles.thumbnailContainerStyle}>
-                <Image
-                  style={styles.thumbnailStyle}
-                  source={{ uri: `${BASE_URL}/images/${item.Request.Transaction.photo}` }}
+     
+    return (
+      <Card>
+        <TouchableNativeFeedback
+          key={item.id}
+          onPress={() => this.detailTransaction(item)}
+        >
+          <View style={styles.itemContainerStyle}>
+            <View style={styles.thumbnailContainerStyle}>
+              <Image
+                style={styles.thumbnailStyle}
+                source={{ uri: `${BASE_URL}/images/${item.Request ? item.Request.Transaction.photo : ''}` }}
+              />
+            </View>
+            <View style={styles.headerContentStyle}>
+              <Text>No. PO {item.id}</Text>
+              <Text>{item.Request ? item.Request.Transaction.Fish.name : '-'}</Text>
+              <Text>{item.Request ? item.Request.Supplier.name : ''}</Text>
+              <Text style={styles.hedaerTextStyle}>{item.StatusHistories && item.StatusHistories.length > 0 ? item.StatusHistories[item.StatusHistories.length - 1].Status.name : 'Kontrak Belum Dibuat'}</Text>
+              <View style={{flexDirection: 'row'}}>
+                <Image 
+                  style={styles.statusIcon}
+                  source={this.imageIcon(item, 1)}
+                />
+                <Image 
+                  style={styles.statusIcon}
+                  source={this.imageIcon(item, 2)}
+                />
+                <Image 
+                  style={styles.statusIcon}
+                  source={this.imageIcon(item, 3)}
+                />
+                <Image 
+                  style={styles.statusIcon}
+                  source={this.imageIcon(item, 4)}
+                />
+                <Image 
+                  style={styles.statusIcon}
+                  source={this.imageIcon(item, 5)}
                 />
               </View>
-              <View style={{ flexDirection: 'column', flex: 1 }}>
-                <View>
-                  <Text style={styles.headerTextStyle}>{item.Request.Transaction.Fish.name} - {item.Request.Transaction.quantity} Kg</Text>
-                  <Text style={styles.titleTextStyle}>{item.Request.Supplier.name}</Text>
-                </View>
-
-                <View style={{ flexDirection: 'row', flex: 1 }}>
-                  <Image
-                    style={styles.trackingImage}
-                    source={require('./../assets/image/ts1.png')}
-                  />
-                  <Image
-                    style={styles.trackingImage}
-                    source={require('./../assets/image/ts2.png')}
-                  />
-                  <Image
-                    style={styles.trackingImage}
-                    source={require('./../assets/image/ts3.png')}
-                  />
-                  <Image
-                    style={styles.trackingImage}
-                    source={require('./../assets/image/ts4.png')}
-                  />
-                  <Image
-                    style={styles.trackingImage}
-                    source={require('./../assets/image/ts5.png')}
-                  />
-                </View>
-              </View>
-
-              <View>
-                <Text>DP Dibayar</Text>
-                <Text>{dateFormat}</Text>
-              </View>
             </View>
-          </TouchableWithoutFeedback>
-        </Card>
-      )
-    })
+          </View>
+        </TouchableNativeFeedback>
+      </Card>
+    )
   }
 
 
@@ -156,14 +182,13 @@ class TransactionPage extends Component {
       return <Spinner size="large" />
     }
     return (
-      <ScrollView>
-        <View>
-          <FlatList
-            data={[this.state.dataTransaksi]}
-            renderItem={({ item }) => this.renderData(item)}
-          />
-        </View>
-      </ScrollView>
+      <View style={{flex: 1}}>
+        <FlatList
+          data={this.state.dataTransaksi}
+          renderItem={({ item }) => this.renderData(item)}
+          keyExtractor={(item, index) => index}
+        />
+      </View>
     );
   }
 };
@@ -171,42 +196,39 @@ class TransactionPage extends Component {
 
 
 const styles = {
-  thumbnailStyle: {
-    height: 50,
-    width: 50,
-    borderRadius: 8
-  },
   itemContainerStyle: {
-    padding: 5,
+    borderBottomWidth: 1, 
     justifyContent: 'flex-start',
-    flexDirection: 'row'
+    flexDirection: 'row',
+    borderColor: '#ddd',
+    backgroundColor: '#fff'
   },
   thumbnailContainerStyle: {
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 15,
+    margin: 10,
   },
-  trackingImage: {
-    height: 22,
-    width: 22,
-    borderRadius: 8
+  thumbnailStyle: {
+    height: 100,
+    width: 100,
   },
   headerContentStyle: {
     flex: 1,
-    marginRight: 15,
     marginTop: 5,
     marginBottom: 10,
     flexDirection: 'column',
     justifyContent: 'space-around'
   },
-  headerTextStyle: {
-    fontSize: 15,
-    color: 'black',
-    fontWeight: 'bold'
+  headerContentStyle2: {
+    marginTop: 8,
   },
-  titleTextStyle: {
-    fontSize: 13,
-    fontWeight: 'bold'
+  hedaerTextStyle: {
+    color: COLOR.secondary_a
+  },
+  statusIcon: {
+    height: 25,
+    width: 25,
+    marginRight: 3
   }
 }
 
