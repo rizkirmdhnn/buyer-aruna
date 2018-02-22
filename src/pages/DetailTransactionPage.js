@@ -114,20 +114,22 @@ class DetailTransactionPage extends Component {
                 .then(response => {
                     console.log(response, 'Data Transaction');
                     this.setState({ dataTransaction: response.data.data, dataDetail: response.data.data, loading: false });
+                    console.log(this.state.dataMaster, 'DATA MASTER');
+                    console.log(this.state.dataTransaction, 'DATA TRANSACTION');
 
-                    if (this.state.dataMaster.Contract == null) {
+                    if (this.state.dataMaster.ContractId == null) {
                         this.setState({
                             contractNotDone: true,
                         })
                     } else {
-                        if (this.state.dataMaster.Contract.Status.id === 4) {
+                        if (this.state.dataTransaction.Contract.Status.id === 4) {
                             this.setState({
                                 contractDone: true,
                                 contractPending: true,
                             })
                         }
 
-                        if (this.state.dataMaster.Contract.Status.id === 5) {
+                        if (this.state.dataTransaction.Contract.Status.id === 5) {
                             this.setState({
                                 contractDone: true,
                                 contractApproved: true
@@ -231,7 +233,7 @@ class DetailTransactionPage extends Component {
                             }
                         }
 
-                        if (this.state.dataMaster.Contract.Status.id === 6) {
+                        if (this.state.dataTransaction.Contract.Status.id === 6) {
                             this.setState({
                                 contractDone: true,
                                 contractRevision: true
