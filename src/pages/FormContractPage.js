@@ -175,17 +175,17 @@ class FormContractPage extends Component {
         // }else {
         //     console.log('LOLOS');
         //     Keyboard.dismiss();
-
+        this.state.dataMaster.Request.Transaction.quantity
 
         const dataContract = {
-            "fishDescribe": this.state.dataMaster.Request.Transaction.describe,
+            "fishDescribe": this.state.fishDescribe,
             "size": this.state.dataMaster.Request.Transaction.size,
             "quantity": this.state.quantity,
             "price": this.state.price,
             "name": this.state.dataMaster.Request.Supplier.name,
             "idNumber": this.state.dataMaster.Request.Supplier.idNumber,
             "organization": this.state.dataMaster.Request.Supplier.organization,
-            "location": this.state.dataMaster.Request.Supplier.address,
+            "location": this.state.dataMaster.Request.Supplier.City.name,
             "shippingMethod": 'JNE',
             "locationOfreception": this.state.locationOfreception,
             "dateOfReception": this.state.dateOfReception,
@@ -320,7 +320,6 @@ class FormContractPage extends Component {
                             label="Ukuran"
                             value={this.state.dataMaster.Request.Transaction.size.toString()}
                             style={styles.textArea}
-                            editable={false}
                         />
                         <Text style={styles.unitStyle}></Text>
                         <InputRegistration
@@ -333,11 +332,11 @@ class FormContractPage extends Component {
                     <CardSectionRegistration>
                         <InputRegistration
                             label="Jumlah"
-                            value={this.state.dataMaster.Request.Transaction.quantity.toString()}
+                            value={quantity}
+                            placeholder="Jumlah"
                             keyboardType="numeric"
                             style={styles.textArea}
                             onChangeText={v => this.onChangeInput('quantity', v)}
-                            editable={false}
                         />
                         <Text style={styles.unitStyle}></Text>
                         <InputRegistration
@@ -350,21 +349,22 @@ class FormContractPage extends Component {
                     <CardSectionRegistration>
                         <InputRegistration
                             label='Deskripsi Komoditas'
-                            value={this.state.dataMaster.Request.Transaction.describe}
+                            placeholder='Ikan Segar'
+                            value={fishDescribe}
                             style={styles.textArea}
-                            onChangeText={v => this.onChangeInput('deskripsi', v)}
+                            onChangeText={v => this.onChangeInput('fishDescribe', v)}
                             maxLength={40}
                             multiline={true}
                             numberOfLines={4}
-                            editable={false}
                         />
                     </CardSectionRegistration>
 
                     <CardSectionRegistration>
                         <InputRegistration
-                            label='Harga Maksimal'
-                            value={this.state.dataMaster.Request.Transaction.maxBudget}
-                            editable={false}
+                            label='Harga'
+                            value={price}
+                            keyboardType="numeric"
+                            onChangeText={v => this.onChangeInput('price', v)}
                         />
                     </CardSectionRegistration>
 
@@ -401,7 +401,7 @@ class FormContractPage extends Component {
                         <InputRegistration
                             label='Lokasi Nelayan'
                             placeholder='Lokasi Lengkap'
-                            value={this.state.dataMaster.Request.Supplier.address}
+                            value={this.state.dataMaster.Request.Supplier.City.name}
                             editable={false}
                         />
                     </CardSectionRegistration>
