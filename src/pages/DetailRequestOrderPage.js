@@ -156,18 +156,27 @@ class DetailRequestOrderPage extends Component {
                 />
               </View>
               <View style={styles.headerContentStyle}>
-                <View style={{ flex: 1, }}>
-                  <Text style={{ fontWeight: 'bold', color: '#009AD3' }}>{data.Supplier.name}</Text>
-                  <CheckBox
-                    containerStyle={{ backgroundColor: 'transparent' }}
-                    onPress={() => this.unCheckItem(data)}
-                    checked={this.state.checkedNotSelected.includes(data)}
-                  />
+                <View style={{ flex: 1, flexDirection: 'row'}}>
+                  <Text style={{ flex: 3, fontFamily: 'Muli-Regular', color: COLOR.secondary_a, fontSize: 16 }}>{data.Supplier.name}</Text>
+                  <View style={{flex: 1}}>
+                    <CheckBox
+                      containerStyle={{
+                        borderWidth: 0,
+                        padding: 0,
+                        margin: 0,
+                        marginTop: 10,
+                        width: 25
+                      }}
+                      onPress={() => this.unCheckItem(data)}
+                      checked={this.state.checkedNotSelected.includes(data)}
+                    />
+                  </View>
                 </View>
-                <View style={{ flexDirection: 'row' }}>
-                  <Text style={{ flex: 1, fontWeight: 'bold' }}>500 Kg </Text>
-                  <Text style={{ flex: 1, fontWeight: 'bold' }}>Rp. 100.000 - Rp. 500.000</Text>
-                </View>
+                <View style={{ flexDirection: 'column' }}>
+                  <Text style={{ flex: 1 }}>{data.Supplier.organization} </Text>
+                  <Text style={{ flex: 1 }}>{data.Product.capacity} Kg </Text>
+                  <Text style={{ flex: 1 }}>Rp. {data.Product ? numeral(data.Product.minPrice).format('0,0') : '-'} - Rp. {data.Product ? numeral(data.Product.maxPrice).format('0,0') : '-'}</Text>
+               </View>
               </View>
             </View>
           </Card>
