@@ -352,14 +352,14 @@ class HomePage extends Component {
 
           <View style={menuContainerStyle}>
             <View style={{ flexDirection: 'row' }}>
-              <View style={{ flex: 1 }}>
+              <View style={{ flex: 1, borderColor:'#3484d7', borderRightWidth: 0.3}}>
                 <TouchableNativeFeedback onPress={() => this.setState({ screen: 'Dashboard' })}>
                   <View style={screen === 'Dashboard' ? tabContainerActive : tabContainer}>
                     <Text style={screen === 'Dashboard' ? tabTextActive : tabText}>Beranda</Text>
                   </View>
                 </TouchableNativeFeedback>
               </View>
-              <View style={{ flex: 1 }}>
+              <View style={{ flex: 1, borderColor:'#3484d7', borderRightWidth: 0.3}}>
                 <TouchableNativeFeedback onPress={() => this.setState({ screen: 'RequestOrderPage' })}>
                   <View style={screen === 'RequestOrderPage' ? tabContainerActive : tabContainer}>
                     <Text style={screen === 'RequestOrderPage' ? tabTextActive : tabText}>Permintaan</Text>
