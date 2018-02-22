@@ -87,9 +87,6 @@ class HomePage extends Component {
     })
   }
 
-
-
-
   renderScreen = () => {
     if (this.state.screen === 'RequestOrderPage') {
       return <RequestOrderPage navi={this.props.navigation} />
@@ -287,9 +284,9 @@ class HomePage extends Component {
           renderNavigationView={() => menuDrawer}
         >
           <View style={styles.header}>
-            <View style={{ padding: 15 }}>
+            <View style={{ paddingLeft: 15, paddingRight: 15  }}>
               <TouchableOpacity onPress={() => this.refs.drawer.openDrawer()}>
-                <Icon size={25} name="md-menu" color="#fff" />
+                <Icon size={24} name="md-menu" color="#fff" />
               </TouchableOpacity>
             </View>
             <View style={styles.headerText}>
@@ -301,19 +298,24 @@ class HomePage extends Component {
                 icon="ic_search"
               />
             </View>
-            <View style={{ padding: 15 }}>
-              <TouchableOpacity onPress={() => this.props.navigation.navigate('NotificationList')}>
-                <Image
-                  style={{ height: 20, width: 15 }}
-                  source={
-                    // this.props.user.unreadNotif > 0 ?
-                    //     require('./../assets/images/ic_notification_on.png')
-                    //     :
-                    require('./../assets/images/ic_notification.png')
-                  }
-                />
-              </TouchableOpacity>
-            </View>
+            {
+              this.state.menuLoginExpanded ?
+                <View style={{ paddingLeft: 15, paddingRight: 15 }}>
+                  <TouchableOpacity onPress={() => this.props.navigation.navigate('NotificationList')}>
+                    <Image
+                      style={{ height: 20, width: 15 }}
+                      source={
+                        // this.props.user.unreadNotif > 0 ?
+                        //     require('./../assets/images/ic_notification_on.png')
+                        //     :
+                        require('./../assets/images/ic_notification.png')
+                      }
+                    />
+                  </TouchableOpacity>
+                </View>
+              :
+                <View style={{ paddingLeft: 5, paddingRight: 5 }} />
+            }
           </View>
 
           {
@@ -481,11 +483,12 @@ const styles = {
     alignItems: 'center',
     shadowOpacity: 0.2,
     width: '100%',
-    elevation: 3
+    elevation: 4
   },
   headerText: {
     flex: 1,
-    paddingTop: 5
+    marginTop: 12,
+    marginBottom: 12,
   },
   headerHomeStyle: {
     paddingTop: 20,
@@ -537,14 +540,14 @@ const styles = {
     justifyContent: 'center'
   },
   tabText: {
-    color: '#eaeaea',
+    color: '#67a6e3',
     textAlign: 'center',
-    fontSize: 18
+    fontSize: 16
   },
   tabTextActive: {
     color: '#fff',
     textAlign: 'center',
-    fontSize: 18
+    fontSize: 16
   },
   drawerItemText: {
     color: '#fff',
