@@ -1,5 +1,5 @@
 export * from './Button';
-export * from './Cards';
+export * from './Card';
 export * from './CardRegistration';
 export * from './CardSection';
 export * from './CardSectionRegistration';

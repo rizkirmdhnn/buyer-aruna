@@ -10,10 +10,11 @@ import {
     Button,
     ContainerSection,
     Container,
-    Spinner
+    Spinner,
+    Card
 } from './../components/common';
 import moment from 'moment';
-import { Card } from 'react-native-elements';
+// import { Card } from 'react-native-elements';
 
 
 class RequestOrderPage extends Component {
@@ -78,7 +79,7 @@ class RequestOrderPage extends Component {
             if (datax.Status.id == 19) {
                 if (datax.sanggup == 0) {
                     return (
-                        <Card key={datax.id}>
+                        <Card>
                             <View
                                 style={styles.itemContainerStyle}
                             >
