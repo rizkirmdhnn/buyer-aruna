@@ -297,6 +297,17 @@ class DetailRequestOrderPage extends Component {
             }
         }
         if (this.state.dataMaster.Status.id == 20) {
+            if (this.state.dataMaster.sanggup > 0) {
+                return (
+                    <View style={{ flex: 1 }}>
+                        <Button
+                            onPress={this.endRequest.bind(this)}
+                        >
+                            Lanjut Transaksi
+                        </Button>
+                    </View>
+                );
+            }
             if (this.state.dataMaster.sanggup == 0) {
                 return (
                     <View style={{ flex: 1 }}>
@@ -335,6 +346,9 @@ class DetailRequestOrderPage extends Component {
             NotDisabledContainer,
             loading
         } = this.state;
+
+
+        console.log(this.state.buttonExpanded, 'Button');
 
         if (loading) {
             return <Spinner size="large" />
@@ -400,6 +414,7 @@ class DetailRequestOrderPage extends Component {
                                 :
                                 <View />
                         }
+
                     </View>
                 </View>
             </ScrollView>
