@@ -364,6 +364,7 @@ class FormContractPage extends Component {
                             label='Harga'
                             value={price}
                             keyboardType="numeric"
+                            onChangeText={v => this.onChangeInput('price', v)}
                         />
                     </CardSectionRegistration>
 
