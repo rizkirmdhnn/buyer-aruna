@@ -199,7 +199,8 @@ class RequestFormOrderSecondPage extends Component {
                 borderWidth: 0,
                 padding: 0,
                 margin: 0,
-                marginTop: 10
+                marginTop: 10,
+                width: 25
               }}
             />
           </View>

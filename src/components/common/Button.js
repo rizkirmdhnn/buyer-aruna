@@ -4,7 +4,7 @@ import { COLOR } from '../../shared/lb.config';
 
 class Button extends Component {
   render() {
-    const { secondary, style } = this.props
+    const { secondary, style, textStyle } = this.props
 
     return (
       <TouchableNativeFeedback
@@ -12,7 +12,7 @@ class Button extends Component {
         background={TouchableNativeFeedback.SelectableBackground()}
       >
         <View style={[secondary ? styles.secondaryButtonStyle : styles.primaryButtonStyle, style]}>
-          <Text style={secondary ? styles.secondaryTextStyle : styles.primaryTextStyle}>{this.props.children}</Text>
+          <Text style={[secondary ? styles.secondaryTextStyle : styles.primaryTextStyle, textStyle]}>{this.props.children}</Text>
         </View>
       </TouchableNativeFeedback>
     )

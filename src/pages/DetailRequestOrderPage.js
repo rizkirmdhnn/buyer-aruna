@@ -13,15 +13,14 @@ import {
 import { CheckBox } from 'react-native-elements';
 import moment from 'moment';
 // import { Button } from 'react-native-elements';
-import { BASE_URL } from './../shared/lb.config';
+import { BASE_URL, COLOR } from './../shared/lb.config';
 import axios from 'axios';
+import numeral from 'numeral'
 
 class DetailRequestOrderPage extends Component {
   static navigationOptions = {
     title: 'Detail Permintaan',
-    headerStyle: { backgroundColor: '#006AAF' },
-    headerTitleStyle: { color: '#FFFFFF', paddingLeft: '20%' },
-    headerTintColor: 'white'
+    headerRight: <View />
   }
 
   constructor(props) {
@@ -74,35 +73,6 @@ class DetailRequestOrderPage extends Component {
     });
   }
 
-  renderData = (item) => {
-    console.log(item, 'Data Detail Request')
-    const dateFormat = moment(item.dueDate).format('DD/MM/YYYY');
-    const timeFormat = moment(item.dueDate).format('h:mm:ss');
-    return (
-      <Card>
-        <View style={styles.itemContainerStyle}>
-          <View style={styles.thumbnailContainerStyle}>
-            <Image
-              style={styles.thumbnailStyles}
-              source={{ uri: `${BASE_URL}/images/${item.photo}` }}
-            />
-          </View>
-          <View style={styles.headerContentStyle}>
-            <Text style={styles.headerTextStyle}>{item.Fish.name}</Text>
-            <Text style={styles.headerTextStyle}>{item.size} Kg</Text>
-            <View style={{ flex: 1 }}></View>
-            <View style={{ flex: 1 }}></View>
-            <View style={{ flex: 1 }}></View>
-            <View style={{ flexDirection: 'column', flex: 1 }}>
-              <Text>Sampai Tanggal: {dateFormat}</Text>
-              <Text>Pukul: {timeFormat}</Text>
-            </View>
-          </View>
-        </View>
-      </Card>
-    )
-  }
-
   renderFlatListSupplierUnChecked = () => {
     if (this.state.loading) {
       return <Spinner size="small" />
@@ -135,13 +105,17 @@ class DetailRequestOrderPage extends Component {
                   />
                 </View>
                 <View style={styles.headerContentStyle}>
-                  <View style={{ flexDirection: 'row' }}>
-                    <View style={{ flex: 1 }}>
-                      <Text style={{ fontWeight: 'bold', color: '#009AD3' }}>{data.Supplier.name}</Text>
-                    </View>
-                    <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+                  <View style={{ flex: 1, flexDirection: 'row'}}>
+                    <Text style={{ flex: 3, fontFamily: 'Muli-Regular', color: COLOR.secondary_a, fontSize: 16 }}>{data.Supplier.name}</Text>
+                    <View style={{flex: 1}}>
                       <CheckBox
-                        containerStyle={{ backgroundColor: 'transparent' }}
+                        containerStyle={{
+                          borderWidth: 0,
+                          padding: 0,
+                          margin: 0,
+                          marginTop: 10,
+                          width: 25
+                        }}
                         onPress={() => this.checkItem(data)}
                         checked={this.state.checkedSelected.includes(data)}
                       />
@@ -149,8 +123,8 @@ class DetailRequestOrderPage extends Component {
                   </View>
                   <View style={{ flexDirection: 'column' }}>
                     <Text style={{ flex: 1 }}>{data.Supplier.organization} </Text>
-                    <Text style={{ flex: 1 }}>500 Kg </Text>
-                    <Text style={{ flex: 1 }}>Rp. 100.000 - Rp. 500.000</Text>
+                    <Text style={{ flex: 1 }}>{data.Product.capacity} Kg </Text>
+                    <Text style={{ flex: 1 }}>Rp. {data.Product ? numeral(data.Product.minPrice).format('0,0') : '-'} - Rp. {data.Product ? numeral(data.Product.maxPrice).format('0,0') : '-'}</Text>
                   </View>
                 </View>
               </View>
@@ -286,12 +260,14 @@ class DetailRequestOrderPage extends Component {
     if (this.state.dataMaster.Status.id == 19) {
       if (this.state.dataMaster.sanggup > 0) {
         return (
-          <View style={{ flex: 1 }}>
-            <Button
-              onPress={this.endRequest.bind(this)}
-            >
-              Lanjut Transaksi
-            </Button>
+          <View style={{ margin: 10 }}>
+            <ContainerSection>
+              <Button
+                onPress={this.endRequest.bind(this)}
+              >
+                Lanjut Transaksi
+              </Button>
+            </ContainerSection>
           </View>
         );
       }
@@ -299,23 +275,27 @@ class DetailRequestOrderPage extends Component {
     if (this.state.dataMaster.Status.id == 20) {
       if (this.state.dataMaster.sanggup > 0) {
         return (
-          <View style={{ flex: 1 }}>
-            <Button
-              onPress={this.endRequest.bind(this)}
-            >
-              Lanjut Transaksi
-            </Button>
+          <View style={{ margin: 10 }}>
+            <ContainerSection>
+              <Button
+                onPress={this.endRequest.bind(this)}
+              >
+                Lanjut Transaksi
+              </Button>
+            </ContainerSection>
           </View>
         );
       }
       if (this.state.dataMaster.sanggup == 0) {
         return (
-          <View style={{ flex: 1 }}>
-            <Button
-              onPress={this.endRequest.bind(this)}
-            >
-              Lanjut Transaksi
-            </Button>
+          <View style={{ margin: 10 }}>
+            <ContainerSection>
+             <Button
+               onPress={this.endRequest.bind(this)}
+             >
+               Lanjut Transaksi
+             </Button>
+            </ContainerSection>
           </View>
         );
       }
@@ -344,7 +324,8 @@ class DetailRequestOrderPage extends Component {
       buttonExpanded,
       disabledContainer,
       NotDisabledContainer,
-      loading
+      loading,
+      dataMaster
     } = this.state;
 
 
@@ -356,29 +337,54 @@ class DetailRequestOrderPage extends Component {
 
     return (
       <ScrollView>
-        <View style={{ flex: 1 }}>
-          <View>
-            <FlatList
-              data={[this.state.dataMaster]}
-              renderItem={({ item }) => this.renderData(item)}
-              keyExtractor={(item, index) => index}
-            />
+        <View style={{ flex: 1, paddingTop: 5 }}>
 
-            <View style={{ marginTop: '2%', flex: 1, flexDirection: 'row' }}>
-              <Button
-                onPress={() => this.viewCheck()}
-              >
-                Supplier Dipilih ({this.state.checkedSelected.length})
-              </Button>
-              <Button
-                onPress={() => this.viewUnCheck()}
-              >
-                Supplier Ditolak ({this.state.checkedNotSelected.length})
-              </Button>
+          <Card>
+            <View style={styles.itemContainerStyle}>
+              <View style={styles.thumbnailContainerStyle}>
+                <Image
+                  style={styles.thumbnailStyles}
+                  source={{ uri: `${BASE_URL}/images/${dataMaster.photo}` }}
+                />
+              </View>
+              <View style={styles.headerContentStyle}>
+                <Text style={styles.headerTextStyle}>{dataMaster.Fish.name}</Text>
+                <Text style={styles.headerTextStyle}>{dataMaster.size} Kg</Text>
+                <View style={{ flex: 1 }}></View>
+                <View style={{ flex: 1 }}></View>
+                <View style={{ flex: 1 }}></View>
+                <View style={{ flexDirection: 'column', flex: 1 }}>
+                  <Text>Sampai Tanggal: {moment(dataMaster.dueDate).format('DD/MM/YYYY')}</Text>
+                  <Text>Pukul: {moment(dataMaster.dueDate).format('h:mm:ss')}</Text>
+                </View>
+              </View>
             </View>
+          </Card>
+
+          <View style={{ margin: 15, flex: 1, flexDirection: 'row' }}>
+            <Button
+              onPress={() => this.viewCheck()}
+              style={{
+                borderRadius: 0,
+                backgroundColor: checkedContainer ? COLOR.primary : COLOR.secondary_a
+              }}
+              textStyle={{fontSize: 14, fontFamily: 'Muli-Regular'}}
+            >
+              Supplier Dipilih ({this.state.checkedSelected.length})
+            </Button>
+            <Button
+              onPress={() => this.viewUnCheck()}
+              style={{
+                borderRadius: 0,
+                backgroundColor: unCheckedContainer ? COLOR.primary : COLOR.secondary_a
+              }}
+              textStyle={{fontSize: 14, fontFamily: 'Muli-Regular'}}
+            >
+              Supplier Ditolak ({this.state.checkedNotSelected.length})
+            </Button>
           </View>
 
-          <View style={{ marginTop: '2%' }}>
+          <View>
 
             {
               checkedContainer ?
@@ -425,16 +431,14 @@ class DetailRequestOrderPage extends Component {
 
 const styles = {
   itemContainerStyle: {
-    borderBottomWidth: 1,
-    padding: 5,
+    backgroundColor: '#fff',
     justifyContent: 'flex-start',
     flexDirection: 'row',
-    borderColor: '#ddd',
   },
   thumbnailContainerStyle: {
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 15,
+    margin: 10,
   },
   thumbnailStyle: {
     height: 100,
@@ -462,15 +466,11 @@ const styles = {
     fontSize: 15,
     fontWeight: 'bold'
   },
-  itemContainerStyle: {
-    padding: 5,
-    justifyContent: 'flex-start',
-    flexDirection: 'row'
-  },
   itemContainerStyleSupplier: {
     padding: 5,
     justifyContent: 'flex-start',
     flexDirection: 'row',
+    backgroundColor: '#fff'
   },
   headerTextStyle: {
     fontSize: 20,
