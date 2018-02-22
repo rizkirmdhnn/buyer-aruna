@@ -29,13 +29,15 @@ class DetailTransactionPage extends Component {
 
   static navigationOptions = ({ navigation, screenProps }) => ({
     title: 'Detail Transaksi',
-    headerStyle: { backgroundColor: '#006AAF' },
-    headerTitleStyle: { color: '#FFFFFF', paddingLeft: '25%' },
-    headerTintColor: 'white',
     headerRight:
-      <TouchableOpacity onPress={() => { navigation.navigate('Message', { idData: navigation.state.params.datas }) }}>
+      <TouchableOpacity 
+        onPress={() => { navigation.navigate('Message', { idData: navigation.state.params.datas }) }}
+      >
         <View>
-          <Icon style={{ marginRight: 20, color: 'white' }} size={30} name="md-chatboxes" />
+          <Image 
+            style={{height: 20, width: 20, margin: 20}}
+            source={require('../assets/images/ic_diskusi_alt_white.png')} 
+          />
         </View>
       </TouchableOpacity>
   });
