@@ -195,6 +195,12 @@ class RequestFormOrderSecondPage extends Component {
               center
               onPress={() => this.checkItem(data)}
               checked={this.state.checkedSelected.includes(data)}
+              containerStyle={{
+                borderWidth: 0,
+                padding: 0,
+                margin: 0,
+                marginTop: 10
+              }}
             />
           </View>
         </View>
