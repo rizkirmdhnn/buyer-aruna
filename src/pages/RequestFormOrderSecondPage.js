@@ -18,7 +18,7 @@ import {
     Container,
     Spinner
 } from './../components/common';
-import { BASE_URL } from './../shared/lb.config';
+import { BASE_URL, COLOR } from './../shared/lb.config';
 import axios from 'axios';
 import { CheckBox } from 'react-native-elements';
 import moment from 'moment';
@@ -28,8 +28,7 @@ class RequestFormOrderSecondPage extends Component {
 
     static navigationOptions = {
         title: 'Pilih Supplier',
-        headerStyle: { backgroundColor: '#006AAF' },
-        headerTitleStyle: { color: '#FFFFFF', paddingLeft: '25%' }
+        headerRight: <View />
     }
 
     constructor(props) {
@@ -80,6 +79,7 @@ class RequestFormOrderSecondPage extends Component {
         });
     }
 
+
     checkItem = data => {
         const { checkedSelected } = this.state;
         if (!checkedSelected.includes(data)) {
@@ -106,6 +106,8 @@ class RequestFormOrderSecondPage extends Component {
             dataRequest.append('size', this.state.datax.size);
 
             console.log(this.state.idSupplier, 'Submit Request');
+
+
 
             this.state.checkedSelected.map((item, index) => {
                 console.log(item.id, ' ', index, 'MAPING');
@@ -156,7 +158,7 @@ class RequestFormOrderSecondPage extends Component {
                 }
             >
                 Next
-			</Button>
+      </Button>
         )
     }
 
@@ -165,43 +167,39 @@ class RequestFormOrderSecondPage extends Component {
         console.log(v);
     }
 
-
     renderItem = (item) => {
         console.log(item, 'Item Data Supplier');
-        return item.map((data, index) => {
+        return item.map((data) => {
             console.log(data, 'ID Supplier');
-            // this.state.idSupplier.push(data.id);
-            // console.log(this.state.idSupplier, 'ID PUSH SUPPLIER');
-            console.log(this.state.checkedSelected, 'HOHOHOHOHOHOOOOO');
+            this.state.idSupplier.push(data.id);
+            console.log(this.state.idSupplier, 'ID PUSH SUPPLIER')
             return (
-                <Card key={index}>
-                    <View style={styles.itemContainerStyleSupplier}>
+                <View style={styles.card}>
+                    <View style={styles.itemContainerStyle}>
                         <View style={styles.thumbnailContainerStyle}>
                             <Image
                                 style={styles.thumbnailStyle}
                                 source={{ uri: `${BASE_URL}/images/${data.User.photo}` }}
-                                resizeMode='cover'
                             />
                         </View>
                         <View style={styles.headerContentStyle}>
-                            <Text style={{ flex: 1, fontWeight: 'bold', color: 'blue' }}>{data.User.name}</Text>
-                            <Text style={{ flex: 1 }}>500 Kg </Text>
-                            <Text style={{ flex: 1 }}>{data.User.organization}</Text>
-                            <Text style={{ flex: 1 }}>{data.minBudget}</Text>
-                            <Text style={{ flex: 1 }}>{data.maxBudget} </Text>
+                            <Text style={styles.hedaerTextStyle}>{data.User.name}</Text>
+                            <Text>{data.User.organizationType} {data.User.organization}</Text>
+                            <Text>{
+                                // data.quantity ? data.quantity : '0'
+                            }
+                            </Text>
+                            <Text>Rp {data.minBudget} - Rp {data.maxBudget} /Kg</Text>
                         </View>
-                        <View style={{ flexDirection: 'row' }}>
-                            <CheckBox
-                                center
-                                onPress={() => this.checkItem(data)}
-                                checked={this.state.checkedSelected.includes(data)}
-                            />
-                        </View>
+                        <CheckBox
+                            center
+                            onPress={() => this.checkItem(data)}
+                            checked={this.state.checkedSelected.includes(data)}
+                        />
                     </View>
-                </Card>
+                </View>
             )
         })
-
     }
 
     render() {
@@ -212,16 +210,14 @@ class RequestFormOrderSecondPage extends Component {
 
         return (
             <ScrollView>
-                <View>
-                    <FlatList
-                        data={[this.state.dataSupplier]}
-                        renderItem={({ item }) => this.renderItem(item)}
-                    />
+                <FlatList
+                    data={[this.state.dataSupplier]}
+                    renderItem={({ item }) => this.renderItem(item)}
+                />
 
-                    <ContainerSection>
-                        {this.renderButton()}
-                    </ContainerSection>
-                </View>
+                <ContainerSection>
+                    {this.renderButton()}
+                </ContainerSection>
             </ScrollView>
         );
     }
@@ -229,27 +225,34 @@ class RequestFormOrderSecondPage extends Component {
 
 
 const styles = {
+    card: {
+        borderWidth: 1,
+        borderRadius: 2,
+        borderColor: '#ddd',
+        borderBottomWidth: 0,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 1,
+        marginLeft: 15,
+        marginRight: 15,
+        marginTop: 10
+    },
     itemContainerStyle: {
-        borderBottomWidth: 1,
-        padding: 5,
         justifyContent: 'flex-start',
         flexDirection: 'row',
         borderColor: '#ddd',
     },
-    itemContainerStyleSupplier: {
-        padding: 5,
-        justifyContent: 'flex-start',
-        flexDirection: 'row'
-    },
     thumbnailContainerStyle: {
         justifyContent: 'center',
         alignItems: 'center',
-        margin: 15,
+        margin: 5,
     },
     thumbnailStyle: {
         height: 100,
         width: 100,
-        borderRadius: 75
+        borderRadius: 50
     },
     headerContentStyle: {
         flex: 1,
@@ -257,22 +260,11 @@ const styles = {
         marginTop: 5,
         marginBottom: 10,
         flexDirection: 'column',
+        justifyContent: 'space-around'
     },
-    headerTextStyle: {
+    hedaerTextStyle: {
         fontSize: 20,
-        fontWeight: 'bold'
-    },
-    titleTextStyle: {
-        fontSize: 15,
-        fontWeight: 'bold'
-    },
-    loadingStyle: {
-        marginTop: 30
-    },
-    containerScroll: {
-        marginBottom: 30,
-        padding: 10,
-        height: 200
+        color: COLOR.secondary_a
     }
 }
 
