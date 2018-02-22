@@ -175,10 +175,10 @@ class FormContractPage extends Component {
         // }else {
         //     console.log('LOLOS');
         //     Keyboard.dismiss();
-
+        this.state.dataMaster.Request.Transaction.quantity
 
         const dataContract = {
-            "fishDescribe": this.state.dataMaster.Request.Transaction.describe,
+            "fishDescribe": this.state.fishDescribe,
             "size": this.state.dataMaster.Request.Transaction.size,
             "quantity": this.state.quantity,
             "price": this.state.price,
@@ -320,7 +320,6 @@ class FormContractPage extends Component {
                             label="Ukuran"
                             value={this.state.dataMaster.Request.Transaction.size.toString()}
                             style={styles.textArea}
-                            editable={false}
                         />
                         <Text style={styles.unitStyle}></Text>
                         <InputRegistration
@@ -333,11 +332,10 @@ class FormContractPage extends Component {
                     <CardSectionRegistration>
                         <InputRegistration
                             label="Jumlah"
-                            value={this.state.dataMaster.Request.Transaction.quantity.toString()}
+                            value={quantity}
                             keyboardType="numeric"
                             style={styles.textArea}
                             onChangeText={v => this.onChangeInput('quantity', v)}
-                            editable={false}
                         />
                         <Text style={styles.unitStyle}></Text>
                         <InputRegistration
@@ -350,21 +348,20 @@ class FormContractPage extends Component {
                     <CardSectionRegistration>
                         <InputRegistration
                             label='Deskripsi Komoditas'
-                            value={this.state.dataMaster.Request.Transaction.describe}
+                            value={fishDescribe}
                             style={styles.textArea}
                             onChangeText={v => this.onChangeInput('deskripsi', v)}
                             maxLength={40}
                             multiline={true}
                             numberOfLines={4}
-                            editable={false}
                         />
                     </CardSectionRegistration>
 
                     <CardSectionRegistration>
                         <InputRegistration
-                            label='Harga Maksimal'
-                            value={this.state.dataMaster.Request.Transaction.maxBudget}
-                            editable={false}
+                            label='Harga'
+                            value={price}
+                            keyboardType="numeric"
                         />
                     </CardSectionRegistration>
 
@@ -401,7 +398,7 @@ class FormContractPage extends Component {
                         <InputRegistration
                             label='Lokasi Nelayan'
                             placeholder='Lokasi Lengkap'
-                            value={this.state.dataMaster.Request.Supplier.address}
+                            value={this.state.dataMaster.Request.Supplier.city.name}
                             editable={false}
                         />
                     </CardSectionRegistration>
