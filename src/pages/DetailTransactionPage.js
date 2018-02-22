@@ -1088,9 +1088,9 @@ class DetailTransactionPage extends Component {
                                                         </Text>
 
                                                             <View>
-                                                                <TouchableOpacity onPress={() => Linking.openURL('http://komisiyudisial.go.id/downlot.php?file=Peraturan-KY-Nomor-2-Tahun-2015.pdf').catch(err => console.error('An error occurred', err))}>
+                                                                <TouchableOpacity onPress={() => Linking.openURL(`${BASE_URL}/files/${this.state.dataTransaction.Contract.file}`).catch(err => console.error('An error occurred', err))}>
                                                                     <View style={{ marginTop: 15, flexDirection: 'row' }}>
-                                                                        <Text style={{ color: 'blue', marginLeft: 10 }}>fileDummyTest.pdf</Text>
+                                                                        <Text style={{ color: 'blue', marginLeft: 10 }}>{this.state.dataTransaction.Contract.file}</Text>
                                                                         <Icon size={20} style={{ color: 'blue', marginLeft: 5 }} name="md-download" />
                                                                     </View>
                                                                 </TouchableOpacity>
@@ -1117,9 +1117,9 @@ class DetailTransactionPage extends Component {
                                                         </Text>
 
                                                             <View>
-                                                                <TouchableOpacity onPress={() => Linking.openURL('http://komisiyudisial.go.id/downlot.php?file=Peraturan-KY-Nomor-2-Tahun-2015.pdf').catch(err => console.error('An error occurred', err))}>
+                                                                <TouchableOpacity onPress={() => Linking.openURL(`${BASE_URL}/files/${this.state.dataTransaction.Contract.file}`).catch(err => console.error('An error occurred', err))}>
                                                                     <View style={{ marginTop: 15, flexDirection: 'row' }}>
-                                                                        <Text style={{ color: 'blue', marginLeft: 10 }}>fileDummyTest.pdf</Text>
+                                                                        <Text style={{ color: 'blue', marginLeft: 10 }}>{this.state.dataTransaction.Contract.file}</Text>
                                                                         <Icon size={20} style={{ color: 'blue', marginLeft: 5 }} name="md-download" />
                                                                     </View>
                                                                 </TouchableOpacity>
