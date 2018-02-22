@@ -348,6 +348,7 @@ class FormContractPage extends Component {
                     <CardSectionRegistration>
                         <InputRegistration
                             label='Deskripsi Komoditas'
+                            placeholder='Ikan Segar'
                             value={fishDescribe}
                             style={styles.textArea}
                             onChangeText={v => this.onChangeInput('deskripsi', v)}
@@ -398,7 +399,7 @@ class FormContractPage extends Component {
                         <InputRegistration
                             label='Lokasi Nelayan'
                             placeholder='Lokasi Lengkap'
-                            value={this.state.dataMaster.Request.Supplier.city.name}
+                            value={this.state.dataMaster.Request.Supplier.City.name}
                             editable={false}
                         />
                     </CardSectionRegistration>
