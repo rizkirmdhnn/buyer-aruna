@@ -185,7 +185,7 @@ class FormContractPage extends Component {
             "name": this.state.dataMaster.Request.Supplier.name,
             "idNumber": this.state.dataMaster.Request.Supplier.idNumber,
             "organization": this.state.dataMaster.Request.Supplier.organization,
-            "location": this.state.dataMaster.Request.Supplier.address,
+            "location": this.state.dataMaster.Request.Supplier.City.name,
             "shippingMethod": 'JNE',
             "locationOfreception": this.state.locationOfreception,
             "dateOfReception": this.state.dateOfReception,
