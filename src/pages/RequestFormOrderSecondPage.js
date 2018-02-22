@@ -172,7 +172,7 @@ class RequestFormOrderSecondPage extends Component {
       this.state.idSupplier.push(data.id);
       console.log(this.state.idSupplier, 'ID PUSH SUPPLIER')
       return (
-        <Card>
+        <View style={styles.card}>
           <View style={styles.itemContainerStyle}>
             <View style={styles.thumbnailContainerStyle}>
               <Image 
@@ -183,7 +183,10 @@ class RequestFormOrderSecondPage extends Component {
             <View style={styles.headerContentStyle}>
               <Text style={styles.hedaerTextStyle}>{data.User.name}</Text>
               <Text>{data.User.organizationType} {data.User.organization}</Text>
-              <Text>{data.quantity ? data.quantity : '0'} Kg</Text>
+              <Text>{
+                // data.quantity ? data.quantity : '0'
+              }
+              </Text>
               <Text>Rp {data.minBudget} - Rp {data.maxBudget} /Kg</Text>
             </View>
             <CheckBox
@@ -192,7 +195,7 @@ class RequestFormOrderSecondPage extends Component {
               onPress={() => this.checkBox(data)}
             />
           </View>
-        </Card>
+        </View>
       )
     })
 
@@ -221,6 +224,20 @@ class RequestFormOrderSecondPage extends Component {
 
 
 const styles = {
+  card: {
+    borderWidth: 1, 
+    borderRadius: 2,
+    borderColor: '#ddd',
+    borderBottomWidth: 0,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
+    marginLeft: 15,
+    marginRight: 15,
+    marginTop: 10
+  },
   itemContainerStyle: {
     justifyContent: 'flex-start',
     flexDirection: 'row',
