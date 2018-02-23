@@ -37,6 +37,7 @@ import HelpPage from './pages/HelpPage';
 import MessageListPage from './pages/MessageListPage';
 import ProfileBuyerPage from './pages/ProfileBuyerPage';
 import ProfileBuyerEditPage from './pages/ProfileBuyerEditPage';
+import FilterBeforePage from './pages/FilterBeforePage';
 /**
  *  List Component
  */
@@ -128,7 +129,8 @@ class App extends React.Component {
       Help: { screen: HelpPage },
       MessageList: { screen: MessageListPage },
       ProfileBuyer: { screen: ProfileBuyerPage },
-      ProfileBuyerEdit: { screen: ProfileBuyerEditPage }
+      ProfileBuyerEdit: { screen: ProfileBuyerEditPage },
+      FilterBefore: { screen: FilterBeforePage }
     }, {
         cardStyle: { backgroundColor: '#fafafa' },
         navigationOptions: {

@@ -315,6 +315,7 @@ class FormContractRevisionPage extends Component {
 
                         <CardSectionRegistration>
                             <InputRegistration
+                                 label="Deskripsi"
                                 value={this.state.dataMaster.Request.Transaction.describe}
                                 style={styles.textArea}
                                 editable={false}
