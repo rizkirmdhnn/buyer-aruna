@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
   Image,
   TouchableNativeFeedback,
+  ToastAndroid
 } from 'react-native';
 import {
   CardRegistration,
@@ -219,17 +220,25 @@ class FormContractPage extends Component {
           )
         })
         .catch(error => {
-          console.log(error.message, 'Error nya');
-          console.log(error.response, 'Error nya');
-          console.log(error, 'Error nya');
-          alert(error.message.data)
+          if (error.response) {
+            ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
+          }
+          else {
+            ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
+          }
         })
     })
   }
 
   navigationRedirect() {
-    const { navigate } = this.props.navigation
-    navigate('Transaction');
+    const resetAction = NavigationActions.reset({
+      index: 1,
+      actions: [
+        NavigationActions.navigate({ routeName: 'Home'}),
+        NavigationActions.navigate({ routeName: 'DetailTransaction', params: { datas: this.props.navigation.state.params.datas }})
+      ]
+    })
+    this.props.navigation.dispatch(resetAction)
   }
 
 
@@ -261,8 +270,7 @@ class FormContractPage extends Component {
     console.log(v, 'Text Type');
   }
 
-
-  renderAllData = () => {
+  render() {
     const {
       loading,
       photo,
@@ -288,6 +296,7 @@ class FormContractPage extends Component {
     } = this.state
     console.log(dpAmount, 'Dp Amount');
     const sizeConvert = { uri: `${BASE_URL}/images/${this.state.dataMaster.Request.Transaction.photo}` };
+
     return (
       <ScrollView
         keyboardShouldPersistTaps="always"
@@ -351,15 +360,15 @@ class FormContractPage extends Component {
               style={styles.textArea}
               onChangeText={v => this.onChangeInput('fishDescribe', v)}
               maxLength={40}
-              multiline={true}
-              numberOfLines={4}
+              multiline
+              lines={4}
+              textAlignVertical="top"
             />
           </CardSectionRegistration>
 
           <CardSectionRegistration>
             <Input
               label='Harga'
-              placeholder='Harga'
               value={price}
               keyboardType="numeric"
               onChangeText={v => this.onChangeInput('price', v)}
@@ -421,7 +430,6 @@ class FormContractPage extends Component {
           <CardSectionRegistration>
             <Input
               label='Lokasi Penerimaan'
-              placeholder='Lokasi Penerimaan'
               value={locationOfreception}
               style={styles.textArea}
               onChangeText={v => this.onChangeInput('locationOfreception', v)}
@@ -446,70 +454,39 @@ class FormContractPage extends Component {
             />
           </CardSectionRegistration>
 
-          <CardSectionRegistration>
-            <Input
-              label='Tanggal DP'
-              value={dateNowPickDP}
-              onChangeText={v => this.onChangeInput('dateNowPickDP', v)}
-              editable={false}
-            />
-            <TouchableOpacity onPress={this._showTanggalDP}>
-              <Image
-                style={{
-                  flexDirection: 'row',
-                  borderColor: '#555',
-                  borderRadius: 3,
-                  borderWidth: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: '#fff',
-                  marginTop: 23,
-                  width: 50,
-                  height: 50
-                }}
-                source={require('./../assets/image/date-icon.png')}
+          <TouchableOpacity onPress={this._showTanggalDP}>
+            <CardSectionRegistration>
+              <Input
+                label='Tanggal DP'
+                value={dateNowPickDP}
+                onChangeText={v => this.onChangeInput('dateNowPickDP', v)}
+                editable={false}
               />
-            </TouchableOpacity>
-            <DateTimePicker
-              isVisible={this.state.tanggalDP}
-              onConfirm={this._handleDatePickedDP}
-              onCancel={this._hideTanggalDP}
-              minimumDate={new Date()}
-            />
-          </CardSectionRegistration>
+            </CardSectionRegistration>
+          </TouchableOpacity>
+          <DateTimePicker
+            isVisible={this.state.tanggalDP}
+            onConfirm={this._handleDatePickedDP}
+            onCancel={this._hideTanggalDP}
+            minimumDate={new Date()}
+          />
 
-          <CardSectionRegistration>
-            <Input
-              label='Tanggal Penerimaan'
-              placeholder='00/00/18'
-              value={dateNowPickPengiriman}
-              onChangeText={v => this.onChangeInput('dateNowPickPengiriman', v)}
-              editable={false}
-            />
-            <TouchableOpacity onPress={this._showTanggalPengiriman}>
-              <Image
-                style={{
-                  flexDirection: 'row',
-                  borderColor: '#555',
-                  borderRadius: 3,
-                  borderWidth: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: '#fff',
-                  marginTop: 23,
-                  width: 50,
-                  height: 50
-                }}
-                source={require('./../assets/image/date-icon.png')}
+          <TouchableOpacity onPress={this._showTanggalPengiriman}>
+            <CardSectionRegistration>
+              <Input
+                label='Tanggal Penerimaan'
+                value={dateNowPickPengiriman}
+                onChangeText={v => this.onChangeInput('dateNowPickPengiriman', v)}
+                editable={false}
               />
-            </TouchableOpacity>
-            <DateTimePicker
-              isVisible={this.state.tanggalPenggiriman}
-              onConfirm={this._handleDatePickedPengiriman}
-              onCancel={this._hideTanggalPengiriman}
-              minimumDate={new Date()}
-            />
-          </CardSectionRegistration>
+            </CardSectionRegistration>
+          </TouchableOpacity>
+          <DateTimePicker
+            isVisible={this.state.tanggalPenggiriman}
+            onConfirm={this._handleDatePickedPengiriman}
+            onCancel={this._hideTanggalPengiriman}
+            minimumDate={new Date()}
+          />
 
           <CardSectionRegistration>
             <Text style={styles.headerStyle}>
@@ -520,39 +497,30 @@ class FormContractPage extends Component {
           <CardSectionRegistration>
             <Input
               label='Deskripsi Komoditas Reject'
-              placeholder='Deskripsi Komoditas Reject'
               value={fishReject}
               onChangeText={v => this.onChangeInput('fishReject', v)}
+              maxLength={40}
+              multiline
+              lines={4}
+              textAlignVertical="top"
             />
           </CardSectionRegistration>
 
           <CardSectionRegistration>
             <Input
               label='Presentase Maksimal Komoditas Reject'
-              placeholder='Presentase Maksimal Komoditas Reject'
               value={maxFishReject}
               keyboardType="numeric"
               onChangeText={v => this.onChangeInput('maxFishReject', v)}
             />
           </CardSectionRegistration>
-
+          <View style={{ marginTop: 20, marginBottom: 20 }}>
+            <ContainerSection>
+              {this.renderButton()}
+            </ContainerSection>
+          </View>
         </Container>
-
-        <ContainerSection>
-          {this.renderButton()}
-        </ContainerSection>
-
       </ScrollView>
-    )
-  }
-
-
-
-  render() {
-    return (
-      <View>
-        {this.renderAllData()}
-      </View>
     );
   }
 };
