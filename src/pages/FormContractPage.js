@@ -15,12 +15,11 @@ import {
   TouchableOpacity,
   Image,
   TouchableNativeFeedback,
-  Input
 } from 'react-native';
 import {
   CardRegistration,
   CardSectionRegistration,
-  InputRegistration,
+  Input,
   Button,
   ContainerSection,
   Container,
@@ -28,11 +27,12 @@ import {
 } from './../components/common';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import AutoComplete from '../components/AutoComplete';
-import { BASE_URL } from './../shared/lb.config';
+import { BASE_URL, COLOR } from './../shared/lb.config';
 import axios from 'axios';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 import { CheckBox } from 'react-native-elements'
+import Icon from 'react-native-vector-icons/Ionicons'
 
 import ImagePicker from 'react-native-image-picker';
 import numeral from 'numeral'
@@ -41,8 +41,6 @@ class FormContractPage extends Component {
 
   static navigationOptions = ({ navigation }) => ({
     title: 'Buat Kontrak',
-    headerStyle: { backgroundColor: '#006AAF' },
-    headerTitleStyle: { color: '#FFFFFF' },
     headerLeft:
       <TouchableNativeFeedback
         onPress={() => {
@@ -60,10 +58,9 @@ class FormContractPage extends Component {
             ]
           )
         }}>
-        <Image
-          style={{ width: 20, height: 20, marginLeft: 30 }}
-          source={require('./../assets/image/arr.png')} />
-      </TouchableNativeFeedback>
+        <Icon style={{marginLeft: 20, color: '#fff'}} name="md-arrow-back" size={24} />
+      </TouchableNativeFeedback>,
+    headerRight: <View />
   });
 
   constructor(props) {
@@ -300,11 +297,11 @@ class FormContractPage extends Component {
           <CardSectionRegistration>
             <Text style={styles.headerStyle}>
               Informasi Komoditas
-              </Text>
+            </Text>
           </CardSectionRegistration>
 
           <CardSectionRegistration>
-            <InputRegistration
+            <Input
               label="Nama Komoditas"
               value={this.state.dataMaster.Request.Transaction.Fish.name}
               style={styles.textArea}
@@ -313,21 +310,23 @@ class FormContractPage extends Component {
           </CardSectionRegistration>
 
           <CardSectionRegistration>
-            <InputRegistration
+            <Input
               label="Ukuran"
               value={this.state.dataMaster.Request.Transaction.size.toString()}
               style={styles.textArea}
             />
-            <Text style={styles.unitStyle}></Text>
-            <InputRegistration
-              editable={false}
-              value={this.state.dataMaster.Request.Transaction.Fish.unit.toString()}
-              onChangeText={v => this.onChangeInput('quantity', v)}
-            />
+            <View style={{flex: 1, paddingTop: 50, paddingLeft: 10}}>
+              <Input
+                editable={false}
+                value={this.state.dataMaster.Request.Transaction.Fish.unit.toString()}
+                onChangeText={v => this.onChangeInput('quantity', v)}
+              />
+            </View>
+            
           </CardSectionRegistration>
 
           <CardSectionRegistration>
-            <InputRegistration
+            <Input
               label="Jumlah"
               value={quantity}
               placeholder="Jumlah"
@@ -335,16 +334,17 @@ class FormContractPage extends Component {
               style={styles.textArea}
               onChangeText={v => this.onChangeInput('quantity', v)}
             />
-            <Text style={styles.unitStyle}></Text>
-            <InputRegistration
-              editable={false}
-              value='Kg'
-              onChangeText={v => this.onChangeInput('quantity', v)}
-            />
+            <View style={{flex: 1, paddingTop: 50, paddingLeft: 10}}>
+              <Input
+                editable={false}
+                value='Kg'
+                onChangeText={v => this.onChangeInput('quantity', v)}
+              />
+            </View>
           </CardSectionRegistration>
 
           <CardSectionRegistration>
-            <InputRegistration
+            <Input
               label='Deskripsi Komoditas'
               placeholder='Ikan Segar'
               value={fishDescribe}
@@ -357,7 +357,7 @@ class FormContractPage extends Component {
           </CardSectionRegistration>
 
           <CardSectionRegistration>
-            <InputRegistration
+            <Input
               label='Harga'
               placeholder='Harga'
               value={price}
@@ -366,12 +366,14 @@ class FormContractPage extends Component {
             />
           </CardSectionRegistration>
 
-          <View>
-            <Text style={styles.headerStyle}>Identitas Nelayan</Text>
-          </View>
+          <CardSectionRegistration>
+            <Text style={styles.headerStyle}>
+              Identitas Nelayan
+            </Text>
+          </CardSectionRegistration>
 
           <CardSectionRegistration>
-            <InputRegistration
+            <Input
               label="Nama Lengkap"
               value={this.state.dataMaster.Request.Supplier.name}
               editable={false}
@@ -379,7 +381,7 @@ class FormContractPage extends Component {
           </CardSectionRegistration>
 
           <CardSectionRegistration>
-            <InputRegistration
+            <Input
               label="No. KTP (Kartu Tanda Penduduk)"
               value={this.state.dataMaster.Request.Supplier.idNumber}
               editable={false}
@@ -387,7 +389,7 @@ class FormContractPage extends Component {
           </CardSectionRegistration>
 
           <CardSectionRegistration>
-            <InputRegistration
+            <Input
               label='Nama Lembaga Nelayan'
               placeholder='Nama Lembaga Nelayan'
               value={this.state.dataMaster.Request.Supplier.organization}
@@ -396,7 +398,7 @@ class FormContractPage extends Component {
           </CardSectionRegistration>
 
           <CardSectionRegistration>
-            <InputRegistration
+            <Input
               label='Lokasi Nelayan'
               placeholder='Lokasi Lengkap'
               value={this.state.dataMaster.Request.Supplier.City.name}
@@ -411,15 +413,13 @@ class FormContractPage extends Component {
               </Text>
           </CardSectionRegistration>
 
-          <CardSectionRegistration>
-            <CheckBox
-              title='Lokasi penerimaan komoditas sama dengan lokasi pembeli'
-              checked="true"
-            />
-          </CardSectionRegistration>
+          <CheckBox
+            title='Lokasi penerimaan komoditas sama dengan lokasi pembeli'
+            checked="true"
+          />
 
           <CardSectionRegistration>
-            <InputRegistration
+            <Input
               label='Lokasi Penerimaan'
               placeholder='Lokasi Penerimaan'
               value={locationOfreception}
@@ -438,9 +438,8 @@ class FormContractPage extends Component {
           </CardSectionRegistration>
 
           <CardSectionRegistration>
-            <InputRegistration
+            <Input
               label="Nominal Dp"
-              placeholder='oo'
               keyboardType="numeric"
               value={dpAmount}
               onChangeText={v => this.onChangeInput('dpAmount', v)}
@@ -448,9 +447,8 @@ class FormContractPage extends Component {
           </CardSectionRegistration>
 
           <CardSectionRegistration>
-            <InputRegistration
+            <Input
               label='Tanggal DP'
-              placeholder='00/00/18'
               value={dateNowPickDP}
               onChangeText={v => this.onChangeInput('dateNowPickDP', v)}
               editable={false}
@@ -481,7 +479,7 @@ class FormContractPage extends Component {
           </CardSectionRegistration>
 
           <CardSectionRegistration>
-            <InputRegistration
+            <Input
               label='Tanggal Penerimaan'
               placeholder='00/00/18'
               value={dateNowPickPengiriman}
@@ -520,7 +518,7 @@ class FormContractPage extends Component {
           </CardSectionRegistration>
 
           <CardSectionRegistration>
-            <InputRegistration
+            <Input
               label='Deskripsi Komoditas Reject'
               placeholder='Deskripsi Komoditas Reject'
               value={fishReject}
@@ -529,7 +527,7 @@ class FormContractPage extends Component {
           </CardSectionRegistration>
 
           <CardSectionRegistration>
-            <InputRegistration
+            <Input
               label='Presentase Maksimal Komoditas Reject'
               placeholder='Presentase Maksimal Komoditas Reject'
               value={maxFishReject}
@@ -562,31 +560,28 @@ class FormContractPage extends Component {
 
 const styles = {
   headerStyle: {
-    color: '#77A7F4',
-    fontWeight: 'bold',
-    fontFamily: 'muli',
-  },
-  pickerTextStyle: {
-    color: '#8e8e8e',
-    flex: 1,
-    paddingLeft: 5
+    color: COLOR.secondary_a,
+    fontSize: 18,
   },
   pickerContainer: {
-    flex: 1,
-    height: 65,
+    flex: 1, 
     marginBottom: 5
   },
-  pickerTextStyle: {
-    color: '#8e8e8e',
-    paddingLeft: 5,
-    fontSize: 16
-  },
   pickerStyle: {
+    borderColor: '#a9a9a9',
+    borderRadius: 5,
+    paddingLeft: 7,
+    borderWidth: 1,
+  },
+  pickerTextStyle: {
+    color: '#5e5e5e',
+    fontSize: 14,
     flex: 1,
-    borderBottomWidth: 1,
-    borderColor: '#716c6c',
-    marginRight: 3,
-    marginLeft: 3,
+    marginTop: 10,
+    marginBottom: 10
+  },
+  containerItemAutoSelect: {
+    padding: 10,
   },
   thumb: {
     width: 30,
@@ -598,8 +593,7 @@ const styles = {
   },
   unitStyle: {
     marginTop: 30,
-    paddingRight: 30,
-    fontWeight: 'bold',
+    paddingRight: 30
   },
   unitStyles: {
     marginTop: 30,
@@ -608,24 +602,26 @@ const styles = {
   },
   textArea: {
     height: 50,
+    borderLine: 1
   },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF'
+    backgroundColor: 'orange',
+    width: 500
   },
   avatarContainer: {
     borderRadius: 10,
-    borderColor: '#9B9B9B',
+    borderWidth: 1,
+    borderColor: 'black',
     borderWidth: 1 / PixelRatio.get(),
     justifyContent: 'center',
     alignItems: 'center'
   },
   avatar: {
-    resizeMode: 'stretch',
-    width: 320,
-    height: 130
+    width: 450,
+    height: 180
   }
 }
 
