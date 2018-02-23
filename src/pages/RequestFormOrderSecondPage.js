@@ -7,7 +7,8 @@ import {
   TouchableNativeFeedback,
   AsyncStorage,
   ScrollView,
-  Alert
+  Alert,
+  ToastAndroid
 } from 'react-native'
 import {
   CardRegistration,
@@ -18,11 +19,14 @@ import {
   Container,
   Spinner
 } from './../components/common';
-import { BASE_URL, COLOR } from './../shared/lb.config';
+import { NavigationActions } from 'react-navigation'
 import axios from 'axios';
+
+import { BASE_URL, COLOR } from './../shared/lb.config';
 import { CheckBox } from 'react-native-elements';
 import moment from 'moment';
 import { Card } from 'react-native-elements';
+
 
 class RequestFormOrderSecondPage extends Component {
 
@@ -94,6 +98,7 @@ class RequestFormOrderSecondPage extends Component {
   };
 
   onSubmit = () => {
+    this.setState({loader: true})
 
     AsyncStorage.getItem('loginCredential', (err, result) => {
       const token = result;
@@ -133,14 +138,25 @@ class RequestFormOrderSecondPage extends Component {
         }).then(response => {
           res = response.data.data;
           console.log(response, 'RES');
-          navigate('Request');
           this.setState({ loader: false });
+
+          const resetAction = NavigationActions.reset({
+            index: 1,
+            actions: [
+              NavigationActions.navigate({ routeName: 'Home'}),
+              NavigationActions.navigate({ routeName: 'Request'})
+            ]
+          })
+          this.props.navigation.dispatch(resetAction)
+
         })
         .catch(error => {
-          console.log(error.message, 'Error nya');
-          console.log(error.response, 'Error nya');
-          console.log(error, 'Error nya');
-          alert(error.message)
+          if (error.response) {
+            ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
+          }
+          else {
+            ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
+          }
           this.setState({ loader: false });
         })
     });
@@ -200,7 +216,7 @@ class RequestFormOrderSecondPage extends Component {
                 padding: 0,
                 margin: 0,
                 marginTop: 10,
-                width: 25
+                width: 40
               }}
             />
           </View>
@@ -222,9 +238,11 @@ class RequestFormOrderSecondPage extends Component {
           renderItem={({ item }) => this.renderItem(item)}
         />
 
-        <ContainerSection>
-          {this.renderButton()}
-        </ContainerSection>
+        <View style={{ margin: 10 }}>
+          <ContainerSection>
+            {this.renderButton()}
+          </ContainerSection>
+        </View>
       </ScrollView>
     );
   }

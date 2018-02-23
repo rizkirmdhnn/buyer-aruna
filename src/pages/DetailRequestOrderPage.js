@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, FlatList, Image, ScrollView, AsyncStorage, TouchableWithoutFeedback } from 'react-native';
+import { Text, View, FlatList, Image, ScrollView, AsyncStorage, TouchableWithoutFeedback, ToastAndroid } from 'react-native';
 import {
   CardRegistration,
   CardSectionRegistration,
@@ -10,9 +10,9 @@ import {
   Button,
   Card
 } from './../components/common';
+import { NavigationActions } from 'react-navigation'
 import { CheckBox } from 'react-native-elements';
 import moment from 'moment';
-// import { Button } from 'react-native-elements';
 import { BASE_URL, COLOR } from './../shared/lb.config';
 import axios from 'axios';
 import numeral from 'numeral'
@@ -247,13 +247,24 @@ class DetailRequestOrderPage extends Component {
         res = response.data.data;
         console.log(response, 'RES');
         this.setState({ loading: false });
-        navigate('Transaction');
+        // navigate('Transaction');
+
+        const resetAction = NavigationActions.reset({
+          index: 1,
+          actions: [
+            NavigationActions.navigate({ routeName: 'Home'}),
+            NavigationActions.navigate({ routeName: 'Transaction'})
+          ]
+        })
+        this.props.navigation.dispatch(resetAction)
       })
       .catch(error => {
-        console.log(error.message, 'Error nya');
-        console.log(error.response, 'Error nya');
-        console.log(error, 'Error nya');
-        alert("Sorry, Something error!")
+        if (error.response) {
+          ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
+        }
+        else {
+          ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
+        }
       })
   }
 

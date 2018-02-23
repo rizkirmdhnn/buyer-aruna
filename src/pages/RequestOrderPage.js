@@ -70,81 +70,49 @@ class RequestOrderPage extends Component {
   renderData = (item) => {
     console.log(item, 'Data ReQ');
 
-    return item.map((datax, index) => {
-      console.log(datax, 'Data Maping Request');
-      const dateFormat = moment(datax.expiredAt).format('DD/MM/YYYY');
-      const timeFormat = moment(datax.expiredAt).format('h:mm:ss');
-      if (datax.Status.id == 19) {
-        if (datax.sanggup == 0) {
-          return (
-            <Card>
-              <View style={styles.itemContainerStyle}>
-                <View style={styles.thumbnailContainerStyle}>
-                  <Image
-                    style={styles.thumbnailStyle}
-                    source={{ uri: `${BASE_URL}/images/${datax.photo}` }}
-                  />
-                </View>
-                <View style={styles.headerContentStyle}>
-                  <Text style={styles.headerTextStyle}>{datax.Fish.name}</Text>
-                  <View style={{ flexDirection: 'column', flex: 1 }}>
-                    <Text style={{ fontSize: 13 }}>Batas Waktu: {dateFormat} Pukul: {timeFormat} </Text>
-                    <Text style={{ color: 'red', fontWeight: 'bold' }}>Expired</Text>
-                  </View>
-                </View>
-              </View>
-            </Card>
-          );
-        }
-
-        if (datax.sanggup > 0) {
-          return (
-           
-            <Card>
-              <TouchableWithoutFeedback
-                onPress={() => this.detailOrder(datax)}
-                key={datax.id}
-              >
-                <View style={styles.itemContainerStyle}>
-                  <View style={styles.thumbnailContainerStyle}>
-                    <Image
-                      style={styles.thumbnailStyle}
-                      source={{ uri: `${BASE_URL}/images/${datax.photo}` }}
-                    />
-                  </View>
-                  <View style={styles.headerContentStyle}>
-                    <Text style={styles.headerTextStyle}>{datax.Fish.name}</Text>
-                    <View style={{ flexDirection: 'column', flex: 1 }}>
-                      <Text style={{ fontSize: 13 }}>Batas Waktu: {dateFormat} Pukul: {timeFormat} </Text>
-                      <Text>{datax.sanggup} Sanggup | {datax.tidakSanggup} Menolak | {datax.menunggu} Menunggu</Text>
-                    </View>
-                  </View>
-                </View>
-              </TouchableWithoutFeedback>
-            </Card>
-          );
-        }
-      }
-
-      if (datax.Status.id === 20) {
+    if (item.Status.id == 19) {
+      if (item.sanggup == 0) {
         return (
           <Card>
+            <View style={styles.itemContainerStyle}>
+              <View style={styles.thumbnailContainerStyle}>
+                <Image
+                  style={styles.thumbnailStyle}
+                  source={{ uri: `${BASE_URL}/images/${item.photo}` }}
+                />
+              </View>
+              <View style={styles.headerContentStyle}>
+                <Text style={styles.headerTextStyle}>{item.Fish.name}</Text>
+                <View style={{ flexDirection: 'column', flex: 1 }}>
+                  <Text style={{ fontSize: 13 }}>Batas Waktu: {moment(item.expiredAt).format('DD/MM/YYYY')} Pukul: {moment(item.expiredAt).format('h:mm:ss')} </Text>
+                  <Text style={{ color: 'red', fontWeight: 'bold' }}>Expired</Text>
+                </View>
+              </View>
+            </View>
+          </Card>
+        );
+      }
+
+      if (item.sanggup > 0) {
+        return (
+         
+          <Card>
             <TouchableWithoutFeedback
-              onPress={() => this.detailOrder(datax)}
-              key={datax.id}
+              onPress={() => this.detailOrder(item)}
+              key={item.id}
             >
               <View style={styles.itemContainerStyle}>
                 <View style={styles.thumbnailContainerStyle}>
                   <Image
                     style={styles.thumbnailStyle}
-                    source={{ uri: `${BASE_URL}/images/${datax.photo}` }}
+                    source={{ uri: `${BASE_URL}/images/${item.photo}` }}
                   />
                 </View>
                 <View style={styles.headerContentStyle}>
-                  <Text style={styles.headerTextStyle}>{datax.Fish.name}</Text>
+                  <Text style={styles.headerTextStyle}>{item.Fish.name}</Text>
                   <View style={{ flexDirection: 'column', flex: 1 }}>
-                    <Text style={{ fontSize: 13 }}>Batas Waktu: {dateFormat} Pukul: {timeFormat} </Text>
-                    <Text>{datax.sanggup} Sanggup | {datax.tidakSanggup} Menolak | {datax.menunggu} Menunggu</Text>
+                    <Text style={{ fontSize: 13 }}>Batas Waktu: {moment(item.expiredAt).format('DD/MM/YYYY')} Pukul: {moment(item.expiredAt).format('h:mm:ss')} </Text>
+                    <Text>{item.sanggup} Sanggup | {item.tidakSanggup} Menolak | {item.menunggu} Menunggu</Text>
                   </View>
                 </View>
               </View>
@@ -152,14 +120,41 @@ class RequestOrderPage extends Component {
           </Card>
         );
       }
-    })
+    }
+
+    if (item.Status.id === 20) {
+      return (
+        <Card>
+          <TouchableWithoutFeedback
+            onPress={() => this.detailOrder(item)}
+            key={item.id}
+          >
+            <View style={styles.itemContainerStyle}>
+              <View style={styles.thumbnailContainerStyle}>
+                <Image
+                  style={styles.thumbnailStyle}
+                  source={{ uri: `${BASE_URL}/images/${item.photo}` }}
+                />
+              </View>
+              <View style={styles.headerContentStyle}>
+                <Text style={styles.headerTextStyle}>{item.Fish.name}</Text>
+                <View style={{ flexDirection: 'column', flex: 1 }}>
+                  <Text style={{ fontSize: 13 }}>Batas Waktu: {moment(item.expiredAt).format('DD/MM/YYYY')} Pukul: {moment(item.expiredAt).format('h:mm:ss')} </Text>
+                  <Text>{item.sanggup} Sanggup | {item.tidakSanggup} Menolak | {item.menunggu} Menunggu</Text>
+                </View>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </Card>
+      );
+    }
   }
 
   renderFlatList = () => {
     return (
       <View>
         <FlatList
-          data={[this.state.dataReqOrder]}
+          data={this.state.dataReqOrder}
           renderItem={({ item }) => this.renderData(item)}
           keyExtractor={(item, index) => index}
         />
