@@ -5,41 +5,29 @@ import {
   ScrollView,
   Text,
   Alert,
-  Picker,
-  KeyboardAvoidingView,
-  Keyboard,
-  TextInput,
   PixelRatio,
   AsyncStorage,
-  TouchableWithoutFeedback,
   TouchableOpacity,
-  Image,
   TouchableNativeFeedback,
-  ToastAndroid
+  ToastAndroid,
+  Keyboard
 } from 'react-native';
-import {
-  CardRegistration,
-  CardSectionRegistration,
-  Input,
-  Button,
-  ContainerSection,
-  Container,
-  Spinner
-} from './../components/common';
-import AwesomeAlert from 'react-native-awesome-alerts';
-import AutoComplete from '../components/AutoComplete';
-import { BASE_URL, COLOR } from './../shared/lb.config';
 import axios from 'axios';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 import { CheckBox } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/Ionicons'
 
-import ImagePicker from 'react-native-image-picker';
-import numeral from 'numeral'
+import {
+  Input,
+  Button,
+  ContainerSection,
+  Container,
+  Spinner
+} from './../components/common';
+import { BASE_URL, COLOR } from './../shared/lb.config';
 
 class FormContractPage extends Component {
-
   static navigationOptions = ({ navigation }) => ({
     title: 'Buat Kontrak',
     headerLeft:
@@ -58,7 +46,8 @@ class FormContractPage extends Component {
               },
             ]
           )
-        }}>
+        }}
+      >
         <Icon style={{marginLeft: 20, color: '#fff'}} name="md-arrow-back" size={24} />
       </TouchableNativeFeedback>,
     headerRight: <View />
@@ -90,28 +79,106 @@ class FormContractPage extends Component {
       dpDate: '',
       fishReject: '',
       maxFishReject: ''
-
-
-    };
-  };
-
+    }
+  }
 
   componentWillMount() {
     this.setState({
       dataMaster: this.props.navigation.state.params.datas
     });
 
-
-    this.setState({ quantity: this.props.navigation.state.params.datas.Request.Transaction.quantity.toString() });
+    this.setState({ quantity: this.props.navigation.state.params.datas.Request.Transaction.quantity.toString() })
 
     console.log(this.props.navigation.state.params.datas.Request.Transaction.quantity, '123123');
   }
 
-
-
   onChangeInput = (name, v) => {
     this.setState({ [name]: v });
     // console.log(v);
+  }
+
+  onSubmit = () => {
+    console.log(this.state.dpAmount, '', this.state.dateOfReception);
+
+    if (this.state.quantity === '') {
+      ToastAndroid.show('Anda belum mengisi Jumlah', ToastAndroid.SHORT)
+    } 
+    else if (this.state.price === '') {
+      ToastAndroid.show('Anda belum mengisi Harga', ToastAndroid.SHORT)
+    } 
+    else if (this.state.dateNowPickPengiriman === '') {
+      ToastAndroid.show('Anda belum menentukan Tanggal Pengiriman', ToastAndroid.SHORT)
+    } 
+    else if (this.state.locationOfreception === '') {
+      ToastAndroid.show('Anda belum menentukan Lokasi Penerimaan', ToastAndroid.SHORT)
+    } 
+    else if (this.state.dpAmount === '') {
+      ToastAndroid.show('Anda belum menentukan Nominal DP', ToastAndroid.SHORT)
+    } 
+    // else if (this.state.dpAmount >= this.state.price) {
+    //     alert('Nominal DP tidak boleh Sama dengan atau Melebihi Total Harga');
+    // } 
+    else if (this.state.fishReject === '') {
+      ToastAndroid.show('Anda belum mengisi Deskripsi Reject', ToastAndroid.SHORT)
+    } 
+    else if (this.state.maxFishReject === '') {
+      ToastAndroid.show('Anda belum menentukan Presentase Reject', ToastAndroid.SHORT)
+    }
+    else {
+      console.log('LOLOS')
+      Keyboard.dismiss()
+      const dataContract = {
+        fishDescribe: this.state.fishDescribe,
+        size: this.state.dataMaster.Request.Transaction.size,
+        quantity: this.state.quantity,
+        price: this.state.price,
+        name: this.state.dataMaster.Request.Supplier.name,
+        idNumber: this.state.dataMaster.Request.Supplier.idNumber,
+        organization: this.state.dataMaster.Request.Supplier.organization,
+        location: this.state.dataMaster.Request.Supplier.City.name,
+        shippingMethod: 'JNE',
+        locationOfreception: this.state.locationOfreception,
+        dateOfReception: this.state.dateOfReception,
+        dpAmount: this.state.dpAmount,
+        dpDate: this.state.dpDate,
+        fishReject: this.state.fishReject,
+        maxFishReject: this.state.maxFishReject
+      }
+
+      const idTransaction = this.state.dataMaster.id;
+
+      AsyncStorage.getItem('loginCredential', (err, result) => {
+        console.log(dataContract, 'Data Contrak');
+        console.log(idTransaction, 'ID Transaction');
+        axios.post(`${BASE_URL}/buyer/orders/${idTransaction}/contracts`,
+          dataContract
+          , {
+            headers: {
+              token: result,
+              'Content-Type': 'application/json',
+            }
+          }).then(response => {
+            res = response.data.data;
+            console.log(response, 'RES');
+
+            Alert.alert(
+              '',
+              'Data kontrak berhasil disimpan. Silahkan tunggu jawaban dari Nelayan',
+              [
+                { text: 'Ok', onPress: () => this.navigationRedirect() },
+              ]
+            )
+          })
+          .catch(error => {
+            if (error.response) {
+              ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
+            }
+            else {
+              ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
+            }
+          })
+      })
+    }
   }
 
   _showTanggalPengiriman = () => this.setState({ tanggalPenggiriman: true });
@@ -153,81 +220,6 @@ class FormContractPage extends Component {
         },
       ]
     )
-  }
-
-  onSubmit = () => {
-    console.log(this.state.dpAmount, '', this.state.dateOfReception);
-
-    // if (this.state.quantity == '') {
-    //     alert('Anda belum mengisi Kuantitas');
-    // } else if (this.state.price == '') {
-    //     alert('Anda belum mengisi Total Harga');
-    // } else if (this.state.dateNowPickPengiriman == '') {
-    //     alert('Anda belum menentukan Tanggal Pengiriman');
-    // } else if (this.state.locationOfreception == '') {
-    //     alert('Anda belum menentukan Lokasi Penerimaan');
-    // } else if (this.state.dpAmount == '') {
-    //     alert('Anda belum menentukan Nominal DP');
-    // } else if (this.state.dpAmount >= this.state.price ) {
-    //     alert('Nominal DP tidak boleh Sama dengan atau Melebihi Total Harga');
-    // } else if (this.state.fishReject == '') {
-    //     alert('Anda belum mengisi Deskripsi Reject');
-    // } else if (this.state.maxFishReject == '') {
-    //     alert('Anda belum menentukan Presentase Reject');
-    // }else {
-    //     console.log('LOLOS');
-    //     Keyboard.dismiss();\
-    const dataContract = {
-      "fishDescribe": this.state.fishDescribe,
-      "size": this.state.dataMaster.Request.Transaction.size,
-      "quantity": this.state.quantity,
-      "price": this.state.price,
-      "name": this.state.dataMaster.Request.Supplier.name,
-      "idNumber": this.state.dataMaster.Request.Supplier.idNumber,
-      "organization": this.state.dataMaster.Request.Supplier.organization,
-      "location": this.state.dataMaster.Request.Supplier.City.name,
-      "shippingMethod": 'JNE',
-      "locationOfreception": this.state.locationOfreception,
-      "dateOfReception": this.state.dateOfReception,
-      "dpAmount": this.state.dpAmount,
-      "dpDate": this.state.dpDate,
-      "fishReject": this.state.fishReject,
-      "maxFishReject": this.state.maxFishReject
-    }
-
-    const idTransaction = this.state.dataMaster.id;
-
-    AsyncStorage.getItem('loginCredential', (err, result) => {
-      console.log(dataContract, 'Data Contrak');
-      console.log(idTransaction, 'ID Transaction');
-      axios.post(`${BASE_URL}/buyer/orders/${idTransaction}/contracts`,
-        dataContract
-        , {
-          headers: {
-            'token': result,
-            'Content-Type': 'application/json',
-          }
-        }).then(response => {
-          res = response.data.data;
-          console.log(response, 'RES');
-
-          Alert.alert(
-            '',
-            'Data kontrak berhasil disimpan. Silahkan tunggu jawaban dari Nelayan',
-            [
-              { text: 'Ok', onPress: () => this.navigationRedirect() },
-            ]
-          )
-        })
-        .catch(error => {
-          if (error.response) {
-            ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
-          }
-          else {
-            ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
-          }
-        })
-    })
   }
 
   navigationRedirect() {
@@ -272,30 +264,18 @@ class FormContractPage extends Component {
 
   render() {
     const {
-      loading,
-      photo,
-      dataMaster,
       dateNowPickPengiriman,
       dateNowPickDP,
 
       fishDescribe,
-      size,
       quantity,
       price,
-      name,
-      idNumber,
-      organization,
-      location,
-      shippingMethod,
       locationOfreception,
-      dateOfReception,
       dpAmount,
-      dpDate,
+     
       fishReject,
       maxFishReject
     } = this.state
-    console.log(dpAmount, 'Dp Amount');
-    const sizeConvert = { uri: `${BASE_URL}/images/${this.state.dataMaster.Request.Transaction.photo}` };
 
     return (
       <ScrollView
@@ -303,22 +283,22 @@ class FormContractPage extends Component {
       >
         <Container>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <Text style={styles.headerStyle}>
               Informasi Komoditas
             </Text>
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <Input
               label="Nama Komoditas"
               value={this.state.dataMaster.Request.Transaction.Fish.name}
               style={styles.textArea}
               editable={false}
             />
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <Input
               label="Ukuran"
               value={this.state.dataMaster.Request.Transaction.size.toString()}
@@ -332,13 +312,12 @@ class FormContractPage extends Component {
               />
             </View>
             
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <Input
               label="Jumlah"
               value={quantity}
-              placeholder="Jumlah"
               keyboardType="numeric"
               style={styles.textArea}
               onChangeText={v => this.onChangeInput('quantity', v)}
@@ -350,12 +329,11 @@ class FormContractPage extends Component {
                 onChangeText={v => this.onChangeInput('quantity', v)}
               />
             </View>
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <Input
               label='Deskripsi Komoditas'
-              placeholder='Ikan Segar'
               value={fishDescribe}
               style={styles.textArea}
               onChangeText={v => this.onChangeInput('fishDescribe', v)}
@@ -364,105 +342,102 @@ class FormContractPage extends Component {
               lines={4}
               textAlignVertical="top"
             />
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <Input
               label='Harga'
               value={price}
               keyboardType="numeric"
               onChangeText={v => this.onChangeInput('price', v)}
             />
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <Text style={styles.headerStyle}>
               Identitas Nelayan
             </Text>
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <Input
               label="Nama Lengkap"
               value={this.state.dataMaster.Request.Supplier.name}
               editable={false}
             />
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <Input
               label="No. KTP (Kartu Tanda Penduduk)"
               value={this.state.dataMaster.Request.Supplier.idNumber}
               editable={false}
             />
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <Input
               label='Nama Lembaga Nelayan'
-              placeholder='Nama Lembaga Nelayan'
               value={this.state.dataMaster.Request.Supplier.organization}
               editable={false}
             />
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <Input
               label='Lokasi Nelayan'
-              placeholder='Lokasi Lengkap'
               value={this.state.dataMaster.Request.Supplier.City.name}
               editable={false}
             />
-          </CardSectionRegistration>
+          </ContainerSection>
 
-
-          <CardSectionRegistration>
+          <ContainerSection>
             <Text style={styles.headerStyle}>
               Lokasi Penerima Komoditas
               </Text>
-          </CardSectionRegistration>
+          </ContainerSection>
 
           <CheckBox
             title='Lokasi penerimaan komoditas sama dengan lokasi pembeli'
-            checked="true"
+            checked
           />
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <Input
               label='Lokasi Penerimaan'
               value={locationOfreception}
               style={styles.textArea}
               onChangeText={v => this.onChangeInput('locationOfreception', v)}
               maxLength={40}
-              multiline={true}
+              multiline
               numberOfLines={4}
             />
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <Text style={styles.headerStyle}>
               Deskripsi Pengiriman
               </Text>
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <Input
               label="Nominal Dp"
               keyboardType="numeric"
               value={dpAmount}
               onChangeText={v => this.onChangeInput('dpAmount', v)}
             />
-          </CardSectionRegistration>
+          </ContainerSection>
 
           <TouchableOpacity onPress={this._showTanggalDP}>
-            <CardSectionRegistration>
+            <ContainerSection>
               <Input
                 label='Tanggal DP'
                 value={dateNowPickDP}
                 onChangeText={v => this.onChangeInput('dateNowPickDP', v)}
                 editable={false}
               />
-            </CardSectionRegistration>
+            </ContainerSection>
           </TouchableOpacity>
           <DateTimePicker
             isVisible={this.state.tanggalDP}
@@ -472,14 +447,14 @@ class FormContractPage extends Component {
           />
 
           <TouchableOpacity onPress={this._showTanggalPengiriman}>
-            <CardSectionRegistration>
+            <ContainerSection>
               <Input
                 label='Tanggal Penerimaan'
                 value={dateNowPickPengiriman}
                 onChangeText={v => this.onChangeInput('dateNowPickPengiriman', v)}
                 editable={false}
               />
-            </CardSectionRegistration>
+            </ContainerSection>
           </TouchableOpacity>
           <DateTimePicker
             isVisible={this.state.tanggalPenggiriman}
@@ -488,13 +463,13 @@ class FormContractPage extends Component {
             minimumDate={new Date()}
           />
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <Text style={styles.headerStyle}>
               Komoditas Reject
               </Text>
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <Input
               label='Deskripsi Komoditas Reject'
               value={fishReject}
@@ -504,16 +479,16 @@ class FormContractPage extends Component {
               lines={4}
               textAlignVertical="top"
             />
-          </CardSectionRegistration>
+          </ContainerSection>
 
-          <CardSectionRegistration>
+          <ContainerSection>
             <Input
               label='Presentase Maksimal Komoditas Reject'
               value={maxFishReject}
               keyboardType="numeric"
               onChangeText={v => this.onChangeInput('maxFishReject', v)}
             />
-          </CardSectionRegistration>
+          </ContainerSection>
           <View style={{ marginTop: 20, marginBottom: 20 }}>
             <ContainerSection>
               {this.renderButton()}
@@ -523,7 +498,7 @@ class FormContractPage extends Component {
       </ScrollView>
     );
   }
-};
+}
 
 
 const styles = {
@@ -581,7 +556,6 @@ const styles = {
   },
   avatarContainer: {
     borderRadius: 10,
-    borderWidth: 1,
     borderColor: 'black',
     borderWidth: 1 / PixelRatio.get(),
     justifyContent: 'center',
@@ -593,4 +567,4 @@ const styles = {
   }
 }
 
-export default FormContractPage;
+export default FormContractPage
