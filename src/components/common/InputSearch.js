@@ -34,7 +34,7 @@ class InputSearch extends Component {
 	}
 
 	render() {
-		const { label, value, onChangeText, placeholder, secureTextEntry, keyboardType, multiline, lines, editable, icon, textAlignVertical } = this.props
+		const { label, value, onChangeText, placeholder, onFocus, secureTextEntry, keyboardType, multiline, lines, editable, icon, textAlignVertical } = this.props
 		const { inputStyle, labelStyle, containerStyle } = styles
 
 		return (
@@ -59,7 +59,7 @@ class InputSearch extends Component {
 						multiline={multiline}
 						editable={editable}
 						onBlur={() => this.onBlur()}
-						onFocus={() => this.onFocus()}
+						onFocus={onFocus}
 						underlineColorAndroid={'transparent'}
 						numberOfLines={lines || 1}
 						textAlignVertical={textAlignVertical}

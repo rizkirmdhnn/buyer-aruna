@@ -68,9 +68,9 @@ class HomePage extends Component {
       })
   }
 
-    querySuggestion(text) {
-      console.log(text, 'Text');
-      axios.get(`${BASE_URL}/fishes/search?key=${text}`)
+  querySuggestion(text) {
+    console.log(text, 'Text');
+    axios.get(`${BASE_URL}/fishes/search?key=${text}`)
       .then(response => {
         res = response.data.data
         this.setState({ searchItem: res })
@@ -79,14 +79,14 @@ class HomePage extends Component {
       .catch(error => {
         console.log(error, 'Error');
         if (error.response) {
-            alert(error.response.data.message)
+          alert(error.response.data.message)
         }
         else {
-            alert('Koneksi internet bermasalah')
+          alert('Koneksi internet bermasalah')
         }
       })
-    }
-    
+  }
+
   onItemSelected = (item) => {
     console.log(item, 'Ikan terpilih');
     this.setState({
@@ -149,10 +149,6 @@ class HomePage extends Component {
       containerStyle, headerHomeStyle, menuContainerStyle,
       profileImageContainer, profileImage, profileName, coin, point, tabContainer, tabContainerActive, tabText, tabTextActive
     } = styles;
-
-    if (loading) {
-      return <Spinner size="large" />
-    }
 
     const menuLogin = [
       {
@@ -303,16 +299,17 @@ class HomePage extends Component {
           renderNavigationView={() => menuDrawer}
         >
           <View style={styles.header}>
-            <View style={{ paddingLeft: 15, paddingRight: 15  }}>
+            <View style={{ paddingLeft: 15, paddingRight: 15 }}>
               <TouchableOpacity onPress={() => this.refs.drawer.openDrawer()}>
                 <Icon size={24} name="md-menu" color="#fff" />
               </TouchableOpacity>
             </View>
             <View style={styles.headerText}>
               <InputSearch
-                onChangeText={(text) => {
-                  this.querySuggestion(text);
-                }}
+                // onChangeText={(text) => {
+                //   this.querySuggestion(text);
+                // }}
+                onFocus={() => navigate('FilterBefore')}
                 placeholder="Cari Komoditas..."
                 icon="ic_search"
               />
@@ -332,7 +329,7 @@ class HomePage extends Component {
                     />
                   </TouchableOpacity>
                 </View>
-              :
+                :
                 <View style={{ paddingLeft: 5, paddingRight: 5 }} />
             }
           </View>
@@ -352,14 +349,14 @@ class HomePage extends Component {
 
           <View style={menuContainerStyle}>
             <View style={{ flexDirection: 'row' }}>
-              <View style={{ flex: 1, borderColor:'#3484d7', borderRightWidth: 0.3}}>
+              <View style={{ flex: 1, borderColor: '#3484d7', borderRightWidth: 0.3 }}>
                 <TouchableNativeFeedback onPress={() => this.setState({ screen: 'Dashboard' })}>
                   <View style={screen === 'Dashboard' ? tabContainerActive : tabContainer}>
                     <Text style={screen === 'Dashboard' ? tabTextActive : tabText}>Beranda</Text>
                   </View>
                 </TouchableNativeFeedback>
               </View>
-              <View style={{ flex: 1, borderColor:'#3484d7', borderRightWidth: 0.3}}>
+              <View style={{ flex: 1, borderColor: '#3484d7', borderRightWidth: 0.3 }}>
                 <TouchableNativeFeedback onPress={() => this.setState({ screen: 'RequestOrderPage' })}>
                   <View style={screen === 'RequestOrderPage' ? tabContainerActive : tabContainer}>
                     <Text style={screen === 'RequestOrderPage' ? tabTextActive : tabText}>Permintaan</Text>
@@ -374,7 +371,17 @@ class HomePage extends Component {
                 </TouchableNativeFeedback>
               </View>
             </View>
-            {this.renderScreen()}
+            {
+              loading ?
+                <View style={{ marginTop: '70%' }}>
+                  <Spinner size="large" />
+                </View>
+                :
+                <View style={styles.menuContainerStyle}>
+                  {this.renderScreen()}
+                </View>
+            }
+
           </View>
         </DrawerLayoutAndroid>
       </View>
