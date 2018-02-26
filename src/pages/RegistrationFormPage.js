@@ -5,25 +5,26 @@ import {
   Text,
   Picker,
   Keyboard,
-  TextInput,
   Image,
-  CameraRoll,
-  PixelRatio,
   TouchableOpacity,
-  Alert
+  Alert,
+  ToastAndroid
 } from 'react-native';
 import axios from 'axios';
 import { NavigationActions } from 'react-navigation'
+import ImagePicker from 'react-native-image-picker';
+
 /**
  *  Import Common
  */
 import { Container, ContainerSection, Spinner, Input, Button } from './../components/common'
 import { BASE_URL, COLOR } from '../shared/lb.config';
 
-
-import ImagePicker from 'react-native-image-picker';
-
 class RegistrationFormPage extends Component {
+  static navigationOptions = {
+    title: 'Pendaftaran Akun',
+    headerRight: <View />
+  }
 
   constructor(props) {
     super(props);
@@ -51,13 +52,11 @@ class RegistrationFormPage extends Component {
       pathKtp: null,
       pathNpwp: null,
     };
-  };
+  }
 
-  showAlert = () => {
-    this.setState({
-      showAlert: true
-    });
-  };
+  onChangeInput = (name, v) => {
+    this.setState({ [name]: v })
+  }
 
   hideAlert = () => {
     this.setState({
@@ -65,14 +64,11 @@ class RegistrationFormPage extends Component {
     });
   };
 
-  static navigationOptions = {
-    title: 'Pendaftaran Akun',
-    headerRight: <View />
-  }
-
-  onChangeInput = (name, v) => {
-    this.setState({ [name]: v })
-  }
+  showAlert = () => {
+    this.setState({
+      showAlert: true
+    });
+  };
 
   register = () => {
     Keyboard.dismiss()
@@ -119,28 +115,18 @@ class RegistrationFormPage extends Component {
           ]
         })
         this.props.navigation.dispatch(resetAction)
+
+        Alert.alert('Registrasi berhasil', `Silahkan cek email anda ${this.state.email} untuk verifikasi email`, [])
       })
       .catch(error => {
-        console.log(error, 'error aja')
-        console.log(error.response, 'Error');
-        alert(error.response.data.message);
-        this.setState({ loading: false })
+        if (error.response) {
+          ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
+        }
+        else {
+          ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
+        }
       })
   }
-
-  handleButtonPress = () => {
-    CameraRoll.getPhotos({
-      first: 20,
-      assetType: 'All',
-    })
-      .then(r => {
-        console.log(r, 'Result');
-        this.setState({ photo: r.edges });
-      })
-      .catch((err) => {
-        console.log(err, 'Error')
-      });
-  };
 
   selectPhotoTappedNPWP() {
     const options = {
@@ -240,10 +226,6 @@ class RegistrationFormPage extends Component {
   }
 
   render() {
-
-    const { navigate } = this.props.navigation
-    const { showAlert } = this.state;
-
     const {
       organization,
       organizationType,
@@ -253,17 +235,12 @@ class RegistrationFormPage extends Component {
 
       name,
       idNumber,
-      photo,
       address,
       phone,
       username,
       password,
 
-      pathKtp,
-      pathNpwp,
     } = this.state
-
-
 
     return (
       <View>
@@ -295,7 +272,6 @@ class RegistrationFormPage extends Component {
             <ContainerSection>
               <Input
                 label='Nama Lembaga'
-                placeholder='Nama Lembaga'
                 value={organization}
                 onChangeText={v => this.onChangeInput('organization', v)}
               />
@@ -303,8 +279,8 @@ class RegistrationFormPage extends Component {
             <ContainerSection>
               <Input
                 label='NPWP (Nomor Pokok Wajib Pajak)'
-                placeholder='NPWP Lembaga'
                 value={npwp}
+                keyboardType="numeric"
                 onChangeText={v => this.onChangeInput('npwp', v)}
               />
             </ContainerSection>
@@ -328,7 +304,6 @@ class RegistrationFormPage extends Component {
             <ContainerSection>
               <Input
                 label='Alamat'
-                placeholder='Alamat'
                 value={addressInstitution}
                 onChangeText={v => this.onChangeInput('addressInstitution', v)}
               />
@@ -353,6 +328,7 @@ class RegistrationFormPage extends Component {
               <Input
                 label='No. KTP (Kartu Tanda Penduduk)'
                 placeholder='1050304562356723'
+                keyboardType="numeric"
                 value={idNumber}
                 onChangeText={v => this.onChangeInput('idNumber', v)}
               />
@@ -380,7 +356,6 @@ class RegistrationFormPage extends Component {
             <ContainerSection>
               <Input
                 label='Alamat'
-                placeholder='Alamat'
                 value={address}
                 onChangeText={v => this.onChangeInput('address', v)}
               />
@@ -388,7 +363,8 @@ class RegistrationFormPage extends Component {
             <ContainerSection>
               <Input
                 label='No. Telepon/Handphone'
-                placeholder='085219100674'
+                placeholder='contoh: 085219100674'
+                keyboardType="numeric"
                 value={phone}
                 onChangeText={v => this.onChangeInput('phone', v)}
               />
@@ -396,7 +372,6 @@ class RegistrationFormPage extends Component {
             <ContainerSection>
               <Input
                 label='Email'
-                placeholder='Email'
                 value={email}
                 onChangeText={v => this.onChangeInput('email', v)}
               />
