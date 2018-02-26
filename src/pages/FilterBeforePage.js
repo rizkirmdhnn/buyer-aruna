@@ -31,7 +31,6 @@ class FilterBeforePage extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            screen: '',
             checkedSupplier: [],
             searchItem: [],
             searchItemAll: [],
@@ -39,7 +38,11 @@ class FilterBeforePage extends Component {
             viewExpanded: true,
             searchResult: null,
             searchResultAll: null,
-            loading: false
+            loading: false,
+            load: false,
+            dataParams: '',
+            fishData: '',
+            idProvince: []
         }
     }
 
@@ -50,11 +53,11 @@ class FilterBeforePage extends Component {
             this.setState({ viewExpanded: true, searchResult: false, searchResultAll: false });
         } else {
             console.log('Text Tidak Kosong');
-            this.setState({ searchResult: true, searchResultAll: false, viewExpanded: false, loading: true });
+            this.setState({ searchResult: true, searchResultAll: false, viewExpanded: false, load: true });
             axios.get(`${BASE_URL}/fishes/search?key=${text}`)
                 .then(response => {
                     res = response.data.data
-                    this.setState({ searchItem: res, loading: false })
+                    this.setState({ searchItem: res, load: false })
                     console.log(res, 'Auto Complete Nya')
                 })
                 .catch(error => {
@@ -70,16 +73,57 @@ class FilterBeforePage extends Component {
     }
 
     componentWillMount() {
-        AsyncStorage.getItem('loginCredential', (err, result) => {
-            if (result) {
+        const params = this.props.navigation.state.params;
+        this.setState({ dataParams: params });
+        console.log(params, 'Data Params');
+        if (params !== undefined) {
+            this.updateSelected(params)
+        }
+    }
 
+    updateSelected = (item) => {
+        console.log(item, 'Data Params');
+        console.log(item.dataProvince, 'Data Provinsi');
+
+        item.dataProvince.map((item, index) => {
+            this.state.idProvince.push(item.id)
+        })
+
+
+        const dataProvinceId = {
+            'ProvinceIds': this.state.idProvince
+        }
+
+        this.setState({ searchResultAll: true, searchResult: false, viewExpanded: false, loading: true })
+        axios.get(`${BASE_URL}/products`, {
+            params: {
+                key: item.fishDatas.datas.name,
+                sorting: 'ASC',
+                dataProvinceId,
+                maxPrice: item.dataPrice
             }
         })
+            .then(response => {
+                res = response.data.data
+                this.setState({ searchItemAll: res, loading: false })
+                console.log(res, 'Semua Ikan Update')
+            })
+            .catch(error => {
+                console.log(error, 'Error');
+                if (error.response) {
+                    alert(error.response.data.message)
+                }
+                else {
+                    alert('Koneksi internet bermasalah')
+                }
+            })
     }
+
 
     onItemSelected = (item) => {
         console.log(item, 'Ikan terpilih');
-        this.setState({ searchResultAll: true, searchResult: false, loading: true })
+        const { fishData } = this.state;
+        this.setState({ searchResultAll: true, fishData: item, searchResult: false, loading: true })
         axios.get(`${BASE_URL}/products`, {
             params: {
                 key: item.name,
@@ -115,12 +159,6 @@ class FilterBeforePage extends Component {
         }
     };
 
-    renderScreen = () => {
-        if (this.state.screen === 'FilterPage') {
-            return <FilterPage navi={this.props.navigation} />
-        }
-    }
-
     render() {
         const { navigate } = this.props.navigation;
         const {
@@ -128,16 +166,19 @@ class FilterBeforePage extends Component {
             searchItem,
             searchItemAll,
             loading,
-            screen,
+            load,
             menuLoginExpanded,
             viewExpanded,
             searchResult,
-            searchResultAll
+            searchResultAll,
+            fishData,
+            dataParams,
+            checkedSupplier 
         } = this.state;
 
         const { tabContainer, tabContainerActive, tabText, tabTextActive } = styles;
 
-        console.log(this.state.checkedSupplier, 'Supplier Check');
+        console.log(checkedSupplier, 'Supplier Check');
         return (
             <View style={styles.container}>
                 <View style={styles.header}>
@@ -167,19 +208,18 @@ class FilterBeforePage extends Component {
                 </View>
 
                 <View>
-
-                    {
-                        loading ?
-                            <View style={{ marginTop: '70%' }}>
-                                <Spinner size="large" />
-                            </View>
-                            :
-                            <View />
-                    }
                     {
                         searchResult ?
                             <View>
                                 <ScrollView>
+                                    {
+                                        load ?
+                                            <View style={{ marginTop: '70%' }}>
+                                                <Spinner size="large" />
+                                            </View>
+                                            :
+                                            <View />
+                                    }
                                     {
                                         searchItem && searchItem.map((item, index) =>
                                             <View key={index}>
@@ -231,15 +271,56 @@ class FilterBeforePage extends Component {
                             <View>
                                 <View style={{ flexDirection: 'row' }}>
                                     <View style={{ flex: 1 }}>
-                                        {/* <TouchableNativeFeedback onPress={() => this.setState({ screen: 'FilterPage' })}> */}
-                                            <View style={screen === 'FilterPage' ? tabContainerActive : tabContainer}>
-                                                <Text style={screen === 'FilterPage' ? tabTextActive : tabText}>Filter</Text>
+                                        <TouchableNativeFeedback onPress={() => {
+                                            console.log(fishData, 'Data Ikan Before Filter');
+                                            this.props.navigation.navigate('Filter', { datas: fishData })
+                                            console.log('Filter Page');
+                                        }}>
+                                            <View style={tabContainer}>
+                                                <Text style={tabText}>Filter</Text>
                                             </View>
-                                        {/* </TouchableNativeFeedback> */}
+                                        </TouchableNativeFeedback>
                                     </View>
-                                    {this.renderScreen()}
+                                </View>
+                                <View style={{ flexDirection: 'row' }}>
+                                    {
+                                        checkedSupplier.length > 0 ?
+                                            <View style={{ flex: 1 }}>
+                                                <TouchableNativeFeedback onPress={() => {
+                                                    
+                                                    const { navigate } = this.props.navigation;
+                                                    const resetAction = NavigationActions.reset({
+                                                        index: 0,
+                                                        actions: [
+                                                            NavigationActions.navigate(
+                                                                {
+                                                                    routeName: 'RequestFormOrderFirst',
+                                                                    params:
+                                                                        { dataFish: fishData, dataSearch: dataParams, dataSupplier: this.state.checkedSupplier}
+                                                                }
+                                                            )
+                                                        ]
+                                                    })
+                                                    this.props.navigation.dispatch(resetAction)
+                                                }}>
+                                                    <View style={tabContainer}>
+                                                        <Text style={tabText}>Buat Permintaan Sekarang</Text>
+                                                    </View>
+                                                </TouchableNativeFeedback>
+                                            </View>
+                                            :
+                                            <View />
+                                    }
                                 </View>
                                 <ScrollView>
+                                    {
+                                        loading ?
+                                            <View style={{ marginTop: '70%' }}>
+                                                <Spinner size="large" />
+                                            </View>
+                                            :
+                                            <View />
+                                    }
                                     {
                                         searchItemAll && searchItemAll.map((item, index) => {
                                             return (
@@ -278,6 +359,12 @@ class FilterBeforePage extends Component {
                                         })
                                     }
                                 </ScrollView>
+                                {/* <Button
+                                    onPress={() => {
+                                        this.saveFilter()
+                                    }}>
+                                    Terapkan
+                                    </Button> */}
                             </View>
                             :
                             <View />

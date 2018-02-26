@@ -53,6 +53,7 @@ class RequestFormOrderFirstPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      dataParams: '',
       load: null,
       loading: null,
       loadButton: null,
@@ -104,7 +105,7 @@ class RequestFormOrderFirstPage extends Component {
   onSubmit = () => {
     console.log(this.state, 'DATA FORM 1');
 
-    if (this.state.photo == require('./../assets/image/upload-foto.png')) {
+    if (this.state.photo == null) {
       alert('Anda belum upload Foto');
     } else if (this.state.FishId == '') {
       alert('Anda belum memilih Komoditas');
@@ -126,8 +127,8 @@ class RequestFormOrderFirstPage extends Component {
       console.log('LOLOS');
       Keyboard.dismiss();
       const data = this.state;
-      console.log(data, 'DATA LEMPAR');
-      this.props.navigation.navigate('RequestFormOrderSecond', { datas: data })
+      console.log(this.state.photo, 'DATA LEMPAR');
+      this.props.navigation.navigate('RequestFormOrderSecond', { datas: data, dataFirst: this.state.dataParams })
     }
   }
 
@@ -178,12 +179,13 @@ class RequestFormOrderFirstPage extends Component {
     this.setState({ loading: true });
 
     const { params } = this.props.navigation.state
-    console.log(params)
+    console.log(params, 'Data Form Order Parsing')
 
     if (params && params.FishId !== '') {
       this.setState({
-        value: params.value,
-        FishId: params.FishId
+        value: params.dataFish.name,
+        FishId: params.dataFish.id,
+        dataParams: params
       })
     }
 
@@ -210,8 +212,8 @@ class RequestFormOrderFirstPage extends Component {
 
   renderProvinceCity = () => {
     const dataProvCity = this.state.dataProvinsi;
-    return dataProvCity.map(data => {
-      return <Picker.Item label={data.name} value={data.id} />
+    return dataProvCity.map((data, index) => {
+      return <Picker.Item label={data.name} value={data.id} key={index} />
     })
   }
 
@@ -246,8 +248,8 @@ class RequestFormOrderFirstPage extends Component {
       return <Picker.Item label='Pilih Kota' value='0' />
     } else {
       const resultRender = this.state.dataMapCity;
-      return resultRender.map((data) => {
-        return <Picker.Item label={data.name} value={data.id} />
+      return resultRender.map((data, index) => {
+        return <Picker.Item label={data.name} value={data.id} key={index} />
       })
     }
   }

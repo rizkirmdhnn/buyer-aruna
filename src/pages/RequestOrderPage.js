@@ -165,7 +165,15 @@ class RequestOrderPage extends Component {
 
   detailOrder = (props) => {
     const listData = props;
-    this.props.navi.navigate('DetailRequestOrder', { datas: listData })
+    console.log(this.props, 'PROPS');
+    if(!this.props.navi) {
+      console.log('Bukan Navi')
+      this.props.navigation.navigate('DetailRequestOrder', { datas: listData })
+    }
+    if(this.props.navi) {
+      console.log('NAVI');
+      this.props.navi.navigate('DetailRequestOrder', { datas: listData })
+    }
   }
 
 

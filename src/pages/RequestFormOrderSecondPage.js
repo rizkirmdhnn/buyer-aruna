@@ -39,21 +39,35 @@ class RequestFormOrderSecondPage extends Component {
     super(props);
     this.state = {
       datax: [{}],
-      dataSupplier: [{}],
+      dataSupplier: [],
       loading: true,
       loader: null,
       checkedSelected: [],
-      idSupplier: []
+      idSupplier: [],
+      dataFirstSearch: '',
+      dataSecondButton: '',
+      dataThirdHome: ''
     };
   };
 
   componentWillMount() {
-    console.log(this.props.navigation.state.params.datas, 'Data 1');
+    const { params } = this.props.navigation.state;
+    console.log(params, 'Data Params');
+    // console.log(this.props.navigation.state.params.datas, 'Data 1');
     this.setState({ datax: this.props.navigation.state.params.datas });
+
+    if(!params.dataFirst) {
+       this.getDefaultButton()
+       console.log('DataFirst Kosong')
+    }
+    if(params.dataFirst) {
+      console.log('Datas Tidak Kosong');
+      this.setState({ dataSupplier: params.dataFirst.dataSupplier, loading: false  })
+    }
   }
 
-  componentDidMount() {
-    console.log(this.state.datax, 'Data 2');
+  getDefaultButton() {
+    // console.log(this.state.datax, 'Data 2');
     AsyncStorage.getItem('loginCredential', (err, result) => {
 
       const token = result;
@@ -173,7 +187,7 @@ class RequestFormOrderSecondPage extends Component {
           () => this.onSubmit()
         }
       >
-        Next
+        Kirim Permintaan
     </Button>
     )
   }
@@ -185,12 +199,12 @@ class RequestFormOrderSecondPage extends Component {
 
   renderItem = (item) => {
     console.log(item, 'Item Data Supplier');
-    return item.map((data) => {
+    return item.map((data, index) => {
       console.log(data, 'ID Supplier');
       this.state.idSupplier.push(data.id);
       console.log(this.state.idSupplier, 'ID PUSH SUPPLIER')
       return (
-        <View style={styles.card}>
+        <View style={styles.card} key={index}>
           <View style={styles.itemContainerStyle}>
             <View style={styles.thumbnailContainerStyle}>
               <Image
