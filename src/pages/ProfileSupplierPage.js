@@ -1,17 +1,15 @@
 import React, { Component } from 'react';
-import { Text, View, AsyncStorage, FlatList, Image, ScrollView } from 'react-native';
-import { BASE_URL } from './../shared/lb.config';
+import { Text, View, AsyncStorage, Image, ScrollView } from 'react-native';
 import axios from 'axios';
-import { Spinner, Container, ContainerSection, Card } from '../components/common';
-import moment from 'moment';
+
+import { Spinner, Container, CardSection, ContainerSection, Card } from '../components/common';
+import { BASE_URL, COLOR } from './../shared/lb.config';
 
 class ProfileSupplierPage extends Component {
 
   static navigationOptions = {
-    title: 'Profile Supplier',
-    headerStyle: { backgroundColor: '#5D9FE2' },
-    headerTitleStyle: { color: '#FFFFFF', paddingLeft: '25%' },
-    headerTintColor: 'white',
+    title: 'Profil Supplier',
+    headerRight: <View />
   }
 
   constructor(props) {
@@ -28,9 +26,8 @@ class ProfileSupplierPage extends Component {
     this.setState({ dataParsing: this.props.navigation.state.params.datas })
     const idSupplier = this.props.navigation.state.params.datas.item.id;
     AsyncStorage.getItem('loginCredential', (err, result) => {
-
       axios.get(`${BASE_URL}/profile/${idSupplier}`, {
-        headers: { 'token': result }
+        headers: { token: result }
       })
         .then(response => {
           res = response.data.user
@@ -49,92 +46,71 @@ class ProfileSupplierPage extends Component {
     });
   }
 
-  renderData = (item) => {
-    return item.map((datax, index) => {
-      console.log(datax.Fish, 'Data Ikan');
-      const dateFish = moment(datax.updatedAt).format('DD/MM/YYYY');
-      <Card>
-        {/* <View style={styles.itemContainerStyle}> */}
-        {/* <View style={styles.thumbnailContainerStyle}> */}
-        <Image
-          style={styles.thumbnailStyles}
-          source={{ uri: `${BASE_URL}/images/${datax.Fish.photo}` }}
-        />
-        {/* </View> */}
-        {/* <View style={styles.headerContentStyle}>
-            <Text style={styles.headerTextStyle}>{dateFish}</Text>
-            <Text style={styles.headerTextStyle}>{datax.Fish.name}</Text>
-            <View style={{ flex: 1 }}></View>
-            <View style={{ flex: 1 }}></View>
-            <View style={{ flex: 1 }}></View>
-            <View style={{ flexDirection: 'column', flex: 1 }}>
-              <Text>Total FishLog: {datax.fishLogAmount}</Text>
-            </View>*/}
-        {/* </View> */}
-        {/* </View> */}
-      </Card>
-    });
-  }
-
   render() {
-
     const {
-      loading
-    } = this.state;
+      loading,
+      dataProfile
+    } = this.state
 
     if (loading) {
       return <Spinner size='large' />
     }
+
     return (
-      <View style={{ flex: 1 }}>
-        <View style={styles.thumbnailContainerStyle}>
+      <ScrollView style={{marginBottom: 20}}>
+        <View style={styles.profileImageContainer}>
           <Image
-            style={styles.thumbnailStyle}
+            style={styles.profileImage}
             source={{ uri: `${BASE_URL}/images/${this.state.dataProfile.photo}` }}
           />
         </View>
 
-        <View
-          style={{
-            marginLeft: '10%', flex: 1,
-            flexDirection: 'column',
-          }}
-        >
-          <Text>Supplier Aruna</Text>
-          <Text style={{ marginTop: '3%', fontSize: 20, fontFamily: 'muli', fontWeight: 'bold' }}>{this.state.dataProfile.name}</Text>
-          <Text>{this.state.dataProfile.organization}</Text>
-        </View>
+        <Container>
+          <ContainerSection>
+            <View>
+              <Text>Supplier Aruna</Text>
+              <Text style={{ marginTop: 10, fontSize: 18, fontFamily: 'Muli-Bold'}}>{this.state.dataProfile.name}</Text>
+              <Text>
+                {this.state.dataProfile.organizationType}
+                {this.state.dataProfile.organization}
+              </Text>
+            </View>
+          </ContainerSection>
+          
+          <View style={{borderWidth: 1, borderColor: '#eaeaea', margin: 5}} />
 
-        <View style={{ marginTop: '-10%', marginLeft: '10%', marginRight: '10%', borderBottomWidth: 3, borderBottomColor: '#DDD' }}></View>
-        <View style={{ marginLeft: '10%', flexDirection: 'row', paddingTop: 20 }}>
-          <Text style={{ flex: 1 }}>Alamat</Text>
-          <Text style={{ flex: 1 }}>:</Text>
-          <Text style={{ flex: 1, justifyContent: 'flex-start' }}>{this.state.dataProfile.address}</Text>
-        </View>
-        <View style={{ marginLeft: '10%', flexDirection: 'row', paddingBottom: 20 }}>
-          <Text style={{ flex: 1 }}>Point</Text>
-          <Text style={{ flex: 1 }}>:</Text>
-          <Text style={{ flex: 1, justifyContent: 'flex-start' }}>{this.state.dataProfile.pointNow}</Text>
-        </View>
-        <View style={{ marginLeft: '10%', marginRight: '10%', borderBottomWidth: 3, borderBottomColor: '#DDD' }}></View>
+          <ContainerSection>
+            <Text style={{ flex: 1 }}>Alamat</Text>
+            <Text style={{ flex: 1}}>{this.state.dataProfile.address}</Text>
+          </ContainerSection>
+          <ContainerSection>
+            <Text style={{ flex: 1 }}>Point</Text>
+            <Text style={{ flex: 1, justifyContent: 'flex-start' }}>{this.state.dataProfile.pointNow}</Text>
+          </ContainerSection>
 
+          <View style={{borderWidth: 1, borderColor: '#eaeaea', margin: 5}} />
 
-        <Text style={{ marginLeft: '10%', paddingTop: 20, flex: 1, fontWeight: 'bold' }}> Komoditas Unggulan </Text>
+        </Container>
 
-        <View style={{ flex: 1 }}>
-          <FlatList
-            data={[this.state.dataProfile.Products]}
-            renderItem={({ item }) => this.renderData(item)}
-            keyExtractor={(item, index) => index}
-          />
-        </View>
+        <Text style={{ marginLeft: 25, paddingTop: 20, flex: 1, fontWeight: 'bold' }}> Komoditas Unggulan </Text>
 
-
-      </View>
+        {
+           dataProfile.Products && dataProfile.Products.map(item =>
+            <Card key={item.id}>
+              <CardSection>
+                <Image
+                  style={{width: 100, height: 100}}
+                  source={{uri: `${BASE_URL}/images/${item.Fish.photo}`}} 
+                />
+                <Text style={{color: COLOR.secondary_a, fontSize: 20, marginLeft: 10}}>{item.Fish && item.Fish.name}</Text>
+              </CardSection>
+            </Card>
+          )
+        }
+      </ScrollView>
     );
   }
-};
-
+}
 
 const styles = {
   itemContainerStyle: {
@@ -144,15 +120,16 @@ const styles = {
     flexDirection: 'row',
     borderColor: '#ddd',
   },
-  thumbnailContainerStyle: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: 15,
+  profileImageContainer: {
+    height: 150,
+    width: 150,
+    alignSelf: 'center',
+    marginTop: 20
   },
-  thumbnailStyle: {
-    height: 300,
-    width: 430,
-    resizeMode: 'stretch',
+  profileImage: {
+    height: 150,
+    width: 150,
+    borderRadius: 150,
   },
   itemContainerStyleSupplier: {
     padding: 5,
@@ -177,4 +154,4 @@ const styles = {
     fontWeight: 'bold'
   }
 };
-export default ProfileSupplierPage;
+export default ProfileSupplierPage

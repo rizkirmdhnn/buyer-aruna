@@ -9,6 +9,7 @@
 		"object-curly-spacing": 0,
 		"brace-style": 0,
 		global-require: 0,
-		"prefer-const": 0
+		"prefer-const": 0,
+		"max-len": 0
 	}
 }
