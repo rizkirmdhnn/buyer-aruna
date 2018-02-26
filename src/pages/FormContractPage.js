@@ -9,6 +9,7 @@ import {
   AsyncStorage,
   TouchableOpacity,
   TouchableNativeFeedback,
+  TouchableWithoutFeedback,
   ToastAndroid,
   Keyboard
 } from 'react-native';
@@ -429,16 +430,18 @@ class FormContractPage extends Component {
             />
           </ContainerSection>
 
-          <TouchableOpacity onPress={this._showTanggalDP}>
-            <ContainerSection>
-              <Input
-                label='Tanggal DP'
-                value={dateNowPickDP}
-                onChangeText={v => this.onChangeInput('dateNowPickDP', v)}
-                editable={false}
-              />
-            </ContainerSection>
-          </TouchableOpacity>
+          <TouchableWithoutFeedback onPress={this._showTanggalDP}>
+           <View>
+             <ContainerSection>
+               <Input
+                 label='Tanggal DP'
+                 value={dateNowPickDP}
+                 onChangeText={v => this.onChangeInput('dateNowPickDP', v)}
+                 editable={false}
+               />
+             </ContainerSection>
+           </View>
+          </TouchableWithoutFeedback>
           <DateTimePicker
             isVisible={this.state.tanggalDP}
             onConfirm={this._handleDatePickedDP}
@@ -446,16 +449,18 @@ class FormContractPage extends Component {
             minimumDate={new Date()}
           />
 
-          <TouchableOpacity onPress={this._showTanggalPengiriman}>
-            <ContainerSection>
-              <Input
-                label='Tanggal Penerimaan'
-                value={dateNowPickPengiriman}
-                onChangeText={v => this.onChangeInput('dateNowPickPengiriman', v)}
-                editable={false}
-              />
-            </ContainerSection>
-          </TouchableOpacity>
+          <TouchableWithoutFeedback onPress={this._showTanggalPengiriman}>
+            <View>
+              <ContainerSection>
+                <Input
+                  label='Tanggal Penerimaan'
+                  value={dateNowPickPengiriman}
+                  onChangeText={v => this.onChangeInput('dateNowPickPengiriman', v)}
+                  editable={false}
+                />
+              </ContainerSection>
+            </View>
+          </TouchableWithoutFeedback>
           <DateTimePicker
             isVisible={this.state.tanggalPenggiriman}
             onConfirm={this._handleDatePickedPengiriman}
