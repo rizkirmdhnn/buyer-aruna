@@ -1129,7 +1129,7 @@ class DetailTransactionPage extends Component {
                                 <View>
                                   <TouchableOpacity onPress={() => Linking.openURL(`${BASE_URL}/files/${this.state.dataTransaction.Contract.file}`).catch(err => console.error('An error occurred', err))}>
                                     <View style={{ marginTop: 15, flexDirection: 'row' }}>
-                                      <Text style={{ color: 'blue', marginLeft: 10 }}>{this.state.dataTransaction.Contract.file}</Text>
+                                      <Text style={{ color: 'blue', marginLeft: 10 }}>File Kontrak.pdf</Text>
                                       <Icon size={20} style={{ color: 'blue', marginLeft: 5 }} name="md-download" />
                                     </View>
                                   </TouchableOpacity>
