@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 import {
   ScrollView,
   View,
@@ -16,18 +15,14 @@ import Modal from 'react-native-modal'
 import numeral from 'numeral'
 import axios from 'axios'
 import { CheckBox, FormInput, Rating } from 'react-native-elements'
-import { Card, Button, CardSection, Container, ContainerSection, Spinner, Input } from '../components/common'
-import { BASE_URL, COLOR } from './../shared/lb.config';
 import ImagePicker from 'react-native-image-picker';
 import moment from 'moment';
 
+import { Card, Button, ContainerSection, Spinner, Input } from '../components/common'
+import { BASE_URL, COLOR } from './../shared/lb.config';
+
 class DetailTransactionPage extends Component {
-
-  isGoDiscuss() {
-    console.log(this.state.dataMaster, 'Data discuss');
-  }
-
-  static navigationOptions = ({ navigation, screenProps }) => ({
+  static navigationOptions = ({ navigation }) => ({
     title: 'Detail Transaksi',
     headerRight:
       <TouchableOpacity 
@@ -264,6 +259,10 @@ class DetailTransactionPage extends Component {
 
   onChangeInput = (name, v) => {
     this.setState({ [name]: v })
+  }
+
+  isGoDiscuss() {
+    console.log(this.state.dataMaster, 'Data discuss');
   }
 
   createContract() {
@@ -1101,8 +1100,8 @@ class DetailTransactionPage extends Component {
                                 <View>
                                   <TouchableOpacity onPress={() => Linking.openURL(`${BASE_URL}/files/${this.state.dataTransaction.Contract.file}`).catch(err => console.error('An error occurred', err))}>
                                     <View style={{ marginTop: 15, flexDirection: 'row' }}>
-                                      <Text style={{ color: 'blue', marginLeft: 10 }}>{this.state.dataTransaction.Contract.file}</Text>
-                                      <Icon size={20} style={{ color: 'blue', marginLeft: 5 }} name="md-download" />
+                                      <Text style={{color: COLOR.secondary_a}}>File Kontrak.pdf</Text>
+                                      <Icon size={20} style={{color: COLOR.secondary_a, marginLeft: 5}} name="md-download" />
                                     </View>
                                   </TouchableOpacity>
                                 </View>
@@ -1392,7 +1391,7 @@ class DetailTransactionPage extends Component {
                         }
                         {
                           paidWaiting ?
-                            <CardSection>
+                            <ContainerSection>
                               <View style={{ flexDirection: 'column' }}>
                                 <View>
                                   <Text>Total Biaya               Rp 5.000.000</Text>
@@ -1401,7 +1400,7 @@ class DetailTransactionPage extends Component {
                                   <Text>Status                    Menunggu Approved Admin</Text>
                                 </View>
                               </View>
-                            </CardSection>
+                            </ContainerSection>
                             :
                             <View />
                         }
@@ -1431,7 +1430,7 @@ class DetailTransactionPage extends Component {
                         }
                         {
                           paidApproved ?
-                            <CardSection>
+                            <ContainerSection>
                               <View style={{ flexDirection: 'column' }}>
                                 <View>
                                   <Text>Total Biaya               Rp 5.000.000</Text>
@@ -1440,7 +1439,7 @@ class DetailTransactionPage extends Component {
                                   <Text>Status                    Approved Admin</Text>
                                 </View>
                               </View>
-                            </CardSection>
+                            </ContainerSection>
                             :
                             <View />
                         }
