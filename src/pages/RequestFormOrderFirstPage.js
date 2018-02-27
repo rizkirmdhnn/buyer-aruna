@@ -254,13 +254,20 @@ class RequestFormOrderFirstPage extends Component {
     }
   }
 
+  renderUkuran = () => {
+    const x = ['Kg', 'Cm', 'Ekor/Kg']
+    return x.map((data, index) => {
+      console.log(data, index)
+      return <Picker.Item label={data} value={data} key={index} />
+    })
+  }
+
   onItemSelected = (item) => {
     console.log(item, 'Ikan terpilih');
     this.setState({
       suggestions: [],
       FishId: item.id,
-      value: item.name,
-      unitFish: item.unit
+      value: item.name
     })
   }
 
@@ -317,7 +324,8 @@ class RequestFormOrderFirstPage extends Component {
       datePick,
       dateNowPick,
       photo,
-      loading
+      loading,
+      unitFish
     } = this.state
 
     if (loading) {
@@ -339,7 +347,7 @@ class RequestFormOrderFirstPage extends Component {
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginBottom: 20 }}>
               <TouchableOpacity onPress={this.selectPhotoTapped.bind(this)}>
                 <View>
-                  {this.state.photo === null ? 
+                  {this.state.photo === null ?
                     <Image
                       source={require('../assets/images/ic_add_a_photo.png')}
                     />
@@ -380,15 +388,28 @@ class RequestFormOrderFirstPage extends Component {
             </AutoComplete>
           </ContainerSection>
           <ContainerSection>
-            <Input
-              label='Ukuran'
-              placeholder=''
-              keyboardType="numeric"
-              value={size}
-              onChangeText={v => this.onChangeInput('size', v)}
-            />
-            <View style={{flex: 1, paddingTop: 50, paddingLeft: 10}}>
-              <Text>{this.state.unitFish}</Text>
+            <View style={styles.pickerContainer}>
+              <Input
+                label='Ukuran'
+                placeholder=''
+                keyboardType="numeric"
+                value={size}
+                onChangeText={v => this.onChangeInput('size', v)}
+              />
+            </View>
+            <View style={styles.pickerContainer}>
+              <View style={styles.pickerStyleBox}>
+                <View style={styles.pickerStyle}>
+                  <Picker
+                    selectedValue={unitFish}
+                    onValueChange={v => this.onChangeInput('unitFish', v)}
+                  >
+                    <Picker.Item label='Kg' value='Kg' />
+                    <Picker.Item label='Cm' value='Kg' />
+                    <Picker.Item label='Ekor/Kg' value='Ekor/Kg' />
+                  </Picker>
+                </View>
+              </View>
             </View>
           </ContainerSection>
 
@@ -400,7 +421,7 @@ class RequestFormOrderFirstPage extends Component {
               value={quantity}
               onChangeText={v => this.onChangeInput('quantity', v)}
             />
-            <View style={{flex: 1, paddingTop: 50, paddingLeft: 10}}>
+            <View style={{ flex: 1, paddingTop: 50, paddingLeft: 10 }}>
               <Text>Kg</Text>
             </View>
           </ContainerSection>
@@ -443,7 +464,7 @@ class RequestFormOrderFirstPage extends Component {
                 onChangeText={v => this.onChangeInput('dateNowPick', v)}
                 editable={false}
                 onPress={this._showDateTimePicker}
-                style={{width: '100%'}}
+                style={{ width: '100%' }}
               />
             </ContainerSection>
           </TouchableOpacity>
@@ -457,15 +478,15 @@ class RequestFormOrderFirstPage extends Component {
           <ContainerSection>
             <View style={styles.pickerContainer}>
               <Text style={styles.pickerTextStyle}>Provinsi</Text>
-                <View style={styles.pickerStyle}>
-                  <Picker
-                    selectedValue={provinsiId}
-                    onValueChange={v => this.onChangeProvince('provinsiId', v)}
-                  >
-                    <Picker.Item label='Pilih Provinsi' value='0' />
-                    {this.renderProvinceCity()}
-                  </Picker>
-                </View>
+              <View style={styles.pickerStyle}>
+                <Picker
+                  selectedValue={provinsiId}
+                  onValueChange={v => this.onChangeProvince('provinsiId', v)}
+                >
+                  <Picker.Item label='Pilih Provinsi' value='0' />
+                  {this.renderProvinceCity()}
+                </Picker>
+              </View>
             </View>
           </ContainerSection>
 
@@ -504,7 +525,7 @@ const styles = {
     fontSize: 18,
   },
   pickerContainer: {
-    flex: 1, 
+    flex: 1,
     marginBottom: 5
   },
   pickerStyle: {
