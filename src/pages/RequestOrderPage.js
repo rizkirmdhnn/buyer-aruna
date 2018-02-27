@@ -195,7 +195,9 @@ const styles = {
   itemContainerStyle: {
     justifyContent: 'flex-start',
     flexDirection: 'row',
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    borderBottomWidth: 1, 
+    borderColor: '#ddd',
   },
   thumbnailContainerStyle: {
     justifyContent: 'center',
