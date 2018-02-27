@@ -1,19 +1,22 @@
 /**
  *  Import Component
  */
-import React, { Component } from 'react';
-import { View, Text } from 'react-native';
-import { TabNavigator, StackNavigator, DrawerNavigator } from 'react-navigation';
+import React from 'react';
+import { StackNavigator } from 'react-navigation';
 import numeral from 'numeral';
 import OneSignal from 'react-native-onesignal';
-import { COLOR } from './shared/lb.config';
-import codePush from "react-native-code-push";
+import codePush from 'react-native-code-push';
 import { setCustomText } from 'react-native-global-props';
+import { Provider } from 'react-redux'
+import ReduxThunk from 'redux-thunk'
+import { createStore, applyMiddleware } from 'redux'
+
+import reducers from './redux/reducers'
+import { COLOR } from './shared/lb.config';
 
 /**
  *  List Page
  */
-import MasterPage from './pages/MasterPage';
 import LoginFormPage from './pages/LoginFormPage';
 import RequestOrderPage from './pages/RequestOrderPage';
 import HomePage from './pages/HomePage';
@@ -41,7 +44,6 @@ import FilterBeforePage from './pages/FilterBeforePage';
 /**
  *  List Component
  */
-import { HeaderHome } from './components/common';
 console.disableYellowBox = true;
 
 numeral.register('locale', 'id', {
@@ -67,15 +69,15 @@ const customTextProps = {
 setCustomText(customTextProps)
 
 class App extends React.Component {
-  componentDidMount() {
-    OneSignal.configure({});
-  }
-
   componentWillMount() {
     OneSignal.addEventListener('received', this.onReceived);
     OneSignal.addEventListener('opened', this.onOpened);
     OneSignal.addEventListener('registered', this.onRegistered);
     OneSignal.addEventListener('ids', this.onIds);
+  }
+
+  componentDidMount() {
+    OneSignal.configure({});
   }
 
   componentWillUnmount() {
@@ -86,7 +88,7 @@ class App extends React.Component {
   }
 
   onReceived(notification) {
-    console.log("Notification received: ", notification);
+    console.log('Notification received: ', notification);
   }
 
   onOpened(openResult) {
@@ -97,7 +99,7 @@ class App extends React.Component {
   }
 
   onRegistered(notifData) {
-    console.log("Device had been registered for push notifications!", notifData);
+    console.log('Device had been registered for push notifications!', notifData);
   }
 
   onIds(device) {
@@ -105,7 +107,6 @@ class App extends React.Component {
   }
 
   render() {
-
     const Routes = StackNavigator({
       Home: { screen: HomePage },
       Request: { screen: RequestOrderPage },
@@ -147,22 +148,16 @@ class App extends React.Component {
         }
       })
 
+    const store = createStore(reducers, {}, applyMiddleware(ReduxThunk))
 
     return (
-      <View style={styles.container} >
+      <Provider store={store}>
         <Routes />
-      </View>
+      </Provider>
     );
-  };
-};
-
-
-const styles = {
-  container: {
-    flex: 1,
-    backgroundColor: '#FFF'
   }
 }
+
 
 App = codePush({ checkFrequency: codePush.CheckFrequency.ON_APP_RESUME, installMode: codePush.InstallMode.ON_NEXT_RESUME })(App)
 

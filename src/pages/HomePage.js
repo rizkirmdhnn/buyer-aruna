@@ -6,29 +6,24 @@ import {
   View,
   Text,
   Image,
-  ScrollView,
-  Dimensions,
-  TouchableWithoutFeedback,
   TouchableOpacity,
-  TouchableHighlight,
   AsyncStorage,
-  FlatList,
   DrawerLayoutAndroid,
   TouchableNativeFeedback,
   ToastAndroid
 } from 'react-native';
-import { Card, Button, CardSection, Container, ContainerSection, Spinner, Input, InputSearch } from '../components/common'
 import { NavigationActions } from 'react-navigation';
-import { Header, SearchBar, SideMenu, List, ListItem } from 'react-native-elements';
 import axios from 'axios';
-import { BASE_URL } from './../shared/lb.config';
-import { COLOR } from './../shared/lb.config';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { connect } from 'react-redux'
 
-
+import { ContainerSection, Spinner, InputSearch } from '../components/common'
 import Dashboard from './Dashboard';
 import RequestOrderPage from './RequestOrderPage';
 import TransactionPage from './TransactionPage';
+import { BASE_URL, COLOR } from './../shared/lb.config';
+import { setUserToken } from '../redux/actions'
+
 class HomePage extends Component {
 
   static navigationOptions = {
@@ -47,57 +42,11 @@ class HomePage extends Component {
     }
   }
 
-  querySuggestion(text) {
-    console.log(text, 'Text');
-    axios.get(`${BASE_URL}/fishes/search?key=${text}`, {
-      headers: { 'x-access-token': this.state.tokenUser }
-    })
-      .then(response => {
-        res = response.data.data
-        this.setState({ searchItem: res })
-        console.log(res, 'Auto Complete Nya')
-      })
-      .catch(error => {
-        console.log(error, 'Error');
-        if (error.response) {
-          alert(error.response.data.message)
-        }
-        else {
-          alert('Koneksi internet bermasalah')
-        }
-      })
-  }
-
-  querySuggestion(text) {
-    console.log(text, 'Text');
-    axios.get(`${BASE_URL}/fishes/search?key=${text}`)
-      .then(response => {
-        res = response.data.data
-        this.setState({ searchItem: res })
-        console.log(res, 'Auto Complete Nya')
-      })
-      .catch(error => {
-        console.log(error, 'Error');
-        if (error.response) {
-          alert(error.response.data.message)
-        }
-        else {
-          alert('Koneksi internet bermasalah')
-        }
-      })
-  }
-
-  onItemSelected = (item) => {
-    console.log(item, 'Ikan terpilih');
-    this.setState({
-      dataItemSearch: item
-    })
-    this.props.navigation.navigate('Filter', { datas: item });
-  }
-
   componentWillMount() {
     AsyncStorage.getItem('loginCredential', (err, result) => {
       if (result) {
+        this.props.setUserToken(result)
+
         this.setState({ menuLoginExpanded: true, loading: false });
       }
       if (!result) {
@@ -106,15 +55,12 @@ class HomePage extends Component {
     })
   }
 
-  renderScreen = () => {
-    if (this.state.screen === 'RequestOrderPage') {
-      return <RequestOrderPage navi={this.props.navigation} />
-    }
-    if (this.state.screen === 'TransactionPage') {
-      return <TransactionPage navi={this.props.navigation} />
-    }
-
-    return <Dashboard navi={this.props.navigation} />
+  onItemSelected = (item) => {
+    console.log(item, 'Ikan terpilih');
+    this.setState({
+      dataItemSearch: item
+    })
+    this.props.navigation.navigate('Filter', { datas: item });
   }
 
   isLogout() {
@@ -134,6 +80,16 @@ class HomePage extends Component {
     });
   }
 
+  renderScreen = () => {
+    if (this.state.screen === 'RequestOrderPage') {
+      return <RequestOrderPage navi={this.props.navigation} />
+    }
+    if (this.state.screen === 'TransactionPage') {
+      return <TransactionPage navi={this.props.navigation} />
+    }
+
+    return <Dashboard navi={this.props.navigation} />
+  }
 
   render() {
     const { navigate } = this.props.navigation;
@@ -586,4 +542,10 @@ const styles = {
   }
 }
 
-export default HomePage;
+const mapStateToProps = (state) => {
+  const { user } = state
+
+  return { user }
+}
+
+export default connect(mapStateToProps, { setUserToken })(HomePage)
