@@ -22,7 +22,7 @@ import Dashboard from './Dashboard';
 import RequestOrderPage from './RequestOrderPage';
 import TransactionPage from './TransactionPage';
 import { BASE_URL, COLOR } from './../shared/lb.config';
-import { setUserToken } from '../redux/actions'
+import { setUserToken, unreadNotifFetch } from '../redux/actions'
 
 class HomePage extends Component {
 
@@ -46,6 +46,7 @@ class HomePage extends Component {
     AsyncStorage.getItem('loginCredential', (err, result) => {
       if (result) {
         this.props.setUserToken(result)
+        this.props.unreadNotifFetch(result)
 
         this.setState({ menuLoginExpanded: true, loading: false });
       }
@@ -277,11 +278,11 @@ class HomePage extends Component {
                     <Image
                       style={{ height: 20, width: 15 }}
                       source={
-                        // this.props.user.unreadNotif > 0 ?
-                        //     require('./../assets/images/ic_notification_on.png')
-                        //     :
-                        require('./../assets/images/ic_notification.png')
-                      }
+                        this.props.user.unreadNotif > 0 ?
+                          require('../assets/images/ic_notification_on.png')
+                        :
+                          require('../assets/images/ic_notification.png')
+                      } 
                     />
                   </TouchableOpacity>
                 </View>
@@ -548,4 +549,4 @@ const mapStateToProps = (state) => {
   return { user }
 }
 
-export default connect(mapStateToProps, { setUserToken })(HomePage)
+export default connect(mapStateToProps, { setUserToken, unreadNotifFetch })(HomePage)
