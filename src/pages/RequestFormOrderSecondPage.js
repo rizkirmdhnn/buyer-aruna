@@ -123,10 +123,8 @@ class RequestFormOrderSecondPage extends Component {
       dataRequest.append('dueDate', this.state.datax.datePick);
       dataRequest.append('quantity', this.state.datax.quantity);
       dataRequest.append('size', this.state.datax.size);
-
-      console.log(this.state.idSupplier, 'Submit Request');
-
-
+      dataRequest.append('describe', this.state.datax.deskripsi);
+      dataRequest.append('unit', this.state.datax.unitFish);
 
       this.state.checkedSelected.map((item, index) => {
         console.log(item.id, ' ', index, 'MAPING');
@@ -136,7 +134,7 @@ class RequestFormOrderSecondPage extends Component {
       dataRequest.append('photo', {
         uri: this.state.datax.photo.uri,
         type: 'image/jpeg',
-        name: 'formrequest'
+        name: 'formrequest.png'
       });
 
       console.log(this.state.datax, 'Data Request');
@@ -200,9 +198,6 @@ class RequestFormOrderSecondPage extends Component {
   renderItem = (item) => {
     console.log(item, 'Item Data Supplier');
     return item.map((data, index) => {
-      console.log(data, 'ID Supplier');
-      this.state.idSupplier.push(data.id);
-      console.log(this.state.idSupplier, 'ID PUSH SUPPLIER')
       return (
         <View style={styles.card} key={index}>
           <View style={styles.itemContainerStyle}>
