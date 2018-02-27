@@ -44,6 +44,13 @@ class MessageListPage extends Component {
 								}
 							</Text>
 						</View>
+
+						{
+							item.unread > 0 && 
+							<View style={{backgroundColor: 'red', borderRadius: 50, marginTop: 5, width: 20, height: 20}}>
+								<Text style={{color: '#fff', fontFamily: 'Muli-Bold', textAlign: 'center'}}>{item.unread}</Text>
+							</View>
+						}
 					</View>
 				</TouchableNativeFeedback>
 			</Card>
