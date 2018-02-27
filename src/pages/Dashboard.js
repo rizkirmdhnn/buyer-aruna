@@ -129,7 +129,7 @@ class Dashboard extends Component {
               source={{ uri: `${BASE_URL}/images/${itemProduct.item.Fish.photo}` }}
               resizeMode='cover'
             />
-            <Text style={{textAlign: 'center', marginLeft: -10}}>
+            <Text style={{ textAlign: 'center', marginLeft: -10 }}>
               {`${number}. ${itemProduct.item.Fish.name}`}
             </Text>
           </View>
@@ -220,7 +220,7 @@ class Dashboard extends Component {
         </View>
 
         <ScrollView>
-          <View style={{padding: 15}}>
+          <View style={{ padding: 15 }}>
             <Button
               onPress={() => {
                 this.credentialButton()
@@ -229,9 +229,15 @@ class Dashboard extends Component {
             </Button>
           </View>
 
-          <View style={{padding: 15, paddingTop: 10, backgroundColor: '#fff'}}>
+          <View style={{ padding: 15, paddingTop: 10, backgroundColor: '#fff' }}>
             <View style={styles.containerTextProductCard}>
               <Text style={styles.textCard}>Komoditas Favorit</Text>
+              <TouchableNativeFeedback onPress={() => {
+                // this.goSupplier()
+                this.props.navi.navigate('ProductList');
+              }}>
+                <Text style={styles.textCardRight}>Lihat Semua</Text>
+              </TouchableNativeFeedback>
             </View>
 
             <View style={styles.containerFlatList}>
@@ -244,9 +250,9 @@ class Dashboard extends Component {
             </View>
           </View>
 
-          <View style={{height: 10, backgroundColor: '#fafafa'}} />
+          <View style={{ height: 10, backgroundColor: '#fafafa' }} />
 
-          <View style={{padding: 15, paddingTop: 10, backgroundColor: '#fff'}}>
+          <View style={{ padding: 15, paddingTop: 10, backgroundColor: '#fff' }}>
             <View style={styles.containerTextProductCard}>
               <Text style={styles.textCard}>Supplier Populer</Text>
             </View>
@@ -338,8 +344,13 @@ const styles = {
   },
   textCard: {
     flex: 1,
-    flexDirection: 'row',
+    // flexDirection: 'row',
     fontSize: 17,
+  },
+  textCardRight: {
+    // flex: 1,
+    marginLeft: '30%',
+    fontSize: 17
   },
   textCardLink: {
     color: '#5D9FE2',
@@ -480,7 +491,7 @@ const styles = {
     marginRight: 20
   },
   wrapper: {
-    
+
   },
   slide1: {
     flex: 1,
