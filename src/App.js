@@ -41,6 +41,7 @@ import MessageListPage from './pages/MessageListPage';
 import ProfileBuyerPage from './pages/ProfileBuyerPage';
 import ProfileBuyerEditPage from './pages/ProfileBuyerEditPage';
 import FilterBeforePage from './pages/FilterBeforePage';
+import NotificationList from './pages/NotificationList';
 /**
  *  List Component
  */
@@ -131,7 +132,8 @@ class App extends React.Component {
       MessageList: { screen: MessageListPage },
       ProfileBuyer: { screen: ProfileBuyerPage },
       ProfileBuyerEdit: { screen: ProfileBuyerEditPage },
-      FilterBefore: { screen: FilterBeforePage }
+      FilterBefore: { screen: FilterBeforePage },
+      NotificationList: { screen: NotificationList }
     }, {
         cardStyle: { backgroundColor: '#fafafa' },
         navigationOptions: {

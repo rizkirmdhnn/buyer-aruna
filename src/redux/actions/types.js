@@ -6,3 +6,5 @@ export const SET_USER_TOKEN = 'set_user_token'
 export const USER_FETCH_UNREAD_SUCCESS = 'user_fetch_unread_success'
 
 export const MESSAGES_FETCH_SUCCESS = 'messages_fetch_success'
+
+export const NOTIFICATIONS_FETCH_SUCCESS = 'notifications_fetch_success'
