@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import moment from 'moment'
 
 import { Spinner, Card } from '../components/common'
-import { notificationsFetch } from '../redux/actions'
+import { notificationsFetch, unreadNotifFetch } from '../redux/actions'
 
 class NotificationList extends Component {
 	static navigationOptions = {
@@ -14,6 +14,7 @@ class NotificationList extends Component {
 
 	componentWillMount() {
 		this.props.notificationsFetch(this.props.user.token, '')
+		this.props.unreadNotifFetch(this.props.user.token)
 	}
 
 	renderItem = (item) => {
@@ -93,4 +94,4 @@ const mapStateToProps = state => {
 	return { user, notifications }
 }
 
-export default connect(mapStateToProps, {notificationsFetch})(NotificationList)
+export default connect(mapStateToProps, {notificationsFetch, unreadNotifFetch})(NotificationList)
