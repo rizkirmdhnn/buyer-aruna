@@ -13,6 +13,7 @@ import {
     Input,
     Card
 } from '../components/common';
+import numeral from 'numeral';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { CheckBox } from 'react-native-elements';
 import axios from 'axios';
@@ -119,15 +120,15 @@ class FilterPage extends Component {
                             keyboardType="numeric"
                             label='Rentang Harga'
                             placeholder='Min'
-                            value={minPrice}
-                            onChangeText={v => this.onChangeInput('minPrice', v)}
+                            value={minPrice ? numeral(parseInt(minPrice)).format('0,0') : ''}
+                            onChangeText={v => this.onChangeInput('minPrice', v.replace(/\./g, ''))}
                         />
 
                         <Input
                             keyboardType="numeric"
                             placeholder='Max'
-                            value={maxPrice}
-                            onChangeText={v => this.onChangeInput('maxPrice', v)}
+                            value={maxPrice ? numeral(parseInt(maxPrice)).format('0,0') : ''}
+                            onChangeText={v => this.onChangeInput('maxPrice', v.replace(/\./g, ''))}
                         />
                     </View>
                 </ContainerSection >

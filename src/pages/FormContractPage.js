@@ -94,8 +94,7 @@ class FormContractPage extends Component {
     console.log(this.props.navigation.state.params.datas, 'Data Lemparan');
 
     this.setState({ 
-      quantity: 
-      this.props.navigation.state.params.datas.Request.Transaction.quantity.toString(),
+      quantity: this.props.navigation.state.params.datas.Request.Transaction.quantity.toString(),
       size: this.props.navigation.state.params.datas.Request.Transaction.size,
       fishDescribe: this.props.navigation.state.params.datas.Request.Transaction.describe
     })
@@ -310,7 +309,7 @@ class FormContractPage extends Component {
       locationEdit
     } = this.state
 
-    const addressBuyer = dataMaster.Request.Buyer.address
+    const addressBuyer = dataMaster.Request.Buyer.address;
     return (
       <ScrollView
         keyboardShouldPersistTaps="always"
