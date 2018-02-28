@@ -115,7 +115,6 @@ class FilterPage extends Component {
             return (
                 <ContainerSection>
                     <View style={{ flex: 1, flexDirection: 'row' }}>
-
                         <Input
                             keyboardType="numeric"
                             label='Rentang Harga'
@@ -123,6 +122,7 @@ class FilterPage extends Component {
                             value={minPrice}
                             onChangeText={v => this.onChangeInput('minPrice', v)}
                         />
+
                         <Input
                             keyboardType="numeric"
                             placeholder='Max'
@@ -130,7 +130,7 @@ class FilterPage extends Component {
                             onChangeText={v => this.onChangeInput('maxPrice', v)}
                         />
                     </View>
-                </ContainerSection>
+                </ContainerSection >
             );
         }
 

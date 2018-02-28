@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import numeral from 'numeral';
 import { NavigationActions } from 'react-navigation';
 import {
   View,
@@ -49,7 +50,7 @@ class FormContractPage extends Component {
           )
         }}
       >
-        <Icon style={{marginLeft: 20, color: '#fff'}} name="md-arrow-back" size={24} />
+        <Icon style={{ marginLeft: 20, color: '#fff' }} name="md-arrow-back" size={24} />
       </TouchableNativeFeedback>,
     headerRight: <View />
   });
@@ -74,12 +75,14 @@ class FormContractPage extends Component {
       organization: '',
       location: '',
       shippingMethod: '',
-      locationOfreception: '',
+      locationOfreception: [],
       dateOfReception: '',
       dpAmount: '',
       dpDate: '',
       fishReject: '',
-      maxFishReject: ''
+      maxFishReject: '',
+      locationEdit: true,
+      shareLoc: ''
     }
   }
 
@@ -88,9 +91,14 @@ class FormContractPage extends Component {
       dataMaster: this.props.navigation.state.params.datas
     });
 
-    this.setState({ quantity: this.props.navigation.state.params.datas.Request.Transaction.quantity.toString() })
+    console.log(this.props.navigation.state.params.datas, 'Data Lemparan');
 
-    console.log(this.props.navigation.state.params.datas.Request.Transaction.quantity, '123123');
+    this.setState({ 
+      quantity: 
+      this.props.navigation.state.params.datas.Request.Transaction.quantity.toString(),
+      size: this.props.navigation.state.params.datas.Request.Transaction.size,
+      fishDescribe: this.props.navigation.state.params.datas.Request.Transaction.describe
+    })
   }
 
   onChangeInput = (name, v) => {
@@ -99,35 +107,38 @@ class FormContractPage extends Component {
   }
 
   onSubmit = () => {
-    console.log(this.state.dpAmount, '', this.state.dateOfReception);
 
     if (this.state.quantity === '') {
       ToastAndroid.show('Anda belum mengisi Jumlah', ToastAndroid.SHORT)
-    } 
+    }
     else if (this.state.price === '') {
       ToastAndroid.show('Anda belum mengisi Harga', ToastAndroid.SHORT)
-    } 
+    }
     else if (this.state.dateNowPickPengiriman === '') {
       ToastAndroid.show('Anda belum menentukan Tanggal Pengiriman', ToastAndroid.SHORT)
-    } 
+    }
     else if (this.state.locationOfreception === '') {
       ToastAndroid.show('Anda belum menentukan Lokasi Penerimaan', ToastAndroid.SHORT)
-    } 
+    }
     else if (this.state.dpAmount === '') {
       ToastAndroid.show('Anda belum menentukan Nominal DP', ToastAndroid.SHORT)
-    } 
+    }
     // else if (this.state.dpAmount >= this.state.price) {
     //     alert('Nominal DP tidak boleh Sama dengan atau Melebihi Total Harga');
     // } 
     else if (this.state.fishReject === '') {
       ToastAndroid.show('Anda belum mengisi Deskripsi Reject', ToastAndroid.SHORT)
-    } 
+    }
     else if (this.state.maxFishReject === '') {
       ToastAndroid.show('Anda belum menentukan Presentase Reject', ToastAndroid.SHORT)
     }
     else {
       console.log('LOLOS')
       Keyboard.dismiss()
+      this.state.locationOfreception.map((data, index) => {
+        this.setState({ shareLoc: data });
+      })
+
       const dataContract = {
         fishDescribe: this.state.fishDescribe,
         size: this.state.dataMaster.Request.Transaction.size,
@@ -138,7 +149,7 @@ class FormContractPage extends Component {
         organization: this.state.dataMaster.Request.Supplier.organization,
         location: this.state.dataMaster.Request.Supplier.City.name,
         shippingMethod: 'JNE',
-        locationOfreception: this.state.locationOfreception,
+        locationOfreception: this.state.shareLoc,
         dateOfReception: this.state.dateOfReception,
         dpAmount: this.state.dpAmount,
         dpDate: this.state.dpDate,
@@ -147,6 +158,7 @@ class FormContractPage extends Component {
       }
 
       const idTransaction = this.state.dataMaster.id;
+      this.setState({ loading: true });
 
       AsyncStorage.getItem('loginCredential', (err, result) => {
         console.log(dataContract, 'Data Contrak');
@@ -169,6 +181,7 @@ class FormContractPage extends Component {
                 { text: 'Ok', onPress: () => this.navigationRedirect() },
               ]
             )
+            this.setState({ loading: false })
           })
           .catch(error => {
             if (error.response) {
@@ -227,12 +240,27 @@ class FormContractPage extends Component {
     const resetAction = NavigationActions.reset({
       index: 1,
       actions: [
-        NavigationActions.navigate({ routeName: 'Home'}),
-        NavigationActions.navigate({ routeName: 'DetailTransaction', params: { datas: this.props.navigation.state.params.datas }})
+        NavigationActions.navigate({ routeName: 'Home' }),
+        NavigationActions.navigate({ routeName: 'DetailTransaction', params: { datas: this.props.navigation.state.params.datas } })
       ]
     })
     this.props.navigation.dispatch(resetAction)
   }
+
+  checkItem = data => {
+    console.log(data, 'Data Check')
+    const { locationOfreception, locationEdit } = this.state;
+    if (!locationOfreception.includes(data)) {
+      this.setState({
+        locationOfreception: [...locationOfreception, data],
+        locationEdit: !locationEdit
+      });
+    } else {
+      this.setState({
+        locationOfreception: locationOfreception.filter(a => a !== data)
+      });
+    }
+  };
 
 
   renderButton = () => {
@@ -273,11 +301,16 @@ class FormContractPage extends Component {
       price,
       locationOfreception,
       dpAmount,
-     
+
       fishReject,
-      maxFishReject
+      maxFishReject,
+      size,
+      checkedSelected,
+      dataMaster,
+      locationEdit
     } = this.state
 
+    const addressBuyer = dataMaster.Request.Buyer.address
     return (
       <ScrollView
         keyboardShouldPersistTaps="always"
@@ -302,33 +335,26 @@ class FormContractPage extends Component {
           <ContainerSection>
             <Input
               label="Ukuran"
-              value={this.state.dataMaster.Request.Transaction.size.toString()}
+              value={size ? numeral(parseInt(size)).format('0,0') : ''}
+              onChangeText={v => this.onChangeInput('size', v.replace(/\./g, ''))}
               style={styles.textArea}
             />
-            <View style={{flex: 1, paddingTop: 50, paddingLeft: 10}}>
-              <Input
-                editable={false}
-                value={this.state.dataMaster.Request.Transaction.Fish.unit.toString()}
-                onChangeText={v => this.onChangeInput('quantity', v)}
-              />
+            <View style={{ flex: 1, paddingTop: 50, paddingLeft: 10 }}>
+              <Text>{this.state.dataMaster.Request.Transaction.unit}</Text>
             </View>
-            
+
           </ContainerSection>
 
           <ContainerSection>
             <Input
               label="Jumlah"
-              value={quantity}
               keyboardType="numeric"
               style={styles.textArea}
-              onChangeText={v => this.onChangeInput('quantity', v)}
+              value={quantity ? numeral(parseInt(quantity)).format('0,0') : ''}
+              onChangeText={v => this.onChangeInput('quantity', v.replace(/\./g, ''))}
             />
-            <View style={{flex: 1, paddingTop: 50, paddingLeft: 10}}>
-              <Input
-                editable={false}
-                value='Kg'
-                onChangeText={v => this.onChangeInput('quantity', v)}
-              />
+            <View style={{ flex: 1, paddingTop: 50, paddingLeft: 10 }}>
+              <Text>Kg</Text>
             </View>
           </ContainerSection>
 
@@ -348,9 +374,9 @@ class FormContractPage extends Component {
           <ContainerSection>
             <Input
               label='Harga'
-              value={price}
               keyboardType="numeric"
-              onChangeText={v => this.onChangeInput('price', v)}
+              value={price ? numeral(parseInt(price)).format('0,0') : ''}
+              onChangeText={v => this.onChangeInput('price', v.replace(/\./g, ''))}
             />
           </ContainerSection>
 
@@ -363,7 +389,7 @@ class FormContractPage extends Component {
           <ContainerSection>
             <Input
               label="Nama Lengkap"
-              value={this.state.dataMaster.Request.Supplier.name}
+              value={dataMaster.Request.Supplier.name}
               editable={false}
             />
           </ContainerSection>
@@ -371,7 +397,7 @@ class FormContractPage extends Component {
           <ContainerSection>
             <Input
               label="No. KTP (Kartu Tanda Penduduk)"
-              value={this.state.dataMaster.Request.Supplier.idNumber}
+              value={dataMaster.Request.Supplier.idNumber}
               editable={false}
             />
           </ContainerSection>
@@ -379,7 +405,7 @@ class FormContractPage extends Component {
           <ContainerSection>
             <Input
               label='Nama Lembaga Nelayan'
-              value={this.state.dataMaster.Request.Supplier.organization}
+              value={dataMaster.Request.Supplier.organization}
               editable={false}
             />
           </ContainerSection>
@@ -387,7 +413,7 @@ class FormContractPage extends Component {
           <ContainerSection>
             <Input
               label='Lokasi Nelayan'
-              value={this.state.dataMaster.Request.Supplier.City.name}
+              value={dataMaster.Request.Supplier.City.name}
               editable={false}
             />
           </ContainerSection>
@@ -400,18 +426,20 @@ class FormContractPage extends Component {
 
           <CheckBox
             title='Lokasi penerimaan komoditas sama dengan lokasi pembeli'
-            checked
+            onPress={() => this.checkItem(addressBuyer)}
+            checked={locationOfreception.includes(addressBuyer)}
           />
 
           <ContainerSection>
             <Input
               label='Lokasi Penerimaan'
-              value={locationOfreception}
+              value={locationOfreception.toString()}
               style={styles.textArea}
               onChangeText={v => this.onChangeInput('locationOfreception', v)}
               maxLength={40}
               multiline
               numberOfLines={4}
+              editable={locationEdit}
             />
           </ContainerSection>
 
@@ -425,22 +453,22 @@ class FormContractPage extends Component {
             <Input
               label="Nominal Dp"
               keyboardType="numeric"
-              value={dpAmount}
-              onChangeText={v => this.onChangeInput('dpAmount', v)}
+              value={dpAmount ? numeral(parseInt(dpAmount)).format('0,0') : ''}
+              onChangeText={v => this.onChangeInput('dpAmount', v.replace(/\./g, ''))}
             />
           </ContainerSection>
 
           <TouchableWithoutFeedback onPress={this._showTanggalDP}>
-           <View>
-             <ContainerSection>
-               <Input
-                 label='Tanggal DP'
-                 value={dateNowPickDP}
-                 onChangeText={v => this.onChangeInput('dateNowPickDP', v)}
-                 editable={false}
-               />
-             </ContainerSection>
-           </View>
+            <View>
+              <ContainerSection>
+                <Input
+                  label='Tanggal DP'
+                  value={dateNowPickDP}
+                  onChangeText={v => this.onChangeInput('dateNowPickDP', v)}
+                  editable={false}
+                />
+              </ContainerSection>
+            </View>
           </TouchableWithoutFeedback>
           <DateTimePicker
             isVisible={this.state.tanggalDP}
@@ -489,9 +517,9 @@ class FormContractPage extends Component {
           <ContainerSection>
             <Input
               label='Presentase Maksimal Komoditas Reject'
-              value={maxFishReject}
               keyboardType="numeric"
-              onChangeText={v => this.onChangeInput('maxFishReject', v)}
+              value={maxFishReject ? numeral(parseInt(maxFishReject)).format('0,0') : ''}
+              onChangeText={v => this.onChangeInput('maxFishReject', v.replace(/\./g, ''))}
             />
           </ContainerSection>
           <View style={{ marginTop: 20, marginBottom: 20 }}>
@@ -512,7 +540,7 @@ const styles = {
     fontSize: 18,
   },
   pickerContainer: {
-    flex: 1, 
+    flex: 1,
     marginBottom: 5
   },
   pickerStyle: {

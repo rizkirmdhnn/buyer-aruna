@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { NavigationActions } from 'react-navigation';
+import numeral from 'numeral';
 import {
   View,
   ScrollView,
@@ -31,6 +32,7 @@ import moment from 'moment';
 
 import ImagePicker from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
+
 class RequestFormOrderFirstPage extends Component {
   static navigationOptions = ({ navigation, screenProps }) => ({
     title: 'Buat Permintaan',
@@ -244,7 +246,7 @@ class RequestFormOrderFirstPage extends Component {
   }
 
   renderPickerCity = () => {
-    if (this.state.dataMapCity == '') {
+    if (this.state.dataMapCity === '') {
       return <Picker.Item label='Pilih Kota' value='0' />
     } else {
       const resultRender = this.state.dataMapCity;
@@ -393,21 +395,23 @@ class RequestFormOrderFirstPage extends Component {
                 label='Ukuran'
                 placeholder=''
                 keyboardType="numeric"
-                value={size}
-                onChangeText={v => this.onChangeInput('size', v)}
+                value={size ? numeral(parseInt(size)).format('0,0') : ''}
+                onChangeText={v => this.onChangeInput('size', v.replace(/\./g, ''))}
               />
             </View>
-            <View style={styles.pickerContainer}>
-              <View style={styles.pickerStyleBox}>
-                <View style={styles.pickerStyle}>
-                  <Picker
-                    selectedValue={unitFish}
-                    onValueChange={v => this.onChangeInput('unitFish', v)}
-                  >
-                    <Picker.Item label='Kg' value='Kg' />
-                    <Picker.Item label='Cm' value='Kg' />
-                    <Picker.Item label='Ekor/Kg' value='Ekor/Kg' />
-                  </Picker>
+            <View style={{ flex: 1, paddingTop: 50, paddingLeft: 10 }}>
+              <View style={styles.pickerContainer}>
+                <View style={styles.pickerStyleBox}>
+                  <View style={styles.pickerStyle}>
+                    <Picker
+                      selectedValue={unitFish}
+                      onValueChange={v => this.onChangeInput('unitFish', v)}
+                    >
+                      <Picker.Item label='Kg' value='Kg' />
+                      <Picker.Item label='Cm' value='Kg' />
+                      <Picker.Item label='Ekor/Kg' value='Ekor/Kg' />
+                    </Picker>
+                  </View>
                 </View>
               </View>
             </View>
@@ -418,8 +422,8 @@ class RequestFormOrderFirstPage extends Component {
               keyboardType="numeric"
               label='Jumlah'
               placeholder=''
-              value={quantity}
-              onChangeText={v => this.onChangeInput('quantity', v)}
+              value={quantity ? numeral(parseInt(quantity)).format('0,0') : ''}
+              onChangeText={v => this.onChangeInput('quantity', v.replace(/\./g, ''))}
             />
             <View style={{ flex: 1, paddingTop: 50, paddingLeft: 10 }}>
               <Text>Kg</Text>
@@ -445,8 +449,8 @@ class RequestFormOrderFirstPage extends Component {
               keyboardType="numeric"
               label='Harga Maksimal'
               placeholder='Rupiah/kg'
-              value={maxBudget}
-              onChangeText={v => this.onChangeInput('maxBudget', v)}
+              value={maxBudget ? numeral(parseInt(maxBudget)).format('0,0') : ''}
+              onChangeText={v => this.onChangeInput('maxBudget', v.replace(/\./g, ''))}
             />
           </ContainerSection>
 
@@ -516,7 +520,7 @@ class RequestFormOrderFirstPage extends Component {
       </ScrollView >
     )
   }
-};
+}
 
 
 const styles = {
@@ -574,7 +578,6 @@ const styles = {
   },
   avatarContainer: {
     borderRadius: 10,
-    borderWidth: 1,
     borderColor: 'black',
     borderWidth: 1 / PixelRatio.get(),
     justifyContent: 'center',
