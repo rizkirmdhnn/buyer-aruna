@@ -8,7 +8,7 @@ import { Spinner, Button } from '../components/common'
 class ProfileBuyerPage extends Component {
 	static navigationOptions = ({ navigation }) => ({
 		title: 'Profile',
-		headerTitleStyle: { paddingLeft: '33%' },
+		headerRight: <View />
 	})
 
 	constructor(props) {
