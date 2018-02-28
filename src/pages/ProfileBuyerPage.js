@@ -93,10 +93,10 @@ class ProfileBuyerPage extends Component {
 	render() {
 		const {
 			containerStyle, headerHomeStyle, menuContainerStyle,
-			profileImageContainer, profileImage, profileName, coin, point, tabContainer, tabContainerActive, tabText, tabTextActive,
+			profileImageContainer, profileImage, profileName,
 		} = styles
 
-		const { data, loading, screen } = this.state
+		const { data, loading } = this.state
 
 		if (loading) {
 			return (
@@ -116,7 +116,7 @@ class ProfileBuyerPage extends Component {
 						/>
 					</View>
 					<Text style={profileName}>{data.name}</Text>
-					<Text style={profileName}>{data.organizationType}  {data.organization} </Text>
+					<Text style={profileName}>{data.organizationType} {data.organization} </Text>
 				</View>
 				<View style={menuContainerStyle}>
 					{this.renderProfile(data)}
