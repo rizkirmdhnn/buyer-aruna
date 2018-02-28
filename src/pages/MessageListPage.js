@@ -33,7 +33,7 @@ class MessageListPage extends Component {
 
 						<View style={styles.headerContentStyle}>
 							<Text>No. PO {item.Request.codeNumber}</Text>
-							<Text style={{fontSize: 12}}>{moment(item.lastUpdatedAt).format('DD MMM YYYY, HH:mm')}</Text>
+							<Text style={{fontSize: 12}}>{item.lastUpdatedAt ? moment(item.lastUpdatedAt).format('DD MMM YYYY, HH:mm') : ''}</Text>
 							<Text style={styles.hedaerTextStyle}>
 								{item.Request.Supplier.organizationType} 
 								{
