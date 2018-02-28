@@ -146,8 +146,7 @@ const styles = {
 		flex: 1
 	},
 	headerHomeStyle: {
-		paddingTop: 3,
-		paddingBottom: 10,
+		paddingTop: 20,
 		flex: 2,
 		justifyContent: 'center',
 		alignSelf: 'center',
@@ -213,12 +212,6 @@ const styles = {
 		fontSize: 18
 	},
 	card: {
-		borderWidth: 1,
-		borderColor: '#ddd',
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 2 },
-		shadowOpacity: 0.1,
-		shadowRadius: 2,
 		elevation: 1,
 		marginLeft: 15,
 		marginRight: 15,
@@ -226,6 +219,7 @@ const styles = {
 		padding: 10,
 		paddingLeft: 15,
 		paddingRight: 15,
+		backgroundColor: '#fff'
 	},
 	cardSection: {
 		padding: 5,

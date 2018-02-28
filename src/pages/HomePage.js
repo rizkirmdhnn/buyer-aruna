@@ -114,7 +114,7 @@ class HomePage extends Component {
         screen: 'Home'
       },
       {
-        label: 'Profile',
+        label: 'Profil',
         icon: require('./../assets/images/ic_profile.png'),
         screen: 'ProfileBuyer'
       },
