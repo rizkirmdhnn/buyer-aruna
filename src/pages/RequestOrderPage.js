@@ -22,11 +22,16 @@ class RequestOrderPage extends Component {
     this.state = {
       loading: true,
       tokenUser: '',
-      dataReqOrder: '',
+      dataReqOrder: [],
       expiredContainer: null,
-      NoExpiredContainer: null
+      NoExpiredContainer: null,
+      refresh: false,
+      page: 1,
+      seed: 1,
+      offset: 4,
+      paging: 0,
     };
-  };
+  }
 
   async componentWillMount() {
     try {
@@ -42,18 +47,28 @@ class RequestOrderPage extends Component {
   }
 
   getData() {
-    axios.get(`${BASE_URL}/buyer/requests?key=to&page=0&pageSize=30&sorting=desc`, {
+    const { offset, paging } = this.state;
+    axios.get(`${BASE_URL}/buyer/requests`, {
+      params: {
+        page: paging,
+        pageSize: offset,
+        sorting: 'ASC'
+      },
       headers: {
         'token': this.state.tokenUser
       }
     }).then(response => {
       res = response.data.data;
       console.log(res, 'Data Request Order');
-      this.setState({ dataReqOrder: res, loading: false });
+      this.setState({
+        dataReqOrder: [...this.state.dataReqOrder, ...res],
+        loading: false,
+        refresh: false
+      });
     })
       .catch(error => {
-        this.setState({ loading: false });
-        console.log(error.response, 'Erroor nya');
+        this.setState({ loading: false, refresh: false });
+        console.log(error, 'Erroor nya');
         console.log('Error Request Order Get Data');
       })
   }
@@ -65,6 +80,24 @@ class RequestOrderPage extends Component {
 
   refreshRequest() {
     return this.getData();
+  }
+
+  handleRefresh = () => {
+    this.setState({
+      page: 1,
+      refresh: true,
+      seed: this.state.seed + 1
+    }, () => {
+      this.getData();
+    })
+  }
+
+  handleLoadMore = () => {
+    this.setState({
+      paging: this.state.paging + 1
+    }, () => {
+      this.getData();
+    });
   }
 
   renderData = (item) => {
@@ -95,7 +128,7 @@ class RequestOrderPage extends Component {
 
       if (item.sanggup > 0) {
         return (
-         
+
           <Card>
             <TouchableWithoutFeedback
               onPress={() => this.detailOrder(item)}
@@ -150,27 +183,15 @@ class RequestOrderPage extends Component {
     }
   }
 
-  renderFlatList = () => {
-    return (
-      <View>
-        <FlatList
-          data={this.state.dataReqOrder}
-          renderItem={({ item }) => this.renderData(item)}
-          keyExtractor={(item, index) => index}
-        />
-      </View>
-    );
-  }
-
 
   detailOrder = (props) => {
     const listData = props;
     console.log(this.props, 'PROPS');
-    if(!this.props.navi) {
+    if (!this.props.navi) {
       console.log('Bukan Navi')
       this.props.navigation.navigate('DetailRequestOrder', { datas: listData })
     }
-    if(this.props.navi) {
+    if (this.props.navi) {
       console.log('NAVI');
       this.props.navi.navigate('DetailRequestOrder', { datas: listData })
     }
@@ -184,7 +205,15 @@ class RequestOrderPage extends Component {
     return (
       <ScrollView>
         <View>
-          {this.renderFlatList()}
+          <FlatList
+            data={this.state.dataReqOrder}
+            renderItem={({ item }) => this.renderData(item)}
+            keyExtractor={(item, index) => index}
+            refreshing={this.state.refresh}
+            onRefresh={this.handleRefresh}
+            onEndReached={this.handleLoadMore}
+            onEndReachedThreshold={0}
+          />
         </View>
       </ScrollView>
     );
@@ -196,7 +225,7 @@ const styles = {
     justifyContent: 'flex-start',
     flexDirection: 'row',
     backgroundColor: '#fff',
-    borderBottomWidth: 1, 
+    borderBottomWidth: 1,
     borderColor: '#ddd',
   },
   thumbnailContainerStyle: {
