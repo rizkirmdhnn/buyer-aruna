@@ -1,13 +1,9 @@
 import React, { Component } from 'react'
-import { ScrollView, View, Text, Image, AsyncStorage, TouchableOpacity, TouchableWithoutFeedback, TouchableNativeFeedback } from 'react-native'
-import { connect } from 'react-redux'
+import { View, Text, Image, AsyncStorage } from 'react-native'
 import axios from 'axios'
-import Icon from 'react-native-vector-icons/Ionicons'
-// import { Button } from 'react-native-elements'
 
-import { BASE_URL } from './../shared/lb.config';
-import { COLOR } from './../shared/lb.config';
-import { Card, CardSection, Spinner, ContainerSection, Button } from '../components/common'
+import { BASE_URL, COLOR } from '../shared/lb.config';
+import { Spinner, Button } from '../components/common'
 
 class ProfileBuyerPage extends Component {
 	static navigationOptions = ({ navigation }) => ({
@@ -37,7 +33,7 @@ class ProfileBuyerPage extends Component {
 			if (result) {
 				console.log(result, 'Token');
 				axios.get(`${BASE_URL}/profile`, {
-					headers: { 'token': result }
+					headers: { token: result }
 				})
 					.then(response => {
 						this.setState({ data: response.data.user })
@@ -229,9 +225,4 @@ const styles = {
 	}
 }
 
-const mapStateToProps = state => {
-	const { user } = state
-	return { user }
-}
-
-export default ProfileBuyerPage;
+export default ProfileBuyerPage
