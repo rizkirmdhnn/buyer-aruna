@@ -38,7 +38,8 @@ class HomePage extends Component {
       dataItemSearch: '',
       loading: true,
       menuLoginExpanded: false,
-      menuLogoutExpanded: false
+      menuLogoutExpanded: false,
+      redirectToNotification: false
     }
   }
 
@@ -95,12 +96,18 @@ class HomePage extends Component {
   render() {
     const { navigate } = this.props.navigation;
     const {
-      requestExpanded,
       searchItem,
       loading,
       screen,
-      menuLoginExpanded
+      menuLoginExpanded,
+      redirectToNotification
     } = this.state;
+
+    // Redirect ke notification list
+    if (this.props.user.unreadNotif > 0 && redirectToNotification === false) {
+      this.props.navigation.navigate('NotificationList')
+      this.setState({redirectToNotification: true})
+    }
 
     const {
       containerStyle, headerHomeStyle, menuContainerStyle,
