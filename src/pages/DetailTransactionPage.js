@@ -23,7 +23,7 @@ import { BASE_URL, COLOR } from './../shared/lb.config';
 
 class DetailTransactionPage extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: 'Detail Transaksi',
+    title: `No. PO ${navigation.state.params.datas.Request.codeNumber}`,
     headerRight:
       <TouchableOpacity
         onPress={() => { navigation.navigate('Message', { idData: navigation.state.params.datas }) }}
@@ -34,7 +34,11 @@ class DetailTransactionPage extends Component {
             source={require('../assets/images/ic_diskusi_alt_white.png')}
           />
         </View>
-      </TouchableOpacity>
+      </TouchableOpacity>,
+      headerTitleStyle: {
+        alignSelf: 'center',
+        fontSize: 14
+      }
   });
 
   constructor(props) {

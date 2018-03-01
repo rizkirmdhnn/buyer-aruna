@@ -143,7 +143,7 @@ class TransactionPage extends Component {
               />
             </View>
             <View style={styles.headerContentStyle}>
-              <Text>No. PO {item.id}</Text>
+              <Text>No. PO {item.Request.codeNumber}</Text>
               <Text>{item.Request ? item.Request.Transaction.Fish.name : '-'}</Text>
               <Text>{item.Request ? item.Request.Supplier.name : ''}</Text>
               <Text style={styles.hedaerTextStyle}>{item.StatusHistories && item.StatusHistories.length > 0 ? item.StatusHistories[item.StatusHistories.length - 1].Status.name : 'Kontrak Belum Dibuat'}</Text>
