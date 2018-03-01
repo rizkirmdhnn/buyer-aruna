@@ -48,7 +48,7 @@ class FilterBeforePage extends Component {
 
     querySuggestion(text) {
         console.log(text, 'Text');
-        if (text == '') {
+        if (!text) {
             console.log('Text Kosong');
             this.setState({ viewExpanded: true, searchResult: false, searchResultAll: false });
         } else {
@@ -63,12 +63,13 @@ class FilterBeforePage extends Component {
                 .catch(error => {
                     console.log(error, 'Error');
                     this.setState({ load: false })
-                    if (error.response) {
-                        alert('Internet anda lemot.')
-                    }
-                    else {
-                        alert('Internet anda lemot')
-                    }
+                    alert('Internet anda lemot Fishes Key')
+                    // if (error.response) {
+                    //     alert('Internet anda lemot Fishes.')
+                    // }
+                    // else {
+                    //     alert('Internet anda lemot Fishes Key')
+                    // }
                 })
         }
     }
@@ -77,7 +78,7 @@ class FilterBeforePage extends Component {
         const params = this.props.navigation.state.params;
         this.setState({ dataParams: params });
         console.log(params, 'Data Params');
-        if (params !== undefined) {
+        if (params) {
             this.updateSelected(params)
         }
     }
@@ -111,17 +112,20 @@ class FilterBeforePage extends Component {
             })
             .catch(error => {
                 console.log(error, 'Error');
-                if (error.response) {
-                    alert(error.response.data.message)
-                }
-                else {
-                    alert('Koneksi internet bermasalah')
-                }
+                this.setState({ loading: false })
+                alert('Koneksi internet bermasalah province')
+                // if (error.response) {
+                //     alert(error.response.data.message)
+                // }
+                // else {
+                //     alert('Koneksi internet bermasalah province')
+                // }
             })
     }
 
 
     onItemSelected = (item) => {
+        console.log('On Item Selected');
         console.log(item, 'Ikan terpilih');
         const { fishData } = this.state;
         this.setState({ searchResultAll: true, fishData: item, searchResult: false, loading: true })
@@ -138,12 +142,14 @@ class FilterBeforePage extends Component {
             })
             .catch(error => {
                 console.log(error, 'Error');
-                if (error.response) {
-                    alert(error.response.data.message)
-                }
-                else {
-                    alert('Koneksi internet bermasalah')
-                }
+                this.setState({ loading: false })
+                alert('Koneksi internet bermasalah on item selected')
+                // if (error.response) {
+                //     alert(error.response.data.message)
+                // }
+                // else {
+                //     alert('Koneksi internet bermasalah on item selected')
+                // }
             })
     }
 
@@ -259,9 +265,9 @@ class FilterBeforePage extends Component {
                                         source={require('./../assets/images/ga_search.png')}
                                     />
                                 </View>
-                                <View style={{ marginTop: '35%' }}>
-                                    <Text style={{ textAlign: 'center' }}>Cari Komoditas Unggulan</Text>
-                                    <Text style={{ textAlign: 'center' }}>Hanya di Marketplace Aruna</Text>
+                                <View style={{ marginTop: '40%' }}>
+                                    <Text style={{ textAlign: 'center', marginTop: '3%' }}>Cari Komoditas Unggulan</Text>
+                                    <Text style={{ textAlign: 'center', marginTop: '3%' }}>Hanya di Marketplace Aruna</Text>
                                 </View>
                             </View>
                             :

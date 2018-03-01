@@ -56,12 +56,13 @@ class FilterPage extends Component {
             .catch(error => {
                 this.setState({ loading: false });
                 console.log(error.response, 'error');
-                if (error.response) {
-                    alert(error.response.data.message + 'DidMount Filter Page');
-                }
-                else {
-                    alert('Koneksi internet bermasalah Provinsi')
-                }
+                alert('Koneksi internet bermasalah Provinsi')
+                // if (error.response) {
+                //     alert(error.response.data.message + 'DidMount Filter Page');
+                // }
+                // else {
+                //     alert('Koneksi internet bermasalah Provinsi')
+                // }
             })
     }
 
