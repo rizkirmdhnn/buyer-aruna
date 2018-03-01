@@ -12,6 +12,7 @@ import {
   TouchableNativeFeedback,
   ToastAndroid
 } from 'react-native';
+import OneSignal from 'react-native-onesignal';
 import { NavigationActions } from 'react-navigation';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -43,6 +44,7 @@ class HomePage extends Component {
   }
 
   componentWillMount() {
+    OneSignal.clearOneSignalNotifications();
     AsyncStorage.getItem('loginCredential', (err, result) => {
       if (result) {
         this.props.setUserToken(result)
@@ -68,6 +70,7 @@ class HomePage extends Component {
     console.log('Logout Klik');
     AsyncStorage.getItem('loginCredential', (err, result) => {
       AsyncStorage.removeItem('loginCredential', () => {
+        OneSignal.deleteTag('userid');
         ToastAndroid.show('Berhasil Logout', ToastAndroid.SHORT)
         console.log('Logout Klik Sukses');
         const resetAction = NavigationActions.reset({

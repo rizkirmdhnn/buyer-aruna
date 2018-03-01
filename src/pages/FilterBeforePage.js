@@ -46,12 +46,47 @@ class FilterBeforePage extends Component {
         }
     }
 
+    componentWillMount() {
+        const params = this.props.navigation.state.params;
+        this.setState({ dataParams: params });
+        console.log(params, 'Data Params');
+        if (params) {
+            this.updateSelected(params)
+        }
+    }
+
+    onItemSelected = (item) => {
+        console.log('On Item Selected');
+        console.log(item, 'Ikan terpilih');
+        const { fishData } = this.state;
+        this.setState({ searchResultAll: true, fishData: item, searchResult: false, loading: true })
+        axios.get(`${BASE_URL}/products`, {
+            params: {
+                key: item.name,
+                sorting: 'ASC'
+            }
+        })
+            .then(response => {
+                res = response.data.data
+                this.setState({ searchItemAll: res, loading: false })
+                console.log(res, 'Semua Ikan')
+            })
+            .catch(error => {
+                console.log(error, 'Error');
+                this.setState({ loading: false })
+                alert('Koneksi internet bermasalah on item selected')
+                // if (error.response) {
+                //     alert(error.response.data.message)
+                // }
+                // else {
+                //     alert('Koneksi internet bermasalah on item selected')
+                // }
+            })
+    }
+
     querySuggestion(text) {
         console.log(text, 'Text');
-        if (!text) {
-            console.log('Text Kosong');
-            this.setState({ viewExpanded: true, searchResult: false, searchResultAll: false });
-        } else {
+        if (text !== '') {
             console.log('Text Tidak Kosong');
             this.setState({ searchResult: true, searchResultAll: false, viewExpanded: false, load: true });
             axios.get(`${BASE_URL}/fishes/search?key=${text}`)
@@ -63,7 +98,7 @@ class FilterBeforePage extends Component {
                 .catch(error => {
                     console.log(error, 'Error');
                     this.setState({ load: false })
-                    alert('Internet anda lemot Fishes Key')
+                    alert('Error Fishes Key')
                     // if (error.response) {
                     //     alert('Internet anda lemot Fishes.')
                     // }
@@ -71,18 +106,13 @@ class FilterBeforePage extends Component {
                     //     alert('Internet anda lemot Fishes Key')
                     // }
                 })
+        } else {
+            console.log('Text Kosong');
+            this.setState({ viewExpanded: true, searchResult: false, searchResultAll: false });
         }
     }
 
-    componentWillMount() {
-        const params = this.props.navigation.state.params;
-        this.setState({ dataParams: params });
-        console.log(params, 'Data Params');
-        if (params) {
-            this.updateSelected(params)
-        }
-    }
-
+    
     updateSelected = (item) => {
         console.log(item, 'Data Params');
         console.log(item.dataProvince, 'Data Provinsi');
@@ -124,35 +154,6 @@ class FilterBeforePage extends Component {
     }
 
 
-    onItemSelected = (item) => {
-        console.log('On Item Selected');
-        console.log(item, 'Ikan terpilih');
-        const { fishData } = this.state;
-        this.setState({ searchResultAll: true, fishData: item, searchResult: false, loading: true })
-        axios.get(`${BASE_URL}/products`, {
-            params: {
-                key: item.name,
-                sorting: 'ASC'
-            }
-        })
-            .then(response => {
-                res = response.data.data
-                this.setState({ searchItemAll: res, loading: false })
-                console.log(res, 'Semua Ikan')
-            })
-            .catch(error => {
-                console.log(error, 'Error');
-                this.setState({ loading: false })
-                alert('Koneksi internet bermasalah on item selected')
-                // if (error.response) {
-                //     alert(error.response.data.message)
-                // }
-                // else {
-                //     alert('Koneksi internet bermasalah on item selected')
-                // }
-            })
-    }
-
     checkItem = data => {
         const { checkedSupplier } = this.state;
         if (!checkedSupplier.includes(data)) {
@@ -180,7 +181,7 @@ class FilterBeforePage extends Component {
             searchResultAll,
             fishData,
             dataParams,
-            checkedSupplier 
+            checkedSupplier
         } = this.state;
 
         const { tabContainer, tabContainerActive, tabText, tabTextActive } = styles;
@@ -294,7 +295,7 @@ class FilterBeforePage extends Component {
                                         checkedSupplier.length > 0 ?
                                             <View style={{ flex: 1 }}>
                                                 <TouchableNativeFeedback onPress={() => {
-                                                    
+
                                                     const { navigate } = this.props.navigation;
                                                     const resetAction = NavigationActions.reset({
                                                         index: 0,
@@ -303,7 +304,7 @@ class FilterBeforePage extends Component {
                                                                 {
                                                                     routeName: 'RequestFormOrderFirst',
                                                                     params:
-                                                                        { dataFish: fishData, dataSearch: dataParams, dataSupplier: this.state.checkedSupplier}
+                                                                        { dataFish: fishData, dataSearch: dataParams, dataSupplier: this.state.checkedSupplier }
                                                                 }
                                                             )
                                                         ]

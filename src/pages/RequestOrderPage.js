@@ -17,6 +17,12 @@ import moment from 'moment';
 
 class RequestOrderPage extends Component {
 
+  static navigationOptions = {
+    title: 'Permintaan',
+    headerRight: <View />
+  }
+
+
   constructor(props) {
     super(props);
     this.state = {
@@ -25,11 +31,7 @@ class RequestOrderPage extends Component {
       dataReqOrder: [],
       expiredContainer: null,
       NoExpiredContainer: null,
-      refresh: false,
-      page: 1,
-      seed: 1,
-      offset: 4,
-      paging: 0,
+      refresh: false
     };
   }
 
@@ -47,11 +49,8 @@ class RequestOrderPage extends Component {
   }
 
   getData() {
-    // const { offset, paging } = this.state;
     axios.get(`${BASE_URL}/buyer/requests`, {
       params: {
-        // page: paging,
-        // pageSize: offset,
         sorting: 'DESC'
       },
       headers: {
@@ -61,7 +60,7 @@ class RequestOrderPage extends Component {
       res = response.data.data;
       console.log(res, 'Data Request Order');
       this.setState({
-        dataReqOrder: [...this.state.dataReqOrder, ...res],
+        dataReqOrder: res,
         loading: false,
         refresh: false
       });
@@ -73,38 +72,35 @@ class RequestOrderPage extends Component {
       })
   }
 
-  static navigationOptions = {
-    title: 'Permintaan',
-    headerRight: <View />
-  }
-
-  refreshRequest() {
-    return this.getData();
-  }
-
+ 
   handleRefresh = () => {
+    console.log('Refresh');
     this.setState({
-      page: 1,
-      refresh: true,
-      seed: this.state.seed + 1
+      refresh: true
     }, () => {
       this.getData();
     })
   }
+  
 
-  handleLoadMore = () => {
-    this.setState({
-      paging: this.state.paging + 1
-    }, () => {
-      this.getData();
-    });
+  detailOrder = (props) => {
+    const listData = props;
+    console.log(this.props, 'PROPS');
+    if (!this.props.navi) {
+      console.log('Bukan Navi')
+      this.props.navigation.navigate('DetailRequestOrder', { datas: listData })
+    }
+    if (this.props.navi) {
+      console.log('NAVI');
+      this.props.navi.navigate('DetailRequestOrder', { datas: listData })
+    }
   }
 
   renderData = (item) => {
     console.log(item, 'Data ReQ');
 
-    if (item.Status.id == 19) {
-      if (item.sanggup == 0) {
+    if (item.Status.id === 19) {
+      if (item.sanggup === 0) {
         return (
           <Card>
             <View style={styles.itemContainerStyle}>
@@ -184,20 +180,6 @@ class RequestOrderPage extends Component {
   }
 
 
-  detailOrder = (props) => {
-    const listData = props;
-    console.log(this.props, 'PROPS');
-    if (!this.props.navi) {
-      console.log('Bukan Navi')
-      this.props.navigation.navigate('DetailRequestOrder', { datas: listData })
-    }
-    if (this.props.navi) {
-      console.log('NAVI');
-      this.props.navi.navigate('DetailRequestOrder', { datas: listData })
-    }
-  }
-
-
   render() {
     if (this.state.loading) {
       return <Spinner size="large" />
@@ -209,16 +191,14 @@ class RequestOrderPage extends Component {
             data={this.state.dataReqOrder}
             renderItem={({ item }) => this.renderData(item)}
             keyExtractor={(item, index) => index}
-            // refreshing={this.state.refresh}
-            // onRefresh={this.handleRefresh}
-            // onEndReached={this.handleLoadMore}
-            // onEndReachedThreshold={0}
+            refreshing={this.state.refresh}
+            onRefresh={() => this.handleRefresh}
           />
         </View>
       </ScrollView>
     );
   }
-};
+}
 
 const styles = {
   itemContainerStyle: {

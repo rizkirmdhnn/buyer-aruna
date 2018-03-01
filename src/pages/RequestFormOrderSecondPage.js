@@ -214,7 +214,7 @@ class RequestFormOrderSecondPage extends Component {
                 // data.quantity ? data.quantity : '0'
               }
               </Text>
-              <Text>Rp {data.minBudget} - Rp {data.maxBudget} /Kg</Text>
+              <Text>Rp {data.minPrice} - Rp {data.maxPrice} /Kg</Text>
             </View>
             <CheckBox
               center

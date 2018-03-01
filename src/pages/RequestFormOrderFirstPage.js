@@ -152,7 +152,7 @@ class RequestFormOrderFirstPage extends Component {
 
 
   querySuggestion = (text) => {
-    this.setState({ value: '' })
+    this.setState({ value: text })
     AsyncStorage.getItem('loginCredential', (err, result) => {
 
       axios.get(`${BASE_URL}/fishes/search?key=${text}`, {
