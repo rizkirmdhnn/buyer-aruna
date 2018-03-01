@@ -70,7 +70,6 @@ class Dashboard extends Component {
   componentWillMount() {
     this.setState({ loading: true })
     AsyncStorage.getItem('loginCredential', (err, result) => {
-      console.log(result);
       this.setState({ tokenUser: result });
       axios.get(`${BASE_URL}/suppliers/popular`, {
         headers: {
@@ -116,12 +115,11 @@ class Dashboard extends Component {
 
   renderProductItem = (itemProduct) => {
     const number = parseInt(itemProduct.index) + 1;
-
     return (
       <View>
         <TouchableWithoutFeedback onPress={() => {
-          // this.goSupplier()
-          console.log('Item Popular');
+          // console.log(this.props, '123')
+          this.props.navi.navigate('DetailFishes', { datas: itemProduct.item.Fish })
         }}>
           <View>
             <Image
@@ -140,7 +138,6 @@ class Dashboard extends Component {
 
   renderSupplierItem = (itemSupplier) => {
     const number = parseInt(itemSupplier.index) + 1;
-    console.log(itemSupplier, ' ', itemSupplier.index, number, 'Data Supplier');
 
     return (
       <TouchableWithoutFeedback onPress={() => {
@@ -348,7 +345,7 @@ const styles = {
     fontSize: 17,
   },
   textCardRight: {
-    // flex: 1,
+    flex: 1,
     marginLeft: '30%',
     fontSize: 17
   },

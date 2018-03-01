@@ -62,11 +62,12 @@ class FilterBeforePage extends Component {
                 })
                 .catch(error => {
                     console.log(error, 'Error');
+                    this.setState({ load: false })
                     if (error.response) {
-                        alert(error.response.data.message)
+                        alert('Internet anda lemot.')
                     }
                     else {
-                        alert('Koneksi internet bermasalah')
+                        alert('Internet anda lemot')
                     }
                 })
         }
@@ -396,6 +397,7 @@ const styles = {
         flex: 1,
         marginTop: 12,
         marginBottom: 12,
+        marginRight: 15
     },
     itemContainerStyle: {
         justifyContent: 'flex-start',

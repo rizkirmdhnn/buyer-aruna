@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, Image, AsyncStorage } from 'react-native'
+import { View, Text, Image, AsyncStorage, ScrollView } from 'react-native'
 import axios from 'axios'
 
 import { BASE_URL, COLOR } from '../shared/lb.config';
@@ -70,7 +70,8 @@ class ProfileBuyerPage extends Component {
 				<View style={styles.cardSection}>
 					<Text style={styles.labelStyle}>Alamat</Text>
 					<Text style={styles.dataStyle}>
-						{`${data.subDistrict} \n${data.village} \n${data.City && data.City.name}`}
+						{`${data.address}`}
+						{/* {`${data.subDistrict} \n${data.village} \n${data.City && data.City.name}`} */}
 					</Text>
 				</View>
 				<View style={styles.cardSection}>
@@ -107,32 +108,34 @@ class ProfileBuyerPage extends Component {
 		}
 
 		return (
-			<View style={containerStyle}>
-				<View style={headerHomeStyle}>
-					<View style={profileImageContainer}>
-						<Image
-							style={profileImage}
-							source={{ uri: `${BASE_URL}/images/${data.photo}` }}
-						/>
+			<ScrollView>
+				<View style={containerStyle}>
+					<View style={headerHomeStyle}>
+						<View style={profileImageContainer}>
+							<Image
+								style={profileImage}
+								source={{ uri: `${BASE_URL}/images/${data.photo}` }}
+							/>
+						</View>
+						<Text style={profileName}>{data.name}</Text>
+						<Text style={profileName}>{data.organizationType} {data.organization} </Text>
 					</View>
-					<Text style={profileName}>{data.name}</Text>
-					<Text style={profileName}>{data.organizationType} {data.organization} </Text>
-				</View>
-				<View style={menuContainerStyle}>
-					{this.renderProfile(data)}
-					<View style={{ height: 50, marginTop: 150 }}>
-						<Button
-							style={{ margin: 5, marginRight: 10 }}
-							onPress={() => {
-								console.log(this.props)
-								this.props.navigation.navigate('ProfileBuyerEdit');
-							}}
-						>
-							Ubah
+					<View style={menuContainerStyle}>
+						{this.renderProfile(data)}
+						<View style={{ height: 50, marginTop: 50 }}>
+							<Button
+								style={{ margin: 5, marginRight: 10 }}
+								onPress={() => {
+									console.log(this.props)
+									this.props.navigation.navigate('ProfileBuyerEdit');
+								}}
+							>
+								Ubah
 						</Button>
+						</View>
 					</View>
 				</View>
-			</View>
+			</ScrollView>
 		)
 	}
 }

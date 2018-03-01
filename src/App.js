@@ -136,7 +136,7 @@ class App extends React.Component {
       ProfileBuyerEdit: { screen: ProfileBuyerEditPage },
       FilterBefore: { screen: FilterBeforePage },
       ProductList: { screen: ProductListPage },
-      DetailFisheh: { screen: DetailFishesPage },
+      DetailFishes: { screen: DetailFishesPage },
       NotificationList: { screen: NotificationList }
     }, {
         cardStyle: { backgroundColor: '#fafafa' },

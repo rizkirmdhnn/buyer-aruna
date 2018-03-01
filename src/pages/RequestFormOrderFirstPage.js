@@ -152,7 +152,7 @@ class RequestFormOrderFirstPage extends Component {
 
 
   querySuggestion = (text) => {
-    this.setState({ value: text })
+    this.setState({ value: '' })
     AsyncStorage.getItem('loginCredential', (err, result) => {
 
       axios.get(`${BASE_URL}/fishes/search?key=${text}`, {
@@ -166,7 +166,7 @@ class RequestFormOrderFirstPage extends Component {
         })
         .catch(error => {
           if (error.response) {
-            alert(error.response.data.message)
+            alert('Internet anda Lemot')
           }
           else {
             alert('Koneksi internet bermasalah')
@@ -408,7 +408,7 @@ class RequestFormOrderFirstPage extends Component {
                       onValueChange={v => this.onChangeInput('unitFish', v)}
                     >
                       <Picker.Item label='Kg' value='Kg' />
-                      <Picker.Item label='Cm' value='Kg' />
+                      <Picker.Item label='Cm' value='Cm' />
                       <Picker.Item label='Ekor/Kg' value='Ekor/Kg' />
                     </Picker>
                   </View>

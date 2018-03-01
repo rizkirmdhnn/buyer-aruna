@@ -47,12 +47,12 @@ class RequestOrderPage extends Component {
   }
 
   getData() {
-    const { offset, paging } = this.state;
+    // const { offset, paging } = this.state;
     axios.get(`${BASE_URL}/buyer/requests`, {
       params: {
-        page: paging,
-        pageSize: offset,
-        sorting: 'ASC'
+        // page: paging,
+        // pageSize: offset,
+        sorting: 'DESC'
       },
       headers: {
         'token': this.state.tokenUser
@@ -209,10 +209,10 @@ class RequestOrderPage extends Component {
             data={this.state.dataReqOrder}
             renderItem={({ item }) => this.renderData(item)}
             keyExtractor={(item, index) => index}
-            refreshing={this.state.refresh}
-            onRefresh={this.handleRefresh}
-            onEndReached={this.handleLoadMore}
-            onEndReachedThreshold={0}
+            // refreshing={this.state.refresh}
+            // onRefresh={this.handleRefresh}
+            // onEndReached={this.handleLoadMore}
+            // onEndReachedThreshold={0}
           />
         </View>
       </ScrollView>

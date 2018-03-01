@@ -27,16 +27,7 @@ class ProductListPage extends Component {
     };
 
     componentWillMount() {
-        //     try {
-        //         const value = await AsyncStorage.getItem('loginCredential');
-        //         if (value !== null) {
-        //             console.log(value, 'Storage Request');
-        //             this.setState({ tokenUser: value })
         return this.getData();
-        //         }
-        //     } catch (error) {
-        //         console.log(error, 'Error Storage Request');
-        //     }
     }
 
     getData() {
@@ -87,7 +78,7 @@ class ProductListPage extends Component {
     }
 
     detailProduct = (item) => {
-        this.props.navigation.navigate('DetailFisheh', { datas: item })
+        this.props.navigation.navigate('DetailFishes', { datas: item })
     }
 
 

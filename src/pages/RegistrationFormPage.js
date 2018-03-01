@@ -84,6 +84,7 @@ class RegistrationFormPage extends Component {
     dataPhoto.append('organization', this.state.organization);
     dataPhoto.append('organizationType', this.state.organizationType);
     dataPhoto.append('idNumber', this.state.idNumber);
+    dataPhoto.append('address', this.state.address);
     dataPhoto.append('idPhoto', {
       uri: this.state.idPhoto.uri,
       type: 'image/jpeg',
@@ -119,6 +120,7 @@ class RegistrationFormPage extends Component {
         Alert.alert('Registrasi berhasil', `Silahkan cek email anda ${this.state.email} untuk verifikasi email`, [])
       })
       .catch(error => {
+        this.setState({ loading: false })
         if (error.response) {
           ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
         }
