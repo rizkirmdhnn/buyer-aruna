@@ -33,10 +33,13 @@ class NotificationList extends Component {
 	fetchDetail = (type, id) => {
 		this.setState({loading: true})
 		let token = this.props.user.token
-		console.log(type)
-		console.log(id)
+		let newType = type
+
+		if (type === 'messages') {
+			newType = 'orders'
+		}
 		
-		axios.get(`${BASE_URL}/buyer/${type}/${id.toString()}`, {
+		axios.get(`${BASE_URL}/buyer/${newType}/${id}`, {
 			headers: {token}
 		})
 		.then(response => {
@@ -48,11 +51,18 @@ class NotificationList extends Component {
 			if (type === 'orders') {
 				link = 'DetailTransaction'
 			}
-	
+			else if (type === 'messages') {
+				link = 'Message'
+				additionalProps = {
+					idData: response.data.data
+				}
+			}
+
 			this.props.navigation.navigate(link, additionalProps)
 			this.setState({loading: false})
 		})
 		.catch(error => {
+			console.log(error)
 			if (error.response) {
 				ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
 			}
