@@ -27,7 +27,7 @@ class MessageListPage extends Component {
 						<View style={styles.thumbnailContainerStyle}>
 							<Image 
 								style={styles.thumbnailStyle}
-								source={{uri: `${BASE_URL}/images/1516800725941PPN Kabayan Aplikasi.jpeg`}} 
+								source={{uri: `${BASE_URL}/images/${item.Request.Supplier.photo}`}} 
 							/>
 						</View>
 
