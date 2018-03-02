@@ -340,13 +340,14 @@ const styles = {
     marginBottom: 10
   },
   textCard: {
-    flex: 1,
+    // flex: 1,
     // flexDirection: 'row',
     fontSize: 17,
   },
   textCardRight: {
+    textAlign: 'right',
+    marginRight: 10,
     flex: 1,
-    marginLeft: '30%',
     fontSize: 17
   },
   textCardLink: {
