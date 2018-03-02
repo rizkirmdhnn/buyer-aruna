@@ -44,14 +44,42 @@ class RegistrationFormPage extends Component {
       phone: '',
       username: '',
       password: '',
+      idCity: '',
+      dataCity: '',
 
 
       idPhoto: null,
       npwpPhoto: null,
+      profilePhoto: null,
 
       pathKtp: null,
       pathNpwp: null,
+      pathProfile: null
     };
+  }
+
+
+  componentWillMount() {
+    this.setState({ loading: true });
+    axios.get(`${BASE_URL}/cities`, {
+      params: {
+        pageSize: 30,
+        sorting: 'ASC'
+      }
+    })
+      .then(response => {
+        res = response.data.data
+        this.setState({
+          dataCity: res,
+          loading: false
+        })
+        console.log(res, 'Data City');
+      })
+      .catch(error => {
+        console.log(error, 'Error');
+        this.setState({ loading: false })
+        alert('Koneksi internet bermasalah on item selected')
+      })
   }
 
   onChangeInput = (name, v) => {
@@ -91,6 +119,11 @@ class RegistrationFormPage extends Component {
       name: 'ktpImage.jpeg'
     });
     dataPhoto.append('npwp', this.state.npwp);
+    dataPhoto.append('photo', {
+      uri: this.state.profilePhoto.uri,
+      type: 'image/jpeg',
+      name: 'profile.jpeg'
+    });
     dataPhoto.append('npwpPhoto', {
       uri: this.state.npwpPhoto.uri,
       type: 'image/jpeg',
@@ -204,6 +237,55 @@ class RegistrationFormPage extends Component {
     });
   }
 
+
+  selectPhotoTappedProfile() {
+    const options = {
+      quality: 1.0,
+      maxWidth: 500,
+      maxHeight: 500,
+      storageOptions: {
+        skipBackup: true
+      }
+    };
+
+
+    ImagePicker.showImagePicker(options, (response) => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled photo picker');
+      }
+      else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      }
+      else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      }
+      else {
+        let source = { uri: response.uri };
+
+        // You can also display the image using data:
+        // let source = { uri: 'data:image/jpeg;base64,' + response.data };
+
+        this.setState({
+          profilePhoto: source,
+          pathProfile: source
+        });
+      }
+    });
+  }
+
+  renderPickerCity = () => {
+    if (this.state.dataCity === '') {
+      return <Picker.Item label='Pilih Kota' value='0' />
+    } else {
+      const resultRender = this.state.dataCity;
+      return resultRender.map((data, index) => {
+        return <Picker.Item label={data.name} value={data.id} key={index} />
+      })
+    }
+  }
+
   renderButton = () => {
     if (this.state.loading) {
       return <Spinner size='large' />
@@ -241,8 +323,13 @@ class RegistrationFormPage extends Component {
       phone,
       username,
       password,
-
+      idCity
     } = this.state
+
+    if (this.state.loading) {
+      return <Spinner size='large' />
+    }
+
 
     return (
       <View>
@@ -318,6 +405,27 @@ class RegistrationFormPage extends Component {
                 Informasi Personal
               </Text>
             </ContainerSection>
+
+            <Text style={[styles.pickerTextStyle, { marginLeft: 5, marginTop: 10 }]}>Unggah Foto Profile</Text>
+            <ContainerSection>
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <TouchableOpacity onPress={this.selectPhotoTappedProfile.bind(this)}>
+                  <View>
+                    {this.state.pathProfile === null ?
+                      <Image
+                        source={require('../assets/images/ic_add_a_photo.png')}
+                      />
+                      :
+                      <Image
+                        style={{ height: 200, width: 300 }}
+                        source={this.state.pathProfile}
+                      />
+                    }
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </ContainerSection>
+
             <ContainerSection>
               <Input
                 label='Nama Lengkap'
@@ -361,6 +469,19 @@ class RegistrationFormPage extends Component {
                 value={address}
                 onChangeText={v => this.onChangeInput('address', v)}
               />
+            </ContainerSection>
+            <ContainerSection>
+              <View style={styles.pickerContainer}>
+                <Text style={styles.pickerTextStyle}>Kota</Text>
+                <View style={styles.pickerStyle}>
+                  <Picker
+                    selectedValue={idCity}
+                    onValueChange={v => this.onChangeInput('idCity', v)}
+                  >
+                    {this.renderPickerCity()}
+                  </Picker>
+                </View>
+              </View>
             </ContainerSection>
             <ContainerSection>
               <Input
