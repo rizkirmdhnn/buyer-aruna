@@ -210,6 +210,18 @@ class HomePage extends Component {
           {
             menuLoginExpanded ?
               <View>
+                <TouchableOpacity onPress={() => this.props.navigation.navigate('Term')}>
+                  <View style={{marginBottom: 20}}>
+                    <ContainerSection>
+                      <Image 
+                        style={styles.menuIcon}
+                        source={require('../assets/images/dokumen.png')} 
+                      />
+                      <Text style={styles.drawerItemText}>Terms & Conditions</Text>
+                    </ContainerSection>
+                  </View>
+                </TouchableOpacity>
+
                 <TouchableOpacity onPress={() => this.props.navigation.navigate('Help')}>
                   <View style={{ marginBottom: 20 }}>
                     <ContainerSection>

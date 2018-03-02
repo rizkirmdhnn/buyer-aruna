@@ -44,6 +44,7 @@ import FilterBeforePage from './pages/FilterBeforePage';
 import ProductListPage from './pages/ProductListPage';
 import DetailFishesPage from './pages/DetailFishesPage';
 import NotificationList from './pages/NotificationList';
+import Term from './pages/Term';
 /**
  *  List Component
  */
@@ -138,7 +139,8 @@ class App extends React.Component {
       FilterBefore: { screen: FilterBeforePage },
       ProductList: { screen: ProductListPage },
       DetailFishes: { screen: DetailFishesPage },
-      NotificationList: { screen: NotificationList }
+      NotificationList: { screen: NotificationList },
+      Term: { screen: Term },
     }, {
         cardStyle: { backgroundColor: '#fafafa' },
         navigationOptions: {
