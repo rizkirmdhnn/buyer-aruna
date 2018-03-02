@@ -119,14 +119,6 @@ class FilterPage extends Component {
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <Input
                             keyboardType="numeric"
-                            label='Rentang Harga'
-                            placeholder='Min'
-                            value={minPrice ? numeral(parseInt(minPrice)).format('0,0') : ''}
-                            onChangeText={v => this.onChangeInput('minPrice', v.replace(/\./g, ''))}
-                        />
-
-                        <Input
-                            keyboardType="numeric"
                             placeholder='Max'
                             value={maxPrice ? numeral(parseInt(maxPrice)).format('0,0') : ''}
                             onChangeText={v => this.onChangeInput('maxPrice', v.replace(/\./g, ''))}
@@ -143,7 +135,7 @@ class FilterPage extends Component {
                     <ContainerSection>
                         <TouchableWithoutFeedback onPress={() => { this.setState({ cityExpanded: !cityExpanded }); console.log(this.state.cityExpanded, 'Request Klik') }}>
                             <View style={{ flex: 1, flexDirection: 'row' }}>
-                                <Text style={{ flex: 1, fontSize: 20 }}>Kota / Kabupaten</Text>
+                                <Text style={{ flex: 1, fontSize: 20 }}>Provinsi</Text>
                                 <View style={{ flex: 1 }}>
                                     <Icon size={30} style={{ alignSelf: 'flex-end' }} name={cityExpanded ? 'md-arrow-dropup' : 'md-arrow-dropdown'} />
                                 </View>

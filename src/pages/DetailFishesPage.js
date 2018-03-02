@@ -64,7 +64,7 @@ class DetailFishesPage extends Component {
 
     createRequest(item) {
         console.log(item, 'Data Ikan Terpilih')
-        this.props.navigation.navigate('RequestFormOrderFirst', { dataFish: item})
+        this.props.navigation.navigate('RequestFormOrderFirst', { dataFish: item })
     }
 
     render() {
@@ -78,7 +78,7 @@ class DetailFishesPage extends Component {
             <ScrollView>
                 <View style={{ flex: 1, paddingTop: 5 }}>
                     <ContainerSection>
-                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginBottom: 20 }}>
+                        <View style={styles.thumbnailContainerStyle}>
                             <View>
                                 <Image
                                     style={styles.thumbnailStyle}
@@ -92,26 +92,28 @@ class DetailFishesPage extends Component {
                         <View style={styles.card}>
                             <ContainerSection>
                                 <View style={{ flex: 1, flexDirection: 'row' }}>
-                                    <Text style={{ flex: 1, fontSize: 20 }}>{dataFish.name}</Text>
+                                    <Text style={{ flex: 1, fontSize: 20, fontWeight: 'bold' }}>{dataFish.name}</Text>
                                 </View>
                             </ContainerSection>
 
                             <ContainerSection>
                                 <View style={{ flexDirection: 'column' }}>
                                     <View>
-                                        <Text style={{ flex: 1, fontSize: 20 }}>{dataFish.description}</Text>
+                                        <Text style={{ flex: 1, fontSize: 13 }}>{dataFish.description}</Text>
                                     </View>
                                 </View>
                             </ContainerSection>
                         </View>
                     </Card>
-
-                    <Button
-                        onPress={() => {
-                            this.createRequest(dataFish);
-                        }}>
-                        Buat Permintaan
+                    <View style={{ marginTop: 5, margin: 17 }}>
+                        <Button
+                            onPress={() => {
+                                this.createRequest(dataFish);
+                            }}>
+                            Buat Permintaan
                     </Button>
+                    </View>
+
                 </View>
             </ScrollView>
         );
@@ -123,8 +125,15 @@ class DetailFishesPage extends Component {
 const styles = {
     thumbnailStyle: {
         height: 290,
-        width: 480,
-        borderWidth: 1
+        width: 450,
+        borderWidth: 1,
+        alignSelf: 'stretch',
+        resizeMode: 'cover',
+    },
+    thumbnailContainerStyle: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 15,
     },
 };
 

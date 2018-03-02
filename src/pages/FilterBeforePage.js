@@ -20,6 +20,7 @@ import { CheckBox } from 'react-native-elements';
 import { BASE_URL, COLOR } from './../shared/lb.config';
 import { Button, CardSection, Container, ContainerSection, Spinner, Input, InputSearch, Card } from '../components/common'
 import FilterPage from './FilterPage';
+import numeral from 'numeral';
 
 class FilterBeforePage extends Component {
 
@@ -334,6 +335,7 @@ class FilterBeforePage extends Component {
                   }
                   {
                     searchItemAll && searchItemAll.map((item, index) => {
+                      console.log(item, 'DATA NELAYAN');
                       return (
                         <View key={index}>
                           <Card>
@@ -341,14 +343,15 @@ class FilterBeforePage extends Component {
                               <View style={styles.thumbnailContainerStyle}>
                                 <Image
                                   style={styles.thumbnailStyle}
-                                  source={{ uri: `${BASE_URL}/images/${item.Fish.photo}` }}
+                                  source={{ uri: `${BASE_URL}/images/${item.User.photo}` }}
                                 />
                               </View>
                               <View style={styles.headerContentStyle}>
-                                <Text style={styles.headerTextStyle}>{item.Fish.name}</Text>
+                                <Text style={styles.headerTextStyle}>{item.User.name}</Text>
                                 <View style={{ flexDirection: 'column', flex: 1 }}>
-                                  <Text>{item.User.name}</Text>
+                                  <Text>{item.Fish.name}</Text>
                                 </View>
+                                <Text style={{ fontSize: 11 }}>Rp {numeral(parseInt(item.minPrice)).format('0,0')} - Rp { numeral(parseInt(item.maxPrice)).format('0,0')} /Kg</Text>
                               </View>
                               <View style={{ flex: 1 }}>
                                 <CheckBox
