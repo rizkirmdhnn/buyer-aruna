@@ -220,7 +220,7 @@ class ProfileBuyerEditPage extends Component {
         formData.append('email', data.email)
         formData.append('password', data.password)
 
-        axios.post(`${BASE_URL}/supplier/profile`, formData, {
+        axios.post(`${BASE_URL}/buyer/profile`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 'token': this.state.tokenUser
@@ -230,18 +230,24 @@ class ProfileBuyerEditPage extends Component {
             .then(response => {
                 console.log(response)
                 this.props.navigation.setParams({ change: false })
+                AsyncStorage.getItem('loginCredential', (err, result) => {
+                    AsyncStorage.removeItem('loginCredential', () => {
+                        AsyncStorage.setItem('loginCredential', response.data.refreshToken, () => {
+                            console.log('Sukses Ganti Token');
+                            const resetAction = NavigationActions.reset({
+                                index: 1,
+                                actions: [
+                                    NavigationActions.navigate({ routeName: 'Home' }),
+                                    NavigationActions.navigate({ routeName: 'ProfileBuyer' })
+                                ]
+                            })
+                            this.props.navigation.dispatch(resetAction)
 
-                const resetAction = NavigationActions.reset({
-                    index: 1,
-                    actions: [
-                        NavigationActions.navigate({ routeName: 'Home' }),
-                        NavigationActions.navigate({ routeName: 'ProfileBuyer' })
-                    ]
+                            this.setState({ loading: false })
+                            ToastAndroid.show('Ubah profil berhasil', ToastAndroid.SHORT)
+                        });
+                    });
                 })
-                this.props.navigation.dispatch(resetAction)
-
-                this.setState({ loading: false })
-                ToastAndroid.show('Ubah profil berhasil', ToastAndroid.SHORT)
             })
             .catch(error => {
                 console.log(error.response)
@@ -316,8 +322,9 @@ class ProfileBuyerEditPage extends Component {
                                     selectedValue={data ? data.organizationType : ''}
                                     onValueChange={v => this.onChangeInput('organizationType', v)}
                                 >
-                                    <Picker.Item label="Kelompok Nelayan" value="Kelompok Nelayan" />
-                                    <Picker.Item label="Personal" value="Personal" />
+                                    <Picker.Item label='PT' value='PT' />
+                                    <Picker.Item label='CV' value='CV' />
+                                    <Picker.Item label='Lainnya' value='Lainnya' />
                                 </Picker>
                             </View>
                         </View>
@@ -457,7 +464,6 @@ class ProfileBuyerEditPage extends Component {
                     <ContainerSection>
                         <Input
                             label='Username'
-                            editable={false}
                             value={data ? data.username : ''}
                         />
                     </ContainerSection>
