@@ -31,21 +31,33 @@ class RequestOrderPage extends Component {
       dataReqOrder: [],
       expiredContainer: null,
       NoExpiredContainer: null,
-      refresh: false
+      refresh: false,
+      anyData: null,
+      noData: null
     };
   }
 
-  async componentWillMount() {
-    try {
-      const value = await AsyncStorage.getItem('loginCredential');
-      if (value !== null) {
-        console.log(value, 'Storage Request');
-        this.setState({ tokenUser: value })
+  componentWillMount() {
+    AsyncStorage.getItem('loginCredential', (err, result) => {
+      if (result) {
+        console.log('Storage Tidak Kosong');
+        this.setState({ tokenUser: result, anyData: true });
         return this.getData();
+      } else {
+        console.log('Storage Kosong');
+        this.setState({ loading: false, noData: true });
+        return this.getNoData();
       }
-    } catch (error) {
-      console.log(error, 'Error Storage Request');
-    }
+    })
+  }
+
+  getNoData() {
+    return (
+      <View style={{ flex: 1, marginTop: '50%' }}>
+        <Text style={{ textAlign: 'center' }}>Ups... Kamu belum login.</Text>
+        <Text style={{ textAlign: 'center' }}>Silahkan login terlebih dahulu :* </Text>
+      </View>
+    )
   }
 
   getData() {
@@ -72,7 +84,7 @@ class RequestOrderPage extends Component {
       })
   }
 
- 
+
   handleRefresh = () => {
     console.log('Refresh');
     this.setState({
@@ -81,7 +93,7 @@ class RequestOrderPage extends Component {
       this.getData();
     })
   }
-  
+
 
   detailOrder = (props) => {
     const listData = props;
@@ -181,20 +193,32 @@ class RequestOrderPage extends Component {
 
 
   render() {
+    const { anyData, noData } = this.state;
     if (this.state.loading) {
       return <Spinner size="large" />
     }
     return (
       <ScrollView>
-        <View>
-          <FlatList
-            data={this.state.dataReqOrder}
-            renderItem={({ item }) => this.renderData(item)}
-            keyExtractor={(item, index) => index}
-            refreshing={this.state.refresh}
-            onRefresh={() => this.handleRefresh}
-          />
-        </View>
+        {
+          anyData ?
+            <View>
+              <FlatList
+                data={this.state.dataReqOrder}
+                renderItem={({ item }) => this.renderData(item)}
+                keyExtractor={(item, index) => index}
+                refreshing={this.state.refresh}
+                onRefresh={() => this.handleRefresh}
+              />
+            </View>
+            :
+            <View />
+        }
+        {
+          noData ?
+            this.getNoData()
+            :
+            <View />
+        }
       </ScrollView>
     );
   }

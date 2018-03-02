@@ -35,22 +35,35 @@ class TransactionPage extends Component {
     this.state = {
       loading: true,
       tokenUser: '',
-      dataTransaksi: []
+      dataTransaksi: [],
+      anyData: null,
+      noData: null
     };
   };
 
 
-  async componentWillMount() {
-    try {
-      const value = await AsyncStorage.getItem('loginCredential');
-      if (value !== null) {
-        console.log(value, 'Storage Request');
-        this.setState({ tokenUser: value })
+  componentWillMount() {
+    AsyncStorage.getItem('loginCredential', (err, result) => {
+      if (result) {
+        console.log('Storage Tidak Kosong');
+        this.setState({ tokenUser: result, anyData: true });
         return this.getData();
+      } else {
+        console.log('Storage Kosong');
+        this.setState({ loading: false, noData: true });
+        return this.getNoData();
       }
-    } catch (error) {
-      console.log(error, 'Error Storage Request');
-    }
+    })
+  }
+
+  
+  getNoData() {
+    return (
+      <View style={{ flex: 1, marginTop: '50%' }}>
+        <Text style={{ textAlign: 'center' }}>Ups... Kamu belum login.</Text>
+        <Text style={{ textAlign: 'center' }}>Silahkan login terlebih dahulu :* </Text>
+      </View>
+    )
   }
 
   getData() {
@@ -178,17 +191,32 @@ class TransactionPage extends Component {
 
 
   render() {
+    const { anyData, noData } = this.state;
+
     if (this.state.loading) {
       return <Spinner size="large" />
     }
     return (
-      <View style={{flex: 1}}>
-        <FlatList
-          data={this.state.dataTransaksi}
-          renderItem={({ item }) => this.renderData(item)}
-          keyExtractor={(item, index) => index}
-        />
-      </View>
+      <ScrollView>
+        {
+          anyData ?
+            <View style={{flex: 1}}>
+              <FlatList
+                data={this.state.dataTransaksi}
+                renderItem={({ item }) => this.renderData(item)}
+                keyExtractor={(item, index) => index}
+              />
+            </View>
+            :
+            <View />
+        }
+        {
+          noData ?
+            this.getNoData()
+            :
+            <View />
+        }
+      </ScrollView>
     );
   }
 };
