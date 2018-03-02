@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { View, Text, Image } from 'react-native'
-import { Container, ContainerSection, Input, Button, Spinner } from '../components/common'
+import { View, Text, Image, Linking, TouchableOpacity } from 'react-native'
+import { Container, ContainerSection } from '../components/common'
 
 class HelpPage extends Component {
 	static navigationOptions = {
@@ -23,9 +23,25 @@ class HelpPage extends Component {
 					<View style={{justifyContent: 'center', alignItems: 'center'}}>
 						<Text>Hubungi</Text>
 						<Text>Pusat Bantuan</Text>
-						<Text style={{fontSize: 20, marginTop: 10, marginBottom: 10}}>+62 21 777 8888</Text>
+						<TouchableOpacity
+							onPress={() => Linking.openURL('tel:0217778888').catch(err => console.error('An error occurred', err))}
+						>
+							<View>
+								<Text style={{fontSize: 20, marginTop: 10, marginBottom: 10}}>
+									+62 21 777 8888
+								</Text>
+							</View>
+						</TouchableOpacity>
+
 						<Text>atau</Text>
-						<Text style={{fontSize: 20, marginTop: 10, marginBottom: 10}}>info@aruna.id</Text>
+						<TouchableOpacity
+							onPress={() => Linking.openURL('mailto:info@aruna.id').catch(err => console.error('An error occurred', err))}
+						>
+							<View>
+								<Text style={{fontSize: 20, marginTop: 10, marginBottom: 10}}>info@aruna.id</Text>
+							</View>
+						</TouchableOpacity>
+
 					</View>
 				</Container>
 			</View>
