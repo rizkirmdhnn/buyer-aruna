@@ -31,7 +31,6 @@ class ProfileBuyerPage extends Component {
 	componentDidMount() {
 		AsyncStorage.getItem('loginCredential', (err, result) => {
 			if (result) {
-				console.log(result, 'Token');
 				axios.get(`${BASE_URL}/profile`, {
 					headers: { token: result }
 				})
