@@ -63,7 +63,7 @@ class FilterBeforePage extends Component {
         axios.get(`${BASE_URL}/products`, {
             params: {
                 key: item.name,
-                sorting: 'ASC'
+                sorting: 'DESC'
             }
         })
             .then(response => {
@@ -89,7 +89,11 @@ class FilterBeforePage extends Component {
         if (text !== '') {
             console.log('Text Tidak Kosong');
             this.setState({ searchResult: true, searchResultAll: false, viewExpanded: false, load: true });
-            axios.get(`${BASE_URL}/fishes/search?key=${text}`)
+            axios.get(`${BASE_URL}/fishes/search?key=${text}`, {
+                params: {
+                    sorting: 'ASC'
+                }
+            })
                 .then(response => {
                     res = response.data.data
                     this.setState({ searchItem: res, load: false })
@@ -112,7 +116,7 @@ class FilterBeforePage extends Component {
         }
     }
 
-    
+
     updateSelected = (item) => {
         console.log(item, 'Data Params');
         console.log(item.dataProvince, 'Data Provinsi');
@@ -130,7 +134,7 @@ class FilterBeforePage extends Component {
         axios.get(`${BASE_URL}/products`, {
             params: {
                 key: item.fishDatas.datas.name,
-                sorting: 'ASC',
+                sorting: 'DESC',
                 dataProvinceId,
                 maxPrice: item.dataPrice
             }
