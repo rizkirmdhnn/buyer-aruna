@@ -390,29 +390,23 @@ class RequestFormOrderFirstPage extends Component {
             </AutoComplete>
           </ContainerSection>
           <ContainerSection>
-            <View style={styles.pickerContainer}>
-              <Input
-                label='Ukuran'
-                placeholder=''
-                keyboardType="numeric"
-                value={size ? numeral(parseInt(size)).format('0,0') : ''}
-                onChangeText={v => this.onChangeInput('size', v.replace(/\./g, ''))}
-              />
-            </View>
-            <View style={{ flex: 1, paddingTop: 50, paddingLeft: 10 }}>
-              <View style={styles.pickerContainer}>
-                <View style={styles.pickerStyleBox}>
-                  <View style={styles.pickerStyle}>
-                    <Picker
-                      selectedValue={unitFish}
-                      onValueChange={v => this.onChangeInput('unitFish', v)}
-                    >
-                      <Picker.Item label='Kg' value='Kg' />
-                      <Picker.Item label='Cm' value='Cm' />
-                      <Picker.Item label='Ekor/Kg' value='Ekor/Kg' />
-                    </Picker>
-                  </View>
-                </View>
+            <Input
+              label='Ukuran'
+              placeholder=''
+              keyboardType="numeric"
+              value={size ? numeral(parseInt(size)).format('0,0') : ''}
+              onChangeText={v => this.onChangeInput('size', v.replace(/\./g, ''))}
+            />
+            <View style={{marginTop: 50, marginLeft: 10, flex: 1}}>
+              <View style={styles.pickerUnitStyle}>
+                <Picker
+                  selectedValue={unitFish}
+                  onValueChange={v => this.onChangeInput('unitFish', v)}
+                >
+                  <Picker.Item label='Kg' value='Kg' />
+                  <Picker.Item label='Cm' value='Cm' />
+                  <Picker.Item label='Ekor/Kg' value='Ekor/Kg' />
+                </Picker>
               </View>
             </View>
           </ContainerSection>
@@ -537,6 +531,14 @@ const styles = {
     borderRadius: 5,
     paddingLeft: 7,
     borderWidth: 1,
+  },
+  pickerUnitStyle: {
+    borderColor: '#a9a9a9',
+    borderRadius: 5,
+    paddingLeft: 7,
+    borderWidth: 1,
+    height: 46,
+    backgroundColor: '#fff'
   },
   pickerTextStyle: {
     color: '#5e5e5e',
