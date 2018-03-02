@@ -12,14 +12,13 @@ import {
   FlatList,
   TouchableNativeFeedback
 } from 'react-native';
-import axios from 'axios';
-import { BASE_URL } from './../shared/lb.config';
-import { COLOR } from './../shared/lb.config';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Button, CardSection, Container, ContainerSection, Spinner, Input, InputSearch } from '../components/common'
+import axios from 'axios';
 import { NavigationActions } from 'react-navigation';
-import { Card, CheckBox } from 'react-native-elements';
+import { CheckBox } from 'react-native-elements';
 
+import { BASE_URL, COLOR } from './../shared/lb.config';
+import { Button, CardSection, Container, ContainerSection, Spinner, Input, InputSearch, Card } from '../components/common'
 import FilterPage from './FilterPage';
 
 class FilterBeforePage extends Component {
@@ -121,13 +120,13 @@ class FilterBeforePage extends Component {
     console.log(item, 'Data Params');
     console.log(item.dataProvince, 'Data Provinsi');
 
-    item.dataProvince.map((item, index) => {
-      this.state.idProvince.push(item.id)
+    item.dataProvince.map(item2 => {
+      this.state.idProvince.push(item2.id)
     })
 
 
     const dataProvinceId = {
-      'ProvinceIds': this.state.idProvince
+      ProvinceIds: this.state.idProvince
     }
 
     this.setState({ searchResultAll: true, searchResult: false, viewExpanded: false, loading: true })
