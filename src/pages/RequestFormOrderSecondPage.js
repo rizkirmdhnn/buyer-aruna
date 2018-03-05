@@ -37,8 +37,7 @@ class RequestFormOrderSecondPage extends Component {
       idSupplier: [],
       dataFirstSearch: '',
       dataSecondButton: '',
-      dataThirdHome: '',
-      buttonRender: null
+      dataThirdHome: ''
     };
   }
 
@@ -220,7 +219,7 @@ class RequestFormOrderSecondPage extends Component {
   }
 
   render() {
-    const { buttonRender, dataSupplier } = this.state;
+    const { dataSupplier } = this.state;
     if (this.state.loading) {
       return <Spinner size="large" />
     }
