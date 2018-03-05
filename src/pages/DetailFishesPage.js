@@ -63,8 +63,15 @@ class DetailFishesPage extends Component {
     }
 
     createRequest(item) {
-        console.log(item, 'Data Ikan Terpilih')
-        this.props.navigation.navigate('RequestFormOrderFirst', { dataFish: item })
+        AsyncStorage.getItem('loginCredential', (err, result) => {
+            if (result) {
+                console.log(item, 'Data Ikan Terpilih')
+                this.props.navigation.navigate('RequestFormOrderFirst', { dataFish: item })
+            } else {
+                alert('Anda belum login. Silahkan lakukan login terlebih dahulu');
+            }
+        })
+
     }
 
     render() {

@@ -55,7 +55,7 @@ class RequestOrderPage extends Component {
     return (
       <View style={{ flex: 1, marginTop: '50%' }}>
         <Text style={{ textAlign: 'center' }}>Ups... Kamu belum login.</Text>
-        <Text style={{ textAlign: 'center' }}>Silahkan login terlebih dahulu :* </Text>
+        <Text style={{ textAlign: 'center' }}>Silahkan login terlebih dahulu. </Text>
       </View>
     )
   }
