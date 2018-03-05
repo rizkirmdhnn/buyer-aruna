@@ -1,21 +1,17 @@
 import React, { Component } from 'react';
-import { Text, View, FlatList, Image, ScrollView, AsyncStorage, TouchableWithoutFeedback, ToastAndroid } from 'react-native';
+import { Text, View, FlatList, Image, ScrollView, AsyncStorage, ToastAndroid } from 'react-native';
+import { NavigationActions } from 'react-navigation'
+import { CheckBox } from 'react-native-elements';
+import moment from 'moment';
+import axios from 'axios';
+import numeral from 'numeral';
+import { BASE_URL, COLOR } from './../shared/lb.config';
 import {
-  CardRegistration,
-  CardSectionRegistration,
-  InputRegistration,
   ContainerSection,
-  Container,
   Spinner,
   Button,
   Card
 } from './../components/common';
-import { NavigationActions } from 'react-navigation'
-import { CheckBox } from 'react-native-elements';
-import moment from 'moment';
-import { BASE_URL, COLOR } from './../shared/lb.config';
-import axios from 'axios';
-import numeral from 'numeral'
 
 class DetailRequestOrderPage extends Component {
   static navigationOptions = {
@@ -41,7 +37,7 @@ class DetailRequestOrderPage extends Component {
       NotDisabledContainer: null,
       buttonExpanded: false
     };
-  };
+  }
 
   componentWillMount() {
     const idOrder = this.props.navigation.state.params.datas.id;
@@ -49,7 +45,7 @@ class DetailRequestOrderPage extends Component {
     AsyncStorage.getItem('loginCredential', (err, result) => {
       axios.get(`${BASE_URL}/buyer/requests/${idOrder}`, {
         headers: {
-          'token': result
+          token: result
         }
       }).then(response => {
         res = response.data.data;
@@ -73,20 +69,103 @@ class DetailRequestOrderPage extends Component {
     });
   }
 
+  viewCheck() {
+    this.setState({
+      checkedContainer: true,
+      unCheckedContainer: false
+    });
+  }
+
+  viewUnCheck() {
+    this.setState({
+      checkedContainer: false,
+      unCheckedContainer: true
+    });
+  }
+
+  endRequest = () => {
+    console.log(this.state.dataMaster, 'End Request');
+    this.setState({ loading: true });
+    this.state.checkedSelected.map((item) => this.state.idRequest.push(item.id))
+
+    const dataId = {
+      RequestIds: this.state.idRequest
+    }
+    const idReq = this.state.dataMaster.id;
+    console.log(dataId, 'ID PUT');
+    axios.put(`${BASE_URL}/buyer/requests/${idReq}`,
+      dataId
+      , {
+        headers: {
+          token: this.state.tokenUser,
+          'Content-Type': 'application/json',
+        }
+      }).then(response => {
+        res = response.data.data;
+        console.log(response, 'RES');
+        this.setState({ loading: false });
+
+        const resetAction = NavigationActions.reset({
+          index: 1,
+          actions: [
+            NavigationActions.navigate({ routeName: 'Home' }),
+            NavigationActions.navigate({ routeName: 'Transaction' })
+          ]
+        })
+        this.props.navigation.dispatch(resetAction)
+      })
+      .catch(error => {
+        if (error.response) {
+          ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
+        }
+        else {
+          ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
+        }
+      })
+  }
+
+  unCheckItem = data => {
+    const { checkedSelected, checkedNotSelected } = this.state;
+    if (!checkedNotSelected.includes(data)) {
+      this.setState({
+        checkedNotSelected: [...checkedNotSelected, data]
+      });
+    } else {
+      this.setState({
+        checkedNotSelected: checkedNotSelected.filter(a => a !== data),
+        checkedSelected: [...checkedSelected, data]
+      });
+    }
+  };
+
+  checkItem = data => {
+    const { checkedSelected, checkedNotSelected } = this.state;
+    if (!checkedSelected.includes(data)) {
+      this.setState({
+        checkedSelected: [...checkedSelected, data]
+      });
+    } else {
+      this.setState({
+        checkedSelected: checkedSelected.filter(a => a !== data),
+        checkedNotSelected: [...checkedNotSelected, data]
+      });
+    }
+  };
+
+
   renderFlatListSupplierUnChecked = () => {
     if (this.state.loading) {
       return <Spinner size="small" />
-    } else {
-      return (
-        <View>
-          <FlatList
-            data={[this.state.checkedNotSelected]}
-            renderItem={({ item }) => this.renderSupplierUnChecked(item)}
-            keyExtractor={(item, index) => index}
-          />
-        </View>
-      );
     }
+    return (
+      <View>
+        <FlatList
+          data={[this.state.checkedNotSelected]}
+          renderItem={({ item }) => this.renderSupplierUnChecked(item)}
+          keyExtractor={(item, index) => index}
+        />
+      </View>
+    );
   }
 
   renderSupplierChecked = (item) => {
@@ -105,9 +184,9 @@ class DetailRequestOrderPage extends Component {
                   />
                 </View>
                 <View style={styles.headerContentStyle}>
-                  <View style={{ flex: 1, flexDirection: 'row'}}>
+                  <View style={{ flex: 1, flexDirection: 'row' }}>
                     <Text style={{ flex: 3, fontFamily: 'Muli-Regular', color: COLOR.secondary_a, fontSize: 16 }}>{data.Supplier.name}</Text>
-                    <View style={{flex: 1}}>
+                    <View style={{ flex: 1 }}>
                       <CheckBox
                         containerStyle={{
                           borderWidth: 0,
@@ -133,7 +212,7 @@ class DetailRequestOrderPage extends Component {
         )
       })
     }
-    if (item.length == 0) {
+    if (item.length === 0) {
       return (
         <View>
           <Text style={{ textAlign: 'center', marginTop: '45%' }}>Belum ada nelayan yang menyanggupi.</Text>
@@ -145,7 +224,7 @@ class DetailRequestOrderPage extends Component {
   renderSupplierUnChecked = (item) => {
     if (item.length > 0) {
       console.log('Ada Data');
-      return item.map((data, index) => {
+      return item.map((data) => {
         return (
           <Card>
             <View style={styles.itemContainerStyleSupplier}>
@@ -156,9 +235,9 @@ class DetailRequestOrderPage extends Component {
                 />
               </View>
               <View style={styles.headerContentStyle}>
-                <View style={{ flex: 1, flexDirection: 'row'}}>
+                <View style={{ flex: 1, flexDirection: 'row' }}>
                   <Text style={{ flex: 3, fontFamily: 'Muli-Regular', color: COLOR.secondary_a, fontSize: 16 }}>{data.Supplier.name}</Text>
-                  <View style={{flex: 1}}>
+                  <View style={{ flex: 1 }}>
                     <CheckBox
                       containerStyle={{
                         borderWidth: 0,
@@ -176,7 +255,7 @@ class DetailRequestOrderPage extends Component {
                   <Text style={{ flex: 1 }}>{data.Supplier.organization} </Text>
                   <Text style={{ flex: 1 }}>{data.Product.capacity} Kg </Text>
                   <Text style={{ flex: 1 }}>Rp. {data.Product ? numeral(data.Product.minPrice).format('0,0') : '-'} - Rp. {data.Product ? numeral(data.Product.maxPrice).format('0,0') : '-'}</Text>
-               </View>
+                </View>
               </View>
             </View>
           </Card>
@@ -184,7 +263,7 @@ class DetailRequestOrderPage extends Component {
       })
     }
 
-    if (item.length == 0) {
+    if (item.length === 0) {
       console.log('Tidak Ada Data');
       return (
         <View>
@@ -194,90 +273,12 @@ class DetailRequestOrderPage extends Component {
     }
   }
 
-  checkItem = data => {
-    const { checkedSelected, checkedNotSelected } = this.state;
-    if (!checkedSelected.includes(data)) {
-      this.setState({
-        checkedSelected: [...checkedSelected, data]
-      });
-    } else {
-      this.setState({
-        checkedSelected: checkedSelected.filter(a => a !== data),
-        checkedNotSelected: [...checkedNotSelected, data]
-      });
-    }
-  };
-
-  unCheckItem = data => {
-    const { checkedSelected, checkedNotSelected } = this.state;
-    if (!checkedNotSelected.includes(data)) {
-      this.setState({
-        checkedNotSelected: [...checkedNotSelected, data]
-      });
-    } else {
-      this.setState({
-        checkedNotSelected: checkedNotSelected.filter(a => a !== data),
-        checkedSelected: [...checkedSelected, data]
-      });
-    }
-  };
-
-  endRequest = () => {
-    console.log(this.state.dataMaster, 'End Request');
-    this.setState({ loading: true });
-    const { navigate } = this.props.navigation;
-
-    this.state.checkedSelected.map((item, index) => {
-      this.state.idRequest.push(item.id)
-    })
-
-    const dataId = {
-      'RequestIds': this.state.idRequest
-    }
-    const idReq = this.state.dataMaster.id;
-    console.log(dataId, 'ID PUT');
-    axios.put(`${BASE_URL}/buyer/requests/${idReq}`,
-      dataId
-      , {
-        headers: {
-          'token': this.state.tokenUser,
-          'Content-Type': 'application/json',
-        }
-      }).then(response => {
-        res = response.data.data;
-        console.log(response, 'RES');
-        this.setState({ loading: false });
-        // navigate('Transaction');
-
-        const resetAction = NavigationActions.reset({
-          index: 1,
-          actions: [
-            NavigationActions.navigate({ routeName: 'Home'}),
-            NavigationActions.navigate({ routeName: 'Transaction'})
-          ]
-        })
-        this.props.navigation.dispatch(resetAction)
-      })
-      .catch(error => {
-        if (error.response) {
-          ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
-        }
-        else {
-          ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
-        }
-      })
-  }
 
   renderButton() {
-    const {
-      disabledContainer,
-      NotDisabledContainer
-    } = this.state;
-
     if (this.state.loading) {
       return <Spinner size="small" />
     }
-    if (this.state.dataMaster.Status.id == 19) {
+    if (this.state.dataMaster.Status.id === 19) {
       if (this.state.dataMaster.sanggup > 0) {
         return (
           <View style={{ margin: 10 }}>
@@ -292,7 +293,7 @@ class DetailRequestOrderPage extends Component {
         );
       }
     }
-    if (this.state.dataMaster.Status.id == 20) {
+    if (this.state.dataMaster.Status.id === 20) {
       if (this.state.dataMaster.sanggup > 0) {
         return (
           <View style={{ margin: 10 }}>
@@ -306,14 +307,14 @@ class DetailRequestOrderPage extends Component {
           </View>
         );
       }
-      if (this.state.dataMaster.sanggup == 0) {
+      if (this.state.dataMaster.sanggup === 0) {
         return (
           <View style={{ margin: 10 }}>
             <ContainerSection>
-             <Button
-               onPress={this.endRequest.bind(this)}
-             >
-               Lanjut Transaksi
+              <Button
+                onPress={this.endRequest.bind(this)}
+              >
+                Lanjut Transaksi
              </Button>
             </ContainerSection>
           </View>
@@ -322,28 +323,12 @@ class DetailRequestOrderPage extends Component {
     }
   }
 
-  viewCheck() {
-    this.setState({
-      checkedContainer: true,
-      unCheckedContainer: false
-    });
-  }
-
-  viewUnCheck() {
-    this.setState({
-      checkedContainer: false,
-      unCheckedContainer: true
-    });
-  }
-
 
   render() {
     const {
       checkedContainer,
       unCheckedContainer,
       buttonExpanded,
-      disabledContainer,
-      NotDisabledContainer,
       loading,
       dataMaster
     } = this.state;
@@ -370,9 +355,9 @@ class DetailRequestOrderPage extends Component {
               <View style={styles.headerContentStyle}>
                 <Text style={styles.headerTextStyle}>{dataMaster.Fish.name}</Text>
                 <Text style={styles.headerTextStyle}>{dataMaster.size} Kg</Text>
-                <View style={{ flex: 1 }}></View>
-                <View style={{ flex: 1 }}></View>
-                <View style={{ flex: 1 }}></View>
+                <View style={{ flex: 1 }} />
+                <View style={{ flex: 1 }} />
+                <View style={{ flex: 1 }} />
                 <View style={{ flexDirection: 'column', flex: 1 }}>
                   <Text>Sampai Tanggal: {moment(dataMaster.dueDate).format('DD/MM/YYYY')}</Text>
                   <Text>Pukul: {moment(dataMaster.dueDate).format('h:mm:ss')}</Text>
@@ -388,7 +373,7 @@ class DetailRequestOrderPage extends Component {
                 borderRadius: 0,
                 backgroundColor: checkedContainer ? COLOR.primary : COLOR.secondary_a
               }}
-              textStyle={{fontSize: 14, fontFamily: 'Muli-Regular'}}
+              textStyle={{ fontSize: 14, fontFamily: 'Muli-Regular' }}
             >
               Supplier Dipilih ({this.state.checkedSelected.length})
             </Button>
@@ -398,7 +383,7 @@ class DetailRequestOrderPage extends Component {
                 borderRadius: 0,
                 backgroundColor: unCheckedContainer ? COLOR.primary : COLOR.secondary_a
               }}
-              textStyle={{fontSize: 14, fontFamily: 'Muli-Regular'}}
+              textStyle={{ fontSize: 14, fontFamily: 'Muli-Regular' }}
             >
               Supplier Ditolak ({this.state.checkedNotSelected.length})
             </Button>
@@ -492,19 +477,10 @@ const styles = {
     flexDirection: 'row',
     backgroundColor: '#fff'
   },
-  headerTextStyle: {
-    fontSize: 20,
-    fontWeight: 'bold'
-  },
-  titleTextStyle: {
-    fontSize: 15,
-    fontWeight: 'bold'
-  },
   loadingStyle: {
     marginTop: 30
   },
   containerScroll: {
-    // padding: 5,
     marginTop: 50,
     height: 200,
     borderTopWidth: 2,

@@ -278,12 +278,11 @@ class RegistrationFormPage extends Component {
   renderPickerCity = () => {
     if (this.state.dataCity === '') {
       return <Picker.Item label='Pilih Kota' value='0' />
-    } else {
-      const resultRender = this.state.dataCity;
-      return resultRender.map((data, index) => {
-        return <Picker.Item label={data.name} value={data.id} key={index} />
-      })
     }
+    const resultRender = this.state.dataCity;
+    return resultRender.map((data, index) => {
+      return <Picker.Item label={data.name} value={data.id} key={index} />
+    })
   }
 
   renderButton = () => {

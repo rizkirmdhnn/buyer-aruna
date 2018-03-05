@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
-import { Text, View, TextInput } from 'react-native'
+import { View, TextInput } from 'react-native'
 
 class InputChat extends Component {
 	render() {
-		const { label, value, onChangeText, placeholder, secureTextEntry, keyboardType, multiline } = this.props
-		const { inputStyle, labelStyle, containerStyle } = styles
+		const { value, onChangeText, placeholder, secureTextEntry, keyboardType, multiline } = this.props
+		const { inputStyle, containerStyle } = styles
 
 		return (
 			<View style={containerStyle}>

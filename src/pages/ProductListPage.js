@@ -1,21 +1,18 @@
 import React, { Component } from 'react';
-import { Text, FlatList, View, Image, TouchableWithoutFeedback, AsyncStorage, resizeMode, ScrollView } from 'react-native';
-import { Header, SearchBar, Icon } from 'react-native-elements';
-import { BASE_URL } from './../shared/lb.config';
+import { Text, FlatList, View, Image, TouchableWithoutFeedback, ScrollView } from 'react-native';
 import axios from 'axios';
 import {
-    CardRegistration,
-    CardSectionRegistration,
-    InputRegistration,
-    Button,
-    ContainerSection,
-    Container,
     Spinner,
     Card
 } from './../components/common';
-import moment from 'moment';
+import { BASE_URL } from './../shared/lb.config';
 
 class ProductListPage extends Component {
+
+    static navigationOptions = {
+        title: 'List Produk',
+        headerRight: <View />
+    }
 
     constructor(props) {
         super(props);
@@ -24,7 +21,7 @@ class ProductListPage extends Component {
             dataProduct: '',
             tokenUser: ''
         };
-    };
+    }
 
     componentWillMount() {
         return this.getData();
@@ -48,13 +45,13 @@ class ProductListPage extends Component {
             })
     }
 
-    static navigationOptions = {
-        title: 'List Produk',
-        headerRight: <View />
-    }
 
     refreshRequest() {
         return this.getData();
+    }
+
+    detailProduct = (item) => {
+        this.props.navigation.navigate('DetailFishes', { datas: item })
     }
 
     renderData = (item) => {
@@ -77,10 +74,6 @@ class ProductListPage extends Component {
         );
     }
 
-    detailProduct = (item) => {
-        this.props.navigation.navigate('DetailFishes', { datas: item })
-    }
-
 
     render() {
         if (this.state.loading) {
@@ -98,7 +91,7 @@ class ProductListPage extends Component {
             </ScrollView>
         );
     }
-};
+}
 
 const styles = {
     itemContainerStyle: {

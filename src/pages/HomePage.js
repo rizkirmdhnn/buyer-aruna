@@ -14,7 +14,6 @@ import {
 } from 'react-native';
 import OneSignal from 'react-native-onesignal';
 import { NavigationActions } from 'react-navigation';
-import axios from 'axios';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { connect } from 'react-redux'
 
@@ -22,7 +21,7 @@ import { ContainerSection, Spinner, InputSearch } from '../components/common'
 import Dashboard from './Dashboard';
 import RequestOrderPage from './RequestOrderPage';
 import TransactionPage from './TransactionPage';
-import { BASE_URL, COLOR } from './../shared/lb.config';
+import { COLOR } from './../shared/lb.config';
 import { setUserToken, unreadNotifFetch } from '../redux/actions'
 
 class HomePage extends Component {
@@ -69,7 +68,7 @@ class HomePage extends Component {
 
   isLogout() {
     console.log('Logout Klik');
-    AsyncStorage.getItem('loginCredential', (err, result) => {
+    AsyncStorage.getItem('loginCredential', () => {
       AsyncStorage.removeItem('loginCredential', () => {
         OneSignal.deleteTag('userid');
         ToastAndroid.show('Berhasil Logout', ToastAndroid.SHORT)
@@ -109,12 +108,11 @@ class HomePage extends Component {
     // Redirect ke notification list
     if (this.props.user.unreadNotif > 0 && redirectToNotification === false) {
       this.props.navigation.navigate('NotificationList')
-      this.setState({redirectToNotification: true})
+      this.setState({ redirectToNotification: true })
     }
 
     const {
-      containerStyle, headerHomeStyle, menuContainerStyle,
-      profileImageContainer, profileImage, profileName, coin, point, tabContainer, tabContainerActive, tabText, tabTextActive
+      menuContainerStyle, tabContainer, tabContainerActive, tabText, tabTextActive
     } = styles;
 
     const menuLogin = [
@@ -211,11 +209,11 @@ class HomePage extends Component {
             menuLoginExpanded ?
               <View>
                 <TouchableOpacity onPress={() => this.props.navigation.navigate('Term')}>
-                  <View style={{marginBottom: 20}}>
+                  <View style={{ marginBottom: 20 }}>
                     <ContainerSection>
-                      <Image 
+                      <Image
                         style={styles.menuIcon}
-                        source={require('../assets/images/dokumen.png')} 
+                        source={require('../assets/images/dokumen.png')}
                       />
                       <Text style={styles.drawerItemText}>Terms & Conditions</Text>
                     </ContainerSection>
@@ -267,8 +265,6 @@ class HomePage extends Component {
     )
 
 
-
-
     return (
       <View style={styles.container}>
         <DrawerLayoutAndroid
@@ -302,9 +298,9 @@ class HomePage extends Component {
                       source={
                         this.props.user.unreadNotif > 0 ?
                           require('../assets/images/ic_notification_on.png')
-                        :
+                          :
                           require('../assets/images/ic_notification.png')
-                      } 
+                      }
                     />
                   </TouchableOpacity>
                 </View>
@@ -366,7 +362,7 @@ class HomePage extends Component {
       </View>
     );
   }
-};
+}
 
 
 const styles = {

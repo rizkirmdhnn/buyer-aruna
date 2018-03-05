@@ -25,7 +25,6 @@ import {
   Spinner
 } from './../components/common';
 import { BASE_URL, COLOR } from './../shared/lb.config';
-import AutoComplete from '../components/AutoComplete';
 
 class FormContractRevisionPage extends Component {
 
@@ -67,21 +66,6 @@ class FormContractRevisionPage extends Component {
     };
   }
 
-  backPage() {
-    const { navigate } = this.props.navigation
-    Alert.alert(
-      '',
-      'Yakin batal mengubah fishlog?',
-      [
-        { text: 'Tidak', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-        {
-          text: 'Ya', onPress: () => {
-            navigate('DetailTransaction')
-          }
-        },
-      ]
-    )
-  }
 
   componentWillMount() {
     this.setState({
@@ -125,35 +109,11 @@ class FormContractRevisionPage extends Component {
     // console.log(v);
   }
 
-  _showTanggalPengiriman = () => this.setState({ tanggalPenggiriman: true });
-
-  _hideTanggalPengiriman = () => this.setState({ tanggalPenggiriman: false });
-
-  _handleDatePickedPengiriman = (date) => {
-    console.log(date, 'Date Nya')
-    const dateTemp = moment(date).format('YYYY-MM-DD h:mm:ss');
-    const dateNow = moment(date).format('DD/MM/YYYY');
-    this.setState({ dateOfReception: dateTemp, dateNowPickPengiriman: dateNow })
-    this._hideTanggalPengiriman();
-  };
-
-  _showTanggalDP = () => this.setState({ tanggalDP: true });
-
-  _hideTanggalDP = () => this.setState({ tanggalDP: false });
-
-  _handleDatePickedDP = (date) => {
-    console.log(date, 'Date Nya')
-    const dateTemp = moment(date).format('YYYY-MM-DD h:mm:ss');
-    const dateNow = moment(date).format('DD/MM/YYYY');
-    this.setState({ dpDate: dateTemp, dateNowPickDP: dateNow })
-    this._hideTanggalDP();
-  };
 
   onSubmit = () => {
     console.log(this.state);
-    this.state.locationOfreception.map((data, index) => {
-      this.setState({ shareLoc: data });
-    })
+    this.state.locationOfreception.map((data) => this.setState({ shareLoc: data }))
+
     const dataContract = {
       fishDescribe: this.state.dataMaster.Request.Transaction.describe,
       size: this.state.dataMaster.Request.Transaction.size,
@@ -203,6 +163,48 @@ class FormContractRevisionPage extends Component {
           ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
         }
       })
+  }
+
+
+  showTanggalDP = () => this.setState({ tanggalDP: true });
+
+  hideTanggalDP = () => this.setState({ tanggalDP: false });
+
+  handleDatePickedDP = (date) => {
+    console.log(date, 'Date Nya')
+    const dateTemp = moment(date).format('YYYY-MM-DD h:mm:ss');
+    const dateNow = moment(date).format('DD/MM/YYYY');
+    this.setState({ dpDate: dateTemp, dateNowPickDP: dateNow })
+    this.hideTanggalDP();
+  };
+
+  handleDatePickedPengiriman = (date) => {
+    console.log(date, 'Date Nya')
+    const dateTemp = moment(date).format('YYYY-MM-DD h:mm:ss');
+    const dateNow = moment(date).format('DD/MM/YYYY');
+    this.setState({ dateOfReception: dateTemp, dateNowPickPengiriman: dateNow })
+    this.hideTanggalPengiriman();
+  };
+
+  hideTanggalPengiriman = () => this.setState({ tanggalPenggiriman: false });
+
+  showTanggalPengiriman = () => this.setState({ tanggalPenggiriman: true });
+
+  backPage() {
+    const { navigate } = this.props.navigation
+    Alert.alert(
+      '',
+      'Yakin batal mengubah fishlog?',
+      [
+        { text: 'Tidak', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+        {
+          text: 'Ya',
+          onPress: () => {
+            navigate('DetailTransaction')
+          }
+        },
+      ]
+    )
   }
 
   navigationRedirect() {
@@ -307,7 +309,7 @@ class FormContractRevisionPage extends Component {
             <Input
               label="Ukuran"
               style={styles.textArea}
-              value={size ? numeral(parseInt(size)).format('0,0') : ''}
+              value={size ? numeral(parseInt(size, 0)).format('0,0') : ''}
               onChangeText={v => this.onChangeInput('size', v.replace(/\./g, ''))}
             />
             <View style={{ flex: 1, paddingTop: 20, paddingLeft: 10 }}>
@@ -317,7 +319,7 @@ class FormContractRevisionPage extends Component {
             <Input
               label="Jumlah"
               style={styles.textArea}
-              value={quantity ? numeral(parseInt(quantity)).format('0,0') : ''}
+              value={quantity ? numeral(parseInt(quantity, 0)).format('0,0') : ''}
               onChangeText={v => this.onChangeInput('quantity', v.replace(/\./g, ''))}
             />
             <View style={{ flex: 1, paddingTop: 25, paddingLeft: 10 }}>
@@ -344,7 +346,7 @@ class FormContractRevisionPage extends Component {
               label="Harga"
               keyboardType="numeric"
               style={styles.textArea}
-              value={price ? numeral(parseInt(quantity)).format('0,0') : ''}
+              value={price ? numeral(parseInt(quantity, 0)).format('0,0') : ''}
               onChangeText={v => this.onChangeInput('price', v.replace(/\./g, ''))}
             />
           </ContainerSection>
@@ -423,12 +425,12 @@ class FormContractRevisionPage extends Component {
             <Input
               label='Nominal DP'
               keyboardType="numeric"
-              value={dpAmount ? numeral(parseInt(dpAmount)).format('0,0') : ''}
+              value={dpAmount ? numeral(parseInt(dpAmount, 0)).format('0,0') : ''}
               onChangeText={v => this.onChangeInput('dpAmount', v.replace(/\./g, ''))}
             />
           </ContainerSection>
 
-          <TouchableWithoutFeedback onPress={this._showTanggalDP}>
+          <TouchableWithoutFeedback onPress={this.showTanggalDP}>
             <View>
               <ContainerSection>
                 <Input
@@ -442,11 +444,11 @@ class FormContractRevisionPage extends Component {
           </TouchableWithoutFeedback>
           <DateTimePicker
             isVisible={this.state.tanggalDP}
-            onConfirm={this._handleDatePickedDP}
-            onCancel={this._hideTanggalDP}
+            onConfirm={this.handleDatePickedDP}
+            onCancel={this.hideTanggalDP}
           />
 
-          <TouchableWithoutFeedback onPress={this._showTanggalPengiriman}>
+          <TouchableWithoutFeedback onPress={this.showTanggalPengiriman}>
             <View>
               <ContainerSection>
                 <Input
@@ -460,8 +462,8 @@ class FormContractRevisionPage extends Component {
           </TouchableWithoutFeedback>
           <DateTimePicker
             isVisible={this.state.tanggalPenggiriman}
-            onConfirm={this._handleDatePickedPengiriman}
-            onCancel={this._hideTanggalPengiriman}
+            onConfirm={this.handleDatePickedPengiriman}
+            onCancel={this.hideTanggalPengiriman}
             minimumDate={new Date()}
           />
 
@@ -487,7 +489,7 @@ class FormContractRevisionPage extends Component {
             <Input
               label='Presentase Maksimal Komoditas Reject'
               keyboardType="numeric"
-              value={maxFishReject ? numeral(parseInt(maxFishReject)).format('0,0') : ''}
+              value={maxFishReject ? numeral(parseInt(maxFishReject, 0)).format('0,0') : ''}
               onChangeText={v => this.onChangeInput('maxFishReject', v.replace(/\./g, ''))}
             />
           </ContainerSection>

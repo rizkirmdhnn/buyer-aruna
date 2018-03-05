@@ -87,6 +87,7 @@ class MessagePage extends Component {
 					headers: { token }
 				})
 					.then(response => {
+						console.log(response);
 						this.setState({ text: '' })
 						this.fetchMessage()
 					})
@@ -111,7 +112,7 @@ class MessagePage extends Component {
 			return <Spinner size='large' />
 		}
 		
-		console.log(this.state.decoded.user, 'DECODE TOKEN');
+		console.log(decoded.user, 'DECODE TOKEN');
 		return (
 			<View style={styles.container}>
 
@@ -127,8 +128,8 @@ class MessagePage extends Component {
 
 				<ScrollView
 					style={styles.body}
-					ref={ref => this.scrollView = ref}
-					onContentSizeChange={(contentWidth, contentHeight) => {
+					ref={ref => { this.scrollView = ref }}
+					onContentSizeChange={() => {
 						this.scrollView.scrollToEnd({ animated: true })
 					}}
 				>

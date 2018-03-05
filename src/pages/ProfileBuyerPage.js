@@ -6,7 +6,7 @@ import { BASE_URL, COLOR } from '../shared/lb.config';
 import { Spinner, Button } from '../components/common'
 
 class ProfileBuyerPage extends Component {
-	static navigationOptions = ({ navigation }) => ({
+	static navigationOptions = () => ({
 		title: 'Profile',
 		headerRight: <View />
 	})

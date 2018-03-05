@@ -1,32 +1,19 @@
 import React, { Component } from 'react';
-import { NavigationActions } from 'react-navigation';
 import {
     View,
     ScrollView,
     Text,
-    Alert,
-    Picker,
-    KeyboardAvoidingView,
-    Keyboard,
-    TextInput,
-    PixelRatio,
     AsyncStorage,
-    TouchableWithoutFeedback,
-    TouchableOpacity,
-    Image,
-    FlatList
+    Image
 } from 'react-native';
+import axios from 'axios';
 import {
-    Input,
     Button,
     ContainerSection,
-    Container,
     Spinner,
-    Card,
-    CardSection
+    Card
 } from './../components/common';
-import { BASE_URL, COLOR } from '../shared/lb.config';
-import axios from 'axios';
+import { BASE_URL } from '../shared/lb.config';
 
 
 class DetailFishesPage extends Component {
@@ -71,7 +58,6 @@ class DetailFishesPage extends Component {
                 alert('Anda belum login. Silahkan lakukan login terlebih dahulu');
             }
         })
-
     }
 
     render() {
@@ -113,10 +99,7 @@ class DetailFishesPage extends Component {
                         </View>
                     </Card>
                     <View style={{ marginTop: 5, margin: 17 }}>
-                        <Button
-                            onPress={() => {
-                                this.createRequest(dataFish);
-                            }}>
+                        <Button onPress={() => { this.createRequest(dataFish); }}>
                             Buat Permintaan
                     </Button>
                     </View>

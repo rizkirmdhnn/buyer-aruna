@@ -1,19 +1,12 @@
 import React, { Component } from 'react';
-import { Text, FlatList, View, Image, TouchableWithoutFeedback, AsyncStorage, resizeMode, ScrollView } from 'react-native';
-import { Header, SearchBar, Icon } from 'react-native-elements';
-import { BASE_URL } from './../shared/lb.config';
+import { Text, FlatList, View, Image, TouchableWithoutFeedback, AsyncStorage, ScrollView } from 'react-native';
 import axios from 'axios';
+import moment from 'moment';
 import {
-  CardRegistration,
-  CardSectionRegistration,
-  InputRegistration,
-  Button,
-  ContainerSection,
-  Container,
   Spinner,
   Card
 } from './../components/common';
-import moment from 'moment';
+import { BASE_URL } from './../shared/lb.config';
 
 class RequestOrderPage extends Component {
 
@@ -43,11 +36,10 @@ class RequestOrderPage extends Component {
         console.log('Storage Tidak Kosong');
         this.setState({ tokenUser: result, anyData: true });
         return this.getData();
-      } else {
-        console.log('Storage Kosong');
-        this.setState({ loading: false, noData: true });
-        return this.getNoData();
       }
+      console.log('Storage Kosong');
+      this.setState({ loading: false, noData: true });
+      return this.getNoData();
     })
   }
 
@@ -66,7 +58,7 @@ class RequestOrderPage extends Component {
         sorting: 'DESC'
       },
       headers: {
-        'token': this.state.tokenUser
+        token: this.state.tokenUser
       }
     }).then(response => {
       res = response.data.data;

@@ -4,29 +4,20 @@ import {
   View,
   Image,
   Text,
-  TouchableNativeFeedback,
   AsyncStorage,
   ScrollView,
-  Alert,
   ToastAndroid
 } from 'react-native'
-import {
-  CardRegistration,
-  CardSectionRegistration,
-  InputRegistration,
-  Button,
-  ContainerSection,
-  Container,
-  Spinner
-} from './../components/common';
 import { NavigationActions } from 'react-navigation'
 import axios from 'axios';
-
-import { BASE_URL, COLOR } from './../shared/lb.config';
+import numeral from 'numeral';
 import { CheckBox } from 'react-native-elements';
-import moment from 'moment';
-import { Card } from 'react-native-elements';
-
+import { BASE_URL, COLOR } from './../shared/lb.config';
+import {
+  Button,
+  ContainerSection,
+  Spinner
+} from './../components/common';
 
 class RequestFormOrderSecondPage extends Component {
 
@@ -48,7 +39,7 @@ class RequestFormOrderSecondPage extends Component {
       dataSecondButton: '',
       dataThirdHome: ''
     };
-  };
+  }
 
   componentWillMount() {
     const { params } = this.props.navigation.state;
@@ -56,39 +47,101 @@ class RequestFormOrderSecondPage extends Component {
     // console.log(this.props.navigation.state.params.datas, 'Data 1');
     this.setState({ datax: this.props.navigation.state.params.datas });
 
-    if(!params.dataFirst) {
+    if (!params.dataFirst) {
        this.getDefaultButton()
        console.log('DataFirst Kosong')
     }
-    if(params.dataFirst) {
+    if (params.dataFirst) {
       console.log('Datas Tidak Kosong');
-      this.setState({ dataSupplier: params.dataFirst.dataSupplier, loading: false  })
+      this.setState({ dataSupplier: params.dataFirst.dataSupplier, loading: false })
     }
   }
 
-  getDefaultButton() {
-    // console.log(this.state.datax, 'Data 2');
-    AsyncStorage.getItem('loginCredential', (err, result) => {
 
+  onSubmit = () => {
+    this.setState({loader: true})
+
+    AsyncStorage.getItem('loginCredential', (err, result) => {
+      const dataRequest = new FormData();
+      dataRequest.append('FishId', this.state.datax.FishId);
+      dataRequest.append('maxBudget', this.state.datax.maxBudget);
+      dataRequest.append('dueDate', this.state.datax.datePick);
+      dataRequest.append('quantity', this.state.datax.quantity);
+      dataRequest.append('size', this.state.datax.size);
+      dataRequest.append('describe', this.state.datax.deskripsi);
+      dataRequest.append('unit', this.state.datax.unitFish);
+
+      this.state.checkedSelected.map((item) => dataRequest.append(ProductIds[' + index + '], item.id))
+
+      dataRequest.append('photo', {
+        uri: this.state.datax.photo.uri,
+        type: 'image/jpeg',
+        name: 'formrequest.png'
+      });
+
+      console.log(this.state.datax, 'Data Request');
+      console.log(dataRequest, 'Data Form Append');
+
+      axios.post(`${BASE_URL}/buyer/requests`,
+        dataRequest
+        , {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            token: result
+          }
+        }).then(response => {
+          res = response.data.data;
+          console.log(response, 'RES');
+          this.setState({ loader: false });
+
+          const resetAction = NavigationActions.reset({
+            index: 1,
+            actions: [
+              NavigationActions.navigate({ routeName: 'Home'}),
+              NavigationActions.navigate({ routeName: 'Request'})
+            ]
+          })
+          this.props.navigation.dispatch(resetAction)
+        })
+        .catch(error => {
+          if (error.response) {
+            ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
+          }
+          else {
+            ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
+          }
+          this.setState({ loader: false });
+        })
+    });
+  }
+
+  onChangeInput = (name, v) => {
+    this.setState({ [name]: v });
+    console.log(v);
+  }
+  
+
+  getDefaultButton() {
+    AsyncStorage.getItem('loginCredential', (err, result) => {
       const token = result;
       console.log(token);
       axios.post(`${BASE_URL}/generate-request`, {
-        'FishId': this.state.datax.FishId,
-        'ProvinceId': this.state.datax.provinsiId,
-        'CityId': this.state.datax.cityId,
-        'maxPrice': this.state.datax.maxBudget
+        FishId: this.state.datax.FishId,
+        ProvinceId: this.state.datax.provinsiId,
+        CityId: this.state.datax.cityId,
+        maxPrice: this.state.datax.maxBudget
       }, {
           headers: {
-            'token': token,
+            token,
             'Content-Type': 'application/json'
           }
         })
         .then(response => {
           res = response.data.data;
           console.log(res, 'RES')
-          const result = res;
-          console.log(result, 'Result Supplier nya');
-          this.setState({ dataSupplier: result, checkedSelected: result, loading: false })
+          const resultRes = res;
+          console.log(resultRes, 'Result Supplier nya');
+          this.setState({ dataSupplier: resultRes, checkedSelected: resultRes, loading: false })
         })
         .catch(error => {
           console.log(error.message, 'Error nya');
@@ -111,71 +164,7 @@ class RequestFormOrderSecondPage extends Component {
     }
   };
 
-  onSubmit = () => {
-    this.setState({loader: true})
-
-    AsyncStorage.getItem('loginCredential', (err, result) => {
-      const token = result;
-      const { navigate } = this.props.navigation;
-      const dataRequest = new FormData();
-      dataRequest.append('FishId', this.state.datax.FishId);
-      dataRequest.append('maxBudget', this.state.datax.maxBudget);
-      dataRequest.append('dueDate', this.state.datax.datePick);
-      dataRequest.append('quantity', this.state.datax.quantity);
-      dataRequest.append('size', this.state.datax.size);
-      dataRequest.append('describe', this.state.datax.deskripsi);
-      dataRequest.append('unit', this.state.datax.unitFish);
-
-      this.state.checkedSelected.map((item, index) => {
-        console.log(item.id, ' ', index, 'MAPING');
-        dataRequest.append('ProductIds[' + index + ']', item.id)
-      })
-
-      dataRequest.append('photo', {
-        uri: this.state.datax.photo.uri,
-        type: 'image/jpeg',
-        name: 'formrequest.png'
-      });
-
-      console.log(this.state.datax, 'Data Request');
-      console.log(dataRequest, 'Data Form Append');
-
-      axios.post(`${BASE_URL}/buyer/requests`,
-        dataRequest
-        , {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'token': result
-          }
-        }).then(response => {
-          res = response.data.data;
-          console.log(response, 'RES');
-          this.setState({ loader: false });
-
-          const resetAction = NavigationActions.reset({
-            index: 1,
-            actions: [
-              NavigationActions.navigate({ routeName: 'Home'}),
-              NavigationActions.navigate({ routeName: 'Request'})
-            ]
-          })
-          this.props.navigation.dispatch(resetAction)
-
-        })
-        .catch(error => {
-          if (error.response) {
-            ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
-          }
-          else {
-            ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
-          }
-          this.setState({ loader: false });
-        })
-    });
-  }
-
   renderButton = () => {
-    const { navigate } = this.props.navigation;
     if (this.state.loader) {
       return <Spinner size='large' />
     }
@@ -188,11 +177,6 @@ class RequestFormOrderSecondPage extends Component {
         Kirim Permintaan
     </Button>
     )
-  }
-
-  onChangeInput = (name, v) => {
-    this.setState({ [name]: v });
-    console.log(v);
   }
 
   renderItem = (item) => {
@@ -214,7 +198,7 @@ class RequestFormOrderSecondPage extends Component {
                 // data.quantity ? data.quantity : '0'
               }
               </Text>
-              <Text>Rp {numeral(parseInt(data.minPrice)).format('0,0')} - Rp {numeral(parseInt(data.minPrice)).format('0,0')} /Kg</Text>
+              <Text>Rp {numeral(parseInt(data.minPrice, 0)).format('0,0')} - Rp {numeral(parseInt(data.minPrice, 0)).format('0,0')} /Kg</Text>
             </View>
             <CheckBox
               center
@@ -235,7 +219,6 @@ class RequestFormOrderSecondPage extends Component {
   }
 
   render() {
-
     if (this.state.loading) {
       return <Spinner size="large" />
     }
@@ -255,7 +238,7 @@ class RequestFormOrderSecondPage extends Component {
       </ScrollView>
     );
   }
-};
+}
 
 
 const styles = {

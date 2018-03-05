@@ -2,24 +2,20 @@
  *  Import Component
  */
 import React, { Component } from 'react';
-import { Text, Image, View, ListView, TouchableWithoutFeedback, TouchableNativeFeedback, ScrollView, FlatList, AsyncStorage } from 'react-native';
-import {
-    Button,
-    CardSection,
-    Container,
-    ContainerSection,
-    Spinner,
-    CardSectionRegistration,
-    Input,
-    Card
-} from '../components/common';
+import { Text, View, TouchableWithoutFeedback, TouchableNativeFeedback, ScrollView } from 'react-native';
 import numeral from 'numeral';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { CheckBox } from 'react-native-elements';
 import axios from 'axios';
-import { BASE_URL, COLOR } from './../shared/lb.config';
-import Modal from 'react-native-modal'
 import { NavigationActions } from 'react-navigation';
+import {
+    Button,
+    ContainerSection,
+    Spinner,
+    Input,
+    Card
+} from '../components/common';
+import { BASE_URL, COLOR } from './../shared/lb.config';
 
 class FilterPage extends Component {
     static navigationOptions = {
@@ -66,8 +62,13 @@ class FilterPage extends Component {
             })
     }
 
+    onChangeInput = (name, v) => {
+        this.setState({ [name]: v });
+        console.log(v);
+    }
+
     provinsiCheck = datax => {
-        const { provinsiId, tokenUser } = this.state;
+        const { provinsiId } = this.state;
         console.log(datax, 'ID PROVINSI')
         if (!provinsiId.includes(datax)) {
             this.setState({
@@ -80,14 +81,9 @@ class FilterPage extends Component {
         }
     };
 
-    onChangeInput = (name, v) => {
-        this.setState({ [name]: v });
-        console.log(v);
-    }
 
     saveFilter = () => {
         const { provinsiId, maxPrice, dataFish } = this.state;
-        const { navigate } = this.props.navigation;
         const resetAction = NavigationActions.reset({
             index: 0,
             actions: [
@@ -105,11 +101,9 @@ class FilterPage extends Component {
 
     renderScreen = () => {
         const {
-            minPrice,
             maxPrice,
             cityExpanded,
             dataProvince,
-            supplier,
             provinsiId
         } = this.state
 
@@ -120,7 +114,7 @@ class FilterPage extends Component {
                         <Input
                             keyboardType="numeric"
                             placeholder='Max'
-                            value={maxPrice ? numeral(parseInt(maxPrice)).format('0,0') : ''}
+                            value={maxPrice ? numeral(parseInt(maxPrice, 0)).format('0,0') : ''}
                             onChangeText={v => this.onChangeInput('maxPrice', v.replace(/\./g, ''))}
                         />
                     </View>
@@ -163,7 +157,6 @@ class FilterPage extends Component {
                                                     </View>
                                                 </ContainerSection>
                                             );
-
                                         })
                                     }
                                 </ScrollView>
@@ -172,10 +165,7 @@ class FilterPage extends Component {
                             <View />
                     }
                     <ContainerSection>
-                        <Button
-                            onPress={() => {
-                                this.saveFilter()
-                            }}>
+                        <Button onPress={() => { this.saveFilter() }}>
                             Terapkan
                         </Button>
                     </ContainerSection>
@@ -187,14 +177,7 @@ class FilterPage extends Component {
 
     render() {
         const {
-            loading,
-            minPrice,
-            maxPrice,
-            buttonExpanded,
-            cityExpanded,
-            dataProvince,
-            supplier,
-            screen
+            loading
         } = this.state
 
         return (
@@ -202,31 +185,39 @@ class FilterPage extends Component {
                 <View style={{ flexDirection: 'row' }}>
                     <View style={{ flex: 1, borderColor: '#3484d7', borderRightWidth: 0.3 }}>
                         <TouchableNativeFeedback onPress={() => this.setState({ screen: '' })}>
-                            <View style={{
-                                backgroundColor: COLOR.element_a3,
-                                height: 50,
-                                justifyContent: 'center'
-                            }}>
-                                <Text style={{
-                                    color: '#67a6e3',
-                                    textAlign: 'center',
-                                    fontSize: 16
-                                }}>Lokasi</Text>
+                            <View
+                                style={{
+                                    backgroundColor: COLOR.element_a3,
+                                    height: 50,
+                                    justifyContent: 'center'
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        color: '#67a6e3',
+                                        textAlign: 'center',
+                                        fontSize: 16
+                                    }}
+                                >Lokasi</Text>
                             </View>
                         </TouchableNativeFeedback>
                     </View>
                     <View style={{ flex: 1, borderColor: '#3484d7', borderRightWidth: 0.3 }}>
                         <TouchableNativeFeedback onPress={() => this.setState({ screen: 'Price' })}>
-                            <View style={{
-                                backgroundColor: COLOR.element_a3,
-                                height: 50,
-                                justifyContent: 'center'
-                            }}>
-                                <Text style={{
-                                    color: '#67a6e3',
-                                    textAlign: 'center',
-                                    fontSize: 16
-                                }}>Harga</Text>
+                            <View
+                                style={{
+                                    backgroundColor: COLOR.element_a3,
+                                    height: 50,
+                                    justifyContent: 'center'
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        color: '#67a6e3',
+                                        textAlign: 'center',
+                                        fontSize: 16
+                                    }}
+                                >Harga</Text>
                             </View>
                         </TouchableNativeFeedback>
                     </View>
@@ -244,7 +235,7 @@ class FilterPage extends Component {
             </View>
         );
     }
-};
+}
 
 
 const styles = {

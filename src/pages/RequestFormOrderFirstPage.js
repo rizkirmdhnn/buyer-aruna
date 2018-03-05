@@ -1,21 +1,22 @@
 import React, { Component } from 'react';
-import { NavigationActions } from 'react-navigation';
-import numeral from 'numeral';
 import {
   View,
   ScrollView,
   Text,
-  Alert,
   Picker,
-  KeyboardAvoidingView,
   Keyboard,
-  TextInput,
   PixelRatio,
   AsyncStorage,
-  TouchableWithoutFeedback,
   TouchableOpacity,
   Image,
 } from 'react-native';
+import numeral from 'numeral';
+import axios from 'axios';
+import DateTimePicker from 'react-native-modal-datetime-picker';
+import moment from 'moment';
+import ImagePicker from 'react-native-image-picker';
+import AutoComplete from '../components/AutoComplete';
+import { BASE_URL, COLOR } from '../shared/lb.config';
 import {
   Input,
   Button,
@@ -23,18 +24,9 @@ import {
   Container,
   Spinner
 } from './../components/common';
-import AwesomeAlert from 'react-native-awesome-alerts';
-import AutoComplete from '../components/AutoComplete';
-import { BASE_URL, COLOR } from '../shared/lb.config';
-import axios from 'axios';
-import DateTimePicker from 'react-native-modal-datetime-picker';
-import moment from 'moment';
-
-import ImagePicker from 'react-native-image-picker';
-import Icon from 'react-native-vector-icons/Ionicons';
 
 class RequestFormOrderFirstPage extends Component {
-  static navigationOptions = ({ navigation, screenProps }) => ({
+  static navigationOptions = ({ navigation }) => ({
     title: 'Buat Permintaan',
     headerLeft:
       <TouchableOpacity
@@ -42,15 +34,11 @@ class RequestFormOrderFirstPage extends Component {
       >
         <Image
           style={{ width: 20, height: 20, marginLeft: 30 }}
-          source={require('./../assets/images/back.png')} />
+          source={require('./../assets/images/back.png')}
+        />
       </TouchableOpacity>,
     headerRight: <View />
   });
-
-  goBack() {
-    const { navigate } = this.props.navigation;
-    navigate('Home');
-  }
 
   constructor(props) {
     super(props);
@@ -77,103 +65,9 @@ class RequestFormOrderFirstPage extends Component {
       maxBudget: '',
       datePick: '',
       dateNowPick: '',
-      photo: null
+      photo: null,
+      isDateTimePickerVisible: false
     };
-  };
-
-
-  onChangeInput = (name, v) => {
-    this.setState({ [name]: v });
-    console.log(v);
-  }
-
-
-  state = {
-    isDateTimePickerVisible: false,
-  };
-
-  _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
-
-  _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
-
-  _handleDatePicked = (date) => {
-    console.log(date, 'Date Nya')
-    const dateTemp = moment(date).format('YYYY-MM-DD h:mm:ss');
-    const dateNow = moment(date).format('DD/MM/YYYY');
-    this.setState({ datePick: dateTemp, dateNowPick: dateNow })
-    this._hideDateTimePicker();
-  };
-
-  onSubmit = () => {
-    console.log(this.state, 'DATA FORM 1');
-
-    if (this.state.photo == null) {
-      alert('Anda belum upload Foto');
-    } else if (this.state.FishId == '') {
-      alert('Anda belum memilih Komoditas');
-    } else if (this.state.size == '') {
-      alert('Anda belum menentukan Ukuran');
-    } else if (this.state.quantity == '') {
-      alert('Anda belum menentukan Kuantitas');
-    } else if (this.state.deskripsi == '') {
-      alert('Anda belum menentukan Deskripsi Komoditas');
-    } else if (this.state.maxBudget == '') {
-      alert('Anda belum menentukan max Harga')
-    } else if (this.state.dateNowPick == '') {
-      alert('Anda belum menentuan tanggal Permintaan')
-    } else if (this.state.provinsiId == '') {
-      alert('anda belum memilih Provinsi');
-    } else if (this.state.cityId == '') {
-      alert('Anda belum memilih Kota')
-    } else {
-      console.log('LOLOS');
-      Keyboard.dismiss();
-      const data = this.state;
-      console.log(this.state.photo, 'DATA LEMPAR');
-      this.props.navigation.navigate('RequestFormOrderSecond', { datas: data, dataFirst: this.state.dataParams })
-    }
-  }
-
-  renderButton = () => {
-    if (this.state.loadButton) {
-      return <Spinner size='large' />
-    }
-
-    return (
-      <Button
-        onPress={
-          () => this.onSubmit()
-        }
-      >
-        Selanjutnya
-      </Button>
-    )
-  }
-
-
-  querySuggestion = (text) => {
-    this.setState({ value: text })
-    AsyncStorage.getItem('loginCredential', (err, result) => {
-
-      axios.get(`${BASE_URL}/fishes/search?key=${text}`, {
-        headers: { 'x-access-token': result }
-      })
-        .then(response => {
-          res = response.data.data
-          this.setState({ suggestions: res })
-          console.log(res, 'Auto Complete Nya')
-
-        })
-        .catch(error => {
-          if (error.response) {
-            alert('Internet anda Lemot')
-          }
-          else {
-            alert('Koneksi internet bermasalah')
-          }
-        })
-
-    });
   }
 
   componentWillMount() {
@@ -192,7 +86,6 @@ class RequestFormOrderFirstPage extends Component {
     }
 
     AsyncStorage.getItem('loginCredential', (err, resultToken) => {
-
       axios.get(`${BASE_URL}/provinces`, {
         headers: { 'x-access-token': resultToken }
       })
@@ -212,13 +105,20 @@ class RequestFormOrderFirstPage extends Component {
     });
   }
 
-  renderProvinceCity = () => {
-    const dataProvCity = this.state.dataProvinsi;
-    return dataProvCity.map((data, index) => {
-      return <Picker.Item label={data.name} value={data.id} key={index} />
-    })
+
+  onChangeInput = (name, v) => {
+    this.setState({ [name]: v });
+    console.log(v);
   }
 
+  onItemSelected = (item) => {
+    console.log(item, 'Ikan terpilih');
+    this.setState({
+      suggestions: [],
+      FishId: item.id,
+      value: item.name
+    })
+  }
 
   onChangeProvince = (name, v) => {
     this.setState({ [name]: v });
@@ -245,32 +145,76 @@ class RequestFormOrderFirstPage extends Component {
     });
   }
 
-  renderPickerCity = () => {
-    if (this.state.dataMapCity === '') {
-      return <Picker.Item label='Pilih Kota' value='0' />
+
+  onSubmit = () => {
+    console.log(this.state, 'DATA FORM 1');
+
+    if (this.state.photo == null) {
+      alert('Anda belum upload Foto');
+    } else if (this.state.FishId === '') {
+      alert('Anda belum memilih Komoditas');
+    } else if (this.state.size === '') {
+      alert('Anda belum menentukan Ukuran');
+    } else if (this.state.quantity === '') {
+      alert('Anda belum menentukan Kuantitas');
+    } else if (this.state.deskripsi === '') {
+      alert('Anda belum menentukan Deskripsi Komoditas');
+    } else if (this.state.maxBudget === '') {
+      alert('Anda belum menentukan max Harga')
+    } else if (this.state.dateNowPick === '') {
+      alert('Anda belum menentuan tanggal Permintaan')
+    } else if (this.state.provinsiId === '') {
+      alert('anda belum memilih Provinsi');
+    } else if (this.state.cityId === '') {
+      alert('Anda belum memilih Kota')
     } else {
-      const resultRender = this.state.dataMapCity;
-      return resultRender.map((data, index) => {
-        return <Picker.Item label={data.name} value={data.id} key={index} />
-      })
+      console.log('LOLOS');
+      Keyboard.dismiss();
+      const data = this.state;
+      console.log(this.state.photo, 'DATA LEMPAR');
+      this.props.navigation.navigate('RequestFormOrderSecond', { datas: data, dataFirst: this.state.dataParams })
     }
   }
 
-  renderUkuran = () => {
-    const x = ['Kg', 'Cm', 'Ekor/Kg']
-    return x.map((data, index) => {
-      console.log(data, index)
-      return <Picker.Item label={data} value={data} key={index} />
-    })
+  showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
+
+  hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
+
+  handleDatePicked = (date) => {
+    console.log(date, 'Date Nya')
+    const dateTemp = moment(date).format('YYYY-MM-DD h:mm:ss');
+    const dateNow = moment(date).format('DD/MM/YYYY');
+    this.setState({ datePick: dateTemp, dateNowPick: dateNow })
+    this.hideDateTimePicker();
+  };
+
+
+  querySuggestion = (text) => {
+    this.setState({ value: text })
+    AsyncStorage.getItem('loginCredential', (err, result) => {
+      axios.get(`${BASE_URL}/fishes/search?key=${text}`, {
+        headers: { 'x-access-token': result }
+      })
+        .then(response => {
+          res = response.data.data
+          this.setState({ suggestions: res })
+          console.log(res, 'Auto Complete Nya')
+        })
+        .catch(error => {
+          if (error.response) {
+            alert('Internet anda Lemot')
+          }
+          else {
+            alert('Koneksi internet bermasalah')
+          }
+        })
+    });
   }
 
-  onItemSelected = (item) => {
-    console.log(item, 'Ikan terpilih');
-    this.setState({
-      suggestions: [],
-      FishId: item.id,
-      value: item.name
-    })
+
+  goBack() {
+    const { navigate } = this.props.navigation;
+    navigate('Home');
   }
 
   selectPhotoTapped() {
@@ -309,23 +253,60 @@ class RequestFormOrderFirstPage extends Component {
     });
   }
 
+  renderUkuran = () => {
+    const x = ['Kg', 'Cm', 'Ekor/Kg']
+    return x.map((data, index) => {
+      console.log(data, index)
+      return <Picker.Item label={data} value={data} key={index} />
+    })
+  }
+
+
+  renderPickerCity = () => {
+    if (this.state.dataMapCity === '') {
+      return <Picker.Item label='Pilih Kota' value='0' />
+    }
+    const resultRender = this.state.dataMapCity;
+    return resultRender.map((data, index) => {
+      return <Picker.Item label={data.name} value={data.id} key={index} />
+    })
+  }
+
+  renderProvinceCity = () => {
+    const dataProvCity = this.state.dataProvinsi;
+    return dataProvCity.map((data, index) => {
+      return <Picker.Item label={data.name} value={data.id} key={index} />
+    })
+  }
+
+
+  renderButton = () => {
+    if (this.state.loadButton) {
+      return <Spinner size='large' />
+    }
+
+    return (
+      <Button
+        onPress={
+          () => this.onSubmit()
+        }
+      >
+        Selanjutnya
+      </Button>
+    )
+  }
+
   render() {
     const {
-      dataMapCity,
-      dataCity,
-      dataProvinsi,
       suggestions,
       value,
       provinsiId,
       cityId,
       size,
       quantity,
-      minBudget,
       maxBudget,
       deskripsi,
-      datePick,
       dateNowPick,
-      photo,
       loading,
       unitFish
     } = this.state
@@ -394,10 +375,10 @@ class RequestFormOrderFirstPage extends Component {
               label='Ukuran'
               placeholder=''
               keyboardType="numeric"
-              value={size ? numeral(parseInt(size)).format('0,0') : ''}
+              value={size ? numeral(parseInt(size, 0)).format('0,0') : ''}
               onChangeText={v => this.onChangeInput('size', v.replace(/\./g, ''))}
             />
-            <View style={{marginTop: 50, marginLeft: 10, flex: 1}}>
+            <View style={{ marginTop: 50, marginLeft: 10, flex: 1 }}>
               <View style={styles.pickerUnitStyle}>
                 <Picker
                   selectedValue={unitFish}
@@ -416,7 +397,7 @@ class RequestFormOrderFirstPage extends Component {
               keyboardType="numeric"
               label='Jumlah'
               placeholder=''
-              value={quantity ? numeral(parseInt(quantity)).format('0,0') : ''}
+              value={quantity ? numeral(parseInt(quantity, 0)).format('0,0') : ''}
               onChangeText={v => this.onChangeInput('quantity', v.replace(/\./g, ''))}
             />
             <View style={{ flex: 1, paddingTop: 50, paddingLeft: 10 }}>
@@ -443,7 +424,7 @@ class RequestFormOrderFirstPage extends Component {
               keyboardType="numeric"
               label='Harga Maksimal'
               placeholder='Rupiah/kg'
-              value={maxBudget ? numeral(parseInt(maxBudget)).format('0,0') : ''}
+              value={maxBudget ? numeral(parseInt(maxBudget, 0)).format('0,0') : ''}
               onChangeText={v => this.onChangeInput('maxBudget', v.replace(/\./g, ''))}
             />
           </ContainerSection>
@@ -454,22 +435,22 @@ class RequestFormOrderFirstPage extends Component {
             </Text>
           </ContainerSection>
 
-          <TouchableOpacity onPress={this._showDateTimePicker}>
+          <TouchableOpacity onPress={this.showDateTimePicker}>
             <ContainerSection>
               <Input
                 label="Tanggal Pengiriman"
                 value={dateNowPick}
                 onChangeText={v => this.onChangeInput('dateNowPick', v)}
                 editable={false}
-                onPress={this._showDateTimePicker}
+                onPress={this.showDateTimePicker}
                 style={{ width: '100%' }}
               />
             </ContainerSection>
           </TouchableOpacity>
           <DateTimePicker
             isVisible={this.state.isDateTimePickerVisible}
-            onConfirm={this._handleDatePicked}
-            onCancel={this._hideDateTimePicker}
+            onConfirm={this.handleDatePicked}
+            onCancel={this.hideDateTimePicker}
             minimumDate={new Date()}
           />
 

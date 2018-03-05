@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
-import { Text, Image, View, TouchableOpacity, ScrollView, AsyncStorage, resizeMode } from 'react-native';
-import { Card, CardSection, Input, Spinner, Container, ContainerSection, Button } from './../components/common';
+import { Text, Image, View, TouchableOpacity, AsyncStorage } from 'react-native';
 import axios from 'axios';
 import OneSignal from 'react-native-onesignal';
-import RegistrationFormPage from './../pages/RegistrationFormPage';
-import { BASE_URL } from './../shared/lb.config';
-import { COLOR } from './../shared/lb.config';
 import jwtDecode from 'jwt-decode';
+import { Input, Spinner, Container, ContainerSection, Button } from './../components/common';
+import { BASE_URL, COLOR } from './../shared/lb.config';
 
 class LoginFormPage extends Component {
     static navigationOptions = {
@@ -30,8 +28,8 @@ class LoginFormPage extends Component {
 
         const { email, password } = this.state;
         axios.post(`${BASE_URL}/login`, {
-            'email': email,
-            'password': password
+            email,
+            password
         }, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,7 +47,7 @@ class LoginFormPage extends Component {
                 });
                 AsyncStorage.setItem('loginCredential', response.data.token, () => {
                     console.log('Sukses');
-                    OneSignal.sendTags({ 'userid': deco.user.id });
+                    OneSignal.sendTags({ userid: deco.user.id });
                     OneSignal.getTags((receivedTags) => {
                         console.log(receivedTags, 'Get Tag');
                     });
@@ -69,6 +67,17 @@ class LoginFormPage extends Component {
         this.setState({ [name]: value })
     }
 
+
+    onLoginSuccess() {
+        this.setState({
+            email: '',
+            password: '',
+            loading: false,
+            error: ''
+        });
+        navigate('HomePage');
+    }
+
     renderButton() {
         if (this.state.loading) {
             return <Spinner size="small" />
@@ -79,16 +88,6 @@ class LoginFormPage extends Component {
                 Login
 			</Button>
         );
-    }
-
-    onLoginSuccess() {
-        this.setState({
-            email: '',
-            password: '',
-            loading: false,
-            error: ''
-        });
-        navigate('HomePage');
     }
 
     renderError = () => {
@@ -148,7 +147,7 @@ class LoginFormPage extends Component {
 					</Text>
                     <TouchableOpacity onPress={() => navigate('RegistrationForm')}>
                         <Text style={{ color: COLOR.secondary_a }}>
-                            {` Daftar`}
+                            {'Daftar'}
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -173,7 +172,6 @@ const styles = {
         color: 'red'
     }
 }
-
 
 
 export default LoginFormPage;

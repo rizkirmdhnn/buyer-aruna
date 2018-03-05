@@ -8,7 +8,6 @@ import {
   Alert,
   PixelRatio,
   AsyncStorage,
-  TouchableOpacity,
   TouchableNativeFeedback,
   TouchableWithoutFeedback,
   ToastAndroid,
@@ -41,8 +40,8 @@ class FormContractPage extends Component {
             [
               { text: 'Tidak', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
               {
-                text: 'Ya', onPress: () => {
-                  // navigate('DetailTransactionPage')
+                text: 'Ya',
+                onPress: () => {
                   navigation.goBack()
                 }
               },
@@ -93,7 +92,7 @@ class FormContractPage extends Component {
 
     console.log(this.props.navigation.state.params.datas, 'Data Lemparan');
 
-    this.setState({ 
+    this.setState({
       quantity: this.props.navigation.state.params.datas.Request.Transaction.quantity.toString(),
       size: this.props.navigation.state.params.datas.Request.Transaction.size,
       fishDescribe: this.props.navigation.state.params.datas.Request.Transaction.describe
@@ -106,7 +105,6 @@ class FormContractPage extends Component {
   }
 
   onSubmit = () => {
-
     if (this.state.quantity === '') {
       ToastAndroid.show('Anda belum mengisi Jumlah', ToastAndroid.SHORT)
     }
@@ -122,9 +120,6 @@ class FormContractPage extends Component {
     else if (this.state.dpAmount === '') {
       ToastAndroid.show('Anda belum menentukan Nominal DP', ToastAndroid.SHORT)
     }
-    // else if (this.state.dpAmount >= this.state.price) {
-    //     alert('Nominal DP tidak boleh Sama dengan atau Melebihi Total Harga');
-    // } 
     else if (this.state.fishReject === '') {
       ToastAndroid.show('Anda belum mengisi Deskripsi Reject', ToastAndroid.SHORT)
     }
@@ -134,9 +129,7 @@ class FormContractPage extends Component {
     else {
       console.log('LOLOS')
       Keyboard.dismiss()
-      this.state.locationOfreception.map((data, index) => {
-        this.setState({ shareLoc: data });
-      })
+      this.state.locationOfreception.map((data) => this.setState({ shareLoc: data }))
 
       const dataContract = {
         fishDescribe: this.state.fishDescribe,
@@ -194,29 +187,31 @@ class FormContractPage extends Component {
     }
   }
 
-  _showTanggalPengiriman = () => this.setState({ tanggalPenggiriman: true });
+  onChangeInput = (name, v) => {
+    this.setState({ [name]: v })
+    console.log(v, 'Text Type');
+  }
 
-  _hideTanggalPengiriman = () => this.setState({ tanggalPenggiriman: false });
 
-  _handleDatePickedPengiriman = (dateReceive) => {
+  handleDatePickedPengiriman = (dateReceive) => {
     console.log(dateReceive, 'Date Nya Penerimaan')
     const dateTemps = moment(dateReceive).format('YYYY-MM-DD h:mm:ss');
     const dateNow = moment(dateReceive).format('DD/MM/YYYY');
     this.setState({ dateOfReception: dateTemps, dateNowPickPengiriman: dateNow })
-    this._hideTanggalPengiriman();
+    this.hideTanggalPengiriman();
     console.log(dateTemps, 'penerimaan tanggal');
   };
 
-  _showTanggalDP = () => this.setState({ tanggalDP: true });
+  showTanggalDP = () => this.setState({ tanggalDP: true });
 
-  _hideTanggalDP = () => this.setState({ tanggalDP: false });
+  hideTanggalDP = () => this.setState({ tanggalDP: false });
 
-  _handleDatePickedDP = (date) => {
+  handleDatePickedDP = (date) => {
     console.log(date, 'Date Nya DP')
     const dateTemp = moment(date).format('YYYY-MM-DD h:mm:ss');
     const dateNow = moment(date).format('DD/MM/YYYY');
     this.setState({ dpDate: dateTemp, dateNowPickDP: dateNow })
-    this._hideTanggalDP();
+    this.hideTanggalDP();
   };
 
   backPage() {
@@ -227,7 +222,8 @@ class FormContractPage extends Component {
       [
         { text: 'Tidak', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
         {
-          text: 'Ya', onPress: () => {
+          text: 'Ya', 
+            onPress: () => {
             navigate('DetailTransactionPage')
           }
         },
@@ -245,6 +241,11 @@ class FormContractPage extends Component {
     })
     this.props.navigation.dispatch(resetAction)
   }
+
+
+  hideTanggalPengiriman = () => this.setState({ tanggalPenggiriman: false });
+
+  showTanggalPengiriman = () => this.setState({ tanggalPenggiriman: true });
 
   checkItem = data => {
     console.log(data, 'Data Check')
@@ -284,11 +285,7 @@ class FormContractPage extends Component {
       </Button>
     )
   }
-
-  onChangeInput = (name, v) => {
-    this.setState({ [name]: v })
-    console.log(v, 'Text Type');
-  }
+  
 
   render() {
     const {
@@ -304,7 +301,6 @@ class FormContractPage extends Component {
       fishReject,
       maxFishReject,
       size,
-      checkedSelected,
       dataMaster,
       locationEdit
     } = this.state
@@ -334,7 +330,7 @@ class FormContractPage extends Component {
           <ContainerSection>
             <Input
               label="Ukuran"
-              value={size ? numeral(parseInt(size)).format('0,0') : ''}
+              value={size ? numeral(parseInt(size, 0)).format('0,0') : ''}
               onChangeText={v => this.onChangeInput('size', v.replace(/\./g, ''))}
               style={styles.textArea}
             />
@@ -349,7 +345,7 @@ class FormContractPage extends Component {
               label="Jumlah"
               keyboardType="numeric"
               style={styles.textArea}
-              value={quantity ? numeral(parseInt(quantity)).format('0,0') : ''}
+              value={quantity ? numeral(parseInt(quantity, 0)).format('0,0') : ''}
               onChangeText={v => this.onChangeInput('quantity', v.replace(/\./g, ''))}
             />
             <View style={{ flex: 1, paddingTop: 50, paddingLeft: 10 }}>
@@ -374,7 +370,7 @@ class FormContractPage extends Component {
             <Input
               label='Harga'
               keyboardType="numeric"
-              value={price ? numeral(parseInt(price)).format('0,0') : ''}
+              value={price ? numeral(parseInt(price, 0)).format('0,0') : ''}
               onChangeText={v => this.onChangeInput('price', v.replace(/\./g, ''))}
             />
           </ContainerSection>
@@ -452,12 +448,12 @@ class FormContractPage extends Component {
             <Input
               label="Nominal Dp"
               keyboardType="numeric"
-              value={dpAmount ? numeral(parseInt(dpAmount)).format('0,0') : ''}
+              value={dpAmount ? numeral(parseInt(dpAmount, 0)).format('0,0') : ''}
               onChangeText={v => this.onChangeInput('dpAmount', v.replace(/\./g, ''))}
             />
           </ContainerSection>
 
-          <TouchableWithoutFeedback onPress={this._showTanggalDP}>
+          <TouchableWithoutFeedback onPress={this.showTanggalDP}>
             <View>
               <ContainerSection>
                 <Input
@@ -471,12 +467,12 @@ class FormContractPage extends Component {
           </TouchableWithoutFeedback>
           <DateTimePicker
             isVisible={this.state.tanggalDP}
-            onConfirm={this._handleDatePickedDP}
-            onCancel={this._hideTanggalDP}
+            onConfirm={this.handleDatePickedDP}
+            onCancel={this.hideTanggalDP}
             minimumDate={new Date()}
           />
 
-          <TouchableWithoutFeedback onPress={this._showTanggalPengiriman}>
+          <TouchableWithoutFeedback onPress={this.showTanggalPengiriman}>
             <View>
               <ContainerSection>
                 <Input
@@ -490,8 +486,8 @@ class FormContractPage extends Component {
           </TouchableWithoutFeedback>
           <DateTimePicker
             isVisible={this.state.tanggalPenggiriman}
-            onConfirm={this._handleDatePickedPengiriman}
-            onCancel={this._hideTanggalPengiriman}
+            onConfirm={this.handleDatePickedPengiriman}
+            onCancel={this.hideTanggalPengiriman}
             minimumDate={new Date()}
           />
 
@@ -517,7 +513,7 @@ class FormContractPage extends Component {
             <Input
               label='Presentase Maksimal Komoditas Reject'
               keyboardType="numeric"
-              value={maxFishReject ? numeral(parseInt(maxFishReject)).format('0,0') : ''}
+              value={maxFishReject ? numeral(parseInt(maxFishReject, 0)).format('0,0') : ''}
               onChangeText={v => this.onChangeInput('maxFishReject', v.replace(/\./g, ''))}
             />
           </ContainerSection>

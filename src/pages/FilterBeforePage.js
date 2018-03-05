@@ -8,19 +8,16 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
-  AsyncStorage,
-  FlatList,
   TouchableNativeFeedback
 } from 'react-native';
+import numeral from 'numeral';
 import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import { NavigationActions } from 'react-navigation';
 import { CheckBox } from 'react-native-elements';
-
 import { BASE_URL, COLOR } from './../shared/lb.config';
-import { Button, CardSection, Container, ContainerSection, Spinner, Input, InputSearch, Card } from '../components/common'
-import FilterPage from './FilterPage';
-import numeral from 'numeral';
+import { Spinner, InputSearch, Card } from '../components/common'
+
 
 class FilterBeforePage extends Component {
 
@@ -58,7 +55,6 @@ class FilterBeforePage extends Component {
   onItemSelected = (item) => {
     console.log('On Item Selected');
     console.log(item, 'Ikan terpilih');
-    const { fishData } = this.state;
     this.setState({ searchResultAll: true, fishData: item, searchResult: false, loading: true })
     axios.get(`${BASE_URL}/products`, {
       params: {
@@ -121,9 +117,7 @@ class FilterBeforePage extends Component {
     console.log(item, 'Data Params');
     console.log(item.dataProvince, 'Data Provinsi');
 
-    item.dataProvince.map(item2 => {
-      this.state.idProvince.push(item2.id)
-    })
+    item.dataProvince.map(item2 => this.state.idProvince.push(item2.id))
 
 
     const dataProvinceId = {
@@ -172,14 +166,11 @@ class FilterBeforePage extends Component {
   };
 
   render() {
-    const { navigate } = this.props.navigation;
     const {
-      requestExpanded,
       searchItem,
       searchItemAll,
       loading,
       load,
-      menuLoginExpanded,
       viewExpanded,
       searchResult,
       searchResultAll,
@@ -188,23 +179,24 @@ class FilterBeforePage extends Component {
       checkedSupplier
     } = this.state;
 
-    const { tabContainer, tabContainerActive, tabText, tabTextActive } = styles;
+    const { tabContainer, tabText } = styles;
 
     console.log(checkedSupplier, 'Supplier Check');
     return (
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={{ paddingLeft: 15, paddingRight: 15 }}>
-            <TouchableOpacity onPress={() => {
-              const { navigate } = this.props.navigation;
-              const resetAction = NavigationActions.reset({
-                index: 0,
-                actions: [
-                  NavigationActions.navigate({ routeName: 'Home' })
-                ]
-              })
-              this.props.navigation.dispatch(resetAction)
-            }}>
+            <TouchableOpacity
+              onPress={() => {
+                const resetAction = NavigationActions.reset({
+                  index: 0,
+                  actions: [
+                    NavigationActions.navigate({ routeName: 'Home' })
+                  ]
+                })
+                this.props.navigation.dispatch(resetAction)
+              }}
+            >
               <Icon size={24} name="md-arrow-back" color="#fff" />
             </TouchableOpacity>
           </View>
@@ -283,11 +275,12 @@ class FilterBeforePage extends Component {
               <View>
                 <View style={{ flexDirection: 'row' }}>
                   <View style={{ flex: 1 }}>
-                    <TouchableNativeFeedback onPress={() => {
-                      console.log(fishData, 'Data Ikan Before Filter');
-                      this.props.navigation.navigate('Filter', { datas: fishData })
-                      console.log('Filter Page');
-                    }}>
+                    <TouchableNativeFeedback
+                      onPress={() => {
+                        console.log(fishData, 'Data Ikan Before Filter');
+                        this.props.navigation.navigate('Filter', { datas: fishData })
+                      }}
+                    >
                       <View style={tabContainer}>
                         <Text style={tabText}>Filter</Text>
                       </View>
@@ -298,23 +291,23 @@ class FilterBeforePage extends Component {
                   {
                     checkedSupplier.length > 0 ?
                       <View style={{ flex: 1 }}>
-                        <TouchableNativeFeedback onPress={() => {
-
-                          const { navigate } = this.props.navigation;
-                          const resetAction = NavigationActions.reset({
-                            index: 0,
-                            actions: [
-                              NavigationActions.navigate(
-                                {
-                                  routeName: 'RequestFormOrderFirst',
-                                  params:
-                                    { dataFish: fishData, dataSearch: dataParams, dataSupplier: this.state.checkedSupplier }
-                                }
-                              )
-                            ]
-                          })
-                          this.props.navigation.dispatch(resetAction)
-                        }}>
+                        <TouchableNativeFeedback
+                          onPress={() => {
+                            const resetAction = NavigationActions.reset({
+                              index: 0,
+                              actions: [
+                                NavigationActions.navigate(
+                                  {
+                                    routeName: 'RequestFormOrderFirst',
+                                    params:
+                                      { dataFish: fishData, dataSearch: dataParams, dataSupplier: this.state.checkedSupplier }
+                                  }
+                                )
+                              ]
+                            })
+                            this.props.navigation.dispatch(resetAction)
+                          }}
+                        >
                           <View style={tabContainer}>
                             <Text style={tabText}>Buat Permintaan Sekarang</Text>
                           </View>
@@ -351,7 +344,7 @@ class FilterBeforePage extends Component {
                                 <View style={{ flexDirection: 'column', flex: 1 }}>
                                   <Text>{item.Fish.name}</Text>
                                 </View>
-                                <Text style={{ fontSize: 11 }}>Rp {numeral(parseInt(item.minPrice)).format('0,0')} - Rp { numeral(parseInt(item.maxPrice)).format('0,0')} /Kg</Text>
+                                <Text style={{ fontSize: 11 }}>Rp {numeral(parseInt(item.minPrice, 0)).format('0,0')} - Rp {numeral(parseInt(item.maxPrice, 0)).format('0,0')} /Kg</Text>
                               </View>
                               <View style={{ flex: 1 }}>
                                 <CheckBox
@@ -387,7 +380,7 @@ class FilterBeforePage extends Component {
       </View>
     );
   }
-};
+}
 
 
 const styles = {

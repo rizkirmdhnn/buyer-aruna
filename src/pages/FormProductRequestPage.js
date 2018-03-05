@@ -16,6 +16,6 @@ class FormProductRequestPage extends Component {
             </View>
         );
     }
-};
+}
 
 export default FormProductRequestPage;

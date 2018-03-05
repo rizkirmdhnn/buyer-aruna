@@ -5,25 +5,16 @@ import {
   AsyncStorage,
   FlatList,
   Image,
-  TouchableWithoutFeedback,
   TouchableNativeFeedback,
   ScrollView
 } from 'react-native';
-import { Header, SearchBar, Icon } from 'react-native-elements';
 import axios from 'axios';
-import { BASE_URL } from './../shared/lb.config';
+import { BASE_URL, COLOR } from './../shared/lb.config';
 import {
-  CardRegistration,
-  CardSectionRegistration,
-  InputRegistration,
-  ContainerSection,
-  Container,
   Spinner,
   Button,
   Card
 } from './../components/common';
-import moment from 'moment';
-import { COLOR } from './../shared/lb.config';
 
 class TransactionPage extends Component {
   static navigationOptions = {
@@ -39,7 +30,7 @@ class TransactionPage extends Component {
       anyData: null,
       noData: null
     };
-  };
+  }
 
 
   componentWillMount() {
@@ -48,15 +39,14 @@ class TransactionPage extends Component {
         console.log('Storage Tidak Kosong');
         this.setState({ tokenUser: result, anyData: true });
         return this.getData();
-      } else {
-        console.log('Storage Kosong');
-        this.setState({ loading: false, noData: true });
-        return this.getNoData();
       }
+      console.log('Storage Kosong');
+      this.setState({ loading: false, noData: true });
+      return this.getNoData();
     })
   }
 
-  
+
   getNoData() {
     return (
       <View style={{ flex: 1, marginTop: '50%' }}>
@@ -70,7 +60,7 @@ class TransactionPage extends Component {
     console.log('API FIRE!')
     axios.get(`${BASE_URL}/buyer/orders?page=0&pageSize=50&sorting=DESC`, {
       headers: {
-        'token': this.state.tokenUser
+        token: this.state.tokenUser
       }
     }).then(response => {
       const result = response.data.data;
@@ -86,7 +76,11 @@ class TransactionPage extends Component {
 
   detailTransaction = (props) => {
     const dataTransaction = props;
-    this.props.navi.navigate('DetailTransaction', { datas: dataTransaction })
+    if (this.props.navi) {
+      this.props.navi.navigate('DetailTransaction', { datas: dataTransaction })
+    } else {
+      this.props.navigation.navigate('DetailTransaction', { datas: dataTransaction })
+    }
   }
 
   refreshRequest() {
@@ -110,7 +104,7 @@ class TransactionPage extends Component {
           return require('../assets/images/status1f.png')
       }
     }
-    
+
     switch (index) {
       case 1:
         return require('../assets/images/status1.png')
@@ -141,7 +135,7 @@ class TransactionPage extends Component {
         </View>
       );
     }
-     
+
     return (
       <Card>
         <TouchableNativeFeedback
@@ -160,24 +154,24 @@ class TransactionPage extends Component {
               <Text>{item.Request ? item.Request.Transaction.Fish.name : '-'}</Text>
               <Text>{item.Request ? item.Request.Supplier.name : ''}</Text>
               <Text style={styles.hedaerTextStyle}>{item.StatusHistories && item.StatusHistories.length > 0 ? item.StatusHistories[item.StatusHistories.length - 1].Status.name : 'Kontrak Belum Dibuat'}</Text>
-              <View style={{flexDirection: 'row'}}>
-                <Image 
+              <View style={{ flexDirection: 'row' }}>
+                <Image
                   style={styles.statusIcon}
                   source={this.imageIcon(item, 1)}
                 />
-                <Image 
+                <Image
                   style={styles.statusIcon}
                   source={this.imageIcon(item, 2)}
                 />
-                <Image 
+                <Image
                   style={styles.statusIcon}
                   source={this.imageIcon(item, 3)}
                 />
-                <Image 
+                <Image
                   style={styles.statusIcon}
                   source={this.imageIcon(item, 4)}
                 />
-                <Image 
+                <Image
                   style={styles.statusIcon}
                   source={this.imageIcon(item, 5)}
                 />
@@ -200,7 +194,7 @@ class TransactionPage extends Component {
       <ScrollView>
         {
           anyData ?
-            <View style={{flex: 1}}>
+            <View style={{ flex: 1 }}>
               <FlatList
                 data={this.state.dataTransaksi}
                 renderItem={({ item }) => this.renderData(item)}
@@ -219,13 +213,12 @@ class TransactionPage extends Component {
       </ScrollView>
     );
   }
-};
-
+}
 
 
 const styles = {
   itemContainerStyle: {
-    borderBottomWidth: 1, 
+    borderBottomWidth: 1,
     justifyContent: 'flex-start',
     flexDirection: 'row',
     borderColor: '#ddd',

@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 
 const CardProduct = (props) => {
-    return(
+    return (
         <View style={styles.containerStyle}>
         {props.children}
         </View>
