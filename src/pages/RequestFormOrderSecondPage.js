@@ -37,7 +37,8 @@ class RequestFormOrderSecondPage extends Component {
       idSupplier: [],
       dataFirstSearch: '',
       dataSecondButton: '',
-      dataThirdHome: ''
+      dataThirdHome: '',
+      buttonRender: null
     };
   }
 
@@ -48,8 +49,8 @@ class RequestFormOrderSecondPage extends Component {
     this.setState({ datax: this.props.navigation.state.params.datas });
 
     if (!params.dataFirst) {
-       this.getDefaultButton()
-       console.log('DataFirst Kosong')
+      this.getDefaultButton()
+      console.log('DataFirst Kosong')
     }
     if (params.dataFirst) {
       console.log('Datas Tidak Kosong');
@@ -59,7 +60,7 @@ class RequestFormOrderSecondPage extends Component {
 
 
   onSubmit = () => {
-    this.setState({loader: true})
+    this.setState({ loader: true })
 
     AsyncStorage.getItem('loginCredential', (err, result) => {
       const dataRequest = new FormData();
@@ -97,8 +98,8 @@ class RequestFormOrderSecondPage extends Component {
           const resetAction = NavigationActions.reset({
             index: 1,
             actions: [
-              NavigationActions.navigate({ routeName: 'Home'}),
-              NavigationActions.navigate({ routeName: 'Request'})
+              NavigationActions.navigate({ routeName: 'Home' }),
+              NavigationActions.navigate({ routeName: 'Request' })
             ]
           })
           this.props.navigation.dispatch(resetAction)
@@ -119,7 +120,7 @@ class RequestFormOrderSecondPage extends Component {
     this.setState({ [name]: v });
     console.log(v);
   }
-  
+
 
   getDefaultButton() {
     AsyncStorage.getItem('loginCredential', (err, result) => {
@@ -219,6 +220,7 @@ class RequestFormOrderSecondPage extends Component {
   }
 
   render() {
+    const { buttonRender, dataSupplier } = this.state;
     if (this.state.loading) {
       return <Spinner size="large" />
     }
@@ -230,11 +232,19 @@ class RequestFormOrderSecondPage extends Component {
           renderItem={({ item }) => this.renderItem(item)}
         />
 
-        <View style={{ margin: 10 }}>
-          <ContainerSection>
-            {this.renderButton()}
-          </ContainerSection>
-        </View>
+        {
+          dataSupplier.length === 0 ?
+            <View style={{ margin: 10 }}>
+              <Text style={{ textAlign: 'center' }}>Ups... Maaf tidak ada daftar nelayan.</Text>
+              <Text style={{ textAlign: 'center' }}>Silahkan coba ganti Nama Ikan / Provinsi / Kota.</Text>
+            </View>
+            :
+            <View style={{ margin: 10 }}>
+              <ContainerSection>
+                {this.renderButton()}
+              </ContainerSection>
+            </View>
+        }
       </ScrollView>
     );
   }
