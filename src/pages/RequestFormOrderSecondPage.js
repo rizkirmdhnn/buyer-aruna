@@ -71,7 +71,7 @@ class RequestFormOrderSecondPage extends Component {
       dataRequest.append('describe', this.state.datax.deskripsi);
       dataRequest.append('unit', this.state.datax.unitFish);
 
-      this.state.checkedSelected.map((item) => dataRequest.append(ProductIds[' + index + '], item.id))
+      this.state.checkedSelected.map((item, index) => dataRequest.append(`ProductIds[${index}]`, item.id))
 
       dataRequest.append('photo', {
         uri: this.state.datax.photo.uri,
