@@ -742,7 +742,7 @@ class DetailTransactionPage extends Component {
                         <View>
                           <Text style={{ textAlign: 'center' }}>Apakah anda ingin melakukan permintaan sample atau survei nelayan?</Text>
                         </View>
-                        <View>
+                        <View style={{ paddingTop: '10' }}>
                           <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
                             <CheckBox
                               title='Survei'
@@ -822,8 +822,9 @@ class DetailTransactionPage extends Component {
                     {
                       contractNotDone ?
                         <View style={{ flexDirection: 'column' }}>
-                          <View>
-                            <Text>Lakukan diskusi untuk mempercepat transaksi</Text>
+                          <View style={{ flex: 1 }}>
+                            <Text style={{ textAlign: 'center' }}>Silahkan anda membuat kontrak.</Text>
+                            <Text style={{ textAlign: 'center' }}>Lakukan diskusi untuk mempercepat transaksi.</Text>
                           </View>
                           <View style={{ height: 20 }} />
                           <View style={{ marginTop: 10, flexDirection: 'row' }}>
