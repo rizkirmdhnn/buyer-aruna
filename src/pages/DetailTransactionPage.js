@@ -260,7 +260,7 @@ class DetailTransactionPage extends Component {
       default:
         return this.setState({ contractDone: true, contractRevision: true })
     }
-   
+
     //=================================================== END LOGIC SECOND CONTAINER BOS ========================================
   }
 
@@ -268,18 +268,20 @@ class DetailTransactionPage extends Component {
   logicFirst() {
     console.log('LOGIC 1 FIRE');
     const { dataTransaction } = this.state;
-    const IDSAMPLE = dataTransaction.Sample.StatusId;
-    console.log(IDSAMPLE, 'IDSAMPLE')
+    const SAMPLE = dataTransaction.Sample;
     //=================================================== LOGIC FIRST CONTAINER BOS ============================================
+    if (SAMPLE === null) {
+      return this.setState({ requestContainer: true })
+    }
+    const IDSAMPLE = dataTransaction.Sample.StatusId;
+    console.log(IDSAMPLE, 'IDSAMPLE');
     switch (IDSAMPLE) {
       case 16:
         return this.setState({ requestContainerWaiting: true })
       case 17:
         return this.setState({ requestContainerApprove: true })
-      case 18:
-        return this.setState({ requestContainerRejected: true })
       default:
-        return this.setState({ requestContainer: true })
+        return this.setState({ requestContainerRejected: true })
     }
     //=================================================== END LOGIC FIRST CONTAINER BOS ========================================
   }
@@ -738,9 +740,9 @@ class DetailTransactionPage extends Component {
                     requestContainer ?
                       <View style={{ flexDirection: 'column' }}>
                         <View>
-                          <Text>Apakah anda ingin melakukan permintaan sample atau survei nelayan?</Text>
+                          <Text style={{ textAlign: 'center' }}>Apakah anda ingin melakukan permintaan sample atau survei nelayan?</Text>
                         </View>
-                        <View >
+                        <View>
                           <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
                             <CheckBox
                               title='Survei'
