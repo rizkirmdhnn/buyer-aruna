@@ -44,6 +44,7 @@ class DetailTransactionPage extends Component {
     super(props)
 
     this.state = {
+      dataSampleSurvey: [],
       dataMaster: '',
       dataTransaction: '',
       dataDetail: '',
@@ -198,7 +199,7 @@ class DetailTransactionPage extends Component {
                   return this.setState({ collectionNotYet: true });
                 }
 
-                const IDCOLLECTION = dataTransaction.Status.id;
+                const IDCOLLECTION = dataTransaction.collection.Status.id;
                 switch (IDCOLLECTION) {
                   case 41:
                     return this.setState({ collectionPending: true });
@@ -214,7 +215,7 @@ class DetailTransactionPage extends Component {
                         case 44:
                           return this.setState({ productionPending: true });
                         case 45:
-                          this.setState({ productionApproved: true, deliveryContainer: true });
+                          this.setState({ productionApproved: true, shippingContainer: true });
                           {
                             if (SHIPPING === null) {
                               return this.setState({ shippingNotYet: true });
@@ -224,7 +225,7 @@ class DetailTransactionPage extends Component {
                               case 28:
                                 return this.setState({ shippingNotYet: true });
                               case 29:
-                                this.setState({ shippingApproved: true });
+                                this.setState({ shippingApproved: true, deliveryContainer: true });
                                 {
                                   if (DELIVERY === null) {
                                     return this.setState({ deliveryNotYet: true });
@@ -266,9 +267,15 @@ class DetailTransactionPage extends Component {
 
   logicFirst() {
     console.log('LOGIC 1 FIRE');
-    const { dataTransaction } = this.state;
+    const { dataTransaction, dataSampleSurvey } = this.state;
     const SAMPLE = dataTransaction.Sample;
     console.log(SAMPLE, 'SAMPLE');
+    if (SAMPLE.sample === true) {
+      this.setState({ dataSampleSurvey: [...dataSampleSurvey, 'Sample']})
+    } else if (SAMPLE.survey === true) {
+      this.setState({ dataSampleSurvey: [...dataSampleSurvey, 'Survey']})
+    }
+    
     //=================================================== LOGIC FIRST CONTAINER BOS ============================================
     if (SAMPLE === null) {
       return this.setState({ requestContainer: true })
@@ -406,7 +413,6 @@ class DetailTransactionPage extends Component {
           name: 'deposit.jpeg'
         });
 
-        const { navigate } = this.props.navigation
         axios.post(`${BASE_URL}/buyer/orders/${id}/deposits`,
           dataPhoto,
           {
@@ -418,19 +424,7 @@ class DetailTransactionPage extends Component {
           .then(result => {
             console.log(result, 'Upload Payment');
             this.setState({ loader: false })
-            Alert.alert(
-              '',
-              'Bukti Deposit Sukses Diupload, Silahkan tunggu verifikasi admin.',
-              [
-                {
-                  text: 'Ya',
-                  onPress: () => {
-                    navigate('DetailTransaction');
-                    console.log('Ke DetailTransaction');
-                  }
-                },
-              ]
-            )
+            alert('Bukti Deposit Sukses Diupload, Silahkan tunggu verifikasi admin.');
           })
           .catch(error => {
             console.log(error);
@@ -697,7 +691,8 @@ class DetailTransactionPage extends Component {
       reviewKomentar,
       loading,
       loader,
-      dataTransaction
+      dataTransaction,
+      dataSampleSurvey
     } = this.state
 
     if (loading) {
@@ -781,7 +776,7 @@ class DetailTransactionPage extends Component {
                     requestContainerApprove ?
                       <View style={{ flexDirection: 'column' }}>
                         <View>
-                          <Text style={{ textAlign: 'center' }}>Permintaan anda telah disetujui.</Text>
+                          <Text style={{ textAlign: 'center' }}>Permintaan {dataSampleSurvey} anda telah disetujui.</Text>
                         </View>
                       </View>
                       :
@@ -1222,10 +1217,10 @@ class DetailTransactionPage extends Component {
               <View style={styles.card}>
                 <ContainerSection>
                   {
-                    shippingContainer ?
+                    deliveryContainer ?
                       <TouchableWithoutFeedback onPress={() => this.setState({ deliveryExpanded: !deliveryExpanded })}>
                         <View style={{ flex: 1, flexDirection: 'row' }}>
-                          <Text style={{ flex: 1, fontSize: 20 }}>Pengiriman</Text>
+                          <Text style={{ flex: 1, fontSize: 20 }}>Penerimaan</Text>
                           <View style={{ flex: 1 }}>
                             <Icon size={30} style={{ alignSelf: 'flex-end' }} name={deliveryExpanded ? 'md-arrow-dropup' : 'md-arrow-dropdown'} />
                           </View>
