@@ -721,7 +721,7 @@ class DetailTransactionPage extends Component {
             <ContainerSection>
               <TouchableWithoutFeedback onPress={() => { this.setState({ requestExpanded: !requestExpanded }); console.log(this.state.requestExpanded, 'Request Klik') }}>
                 <View style={{ flex: 1, flexDirection: 'row' }}>
-                  <Text style={{ flex: 1, fontSize: 15 }}>Survei & Sample</Text>
+                  <Text style={{ fontSize: 20 }}>Survey & Sample</Text>
                   <View style={{ flex: 1 }}>
                     <Icon size={30} style={{ alignSelf: 'flex-end' }} name={requestExpanded ? 'md-arrow-dropup' : 'md-arrow-dropdown'} />
                   </View>
