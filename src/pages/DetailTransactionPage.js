@@ -168,7 +168,6 @@ class DetailTransactionPage extends Component {
     const PRODUCTION = dataTransaction.production;
     const SHIPPING = dataTransaction.shipping;
     const DELIVERY = dataTransaction.shippingDelivered;
-    console.log(DELIVERY, 'COLLECTION STATUS');
 
     if (CONTRACT === null) {
       return this.setState({ contractNotDone: true })
@@ -269,6 +268,7 @@ class DetailTransactionPage extends Component {
     console.log('LOGIC 1 FIRE');
     const { dataTransaction } = this.state;
     const SAMPLE = dataTransaction.Sample;
+    console.log(SAMPLE, 'SAMPLE');
     //=================================================== LOGIC FIRST CONTAINER BOS ============================================
     if (SAMPLE === null) {
       return this.setState({ requestContainer: true })
@@ -726,7 +726,7 @@ class DetailTransactionPage extends Component {
             <ContainerSection>
               <TouchableWithoutFeedback onPress={() => { this.setState({ requestExpanded: !requestExpanded }); console.log(this.state.requestExpanded, 'Request Klik') }}>
                 <View style={{ flex: 1, flexDirection: 'row' }}>
-                  <Text style={{ flex: 1, fontSize: 20 }}>Permintaan</Text>
+                  <Text style={{ flex: 1, fontSize: 20 }}>Survei dan Sample</Text>
                   <View style={{ flex: 1 }}>
                     <Icon size={30} style={{ alignSelf: 'flex-end' }} name={requestExpanded ? 'md-arrow-dropup' : 'md-arrow-dropdown'} />
                   </View>
@@ -742,7 +742,7 @@ class DetailTransactionPage extends Component {
                         <View>
                           <Text style={{ textAlign: 'center' }}>Apakah anda ingin melakukan permintaan sample atau survei nelayan?</Text>
                         </View>
-                        <View style={{ paddingTop: '10' }}>
+                        <View style={{ paddingTop: 10 }}>
                           <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
                             <CheckBox
                               title='Survei'
