@@ -68,6 +68,7 @@ class FormContractRevisionPage extends Component {
 
 
   componentWillMount() {
+    console.log(this.props.navigation.state.params.datas, 'Data Parsing');
     this.setState({
       dataMaster: this.props.navigation.state.params.datas,
       loadingView: true
@@ -266,7 +267,12 @@ class FormContractRevisionPage extends Component {
       locationOfreception,
       dpAmount,
       fishReject,
-      maxFishReject
+      maxFishReject,
+      dataMaster,
+      size,
+      quantity,
+      fishDescribe,
+      locationEdit
     } = this.state
 
     const sizeConvert = { uri: `${BASE_URL}/images/${this.state.dataMaster.Request.Transaction.photo}` };
@@ -346,7 +352,7 @@ class FormContractRevisionPage extends Component {
               label="Harga"
               keyboardType="numeric"
               style={styles.textArea}
-              value={price ? numeral(parseInt(quantity, 0)).format('0,0') : ''}
+              value={price ? numeral(parseInt(price, 0)).format('0,0') : ''}
               onChangeText={v => this.onChangeInput('price', v.replace(/\./g, ''))}
             />
           </ContainerSection>

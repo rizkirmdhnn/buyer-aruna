@@ -726,7 +726,7 @@ class DetailTransactionPage extends Component {
             <ContainerSection>
               <TouchableWithoutFeedback onPress={() => { this.setState({ requestExpanded: !requestExpanded }); console.log(this.state.requestExpanded, 'Request Klik') }}>
                 <View style={{ flex: 1, flexDirection: 'row' }}>
-                  <Text style={{ flex: 1, fontSize: 20 }}>Survei dan Sample</Text>
+                  <Text style={{ flex: 1, fontSize: 15 }}>Survei & Sample</Text>
                   <View style={{ flex: 1 }}>
                     <Icon size={30} style={{ alignSelf: 'flex-end' }} name={requestExpanded ? 'md-arrow-dropup' : 'md-arrow-dropdown'} />
                   </View>
@@ -843,10 +843,12 @@ class DetailTransactionPage extends Component {
                         <View style={{ flexDirection: 'column' }}>
                           {
                             contractPending ?
-                              <View>
-                                <Text>Anda sudah mengisi formulir kontrak. Status : {this.state.dataTransaction.Contract.Status.name}, Lakukan
-                                  diskusi untuk mempercepat transaksi.
-                              </Text>
+                              <View style={{ flex: 1, flexDirection: 'column' }}>
+                                <View style={{ flex: 1 }}>
+                                  <Text style={{ textAlign: 'center' }}>Anda sudah mengisi formulir kontrak.</Text>
+                                  <Text style={{ textAlign: 'center' }}>Status : {this.state.dataTransaction.Contract.Status.name}</Text>
+                                  <Text style={{ textAlign: 'center' }}>Lakukan diskusi untuk mempercepat transaksi.</Text>
+                                </View>
                               </View>
                               :
                               <View />
