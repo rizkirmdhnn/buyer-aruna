@@ -31,6 +31,7 @@ class RegistrationFormPage extends Component {
     this.state = {
       showAlert: false,
       loading: null,
+      loader: null,
 
       organization: '',
       organizationType: '',
@@ -44,6 +45,7 @@ class RegistrationFormPage extends Component {
       phone: '',
       username: '',
       password: '',
+      repassword: '',
       idCity: '',
       dataCity: '',
 
@@ -86,28 +88,14 @@ class RegistrationFormPage extends Component {
     this.setState({ [name]: v })
   }
 
-  hideAlert = () => {
-    this.setState({
-      showAlert: false
-    });
-  };
-
-  showAlert = () => {
-    this.setState({
-      showAlert: true
-    });
-  };
-
-  register = () => {
-    Keyboard.dismiss()
-    const { navigate } = this.props.navigation;
-    this.setState({ loading: true })
+  onRegister() {
+    this.setState({ loader: true })
 
     const dataPhoto = new FormData();
     dataPhoto.append('name', this.state.name);
     dataPhoto.append('email', this.state.email);
     dataPhoto.append('username', this.state.username);
-    dataPhoto.append('password', this.state.password);
+    dataPhoto.append('password', this.state.repassword);
     dataPhoto.append('phone', this.state.phone);
     dataPhoto.append('organization', this.state.organization);
     dataPhoto.append('organizationType', this.state.organizationType);
@@ -139,8 +127,7 @@ class RegistrationFormPage extends Component {
       }).then(response => {
         console.log(response, 'Response');
         console.log(response.status)
-        this.setState({ loading: false })
-        navigate('Home');
+        this.setState({ loader: false })
 
         const resetAction = NavigationActions.reset({
           index: 0,
@@ -153,7 +140,7 @@ class RegistrationFormPage extends Component {
         Alert.alert('Registrasi berhasil', `Silahkan cek email anda ${this.state.email} untuk verifikasi email`, [])
       })
       .catch(error => {
-        this.setState({ loading: false })
+        this.setState({ loader: false })
         if (error.response) {
           ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
         }
@@ -162,6 +149,183 @@ class RegistrationFormPage extends Component {
         }
       })
   }
+
+
+  regexEmail = (email) => {
+    const validate = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return validate.test(email);
+  };
+
+  regexPhoneNumber = (phone) => {
+    const validate = /^\d+$/;
+    return validate.test(phone);
+  }
+
+  register = () => {
+    Keyboard.dismiss()
+    console.log(this.state, 'STATE');
+    const {
+      name,
+      email,
+      username,
+      password,
+      repassword,
+      phone,
+      organization,
+      organizationType,
+      idNumber,
+      address,
+      idPhoto,
+      profilePhoto,
+      npwpPhoto,
+      npwp
+    } = this.state;
+
+    switch (name) {
+      case '':
+        return ToastAndroid.show('Nama Lengkap Tidak Boleh Kosong', ToastAndroid.SHORT);
+      default:
+        console.log('Nama Lengkap Tidak Kosong');
+        if (name.length <= 3) {
+          return ToastAndroid.show('Nama Lengkap minimal 4 huruf.', ToastAndroid.SHORT);
+        }
+        switch (password) {
+          case '':
+            return ToastAndroid.show('Password Tidak Boleh Kosong', ToastAndroid.SHORT);
+          default:
+            console.log('Password Tidak Kosong');
+            if (password.length <= 5) {
+              return ToastAndroid.show('Password minimal 6 digit.', ToastAndroid.SHORT);
+            }
+            switch (repassword) {
+              case '':
+                return ToastAndroid.show('Konfirmasi Password Tidak Boleh Kosong', ToastAndroid.SHORT);
+              default:
+                console.log('Konfirmasi Password Tidak Kosong');
+                console.log(repassword, password);
+                if (repassword.length <= 5) {
+                  return ToastAndroid.show('Konfirmasi Password minimal 6 digit.', ToastAndroid.SHORT);
+                }
+                if (repassword !== password) {
+                  return ToastAndroid.show('Konfirmasi Password Tidak Sama.', ToastAndroid.SHORT);
+                }
+                switch (email) {
+                  case '':
+                    return ToastAndroid.show('Email Tidak Boleh Kosong', ToastAndroid.SHORT);
+                  default:
+                    console.log('Email Tidak Kosong');
+                    if (email) {
+                      if (!this.regexEmail(email)) {
+                        return ToastAndroid.show('Format Email Salah', ToastAndroid.SHORT);
+                      }
+                      switch (username) {
+                        case '':
+                          return ToastAndroid.show('Username Tidak Boleh Kosong', ToastAndroid.SHORT);
+                        default:
+                          console.log('Username Tidak Kosong');
+                          if (username.length <= 3) {
+                            return ToastAndroid.show('Username minimal 4 huruf', ToastAndroid.SHORT);
+                          }
+                          switch (phone) {
+                            case '':
+                              return ToastAndroid.show('No. Telepon Tidak Boleh Kosong', ToastAndroid.SHORT);
+                            default:
+                              console.log('Nomor Telepon Tidak Kosong');
+                              if (phone) {
+                                if (!this.regexPhoneNumber(phone)) {
+                                  return ToastAndroid.show('Format No Telepon Salah', ToastAndroid.SHORT);
+                                }
+                                switch (organization) {
+                                  case '':
+                                    return ToastAndroid.show('Nama Lembaga Tidak Boleh Kosong', ToastAndroid.SHORT);
+                                  default:
+                                    console.log('Nama Lembaga Tidak Kosong');
+                                    if (organization.length <= 3) {
+                                      return ToastAndroid.show('Nama Lembaga minimal 4 Huruf', ToastAndroid.SHORT);
+                                    }
+                                    switch (organizationType) {
+                                      case '':
+                                        return ToastAndroid.show('Jenis Lembaga Tidak Boleh Kosong', ToastAndroid.SHORT);
+                                      default:
+                                        console.log('Jenis Lembaga Tidak Kosong');
+                                        switch (idNumber) {
+                                          case '':
+                                            return ToastAndroid.show('Nomor KTP Tidak Boleh Kosong', ToastAndroid.SHORT);
+                                          default:
+                                            console.log('No KTP Tidak Kosong');
+                                            if (idNumber.length <= 15) {
+                                              return ToastAndroid.show('Nomor KTP minimal 16 digit', ToastAndroid.SHORT);
+                                            }
+                                            switch (address) {
+                                              case '':
+                                                return ToastAndroid.show('Alamat Tidak Boleh Kosong', ToastAndroid.SHORT);
+                                              default:
+                                                console.log('Alamat Tidak Kosong');
+                                                if (address.length <= 3) {
+                                                  return ToastAndroid.show('Alamat minimal 4 Huruf', ToastAndroid.SHORT);
+                                                }
+                                                switch (idPhoto) {
+                                                  case '':
+                                                    return ToastAndroid.show('Foto KTP Tidak Boleh Kosong', ToastAndroid.SHORT);
+                                                  case null:
+                                                    return ToastAndroid.show('Foto KTP Tidak Boleh Kosong', ToastAndroid.SHORT);
+                                                  default:
+                                                    console.log('KTP TIdak Kosong');
+                                                    switch (npwp) {
+                                                      case '':
+                                                        return ToastAndroid.show('Nomor NPWP Tidak Boleh Kosong', ToastAndroid.SHORT);
+                                                      default:
+                                                        console.log('No NPWP Tidak Kosong');
+                                                        if (npwp.length <= 13) {
+                                                          return ToastAndroid.show('Nomor NPWP minimal 14 Digit', ToastAndroid.SHORT);
+                                                        }
+                                                        switch (profilePhoto) {
+                                                          case '':
+                                                            return ToastAndroid.show('Foto Profil Tidak Boleh Kosong', ToastAndroid.SHORT);
+                                                          case null:
+                                                            return ToastAndroid.show('Foto Profil Tidak Boleh Kosong', ToastAndroid.SHORT);
+                                                          default:
+                                                            console.log('Foto Profil Tidak Kosong');
+                                                            switch (npwpPhoto) {
+                                                              case '':
+                                                                return ToastAndroid.show('Foto NPWP Tidak Boleh Kosong', ToastAndroid.SHORT);
+                                                              case null:
+                                                                return ToastAndroid.show('Foto NPWP Tidak Boleh Kosong', ToastAndroid.SHORT);
+                                                              default:
+                                                                console.log('Foto NPWP Tidak Kosong');
+                                                                return this.onRegister();
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                              }
+                          }
+                      }
+                    }
+                }
+            }
+        }
+    }
+  }
+
+
+  hideAlert = () => {
+    this.setState({
+      showAlert: false
+    });
+  };
+
+
+  showAlert = () => {
+    this.setState({
+      showAlert: true
+    });
+  };
+
 
   selectPhotoTappedNPWP() {
     const options = {
@@ -286,7 +450,7 @@ class RegistrationFormPage extends Component {
   }
 
   renderButton = () => {
-    if (this.state.loading) {
+    if (this.state.loader) {
       return <Spinner size='large' />
     }
 
@@ -322,6 +486,7 @@ class RegistrationFormPage extends Component {
       phone,
       username,
       password,
+      repassword,
       idCity
     } = this.state
 
@@ -350,6 +515,7 @@ class RegistrationFormPage extends Component {
                     selectedValue={organizationType}
                     onValueChange={v => this.onChangeInput('organizationType', v)}
                   >
+                    <Picker.Item label='Pilih Jenis Lembaga' value='0' />
                     <Picker.Item label='PT' value='PT' />
                     <Picker.Item label='CV' value='CV' />
                     <Picker.Item label='Lainnya' value='Lainnya' />
@@ -519,6 +685,8 @@ class RegistrationFormPage extends Component {
               <Input
                 label='Password'
                 placeholder='minimal 6 karakter'
+                value={password}
+                onChangeText={v => this.onChangeInput('password', v)}
                 secureTextEntry
               />
             </ContainerSection>
@@ -527,8 +695,8 @@ class RegistrationFormPage extends Component {
                 label='Konfirmasi Password'
                 placeholder='minimal 6 karakter'
                 secureTextEntry
-                value={password}
-                onChangeText={v => this.onChangeInput('password', v)}
+                value={repassword}
+                onChangeText={v => this.onChangeInput('repassword', v)}
               />
             </ContainerSection>
 
