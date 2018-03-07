@@ -270,15 +270,15 @@ class DetailTransactionPage extends Component {
     const { dataTransaction, dataSampleSurvey } = this.state;
     const SAMPLE = dataTransaction.Sample;
     console.log(SAMPLE, 'SAMPLE');
-    if (SAMPLE.sample === true) {
-      this.setState({ dataSampleSurvey: [...dataSampleSurvey, 'Sample']})
-    } else if (SAMPLE.survey === true) {
-      this.setState({ dataSampleSurvey: [...dataSampleSurvey, 'Survey']})
-    }
-    
+
     //=================================================== LOGIC FIRST CONTAINER BOS ============================================
     if (SAMPLE === null) {
       return this.setState({ requestContainer: true })
+    }
+    if (SAMPLE.sample === true) {
+      this.setState({ dataSampleSurvey: [...dataSampleSurvey, 'Sample'] })
+    } else if (SAMPLE.survey === true) {
+      this.setState({ dataSampleSurvey: [...dataSampleSurvey, 'Survey'] })
     }
     const IDSAMPLE = dataTransaction.Sample.StatusId;
     console.log(IDSAMPLE, 'IDSAMPLE');
@@ -838,11 +838,23 @@ class DetailTransactionPage extends Component {
                         <View style={{ flexDirection: 'column' }}>
                           {
                             contractPending ?
-                              <View style={{ flex: 1, flexDirection: 'column' }}>
+                              <View style={{ flex: 1, flexDirection: 'row' }}>
                                 <View style={{ flex: 1 }}>
-                                  <Text style={{ textAlign: 'center' }}>Anda sudah mengisi formulir kontrak.</Text>
-                                  <Text style={{ textAlign: 'center' }}>Status : {this.state.dataTransaction.Contract.Status.name}</Text>
-                                  <Text style={{ textAlign: 'center' }}>Lakukan diskusi untuk mempercepat transaksi.</Text>
+                                  <Text>Status</Text>
+                                  <Text>Keterangan</Text>
+                                </View>
+                                <View style={{ flex: 1 }}>
+                                  <Text>{this.state.dataTransaction.Contract.Status.name}</Text>
+                                  <Text>Anda sudah mengisi formulir kontrak. {'\n'} Tunggu Nelayan Menyetujui. Lakukan diskusi untuk mempercepat transaksi.</Text>
+                                </View>
+
+                                <View>
+                                  <TouchableOpacity onPress={() => Linking.openURL(`${BASE_URL}/files/${this.state.dataTransaction.Contract.file}`).catch(err => console.error('An error occurred', err))}>
+                                    <View style={{ marginTop: 15, flexDirection: 'row' }}>
+                                      <Text style={{ color: COLOR.secondary_a }}>File Kontrak.pdf</Text>
+                                      <Icon size={20} style={{ color: COLOR.secondary_a, marginLeft: 5 }} name="md-download" />
+                                    </View>
+                                  </TouchableOpacity>
                                 </View>
                               </View>
                               :
@@ -851,9 +863,16 @@ class DetailTransactionPage extends Component {
                           {
                             contractRevision ?
                               <View>
-                                <Text>Anda sudah mengisi formulir kontrak. Status : {this.state.dataTransaction.Contract.Status.name}, Nelayan meminta
-                                  revisi kontrak, lakukan diskusi untuk mempercepat transaksi.
-                              </Text>
+                                <View style={{ flex: 1, flexDirection: 'row' }}>
+                                  <View style={{ flex: 1 }}>
+                                    <Text>Status</Text>
+                                    <Text>Keterangan</Text>
+                                  </View>
+                                  <View style={{ flex: 1 }}>
+                                    <Text style={{ textAlign: 'left' }}>{this.state.dataTransaction.Contract.Status.name}</Text>
+                                    <Text style={{ textAlign: 'left' }}>Anda sudah me-revisi kontrak. Silahkan tunggu persetujuan nelayan</Text>
+                                  </View>
+                                </View>
 
                                 <View>
                                   <TouchableOpacity onPress={() => Linking.openURL(`${BASE_URL}/files/${this.state.dataTransaction.Contract.file}`).catch(err => console.error('An error occurred', err))}>
@@ -878,16 +897,22 @@ class DetailTransactionPage extends Component {
                           {
                             contractApproved ?
                               <View>
-                                <Text>Kontrak ada sudah disetujui oleh nelayan, Silahkan melanjutkan transaksi.
-                              </Text>
-
-                                <View>
-                                  <TouchableOpacity onPress={() => Linking.openURL(`${BASE_URL}/files/${this.state.dataTransaction.Contract.file}`).catch(err => console.error('An error occurred', err))}>
-                                    <View style={{ marginTop: 15, flexDirection: 'row' }}>
-                                      <Text style={{ color: 'blue', marginLeft: 10 }}>File Kontrak.pdf</Text>
-                                      <Icon size={20} style={{ color: 'blue', marginLeft: 5 }} name="md-download" />
-                                    </View>
-                                  </TouchableOpacity>
+                                <View style={{ flex: 1, flexDirection: 'row' }}>
+                                  <View style={{ flex: 1 }}>
+                                    <Text>Status</Text>
+                                    <Text>File</Text>
+                                    <Text>Keterangan</Text>
+                                  </View>
+                                  <View style={{ flex: 1 }}>
+                                    <Text style={{ textAlign: 'left' }}>Disetujui</Text>
+                                    <TouchableOpacity onPress={() => Linking.openURL(`${BASE_URL}/files/${this.state.dataTransaction.Contract.file}`).catch(err => console.error('An error occurred', err))}>
+                                      <View style={{ flexDirection: 'row' }}>
+                                        <Text style={{ color: 'blue' }}>File Kontrak.pdf</Text>
+                                        <Icon size={20} style={{ color: 'blue', marginLeft: 5 }} name="md-download" />
+                                      </View>
+                                    </TouchableOpacity>
+                                    <Text style={{ textAlign: 'left' }}>Kontrak anda telah disetujui Nelayan.</Text>
+                                  </View>
                                 </View>
                               </View>
                               :
@@ -929,7 +954,8 @@ class DetailTransactionPage extends Component {
                         depositNotYet ?
                           <View style={{ flexDirection: 'column', flex: 1 }}>
                             <View>
-                              <Text>Kontrak anda telah disetujui,{'\n'}Silahkan lakukan deposit sebesar Rp. {numeral(dataTransaction.Contract.price).format('0,0')}</Text>
+                              <Text>Kontrak anda telah disetujui</Text>
+                              <Text>Silahkan lakukan deposit sebesar Rp. {numeral(dataTransaction.Contract.price).format('0,0')}</Text>
                             </View>
                             <View style={{ flex: 1 }}>
                               {
@@ -990,9 +1016,9 @@ class DetailTransactionPage extends Component {
                               <Text>Status</Text>
                             </View>
                             <View style={{ flex: 1 }}>
-                              <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Rp. {numeral(dataTransaction.Contract.price).format('0,0')}</Text>
-                              <Text style={{ textAlign: 'center', fontWeight: 'bold' }} >{moment(dataTransaction.deposit.updatedAt).format('DD/MM/YYYY')}</Text>
-                              <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Pembayaran Deposit Telah Diverifikasi Admin</Text>
+                              <Text style={{ textAlign: 'left' }}>Rp. {numeral(dataTransaction.Contract.price).format('0,0')}</Text>
+                              <Text style={{ textAlign: 'left' }} >{moment(dataTransaction.deposit.updatedAt).format('DD MMM YYYY')}</Text>
+                              <Text style={{ textAlign: 'left' }}>Pembayaran Deposit Telah Diverifikasi Admin</Text>
                             </View>
                           </View>
 
@@ -1051,7 +1077,14 @@ class DetailTransactionPage extends Component {
                         {
                           collectionApproved ?
                             <View>
-                              <Text>URL Gambar</Text>
+                              <TouchableOpacity onPress={() => Linking.openURL(`${BASE_URL}/images/${dataTransaction.collection.photo}`).catch(err => console.error('An error occurred', err))}>
+                                <View style={{ marginTop: 15, flexDirection: 'row' }}>
+                                  <Image
+                                    style={{ height: 200, width: 500, margin: 3, alignSelf: 'stretch', resizeMode: 'cover' }}
+                                    source={{ uri: `${BASE_URL}/images/${dataTransaction.collection.photo}` }}
+                                  />
+                                </View>
+                              </TouchableOpacity>
                             </View>
                             :
                             <View />
@@ -1115,7 +1148,14 @@ class DetailTransactionPage extends Component {
                         {
                           productionApproved ?
                             <View>
-                              <Text>URL Gambar</Text>
+                              <TouchableOpacity onPress={() => Linking.openURL(`${BASE_URL}/images/${dataTransaction.production.photo}`).catch(err => console.error('An error occurred', err))}>
+                                <View style={{ marginTop: 15, flexDirection: 'row' }}>
+                                  <Image
+                                    style={{ height: 200, width: 500, margin: 3, alignSelf: 'stretch', resizeMode: 'cover' }}
+                                    source={{ uri: `${BASE_URL}/images/${dataTransaction.production.photo}` }}
+                                  />
+                                </View>
+                              </TouchableOpacity>
                             </View>
                             :
                             <View />
@@ -1185,9 +1225,14 @@ class DetailTransactionPage extends Component {
                       {
                         shippingApproved ?
                           <View style={{ flex: 1, flexDirection: 'column' }}>
-                            <View style={{ flex: 1 }}>
-                              <Text style={{ textAlign: 'center' }}>Link Url Photo.</Text>
-                            </View>
+                            <TouchableOpacity onPress={() => Linking.openURL(`${BASE_URL}/images/${dataTransaction.shipping.photo}`).catch(err => console.error('An error occurred', err))}>
+                              <View style={{ marginTop: 15, flexDirection: 'row' }}>
+                                <Image
+                                  style={{ height: 200, width: 500, margin: 3, alignSelf: 'stretch', resizeMode: 'cover' }}
+                                  source={{ uri: `${BASE_URL}/images/${dataTransaction.shipping.photo}` }}
+                                />
+                              </View>
+                            </TouchableOpacity>
                           </View>
                           :
                           <View />
@@ -1270,9 +1315,14 @@ class DetailTransactionPage extends Component {
                       {
                         deliveryApproved ?
                           <View style={{ flex: 1, flexDirection: 'column' }}>
-                            <View style={{ flex: 1 }}>
-                              <Text style={{ textAlign: 'center' }}>Link URL Photo.</Text>
-                            </View>
+                            <TouchableOpacity onPress={() => Linking.openURL(`${BASE_URL}/images/${dataTransaction.shippingDelivered.photo}`).catch(err => console.error('An error occurred', err))}>
+                              <View style={{ marginTop: 15, flexDirection: 'row' }}>
+                                <Image
+                                  style={{ height: 200, width: 500, margin: 3, alignSelf: 'stretch', resizeMode: 'cover' }}
+                                  source={{ uri: `${BASE_URL}/images/${dataTransaction.shippingDelivered.photo}` }}
+                                />
+                              </View>
+                            </TouchableOpacity>
                           </View>
                           :
                           <View />
@@ -1329,29 +1379,36 @@ class DetailTransactionPage extends Component {
                 {
                   doneExpanded ?
                     <ContainerSection>
-                      <View style={{ flexDirection: 'column', flex: 1 }}>
-                        <View style={{ alignItems: 'center', flex: 1, marginBottom: 20 }}>
-                          <Rating
-                            imageSize={20}
-                            startingValue={3.5}
-                          />
-                        </View>
-                        <Input
-                          placeholder='Komentar'
-                          value={reviewKomentar}
-                          onChangeText={v => this.onChangeInput('reviewKomentar', v)}
-                          multiline
-                          lines={5}
-                          textAlignVertical="top"
-                        />
+                      {
+                        dataTransaction.Review ?
+                          <View>
+                            <Text>Anda sudah me-review nelayan. terimakasih</Text>
+                          </View>
+                          :
+                          <View style={{ flexDirection: 'column', flex: 1 }}>
+                            <View style={{ alignItems: 'center', flex: 1, marginBottom: 20 }}>
+                              <Rating
+                                imageSize={20}
+                                startingValue={3.5}
+                              />
+                            </View>
+                            <Input
+                              placeholder='Komentar'
+                              value={reviewKomentar}
+                              onChangeText={v => this.onChangeInput('reviewKomentar', v)}
+                              multiline
+                              lines={5}
+                              textAlignVertical="top"
+                            />
 
-                        <View style={{ marginTop: 20, marginBottom: 20 }}>
-                          <Button onPress={() => { this.giveComment() }}>
-                            Beri Ulasan
+                            <View style={{ marginTop: 20, marginBottom: 20 }}>
+                              <Button onPress={() => { this.giveComment() }}>
+                                Beri Ulasan
                           </Button>
-                        </View>
+                            </View>
 
-                      </View>
+                          </View>
+                      }
                     </ContainerSection>
                     :
                     <View />
@@ -1361,21 +1418,6 @@ class DetailTransactionPage extends Component {
               <View />
           }
         </Card>
-
-        <Modal
-          isVisible={this.state.isModalVisible}
-          onBackdropPress={() => this.setState({ isModalVisible: false })}
-        >
-          <View style={{ flex: 1, justifyContent: 'center' }}>
-            <View style={{ backgroundColor: 'white', borderRadius: 2, padding: 10 }}>
-              <Text style={{ textAlign: 'center', marginBottom: 20 }}>Catatan Revisi</Text>
-              <FormInput />
-              <Button onPress={() => { this.sendRequest() }} >
-                Kirim Permintaan
-              </Button>
-            </View>
-          </View>
-        </Modal>
       </ScrollView>
     )
   }
