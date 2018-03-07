@@ -7,6 +7,7 @@ import {
   Keyboard,
   PixelRatio,
   AsyncStorage,
+  ToastAndroid,
   TouchableOpacity,
   Image,
 } from 'react-native';
@@ -145,35 +146,83 @@ class RequestFormOrderFirstPage extends Component {
     });
   }
 
+  onReqButtonPress() {
+    const {
+      photo,
+      FishId,
+      size,
+      quantity,
+      deskripsi,
+      maxBudget,
+      dateNowPick,
+      provinsiId,
+      cityId
+    } = this.state;
 
-  onSubmit = () => {
-    console.log(this.state, 'DATA FORM 1');
-
-    if (this.state.photo == null) {
-      alert('Anda belum upload Foto');
-    } else if (this.state.FishId === '') {
-      alert('Anda belum memilih Komoditas');
-    } else if (this.state.size === '') {
-      alert('Anda belum menentukan Ukuran');
-    } else if (this.state.quantity === '') {
-      alert('Anda belum menentukan Kuantitas');
-    } else if (this.state.deskripsi === '') {
-      alert('Anda belum menentukan Deskripsi Komoditas');
-    } else if (this.state.maxBudget === '') {
-      alert('Anda belum menentukan max Harga')
-    } else if (this.state.dateNowPick === '') {
-      alert('Anda belum menentuan tanggal Permintaan')
-    } else if (this.state.provinsiId === '') {
-      alert('anda belum memilih Provinsi');
-    } else if (this.state.cityId === '') {
-      alert('Anda belum memilih Kota')
-    } else {
-      console.log('LOLOS');
-      Keyboard.dismiss();
-      const data = this.state;
-      console.log(this.state.photo, 'DATA LEMPAR');
-      this.props.navigation.navigate('RequestFormOrderSecond', { datas: data, dataFirst: this.state.dataParams })
+    switch (photo) {
+      case '':
+        return ToastAndroid.show('Foto Ikan Tidak Boleh Kosong', ToastAndroid.SHORT);
+      case null:
+        return ToastAndroid.show('Foto Ikan Tidak Boleh Kosong', ToastAndroid.SHORT);
+      default:
+        console.log('Poto Tidak Kosong');
+        switch (FishId) {
+          case '':
+            return ToastAndroid.show('Nama Komoditas Tidak Boleh Kosong', ToastAndroid.SHORT);
+          default:
+            console.log('Nama Komoditas Tidak Boleh Kosong');
+            switch (size) {
+              case '':
+                return ToastAndroid.show('Ukuran Tidak Boleh Kosong', ToastAndroid.SHORT);
+              default:
+                console.log('Ukuran Tidak Kosong');
+                switch (quantity) {
+                  case '':
+                    return ToastAndroid.show('Kuantitas Tidak Boleh Kosong', ToastAndroid.SHORT);
+                  default:
+                    console.log('Kuantitas Tidak Kosong');
+                    switch (deskripsi) {
+                      case '':
+                        return ToastAndroid.show('Deskripsi Tidak Boleh Kosong', ToastAndroid.SHORT);
+                      default:
+                        console.log('Deskripsi Tidak Kosong');
+                        switch (maxBudget) {
+                          case '':
+                            return ToastAndroid.show('Harga Maksimal Tidak Boleh Kosong', ToastAndroid.SHORT);
+                          default:
+                            console.log('Harga Maksimal Tidak Kosong');
+                            switch (dateNowPick) {
+                              case '':
+                                return ToastAndroid.show('Tanggal Pengiriman Tidak Boleh Kosong', ToastAndroid.SHORT);
+                              default:
+                                console.log('Tanggal Pengiriman Tidak Kosong');
+                                switch (provinsiId) {
+                                  case '':
+                                    return ToastAndroid.show('Provinsi Tidak Boleh Kosong', ToastAndroid.SHORT);
+                                  default:
+                                    console.log('Provinsi Tidak Kosong');
+                                    switch (cityId) {
+                                      case '':
+                                        return ToastAndroid.show('Kota Tidak Boleh Kosong', ToastAndroid.SHORT);
+                                      default:
+                                        console.log('Kota Tidak Kosong');
+                                        return this.onRequested();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
+  }
+
+
+  onRequested = () => {
+    Keyboard.dismiss();
+    const data = this.state;
+    this.props.navigation.navigate('RequestFormOrderSecond', { datas: data, dataFirst: this.state.dataParams })
   }
 
   showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
@@ -288,7 +337,7 @@ class RequestFormOrderFirstPage extends Component {
     return (
       <Button
         onPress={
-          () => this.onSubmit()
+          () => this.onReqButtonPress()
         }
       >
         Selanjutnya
