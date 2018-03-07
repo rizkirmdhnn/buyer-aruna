@@ -57,6 +57,16 @@ class RequestFormOrderSecondPage extends Component {
     }
   }
 
+  onPressReqButton() {
+    const { checkedSelected } = this.state;
+
+    if (checkedSelected.length === 0) {
+      return ToastAndroid.show('Anda Belum Memilih Supplier', ToastAndroid.SHORT);
+    }
+
+    return this.onSubmit();
+  }
+
 
   onSubmit = () => {
     this.setState({ loader: true })
@@ -171,7 +181,7 @@ class RequestFormOrderSecondPage extends Component {
     return (
       <Button
         onPress={
-          () => this.onSubmit()
+          () => this.onPressReqButton()
         }
       >
         Kirim Permintaan
@@ -180,7 +190,8 @@ class RequestFormOrderSecondPage extends Component {
   }
 
   renderItem = (item) => {
-    console.log(item, 'Item Data Supplier');
+    console.log(item, 'Render Data Supplier');
+    console.log(this.state.checkedSelected, 'Data Check');
     return item.map((data, index) => {
       return (
         <View style={styles.card} key={index}>

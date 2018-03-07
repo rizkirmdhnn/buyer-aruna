@@ -256,6 +256,9 @@ class RegistrationFormPage extends Component {
                                             if (idNumber.length <= 15) {
                                               return ToastAndroid.show('Nomor KTP minimal 16 digit', ToastAndroid.SHORT);
                                             }
+                                            if (idNumber.length > 16) {
+                                              return ToastAndroid.show('Nomor KTP maximal 16 digit', ToastAndroid.SHORT);
+                                            }
                                             switch (address) {
                                               case '':
                                                 return ToastAndroid.show('Alamat Tidak Boleh Kosong', ToastAndroid.SHORT);
@@ -276,8 +279,11 @@ class RegistrationFormPage extends Component {
                                                         return ToastAndroid.show('Nomor NPWP Tidak Boleh Kosong', ToastAndroid.SHORT);
                                                       default:
                                                         console.log('No NPWP Tidak Kosong');
-                                                        if (npwp.length <= 13) {
-                                                          return ToastAndroid.show('Nomor NPWP minimal 14 Digit', ToastAndroid.SHORT);
+                                                        if (npwp.length <= 14) {
+                                                          return ToastAndroid.show('Nomor NPWP minimal 15 Digit', ToastAndroid.SHORT);
+                                                        }
+                                                        if (npwp.length > 15) {
+                                                          return ToastAndroid.show('Nomor NPWP maximal 15 Digit', ToastAndroid.SHORT);
                                                         }
                                                         switch (profilePhoto) {
                                                           case '':
