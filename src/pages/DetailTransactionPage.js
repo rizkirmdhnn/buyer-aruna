@@ -1381,7 +1381,7 @@ class DetailTransactionPage extends Component {
                     <ContainerSection>
                       {
                         dataTransaction.Review ?
-                          <View>
+                          <View style={{ marginBottom: 30 }}>
                             <Text>Anda sudah me-review nelayan. terimakasih</Text>
                           </View>
                           :
