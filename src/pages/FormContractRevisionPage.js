@@ -65,7 +65,8 @@ class FormContractRevisionPage extends Component {
       fishReject: '',
       maxFishReject: '',
       shareLoc: '',
-      locationEdit: false
+      locationEdit: false,
+      hargaTot: 0
     };
   }
 
@@ -83,6 +84,10 @@ class FormContractRevisionPage extends Component {
       fishDescribe: this.props.navigation.state.params.datas.Request.Transaction.describe
     })
 
+    const b = this.props.navigation.state.params.datas.Request.Transaction.quantity;
+    const totLah = parseInt(this.state.hargaTot, 0) * parseInt(b, 0);
+    this.setState({ hargaTot: totLah });
+
     AsyncStorage.getItem('loginCredential', (err, result) => {
       this.setState({ tokenUser: result })
       const idContract = this.state.dataMaster.id;
@@ -91,7 +96,7 @@ class FormContractRevisionPage extends Component {
           headers: {
             token: this.state.tokenUser,
             'Content-Type': 'application/json',
-          } 
+          }
         }).then(response => {
           res = response.data.data;
           console.log(res, 'Data Temp Res');
@@ -107,10 +112,10 @@ class FormContractRevisionPage extends Component {
             dateNowPickDP: moment(res.Contract.dpDate).format('DD/MM/YYYY'),
             dateNowPickPengiriman: moment(res.Contract.dateOfReception).format('DD/MM/YYYY'),
             locationSupplier: res.Contract.Supplier.City.Province.name,
-            dataTemp: res, 
+            dataTemp: res,
             loadingView: false,
             fishReject: res.Contract.fishReject,
-            maxFishReject: res.Contract.maxFishReject 
+            maxFishReject: res.Contract.maxFishReject
           })
         })
         .catch(error => {
@@ -121,8 +126,10 @@ class FormContractRevisionPage extends Component {
   }
 
   onChangeInput = (name, v) => {
-    this.setState({ [name]: v });
-    // console.log(v);
+    this.setState({ [name]: v }, () => {
+      console.log('Panggil Sum');
+      this.sum();
+    });
   }
 
 
@@ -264,6 +271,12 @@ class FormContractRevisionPage extends Component {
       })
   }
 
+  sum() {
+    const { price, quantity } = this.state;
+    const totLah = parseInt(price, 0) * parseInt(quantity, 0);
+    this.setState({ hargaTot: totLah })
+  }
+
 
   showTanggalDP = () => this.setState({ tanggalDP: true });
 
@@ -374,13 +387,14 @@ class FormContractRevisionPage extends Component {
       quantity,
       fishDescribe,
       locationEdit,
-      dataTemp
+      dataTemp,
+      hargaTot
     } = this.state
 
     const sizeConvert = { uri: `${BASE_URL}/images/${this.state.dataMaster.Request.Transaction.photo}` };
     const addressBuyer = dataMaster.Request.Buyer.address;
     console.log(dataTemp, 'Data Temp');
-   
+
 
     if (this.state.loadingView === true) {
       return <Spinner size='large' />
@@ -453,11 +467,20 @@ class FormContractRevisionPage extends Component {
 
           <ContainerSection>
             <Input
-              label="Harga"
+              label="Harga Per Kg"
               keyboardType="numeric"
               style={styles.textArea}
               value={price ? numeral(parseInt(price, 0)).format('0,0') : ''}
               onChangeText={v => this.onChangeInput('price', v.replace(/\./g, ''))}
+            />
+          </ContainerSection>
+
+          <ContainerSection>
+            <Input
+              label='Harga Total'
+              keyboardType="numeric"
+              value={hargaTot.toString() ? numeral(parseInt(hargaTot, 0)).format('0,0') : ''}
+              editable={false}
             />
           </ContainerSection>
 
