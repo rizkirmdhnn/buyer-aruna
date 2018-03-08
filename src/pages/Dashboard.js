@@ -237,7 +237,7 @@ class Dashboard extends Component {
 
           <View style={{ padding: 15, paddingTop: 10, backgroundColor: '#fff' }}>
             <View style={styles.containerTextProductCard}>
-              <Text style={styles.textCard}>Supplier Populer...</Text>
+              <Text style={styles.textCard}>Supplier Populer</Text>
             </View>
 
             <View style={styles.containerFlatListSupplier}>
