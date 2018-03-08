@@ -135,7 +135,7 @@ class FormContractPage extends Component {
               default:
                 console.log('Deskripsi Komoditas Tidak Kosong');
                 if (fishDescribe.length <= 3) {
-                  return ToastAndroid.show('Deskripsi Komoditas Minimal 4 Huruf')
+                  return ToastAndroid.show('Deskripsi Komoditas Minimal 4 Huruf', ToastAndroid.SHORT)
                 }
                 switch (price) {
                   case '':
