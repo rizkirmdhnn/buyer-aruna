@@ -33,7 +33,7 @@ class HomePage extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      screen: 'Dashboard',
+      screen: '',
       searchItem: [],
       dataItemSearch: '',
       loading: true,
@@ -44,6 +44,13 @@ class HomePage extends Component {
   }
 
   componentWillMount() {
+    if (!this.props.navigation.state.params) {
+      console.log('Params tidak ada')
+      this.setState({ screen: 'Dashboard' })
+    } else {
+      console.log('Params Ada')
+      this.setState({ screen: this.props.navigation.state.params.screenDefault })
+    }
     OneSignal.clearOneSignalNotifications();
     AsyncStorage.getItem('loginCredential', (err, result) => {
       if (result) {

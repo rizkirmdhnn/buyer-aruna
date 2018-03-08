@@ -104,87 +104,150 @@ class FormContractPage extends Component {
     // console.log(v);
   }
 
+  onContract() {
+    console.log(this.state, 'State');
+    const {
+      size,
+      quantity,
+      fishDescribe,
+      price,
+      locationOfreception,
+      dpAmount,
+      dateNowPickDP,
+      dateNowPickPengiriman,
+      fishReject,
+      maxFishReject
+    } = this.state;
+
+    switch (size) {
+      case '':
+        return ToastAndroid.show('Ukuran Tidak Boleh Kosong', ToastAndroid.SHORT);
+      default:
+        console.log('Ukuran Tidak Kosong');
+        switch (quantity) {
+          case '':
+            return ToastAndroid.show('Jumlah Tidak Boleh Kosong', ToastAndroid.SHORT);
+          default:
+            console.log('Ukuran Tidak Kosong');
+            switch (fishDescribe) {
+              case '':
+                return ToastAndroid.show('Deskripsi Komoditas Tidak Boleh Kosong', ToastAndroid.SHORT);
+              default:
+                console.log('Deskripsi Komoditas Tidak Kosong');
+                if (fishDescribe.length <= 3) {
+                  return ToastAndroid.show('Deskripsi Komoditas Minimal 4 Huruf')
+                }
+                switch (price) {
+                  case '':
+                    return ToastAndroid.show('Harga Tidak Boleh Kosong', ToastAndroid.SHORT)
+                  default:
+                    console.log('Harga Tidak Kosong');
+                    switch (locationOfreception) {
+                      case '':
+                        return ToastAndroid.show('Lokasi Penerimaan Tidak Boleh Kosong', ToastAndroid.SHORT)
+                      default:
+                        console.log('Lokasi Penerimaan Tidak Kosong');
+                        if (locationOfreception.length === 0) {
+                          return ToastAndroid.show('Lokasi Penerimaan Tidak Boleh Kosong', ToastAndroid.SHORT)
+                        }
+                        switch (dpAmount) {
+                          case '':
+                            return ToastAndroid.show('Nominal DP Tidak Boleh Kosong', ToastAndroid.SHORT)
+                          default:
+                            console.log('Nominal DP Tidak Kosong');
+                            switch (dateNowPickDP) {
+                              case '':
+                                return ToastAndroid.show('Tanggal DP Tidak Boleh Kosong', ToastAndroid.SHORT)
+                              default:
+                                console.log('Tanggal DP Tidak Kosong');
+                                switch (dateNowPickPengiriman) {
+                                  case '':
+                                    return ToastAndroid.show('Tanggal Penerimaan Tidak Boleh Kosong', ToastAndroid.SHORT)
+                                  default:
+                                    console.log('Tanggal Penerimaan Tidak Kosong');
+                                    switch (fishReject) {
+                                      case '':
+                                        return ToastAndroid.show('Deskripsi Komoditas Reject Tidak Boleh Kosong', ToastAndroid.SHORT)
+                                      default:
+                                        console.log('Deskripsi Komoditas Reject Tidak Kosong');
+                                        if (fishReject.length <= 3) {
+                                          return ToastAndroid.show('Deskripsi Komoditas Reject Minimal 4 Huruf', ToastAndroid.SHORT)
+                                        }
+                                        switch (maxFishReject) {
+                                          case '':
+                                            return ToastAndroid.show('Presentase Maksimal Kodomitas Tidak Boleh Kosong', ToastAndroid.SHORT)
+                                          default:
+                                            console.log('Presentase Komoditas Reject Tidak Kosong');
+                                            return this.onSubmit();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+  }
+
   onSubmit = () => {
-    if (this.state.quantity === '') {
-      ToastAndroid.show('Anda belum mengisi Jumlah', ToastAndroid.SHORT)
-    }
-    else if (this.state.price === '') {
-      ToastAndroid.show('Anda belum mengisi Harga', ToastAndroid.SHORT)
-    }
-    else if (this.state.dateNowPickPengiriman === '') {
-      ToastAndroid.show('Anda belum menentukan Tanggal Pengiriman', ToastAndroid.SHORT)
-    }
-    else if (this.state.locationOfreception === '') {
-      ToastAndroid.show('Anda belum menentukan Lokasi Penerimaan', ToastAndroid.SHORT)
-    }
-    else if (this.state.dpAmount === '') {
-      ToastAndroid.show('Anda belum menentukan Nominal DP', ToastAndroid.SHORT)
-    }
-    else if (this.state.fishReject === '') {
-      ToastAndroid.show('Anda belum mengisi Deskripsi Reject', ToastAndroid.SHORT)
-    }
-    else if (this.state.maxFishReject === '') {
-      ToastAndroid.show('Anda belum menentukan Presentase Reject', ToastAndroid.SHORT)
-    }
-    else {
-      console.log('LOLOS')
-      Keyboard.dismiss()
-      this.state.locationOfreception.map((data) => this.setState({ shareLoc: data }))
+    Keyboard.dismiss()
+    this.state.locationOfreception.map((data) => this.setState({ shareLoc: data }))
 
-      const dataContract = {
-        fishDescribe: this.state.fishDescribe,
-        size: this.state.dataMaster.Request.Transaction.size,
-        quantity: this.state.quantity,
-        price: this.state.price,
-        name: this.state.dataMaster.Request.Supplier.name,
-        idNumber: this.state.dataMaster.Request.Supplier.idNumber,
-        organization: this.state.dataMaster.Request.Supplier.organization,
-        location: this.state.dataMaster.Request.Supplier.City.name,
-        shippingMethod: 'JNE',
-        locationOfreception: this.state.shareLoc,
-        dateOfReception: this.state.dateOfReception,
-        dpAmount: this.state.dpAmount,
-        dpDate: this.state.dpDate,
-        fishReject: this.state.fishReject,
-        maxFishReject: this.state.maxFishReject
-      }
-
-      const idTransaction = this.state.dataMaster.id;
-      this.setState({ loading: true });
-
-      AsyncStorage.getItem('loginCredential', (err, result) => {
-        console.log(dataContract, 'Data Contrak');
-        console.log(idTransaction, 'ID Transaction');
-        axios.post(`${BASE_URL}/buyer/orders/${idTransaction}/contracts`,
-          dataContract
-          , {
-            headers: {
-              token: result,
-              'Content-Type': 'application/json',
-            }
-          }).then(response => {
-            res = response.data.data;
-            console.log(response, 'RES');
-
-            Alert.alert(
-              '',
-              'Data kontrak berhasil disimpan. Silahkan tunggu jawaban dari Nelayan',
-              [
-                { text: 'Ok', onPress: () => this.navigationRedirect() },
-              ]
-            )
-            this.setState({ loading: false })
-          })
-          .catch(error => {
-            if (error.response) {
-              ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
-            }
-            else {
-              ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
-            }
-          })
-      })
+    const dataContract = {
+      fishDescribe: this.state.fishDescribe,
+      size: this.state.dataMaster.Request.Transaction.size,
+      quantity: this.state.quantity,
+      price: this.state.price,
+      name: this.state.dataMaster.Request.Supplier.name,
+      idNumber: this.state.dataMaster.Request.Supplier.idNumber,
+      organization: this.state.dataMaster.Request.Supplier.organization,
+      location: this.state.dataMaster.Request.Supplier.City.name,
+      shippingMethod: 'JNE',
+      locationOfreception: this.state.shareLoc,
+      dateOfReception: this.state.dateOfReception,
+      dpAmount: this.state.dpAmount,
+      dpDate: this.state.dpDate,
+      fishReject: this.state.fishReject,
+      maxFishReject: this.state.maxFishReject
     }
+
+    const idTransaction = this.state.dataMaster.id;
+    this.setState({ loading: true });
+
+    AsyncStorage.getItem('loginCredential', (err, result) => {
+      console.log(dataContract, 'Data Contrak');
+      console.log(idTransaction, 'ID Transaction');
+      axios.post(`${BASE_URL}/buyer/orders/${idTransaction}/contracts`,
+        dataContract
+        , {
+          headers: {
+            token: result,
+            'Content-Type': 'application/json',
+          }
+        }).then(response => {
+          res = response.data.data;
+          console.log(response, 'RES');
+
+          Alert.alert(
+            '',
+            'Data kontrak berhasil disimpan. Silahkan tunggu jawaban dari Nelayan',
+            [
+              { text: 'Ok', onPress: () => this.navigationRedirect() },
+            ]
+          )
+          this.setState({ loading: false })
+        })
+        .catch(error => {
+          if (error.response) {
+            ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
+          }
+          else {
+            ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
+          }
+        })
+    })
   }
 
   onChangeInput = (name, v) => {
@@ -222,8 +285,8 @@ class FormContractPage extends Component {
       [
         { text: 'Tidak', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
         {
-          text: 'Ya', 
-            onPress: () => {
+          text: 'Ya',
+          onPress: () => {
             navigate('DetailTransactionPage')
           }
         },
@@ -250,6 +313,7 @@ class FormContractPage extends Component {
   checkItem = data => {
     console.log(data, 'Data Check')
     const { locationOfreception, locationEdit } = this.state;
+    console.log(locationOfreception, 'Data Lokasi Sebelumnya');
     if (!locationOfreception.includes(data)) {
       this.setState({
         locationOfreception: [...locationOfreception, data],
@@ -257,7 +321,8 @@ class FormContractPage extends Component {
       });
     } else {
       this.setState({
-        locationOfreception: locationOfreception.filter(a => a !== data)
+        locationOfreception: locationOfreception.filter(a => a !== data),
+        locationEdit: !locationEdit
       });
     }
   };
@@ -276,7 +341,7 @@ class FormContractPage extends Component {
             'Sudah yakin dengan form kontrak anda ?',
             [
               { text: 'Tidak', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-              { text: 'Ya', onPress: () => this.onSubmit() },
+              { text: 'Ya', onPress: () => this.onContract() },
             ]
           )
         }
@@ -285,7 +350,7 @@ class FormContractPage extends Component {
       </Button>
     )
   }
-  
+
 
   render() {
     const {

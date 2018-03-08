@@ -64,7 +64,8 @@ class FormContractRevisionPage extends Component {
       dpDate: '',
       fishReject: '',
       maxFishReject: '',
-      shareLoc: ''
+      shareLoc: '',
+      locationEdit: false
     };
   }
 
@@ -125,6 +126,94 @@ class FormContractRevisionPage extends Component {
   }
 
 
+  onContractRevision() {
+    console.log(this.state, 'State');
+    const {
+      size,
+      quantity,
+      fishDescribe,
+      price,
+      locationOfreception,
+      dpAmount,
+      dateNowPickDP,
+      dateNowPickPengiriman,
+      fishReject,
+      maxFishReject
+    } = this.state;
+
+    switch (size) {
+      case '':
+        return ToastAndroid.show('Ukuran Tidak Boleh Kosong', ToastAndroid.SHORT);
+      default:
+        console.log('Ukuran Tidak Kosong');
+        switch (quantity) {
+          case '':
+            return ToastAndroid.show('Jumlah Tidak Boleh Kosong', ToastAndroid.SHORT);
+          default:
+            console.log('Ukuran Tidak Kosong');
+            switch (fishDescribe) {
+              case '':
+                return ToastAndroid.show('Deskripsi Komoditas Tidak Boleh Kosong', ToastAndroid.SHORT);
+              default:
+                console.log('Deskripsi Komoditas Tidak Kosong');
+                if (fishDescribe.length <= 3) {
+                  return ToastAndroid.show('Deskripsi Komoditas Minimal 4 Huruf')
+                }
+                switch (price) {
+                  case '':
+                    return ToastAndroid.show('Harga Tidak Boleh Kosong', ToastAndroid.SHORT)
+                  default:
+                    console.log('Harga Tidak Kosong');
+                    switch (locationOfreception) {
+                      case '':
+                        return ToastAndroid.show('Lokasi Penerimaan Tidak Boleh Kosong', ToastAndroid.SHORT)
+                      default:
+                        console.log('Lokasi Penerimaan Tidak Kosong');
+                        if (locationOfreception.length === 0) {
+                          return ToastAndroid.show('Lokasi Penerimaan Tidak Boleh Kosong', ToastAndroid.SHORT)
+                        }
+                        switch (dpAmount) {
+                          case '':
+                            return ToastAndroid.show('Nominal DP Tidak Boleh Kosong', ToastAndroid.SHORT)
+                          default:
+                            console.log('Nominal DP Tidak Kosong');
+                            switch (dateNowPickDP) {
+                              case '':
+                                return ToastAndroid.show('Tanggal DP Tidak Boleh Kosong', ToastAndroid.SHORT)
+                              default:
+                                console.log('Tanggal DP Tidak Kosong');
+                                switch (dateNowPickPengiriman) {
+                                  case '':
+                                    return ToastAndroid.show('Tanggal Penerimaan Tidak Boleh Kosong', ToastAndroid.SHORT)
+                                  default:
+                                    console.log('Tanggal Penerimaan Tidak Kosong');
+                                    switch (fishReject) {
+                                      case '':
+                                        return ToastAndroid.show('Deskripsi Komoditas Reject Tidak Boleh Kosong', ToastAndroid.SHORT)
+                                      default:
+                                        console.log('Deskripsi Komoditas Reject Tidak Kosong');
+                                        if (fishReject.length <= 3) {
+                                          return ToastAndroid.show('Deskripsi Komoditas Reject Minimal 4 Huruf', ToastAndroid.SHORT)
+                                        }
+                                        switch (maxFishReject) {
+                                          case '':
+                                            return ToastAndroid.show('Presentase Maksimal Kodomitas Tidak Boleh Kosong', ToastAndroid.SHORT)
+                                          default:
+                                            console.log('Presentase Komoditas Reject Tidak Kosong');
+                                            return this.onSubmit();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+  }
+
+
   onSubmit = () => {
     this.setState({ loading: true });
     console.log(this.state.locationOfreception, 'RWRWRWRWRWRWRRWRWR');
@@ -161,14 +250,8 @@ class FormContractRevisionPage extends Component {
         res = response.data.data;
         console.log(response, 'RES');
         this.setState({ loading: false })
-
-        Alert.alert(
-          '',
-          'Data kontrak berhasil diedit. Silahkan tunggu jawaban dari Nelayan',
-          [
-            { text: 'Ok', onPress: () => this.navigationRedirect() },
-          ]
-        )
+        ToastAndroid.show('Data kontrak berhasil diedit. Silahkan tunggu jawaban dari Nelayan', ToastAndroid.SHORT)
+        this.navigationRedirect();
       })
       .catch(error => {
         console.log(error.response, 'Error');
@@ -244,7 +327,8 @@ class FormContractRevisionPage extends Component {
       });
     } else {
       this.setState({
-        locationOfreception: locationOfreception.filter(a => a !== data)
+        locationOfreception: locationOfreception.filter(a => a !== data),
+        locationEdit: !locationEdit
       });
     }
   };
@@ -263,7 +347,7 @@ class FormContractRevisionPage extends Component {
             'Sudah yakin dengan form kontrak anda ?',
             [
               { text: 'Tidak', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-              { text: 'Ya', onPress: () => this.onSubmit() },
+              { text: 'Ya', onPress: () => this.onContractRevision() },
             ]
           )
         }
@@ -290,7 +374,6 @@ class FormContractRevisionPage extends Component {
       quantity,
       fishDescribe,
       locationEdit,
-
       dataTemp
     } = this.state
 
@@ -317,7 +400,7 @@ class FormContractRevisionPage extends Component {
 
           <ContainerSection>
             <View style={styles.container}>
-              <View style={[styles.avatar, styles.avatarContainer, { resizeMode: 'stretch' }]}>
+              <View style={[styles.avatar, styles.avatarContainer]}>
                 <Image style={[styles.avatar, { resizeMode: 'stretch' }]} source={sizeConvert} />
               </View>
             </View>
@@ -584,7 +667,7 @@ const styles = {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'orange',
+    backgroundColor: 'transparent',
     width: 500
   },
   avatarContainer: {

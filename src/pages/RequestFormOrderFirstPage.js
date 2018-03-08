@@ -156,7 +156,8 @@ class RequestFormOrderFirstPage extends Component {
       maxBudget,
       dateNowPick,
       provinsiId,
-      cityId
+      cityId,
+      unitFish
     } = this.state;
 
     switch (photo) {
@@ -178,35 +179,47 @@ class RequestFormOrderFirstPage extends Component {
                 console.log('Ukuran Tidak Kosong');
                 switch (quantity) {
                   case '':
-                    return ToastAndroid.show('Kuantitas Tidak Boleh Kosong', ToastAndroid.SHORT);
+                    return ToastAndroid.show('Jumlah/Kuantitas Tidak Boleh Kosong', ToastAndroid.SHORT);
                   default:
                     console.log('Kuantitas Tidak Kosong');
-                    switch (deskripsi) {
+                    switch (unitFish) {
                       case '':
-                        return ToastAndroid.show('Deskripsi Tidak Boleh Kosong', ToastAndroid.SHORT);
+                        return ToastAndroid.show('Ukuran Unit Tidak Boleh Kosong', ToastAndroid.SHORT);
                       default:
-                        console.log('Deskripsi Tidak Kosong');
-                        switch (maxBudget) {
+                        console.log('Ukuran Unit Tidak Kosong');
+                        if (unitFish === 'Kg') {
+                          if (quantity < size) {
+                            return ToastAndroid.show('Jumlah Tidak Boleh Lebih Kecil Dari Ukuran.', ToastAndroid.SHORT);
+                          }
+                        }
+
+                        switch (deskripsi) {
                           case '':
-                            return ToastAndroid.show('Harga Maksimal Tidak Boleh Kosong', ToastAndroid.SHORT);
+                            return ToastAndroid.show('Deskripsi Tidak Boleh Kosong', ToastAndroid.SHORT);
                           default:
-                            console.log('Harga Maksimal Tidak Kosong');
-                            switch (dateNowPick) {
+                            console.log('Deskripsi Tidak Kosong');
+                            switch (maxBudget) {
                               case '':
-                                return ToastAndroid.show('Tanggal Pengiriman Tidak Boleh Kosong', ToastAndroid.SHORT);
+                                return ToastAndroid.show('Harga Maksimal Tidak Boleh Kosong', ToastAndroid.SHORT);
                               default:
-                                console.log('Tanggal Pengiriman Tidak Kosong');
-                                switch (provinsiId) {
+                                console.log('Harga Maksimal Tidak Kosong');
+                                switch (dateNowPick) {
                                   case '':
-                                    return ToastAndroid.show('Provinsi Tidak Boleh Kosong', ToastAndroid.SHORT);
+                                    return ToastAndroid.show('Tanggal Pengiriman Tidak Boleh Kosong', ToastAndroid.SHORT);
                                   default:
-                                    console.log('Provinsi Tidak Kosong');
-                                    switch (cityId) {
+                                    console.log('Tanggal Pengiriman Tidak Kosong');
+                                    switch (provinsiId) {
                                       case '':
-                                        return ToastAndroid.show('Kota Tidak Boleh Kosong', ToastAndroid.SHORT);
+                                        return ToastAndroid.show('Provinsi Tidak Boleh Kosong', ToastAndroid.SHORT);
                                       default:
-                                        console.log('Kota Tidak Kosong');
-                                        return this.onRequested();
+                                        console.log('Provinsi Tidak Kosong');
+                                        switch (cityId) {
+                                          case '':
+                                            return ToastAndroid.show('Kota Tidak Boleh Kosong', ToastAndroid.SHORT);
+                                          default:
+                                            console.log('Kota Tidak Kosong');
+                                            return this.onRequested();
+                                        }
                                     }
                                 }
                             }
@@ -433,6 +446,7 @@ class RequestFormOrderFirstPage extends Component {
                   selectedValue={unitFish}
                   onValueChange={v => this.onChangeInput('unitFish', v)}
                 >
+                  <Picker.Item label='Pilih Ukuran' value='' />
                   <Picker.Item label='Kg' value='Kg' />
                   <Picker.Item label='Cm' value='Cm' />
                   <Picker.Item label='Ekor/Kg' value='Ekor/Kg' />

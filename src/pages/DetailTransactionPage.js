@@ -8,14 +8,14 @@ import {
   Linking,
   AsyncStorage,
   TouchableWithoutFeedback,
-  Alert,
+  ToastAndroid
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import Modal from 'react-native-modal';
+import { NavigationActions } from 'react-navigation';
 import moment from 'moment';
 import numeral from 'numeral';
 import axios from 'axios';
-import { CheckBox, FormInput, Rating } from 'react-native-elements';
+import { CheckBox, Rating } from 'react-native-elements';
 import ImagePicker from 'react-native-image-picker';
 import { Card, Button, ContainerSection, Spinner, Input } from '../components/common'
 import { BASE_URL, COLOR } from './../shared/lb.config';
@@ -23,6 +23,15 @@ import { BASE_URL, COLOR } from './../shared/lb.config';
 class DetailTransactionPage extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: `No. PO ${navigation.state.params.datas.Request.codeNumber}`,
+    headerLeft:
+      <TouchableOpacity
+        onPress={() => { navigation.navigate('Home', { screenDefault: 'TransactionPage' }) }}
+      >
+        <Image
+          style={{ width: 20, height: 20, marginLeft: 30 }}
+          source={require('./../assets/images/back.png')}
+        />
+      </TouchableOpacity>,
     headerRight:
       <TouchableOpacity
         onPress={() => { navigation.navigate('Message', { idData: navigation.state.params.datas }) }}
@@ -123,9 +132,16 @@ class DetailTransactionPage extends Component {
 
   componentWillMount() {
     this.setState({ dataMaster: this.props.navigation.state.params.datas, loading: true });
+    return this.getData();
+  }
 
-    const idTransaction = this.props.navigation.state.params.datas.id
+  onChangeInput = (name, v) => {
+    this.setState({ [name]: v })
+  }
 
+
+  getData() {
+    const idTransaction = this.props.navigation.state.params.datas.id;
     AsyncStorage.getItem('loginCredential', (err, result) => {
       const token = result;
       this.setState({ tokenUser: token })
@@ -152,10 +168,6 @@ class DetailTransactionPage extends Component {
           this.setState({ loading: false })
         })
     });
-  }
-
-  onChangeInput = (name, v) => {
-    this.setState({ [name]: v })
   }
 
 
@@ -277,9 +289,11 @@ class DetailTransactionPage extends Component {
     }
     if (SAMPLE.sample === true) {
       this.setState({ dataSampleSurvey: [...dataSampleSurvey, 'Sample'] })
-    } else if (SAMPLE.survey === true) {
+    }
+    if (SAMPLE.survey === true) {
       this.setState({ dataSampleSurvey: [...dataSampleSurvey, 'Survey'] })
     }
+    console.log(this.state.dataSampleSurvey, 'SURVEYYYYYYYYYYYYYYYYYYYYYY');
     const IDSAMPLE = dataTransaction.Sample.StatusId;
     console.log(IDSAMPLE, 'IDSAMPLE');
     switch (IDSAMPLE) {
@@ -305,28 +319,6 @@ class DetailTransactionPage extends Component {
     this.props.navigation.navigate('FormContractRevision', { datas: this.props.navigation.state.params.datas })
   }
 
-  fetchDetail = () => {
-    AsyncStorage.getItem('loginCredential', (err, result) => {
-      const token = result;
-      const id = this.props.navigation.state.params.id
-
-      axios.get(`${BASE_URL}/supplier/orders/${id}`, {
-        headers: { token }
-      })
-        .then(response => {
-          this.setState({ data: response.data.data, loading: false })
-        })
-        .catch(error => {
-          if (error.response) {
-            alert(error.response.data.message)
-          }
-          else {
-            alert('Koneksi internet bermasalah Fetch Detail')
-          }
-          this.setState({ loading: false })
-        })
-    });
-  }
 
   _toggleModal = () => {
     this.setState({ isModalVisible: !this.state.isModalVisible })
@@ -359,7 +351,17 @@ class DetailTransactionPage extends Component {
         })
         .then(response => {
           console.log(response, 'Result')
-          alert('Sukses Request permintaan Survei & Sample. Info lebih lanjut silahkan lakukan diskusi dengan nelayan.')
+          ToastAndroid.show('Sukses Request permintaan Survei & Sample.', ToastAndroid.SHORT)
+          const resetAction = NavigationActions.reset({
+            index: 0,
+            actions: [
+              NavigationActions.navigate({
+                routeName: 'DetailTransaction',
+                params: { datas: this.state.dataMaster }
+              })
+            ]
+          })
+          this.props.navigation.dispatch(resetAction)
         })
         .catch(error => {
           console.log(error, 'Error');
@@ -424,7 +426,17 @@ class DetailTransactionPage extends Component {
           .then(result => {
             console.log(result, 'Upload Payment');
             this.setState({ loader: false })
-            alert('Bukti Deposit Sukses Diupload, Silahkan tunggu verifikasi admin.');
+            ToastAndroid.show('Bukti Deposit Sukses Diupload.', ToastAndroid.SHORT)
+            const resetAction = NavigationActions.reset({
+              index: 0,
+              actions: [
+                NavigationActions.navigate({
+                  routeName: 'DetailTransaction',
+                  params: { datas: this.state.dataMaster }
+                })
+              ]
+            })
+            this.props.navigation.dispatch(resetAction)
           })
           .catch(error => {
             console.log(error);
@@ -479,7 +491,6 @@ class DetailTransactionPage extends Component {
           name: 'receivingKomoditas.jpeg'
         });
 
-        const { navigate } = this.props.navigation
         axios.post(`${BASE_URL}/buyer/orders/${id}/shippingsdelivered`,
           dataPhoto,
           {
@@ -491,19 +502,17 @@ class DetailTransactionPage extends Component {
           .then(result => {
             console.log('AIOSAIODAODISODIAD');
             console.log(result, 'Upload Payment');
-            Alert.alert(
-              '',
-              'Upload Bukti Penerimaan Sukses.',
-              [
-                {
-                  text: 'Ya',
-                  onPress: () => {
-                    navigate('Home');
-                    console.log('Ke Home');
-                  }
-                },
+            ToastAndroid.show('Upload Bukti Penerimaan Sukses.', ToastAndroid.SHORT)
+            const resetAction = NavigationActions.reset({
+              index: 0,
+              actions: [
+                NavigationActions.navigate({
+                  routeName: 'DetailTransaction',
+                  params: { datas: this.state.dataMaster }
+                })
               ]
-            )
+            })
+            this.props.navigation.dispatch(resetAction)
           })
           .catch(error => {
             console.log(error);
@@ -558,7 +567,6 @@ class DetailTransactionPage extends Component {
           name: 'receivingKomoditasRevision.jpeg'
         });
 
-        const { navigate } = this.props.navigation
         axios.put(`${BASE_URL}/buyer/orders/${id}/shippingsdelivered`,
           dataPhoto,
           {
@@ -570,19 +578,17 @@ class DetailTransactionPage extends Component {
           .then(result => {
             console.log('AIOSAIODAODISODIAD');
             console.log(result, 'Upload Payment');
-            Alert.alert(
-              '',
-              'Upload Bukti Penerimaan Sukses.',
-              [
-                {
-                  text: 'Ya',
-                  onPress: () => {
-                    navigate('Home');
-                    console.log('Ke Home');
-                  }
-                },
+            ToastAndroid.show('Upload Bukti Revisi Penerimaan Sukses.', ToastAndroid.SHORT)
+            const resetAction = NavigationActions.reset({
+              index: 0,
+              actions: [
+                NavigationActions.navigate({
+                  routeName: 'DetailTransaction',
+                  params: { datas: this.state.dataMaster }
+                })
               ]
-            )
+            })
+            this.props.navigation.dispatch(resetAction)
           })
           .catch(error => {
             console.log(error);
@@ -602,7 +608,7 @@ class DetailTransactionPage extends Component {
   giveComment() {
     console.log(this.state.reviewKomentar, 'data')
     const idOrder = this.state.dataTransaction.id;
-
+    this.setState({ loader: true });
     const dataReviews = {
       rating: 4,
       comment: this.state.reviewKomentar
@@ -619,9 +625,22 @@ class DetailTransactionPage extends Component {
       })
         .then(response => {
           console.log(response, 'sukses');
-          alert('Sukses Kasih Review');
+          ToastAndroid.show('Sukses Me-review Nelayan.', ToastAndroid.SHORT)
+          this.setState({ loader: false });
+          const resetAction = NavigationActions.reset({
+            index: 0,
+            actions: [
+              NavigationActions.navigate({
+                routeName: 'DetailTransaction',
+                params: { datas: this.state.dataMaster }
+              })
+            ]
+          })
+          this.props.navigation.dispatch(resetAction)
         })
         .catch(error => {
+          this.setState({ loader: false });
+          alert('Admin Belum Melakukan Pelunasan. Silahkan Tunggu Pelunasan oleh admin');
           console.log('Failed');
           console.log(error.response, 'Error')
         });
@@ -710,7 +729,7 @@ class DetailTransactionPage extends Component {
           </View>
           <View style={{ justifyContent: 'space-around', flex: 2 }}>
             <Text style={styles.buyerName}>{this.state.dataMaster.Request.Transaction.Fish.name}</Text>
-            <Text style={styles.buyerName}>{this.state.dataMaster.Request.Transaction.quantity} Kg</Text>
+            <Text style={styles.buyerName}>{numeral(this.state.dataMaster.Request.Transaction.quantity).format('0,0')} Kg</Text>
             <Text>Rp {numeral(this.state.dataMaster.Request.Transaction.minBudget).format('0,0')} - {numeral(this.state.dataMaster.Request.Transaction.maxBudget).format('0,0')},-/Kg</Text>
             <Text>{this.state.dataMaster.Request.Supplier.organizationType} {this.state.dataMaster.Request.Supplier.organization}</Text>
           </View>
@@ -818,8 +837,8 @@ class DetailTransactionPage extends Component {
                       contractNotDone ?
                         <View style={{ flexDirection: 'column' }}>
                           <View style={{ flex: 1 }}>
-                            <Text style={{ textAlign: 'center' }}>Silahkan anda membuat kontrak.</Text>
-                            <Text style={{ textAlign: 'center' }}>Lakukan diskusi untuk mempercepat transaksi.</Text>
+                            <Text style={{ textAlign: 'left' }}>Silahkan anda membuat kontrak.</Text>
+                            <Text style={{ textAlign: 'left' }}>Lakukan diskusi untuk mempercepat transaksi.</Text>
                           </View>
                           <View style={{ height: 20 }} />
                           <View style={{ marginTop: 10, flexDirection: 'row' }}>
@@ -841,20 +860,18 @@ class DetailTransactionPage extends Component {
                               <View style={{ flex: 1, flexDirection: 'row' }}>
                                 <View style={{ flex: 1 }}>
                                   <Text>Status</Text>
+                                  <Text>File</Text>
                                   <Text>Keterangan</Text>
                                 </View>
                                 <View style={{ flex: 1 }}>
                                   <Text>{this.state.dataTransaction.Contract.Status.name}</Text>
-                                  <Text>Anda sudah mengisi formulir kontrak. {'\n'} Tunggu Nelayan Menyetujui. Lakukan diskusi untuk mempercepat transaksi.</Text>
-                                </View>
-
-                                <View>
                                   <TouchableOpacity onPress={() => Linking.openURL(`${BASE_URL}/files/${this.state.dataTransaction.Contract.file}`).catch(err => console.error('An error occurred', err))}>
-                                    <View style={{ marginTop: 15, flexDirection: 'row' }}>
+                                    <View style={{ flexDirection: 'row' }}>
                                       <Text style={{ color: COLOR.secondary_a }}>File Kontrak.pdf</Text>
                                       <Icon size={20} style={{ color: COLOR.secondary_a, marginLeft: 5 }} name="md-download" />
                                     </View>
                                   </TouchableOpacity>
+                                  <Text>Anda sudah mengisi formulir kontrak. Tunggu Nelayan Menyetujui. Lakukan diskusi untuk mempercepat transaksi.</Text>
                                 </View>
                               </View>
                               :
@@ -866,21 +883,19 @@ class DetailTransactionPage extends Component {
                                 <View style={{ flex: 1, flexDirection: 'row' }}>
                                   <View style={{ flex: 1 }}>
                                     <Text>Status</Text>
+                                    <Text>File</Text>
                                     <Text>Keterangan</Text>
                                   </View>
                                   <View style={{ flex: 1 }}>
                                     <Text style={{ textAlign: 'left' }}>{this.state.dataTransaction.Contract.Status.name}</Text>
-                                    <Text style={{ textAlign: 'left' }}>Anda sudah me-revisi kontrak. Silahkan tunggu persetujuan nelayan</Text>
+                                    <TouchableOpacity onPress={() => Linking.openURL(`${BASE_URL}/files/${this.state.dataTransaction.Contract.file}`).catch(err => console.error('An error occurred', err))}>
+                                      <View style={{ flexDirection: 'row' }}>
+                                        <Text style={{ color: COLOR.secondary_a }}>File Kontrak.pdf</Text>
+                                        <Icon size={20} style={{ color: COLOR.secondary_a, marginLeft: 5 }} name="md-download" />
+                                      </View>
+                                    </TouchableOpacity>
+                                    <Text style={{ textAlign: 'left' }}>Nelayan meminta kontrak anda di revisi. Silahkan Ubah kontrak anda</Text>
                                   </View>
-                                </View>
-
-                                <View>
-                                  <TouchableOpacity onPress={() => Linking.openURL(`${BASE_URL}/files/${this.state.dataTransaction.Contract.file}`).catch(err => console.error('An error occurred', err))}>
-                                    <View style={{ marginTop: 15, flexDirection: 'row' }}>
-                                      <Text style={{ color: COLOR.secondary_a }}>File Kontrak.pdf</Text>
-                                      <Icon size={20} style={{ color: COLOR.secondary_a, marginLeft: 5 }} name="md-download" />
-                                    </View>
-                                  </TouchableOpacity>
                                 </View>
 
                                 <View style={{ marginTop: 10, flexDirection: 'row' }}>
@@ -964,7 +979,7 @@ class DetailTransactionPage extends Component {
                                     <Spinner size='large' />
                                   </View>
                                   :
-                                  <View>
+                                  <View style={{ marginTop: 30 }}>
                                     <Button onPress={() => { this.uploadDeposit() }}>
                                       Unggah Bukti Deposit
                                     </Button>
@@ -991,18 +1006,24 @@ class DetailTransactionPage extends Component {
                       }
                       {
                         depositFailed ?
-
-                          <View style={{ flexDirection: 'column', flex: 1 }}>
-                            <View>
-                              <Text>Deposit ditolak, silahkan upload kembali bukti transfer deposit yang benar.</Text>
+                          <View style={{ flex: 1 }}>
+                            <View style={{ flex: 1, flexDirection: 'row' }}>
                               <View style={{ flex: 1 }}>
-                                <Button onPress={() => { this.uploadDeposit() }}>
-                                  Unggah Bukti Ulang
-                              </Button>
+                                <Text>Status</Text>
+                                <Text>Keterangan</Text>
+                              </View>
+                              <View style={{ flex: 1 }}>
+                                <Text>Deposit Ditolak</Text>
+                                <Text>Silahkan upload bukti deposit yang benar.</Text>
                               </View>
                             </View>
-                          </View>
 
+                            <View style={{ marginTop: 10, flexDirection: 'row' }}>
+                              <Button onPress={() => { this.uploadDeposit() }}>
+                                Unggah Ulang Bukti Deposit
+                              </Button>
+                            </View>
+                          </View>
                           :
                           <View />
                       }
@@ -1059,8 +1080,8 @@ class DetailTransactionPage extends Component {
                           collectionNotYet ?
                             <View style={{ flex: 1, flexDirection: 'column' }}>
                               <View style={{ flex: 1 }}>
-                                <Text style={{ textAlign: 'center' }}> Nelayan belum melakukan upload foto pengumpulan.</Text>
-                                <Text style={{ textAlign: 'center' }}> Silahkan lakukan diskusi/chat untuk mempercepat transaksi.</Text>
+                                <Text style={{ textAlign: 'left' }}> Nelayan belum melakukan upload foto pengumpulan.</Text>
+                                <Text style={{ textAlign: 'left' }}> Silahkan lakukan diskusi/chat untuk mempercepat transaksi.</Text>
                               </View>
                             </View>
                             :
@@ -1092,7 +1113,7 @@ class DetailTransactionPage extends Component {
                         {
                           collectionRejected ?
                             <View>
-                              <Text>Foto Nelayang di rejected leh admin. </Text>
+                              <Text>Foto Nelayang di rejected oleh admin. </Text>
                               <Text>Silahkan tunggu nelayan untuk proses upload ulang</Text>
                             </View>
                             :
@@ -1203,8 +1224,8 @@ class DetailTransactionPage extends Component {
                         shippingNotYet ?
                           <View style={{ flex: 1, flexDirection: 'column' }}>
                             <View style={{ flex: 1 }}>
-                              <Text style={{ textAlign: 'center' }}> Nelayan belum melakukan upload foto pengumpulan.</Text>
-                              <Text style={{ textAlign: 'center' }}> Silahkan lakukan diskusi/chat untuk mempercepat transaksi.</Text>
+                              <Text style={{ textAlign: 'left' }}> Nelayan belum melakukan upload foto pengumpulan.</Text>
+                              <Text style={{ textAlign: 'left' }}> Silahkan lakukan diskusi/chat untuk mempercepat transaksi.</Text>
                             </View>
                           </View>
                           :
@@ -1214,9 +1235,9 @@ class DetailTransactionPage extends Component {
                         shippingPending ?
                           <View style={{ flex: 1, flexDirection: 'column' }}>
                             <View style={{ flex: 1 }}>
-                              <Text style={{ textAlign: 'center' }}> Nelayan telah melakukan upload foto pengiriman.</Text>
-                              <Text style={{ textAlign: 'center' }}> Silahkan tunggu verifikasi admin.</Text>
-                              <Text style={{ textAlign: 'center' }}> Silahkan lakukan diskusi/chat untuk mempercepat transaksi.</Text>
+                              <Text style={{ textAlign: 'left' }}> Nelayan telah melakukan upload foto pengiriman.</Text>
+                              <Text style={{ textAlign: 'left' }}> Silahkan tunggu verifikasi admin.</Text>
+                              <Text style={{ textAlign: 'left' }}> Silahkan lakukan diskusi/chat untuk mempercepat transaksi.</Text>
                             </View>
                           </View>
                           :
@@ -1241,9 +1262,9 @@ class DetailTransactionPage extends Component {
                         shippingRevision ?
                           <View style={{ flex: 1, flexDirection: 'column' }}>
                             <View style={{ flex: 1 }}>
-                              <Text style={{ textAlign: 'center' }}> Foto pengiriman sedang dilakukan revisi oleh Nelayan</Text>
-                              <Text style={{ textAlign: 'center' }}> Silahkan tunggu.</Text>
-                              <Text style={{ textAlign: 'center' }}> Silahkan lakukan diskusi/chat untuk mempercepat transaksi.</Text>
+                              <Text style={{ textAlign: 'left' }}> Foto pengiriman sedang dilakukan revisi oleh Nelayan</Text>
+                              <Text style={{ textAlign: 'left' }}> Silahkan tunggu.</Text>
+                              <Text style={{ textAlign: 'left' }}> Silahkan lakukan diskusi/chat untuk mempercepat transaksi.</Text>
                             </View>
                           </View>
                           :
@@ -1289,7 +1310,7 @@ class DetailTransactionPage extends Component {
                                     <Spinner size='large' />
                                   </View>
                                   :
-                                  <View>
+                                  <View style={{ marginTop: 20 }}>
                                     <Button onPress={() => { this.uploadReceiving() }}>
                                       Unggah Bukti Penerimaan
                                     </Button>
@@ -1304,9 +1325,9 @@ class DetailTransactionPage extends Component {
                         deliveryPending ?
                           <View style={{ flex: 1, flexDirection: 'column' }}>
                             <View style={{ flex: 1 }}>
-                              <Text style={{ textAlign: 'center' }}> Anda telah melakukan upload foto bukti penerimaan.</Text>
-                              <Text style={{ textAlign: 'center' }}> Silahkan tunggu verifikasi admin.</Text>
-                              <Text style={{ textAlign: 'center' }}> Silahkan lakukan diskusi/chat untuk mempercepat transaksi.</Text>
+                              <Text style={{ textAlign: 'left' }}> Anda telah melakukan upload foto bukti penerimaan.</Text>
+                              <Text style={{ textAlign: 'left' }}> Silahkan tunggu verifikasi admin.</Text>
+                              <Text style={{ textAlign: 'left' }}> Silahkan lakukan diskusi/chat untuk mempercepat transaksi.</Text>
                             </View>
                           </View>
                           :
@@ -1331,15 +1352,15 @@ class DetailTransactionPage extends Component {
                         deliveryRevision ?
                           <View style={{ flex: 1, flexDirection: 'column' }}>
                             <View style={{ flex: 1 }}>
-                              <Text style={{ textAlign: 'center' }}> Foto bukti penerimaan anda telah direvisi admin</Text>
-                              <Text style={{ textAlign: 'center' }}> Silahkan upload ulang foto bukti penerimaan barang anda.</Text>
+                              <Text style={{ textAlign: 'left' }}> Foto bukti penerimaan anda telah direvisi admin</Text>
+                              <Text style={{ textAlign: 'left' }}> Silahkan upload ulang foto bukti penerimaan barang anda.</Text>
                               {
                                 loader ?
                                   <View>
                                     <Spinner size='large' />
                                   </View>
                                   :
-                                  <View>
+                                  <View style={{ marginTop: 20 }}>
                                     <Button onPress={() => { this.uploadReceivingRevision() }}>
                                       Unggah Bukti Penerimaan
                                     </Button>
@@ -1382,6 +1403,7 @@ class DetailTransactionPage extends Component {
                       {
                         dataTransaction.Review ?
                           <View style={{ marginBottom: 30 }}>
+                            <Text>Transaksi Selesai.</Text>
                             <Text>Anda sudah me-review nelayan. terimakasih</Text>
                           </View>
                           :
@@ -1401,12 +1423,18 @@ class DetailTransactionPage extends Component {
                               textAlignVertical="top"
                             />
 
-                            <View style={{ marginTop: 20, marginBottom: 20 }}>
-                              <Button onPress={() => { this.giveComment() }}>
-                                Beri Ulasan
-                          </Button>
-                            </View>
-
+                            {
+                              loader ?
+                                <View>
+                                  <Spinner size='large' />
+                                </View>
+                                :
+                                <View style={{ marginTop: 20 }}>
+                                  <Button onPress={() => { this.giveComment() }}>
+                                    Beri Ulasan
+                                  </Button>
+                                </View>
+                            }
                           </View>
                       }
                     </ContainerSection>
