@@ -45,6 +45,7 @@ import ProductListPage from './pages/ProductListPage';
 import DetailFishesPage from './pages/DetailFishesPage';
 import NotificationList from './pages/NotificationList';
 import Term from './pages/Term';
+import MessageAdminPage from './pages/MessageAdminPage';
 /**
  *  List Component
  */
@@ -141,6 +142,7 @@ class App extends React.Component {
       DetailFishes: { screen: DetailFishesPage },
       NotificationList: { screen: NotificationList },
       Term: { screen: Term },
+      MessageAdmin: { screen: MessageAdminPage }
     }, {
         cardStyle: { backgroundColor: '#fafafa' },
         navigationOptions: {

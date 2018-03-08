@@ -20,35 +20,35 @@ class MessageListPage extends Component {
 	renderItem = (item) => {
 		return (
 			<Card>
-				<TouchableNativeFeedback 
-					onPress={() => this.props.navigation.navigate('Message', {idData: item})}
+				<TouchableNativeFeedback
+					onPress={() => this.props.navigation.navigate('Message', { idData: item })}
 				>
 					<View style={styles.itemContainerStyle}>
 						<View style={styles.thumbnailContainerStyle}>
-							<Image 
+							<Image
 								style={styles.thumbnailStyle}
-								source={{uri: `${BASE_URL}/images/${item.Request.Supplier.photo}`}} 
+								source={{ uri: `${BASE_URL}/images/${item.Request.Supplier.photo}` }}
 							/>
 						</View>
 
 						<View style={styles.headerContentStyle}>
 							<Text>No. PO {item.Request.codeNumber}</Text>
-							<Text style={{fontSize: 12}}>{item.lastUpdatedAt ? moment(item.lastUpdatedAt).format('DD MMM YYYY, HH:mm') : ''}</Text>
+							<Text style={{ fontSize: 12 }}>{item.lastUpdatedAt ? moment(item.lastUpdatedAt).format('DD MMM YYYY, HH:mm') : ''}</Text>
 							<Text style={styles.hedaerTextStyle}>
-								{item.Request.Supplier.organizationType} 
+								{item.Request.Supplier.organizationType}
 								{
-									item.Request.Supplier.organization ? 
-									`\n${item.Request.Supplier.organization}`
-								: 
-									item.Request.Supplier.name
+									item.Request.Supplier.organization ?
+										`\n${item.Request.Supplier.organization}`
+										:
+										item.Request.Supplier.name
 								}
 							</Text>
 						</View>
 
 						{
-							item.unread > 0 && 
-							<View style={{backgroundColor: 'red', borderRadius: 50, marginTop: 5, width: 20, height: 20}}>
-								<Text style={{color: '#fff', fontFamily: 'Muli-Bold', textAlign: 'center'}}>{item.unread}</Text>
+							item.unread > 0 &&
+							<View style={{ backgroundColor: 'red', borderRadius: 50, marginTop: 5, width: 20, height: 20 }}>
+								<Text style={{ color: '#fff', fontFamily: 'Muli-Bold', textAlign: 'center' }}>{item.unread}</Text>
 							</View>
 						}
 					</View>
@@ -60,17 +60,44 @@ class MessageListPage extends Component {
 	render() {
 		if (this.props.messages.loading) {
 			return (
-				<View style={{flex: 1}}>
+				<View style={{ flex: 1 }}>
 					<Spinner size='large' />
 				</View>
 			)
 		}
 
 		return (
-			<View style={{flex: 1}}>
+			<View style={{ flex: 1 }}>
+				<Card>
+					<TouchableNativeFeedback
+						onPress={() => this.props.navigation.navigate('MessageAdmin',
+							{
+								id: 1,
+								codeNumber: 'chat admin',
+								organizationType: 'Admin Aruna',
+							})}
+					>
+						<View style={styles.itemContainerStyle}>
+							<View style={styles.thumbnailContainerStyle}>
+								<Image
+									style={styles.thumbnailStyle}
+									source={require('./../assets/images/ic_launcher.png')}
+								/>
+							</View>
+
+							<View style={styles.headerContentStyle}>
+								<Text style={{ fontSize: 12 }}>{moment().format('DD MMM YYYY, HH:mm')}</Text>
+								<Text style={styles.hedaerTextStyle}>
+									Admin Aruna
+								</Text>
+							</View>
+						</View>
+					</TouchableNativeFeedback>
+				</Card>
+
 				<FlatList
 					data={this.props.messages.data}
-					renderItem={({item}) => this.renderItem(item)}
+					renderItem={({ item }) => this.renderItem(item)}
 					keyExtractor={(item, index) => index}
 				/>
 			</View>
@@ -80,7 +107,7 @@ class MessageListPage extends Component {
 
 const styles = {
 	itemContainerStyle: {
-		borderBottomWidth: 1, 
+		borderBottomWidth: 1,
 		justifyContent: 'flex-start',
 		flexDirection: 'row',
 		borderColor: '#ddd',
@@ -115,4 +142,4 @@ const mapStateToProps = state => {
 	return { messages, user }
 }
 
-export default connect(mapStateToProps, {messagesFetch})(MessageListPage)
+export default connect(mapStateToProps, { messagesFetch })(MessageListPage)
