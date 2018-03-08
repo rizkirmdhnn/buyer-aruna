@@ -198,6 +198,9 @@ class RequestFormOrderFirstPage extends Component {
                             return ToastAndroid.show('Deskripsi Tidak Boleh Kosong', ToastAndroid.SHORT);
                           default:
                             console.log('Deskripsi Tidak Kosong');
+                            if (deskripsi.length <= 3) {
+                              return ToastAndroid.show('Deskripsi Minimal 4 Huruf', ToastAndroid.SHORT)
+                            }
                             switch (maxBudget) {
                               case '':
                                 return ToastAndroid.show('Harga Maksimal Tidak Boleh Kosong', ToastAndroid.SHORT);
