@@ -73,6 +73,8 @@ class DetailTransactionPage extends Component {
       requestContainerApprove: null,
       requestContainerRejected: null,
       requestContainerWaiting: null,
+      requestContainerLate: null,
+
       contractDone: null,
       contractNotDone: null,
       contractRevision: null,
@@ -190,9 +192,9 @@ class DetailTransactionPage extends Component {
 
     switch (IDCONTRACT) {
       case 4:
-        return this.setState({ contractDone: true, contractPending: true, });
+        return this.setState({ requestContainer: false, requestContainerLate: true, contractDone: true, contractPending: true, });
       case 5:
-        this.setState({ contractDone: true, contractApproved: true, depositContainer: true });
+        this.setState({ requestContainer: false, requestContainerLate: true, contractDone: true, contractApproved: true, depositContainer: true });
         {
           if (DEPOSIT === null) {
             return this.setState({ depositNotYet: true })
@@ -270,7 +272,7 @@ class DetailTransactionPage extends Component {
           }
         }
       default:
-        return this.setState({ contractDone: true, contractRevision: true })
+        return this.setState({ requestContainer: false, requestContainerLate: true, contractDone: true, contractRevision: true })
     }
 
     //=================================================== END LOGIC SECOND CONTAINER BOS ========================================
@@ -658,6 +660,7 @@ class DetailTransactionPage extends Component {
       requestContainerApprove,
       requestContainerRejected,
       requestContainerWaiting,
+      requestContainerLate,
 
       contractExpanded,
       contractDone,
@@ -806,6 +809,16 @@ class DetailTransactionPage extends Component {
                       <View style={{ flexDirection: 'column' }}>
                         <View>
                           <Text>Permintaan anda telah ditolak.</Text>
+                        </View>
+                      </View>
+                      :
+                      <View />
+                  }
+                  {
+                    requestContainerLate ?
+                      <View style={{ flexDirection: 'column' }}>
+                        <View>
+                          <Text>Anda sudah membuat kontrak. Tidak dapat melakukan permintaan sample dan request </Text>
                         </View>
                       </View>
                       :

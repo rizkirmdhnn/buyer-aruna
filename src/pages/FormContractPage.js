@@ -81,7 +81,8 @@ class FormContractPage extends Component {
       fishReject: '',
       maxFishReject: '',
       locationEdit: true,
-      shareLoc: ''
+      shareLoc: '',
+      hargaTot: 0
     }
   }
 
@@ -91,17 +92,24 @@ class FormContractPage extends Component {
     });
 
     console.log(this.props.navigation.state.params.datas, 'Data Lemparan');
-
+    
     this.setState({
       quantity: this.props.navigation.state.params.datas.Request.Transaction.quantity.toString(),
       size: this.props.navigation.state.params.datas.Request.Transaction.size,
       fishDescribe: this.props.navigation.state.params.datas.Request.Transaction.describe
-    })
+    });
+
+
+    const b = this.props.navigation.state.params.datas.Request.Transaction.quantity;
+    const totLah = parseInt(this.state.hargaTot, 0) * parseInt(b, 0);
+    this.setState({ hargaTot: totLah });
   }
 
   onChangeInput = (name, v) => {
-    this.setState({ [name]: v });
-    // console.log(v);
+    this.setState({ [name]: v }, () => {
+      console.log('Panggil Sum');
+      this.sum();
+    });
   }
 
   onContract() {
@@ -250,11 +258,6 @@ class FormContractPage extends Component {
     })
   }
 
-  onChangeInput = (name, v) => {
-    this.setState({ [name]: v })
-    console.log(v, 'Text Type');
-  }
-
 
   handleDatePickedPengiriman = (dateReceive) => {
     console.log(dateReceive, 'Date Nya Penerimaan')
@@ -328,6 +331,12 @@ class FormContractPage extends Component {
   };
 
 
+  sum() {
+    const { price, quantity } = this.state;
+    const totLah = parseInt(price, 0) * parseInt(quantity, 0);
+    this.setState({ hargaTot: totLah })
+  }
+
   renderButton = () => {
     if (this.state.loading) {
       return <Spinner size='large' />
@@ -367,10 +376,12 @@ class FormContractPage extends Component {
       maxFishReject,
       size,
       dataMaster,
-      locationEdit
+      locationEdit,
+      hargaTot
     } = this.state
 
     const addressBuyer = dataMaster.Request.Buyer.address;
+    console.log(hargaTot, 'Harga Total');
     return (
       <ScrollView
         keyboardShouldPersistTaps="always"
@@ -433,10 +444,19 @@ class FormContractPage extends Component {
 
           <ContainerSection>
             <Input
-              label='Harga'
+              label='Harga Per Kg'
               keyboardType="numeric"
               value={price ? numeral(parseInt(price, 0)).format('0,0') : ''}
               onChangeText={v => this.onChangeInput('price', v.replace(/\./g, ''))}
+            />
+          </ContainerSection>
+
+          <ContainerSection>
+            <Input
+              label='Harga Total'
+              keyboardType="numeric"
+              value={hargaTot.toString() ? numeral(parseInt(hargaTot, 0)).format('0,0') : ''}
+              editable={false}
             />
           </ContainerSection>
 
