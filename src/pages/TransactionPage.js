@@ -5,15 +5,13 @@ import {
   AsyncStorage,
   FlatList,
   Image,
-  TouchableNativeFeedback,
-  ScrollView
+  TouchableNativeFeedback
 } from 'react-native';
 import axios from 'axios';
 import { BASE_URL, COLOR } from './../shared/lb.config';
 import {
-  Spinner,
-  Button,
-  Card
+  Card,
+  Button
 } from './../components/common';
 
 class TransactionPage extends Component {
@@ -52,6 +50,11 @@ class TransactionPage extends Component {
       <View style={{ flex: 1, marginTop: '50%' }}>
         <Text style={{ textAlign: 'center' }}>Ups... Kamu belum login.</Text>
         <Text style={{ textAlign: 'center' }}>Silahkan login terlebih dahulu.</Text>
+        <View style={{ padding: 15 }}>
+          <Button onPress={() => { this.loginFirst() }}>
+            Login
+          </Button>
+        </View>
       </View>
     )
   }
@@ -73,6 +76,12 @@ class TransactionPage extends Component {
         console.log('Error Transation Get Data');
       })
   }
+  
+  
+  loginFirst() {
+    this.props.navi.navigate('isLogin');
+  }
+
 
   detailTransaction = (props) => {
     const dataTransaction = props;
@@ -83,8 +92,13 @@ class TransactionPage extends Component {
     }
   }
 
-  refreshRequest() {
-    return this.getData();
+  handleRefresh = () => {
+    console.log('Refresh');
+    this.setState({
+      loading: true
+    }, () => {
+      this.getData();
+    })
   }
 
   imageIcon = (item, index) => {
@@ -121,21 +135,27 @@ class TransactionPage extends Component {
     }
   }
 
+  orderFirst() {
+    this.props.navi.navigate('RequestFormOrderFirst');
+  }
+
   renderData = (item) => {
     console.log(item, 'Data Trans');
-    if (item.length === 0) {
+    if (item === null || item === '') {
       return (
-        <View style={{ paddingTop: '50%' }}>
-          <Text style={{ color: 'grey', paddingLeft: '25%' }}>
-            Ups.. Your connection internet to slow!
-          </Text>
-          <Button onPress={() => this.refreshRequest()}>
-            Tap Tap Me Please!
-          </Button>
+        <View style={{ flex: 1, marginTop: '20%' }}>
+          <Card>
+            <Text style={{ textAlign: 'center' }}>Anda Belum Melakukan Transaksi</Text>
+            <Text style={{ textAlign: 'center' }}>Silahkan lakukan order komoditas</Text>
+            <View style={{ padding: 15 }}>
+              <Button onPress={() => { this.orderFirst() }}>
+                Buat Permintaan
+            </Button>
+            </View>
+          </Card>
         </View>
-      );
+      )
     }
-
     return (
       <Card>
         <TouchableNativeFeedback
@@ -186,21 +206,17 @@ class TransactionPage extends Component {
 
   render() {
     const { anyData, noData } = this.state;
-
-    if (this.state.loading) {
-      return <Spinner size="large" />
-    }
     return (
-      <ScrollView>
+      <View style={{ flex: 1 }}>
         {
           anyData ?
-            <View style={{ flex: 1 }}>
-              <FlatList
-                data={this.state.dataTransaksi}
-                renderItem={({ item }) => this.renderData(item)}
-                keyExtractor={(item, index) => index}
-              />
-            </View>
+            <FlatList
+              data={this.state.dataTransaksi}
+              renderItem={({ item }) => this.renderData(item)}
+              keyExtractor={(item, index) => index}
+              refreshing={this.state.loading}
+              onRefresh={() => this.handleRefresh()}
+            />
             :
             <View />
         }
@@ -210,7 +226,7 @@ class TransactionPage extends Component {
             :
             <View />
         }
-      </ScrollView>
+      </View>
     );
   }
 }

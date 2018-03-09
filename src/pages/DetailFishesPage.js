@@ -4,13 +4,13 @@ import {
     ScrollView,
     Text,
     AsyncStorage,
-    Image
+    Image,
+    RefreshControl
 } from 'react-native';
 import axios from 'axios';
 import {
     Button,
     ContainerSection,
-    Spinner,
     Card
 } from './../components/common';
 import { BASE_URL } from '../shared/lb.config';
@@ -26,34 +26,55 @@ class DetailFishesPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            loading: true,
+            refreshing: true,
             dataFish: '',
-            tokenUser: '',
+            temp: '',
+            idFish: '',
+            dataSup: ''
         };
     }
 
     componentWillMount() {
-        const { params } = this.props.navigation.state
-        console.log(params, 'Data Form Order Parsing')
+        console.log(this.props.navigation.state.params, 'KAKAKAKAKKA');
+        this.setState({ 
+            temp: this.props.navigation.state.params.datas.id,
+            dataSup: this.props.navigation.state.params.datas
+         }, () => {
+            const { temp } = this.state;
+            this.setState({ idFish: temp }, () => {
+                return this.getData();
+            })
+        })
+    }
 
-        const idFish = params.datas.id;
+    onRefresh() {
+        this.setState({
+            refreshing: true
+        }, () => {
+            this.getData();
+        });
+    }
+
+    getData() {
+        const { idFish } = this.state;
         axios.get(`${BASE_URL}/fishes/${idFish}`).then(response => {
             res = response.data.data;
             console.log(res, 'Data Ikan');
-            this.setState({ dataFish: res, loading: false });
+            this.setState({ dataFish: res, refreshing: false });
         })
             .catch(error => {
-                this.setState({ loading: false });
+                this.setState({ refreshing: false });
                 console.log(error.response, 'Erroor nya');
                 console.log('Error Request Order Get Data');
             })
     }
 
+
     createRequest(item) {
         AsyncStorage.getItem('loginCredential', (err, result) => {
             if (result) {
                 console.log(item, 'Data Ikan Terpilih')
-                this.props.navigation.navigate('RequestFormOrderFirst', { dataFish: item })
+                this.props.navigation.navigate('RequestFormOrderFirst', { dataFish: item, navigation: 'LIST' })
             } else {
                 alert('Anda belum login. Silahkan lakukan login terlebih dahulu');
             }
@@ -62,13 +83,15 @@ class DetailFishesPage extends Component {
 
     render() {
         const { dataFish } = this.state;
-
-        if (this.state.loading) {
-            return <Spinner size="large" />
-        }
-        console.log(dataFish.description);
         return (
-            <ScrollView>
+            <ScrollView
+                refreshControl={
+                    <RefreshControl
+                        refreshing={this.state.refreshing}
+                        onRefresh={this.onRefresh.bind(this)}
+                    />
+                }
+            >
                 <View style={{ flex: 1, paddingTop: 5 }}>
                     <ContainerSection>
                         <View style={styles.thumbnailContainerStyle}>
@@ -115,10 +138,11 @@ class DetailFishesPage extends Component {
 const styles = {
     thumbnailStyle: {
         height: 290,
-        width: 450,
+        width: 470,
         borderWidth: 1,
         alignSelf: 'stretch',
         resizeMode: 'cover',
+        margin: 15,
     },
     thumbnailContainerStyle: {
         justifyContent: 'center',

@@ -31,29 +31,37 @@ class RequestFormOrderSecondPage extends Component {
     this.state = {
       datax: [{}],
       dataSupplier: [],
-      loading: true,
+      loading: null,
       loader: null,
       checkedSelected: [],
       idSupplier: [],
       dataFirstSearch: '',
       dataSecondButton: '',
-      dataThirdHome: ''
+      dataThirdHome: '',
+
+      dataNot: ''
     };
   }
 
   componentWillMount() {
     const { params } = this.props.navigation.state;
-    console.log(params, 'Data Params');
-    // console.log(this.props.navigation.state.params.datas, 'Data 1');
+    console.log(params, 'DATA PARAMMMMMMSSSSSSS');
     this.setState({ datax: this.props.navigation.state.params.datas });
 
-    if (!params.dataFirst) {
-      this.getDefaultButton()
-      console.log('DataFirst Kosong')
-    }
-    if (params.dataFirst) {
-      console.log('Datas Tidak Kosong');
-      this.setState({ dataSupplier: params.dataFirst.dataSupplier, loading: false })
+    const dataOne = params.dataFirst.navigation;
+
+    switch (dataOne) {
+      case 'SEARCH':
+        console.log('SEARCH');
+        return this.setState({ dataSupplier: params.dataFirst.supplierData });
+      case 'LIST':
+        console.log('LIST');
+        return this.setState({ dataNot: params.dataFirst.dataFish }, () => {
+          this.getDefaultButton();
+        });
+      default:
+        console.log('BUTTON');
+        return this.getDefaultButton();
     }
   }
 
@@ -132,11 +140,12 @@ class RequestFormOrderSecondPage extends Component {
 
 
   getDefaultButton() {
+    this.setState({ loading: true })
     AsyncStorage.getItem('loginCredential', (err, result) => {
       const token = result;
       console.log(token);
       axios.post(`${BASE_URL}/generate-request`, {
-        FishId: this.state.datax.FishId,
+        FishId: this.state.datax.FishId === undefined || this.state.datax.FishId === null ? this.state.dataNot.id : this.state.datax.FishId,
         ProvinceId: this.state.datax.provinsiId,
         CityId: this.state.datax.cityId,
         maxPrice: this.state.datax.maxBudget
@@ -204,12 +213,8 @@ class RequestFormOrderSecondPage extends Component {
             </View>
             <View style={styles.headerContentStyle}>
               <Text style={styles.hedaerTextStyle}>{data.User.name}</Text>
-              <Text>{data.User.organizationType} {data.User.organization}</Text>
-              <Text>{
-                // data.quantity ? data.quantity : '0'
-              }
-              </Text>
-              <Text>Rp {numeral(parseInt(data.minPrice, 0)).format('0,0')} - Rp {numeral(parseInt(data.minPrice, 0)).format('0,0')} /Kg</Text>
+              <Text style={{ fontSize: 10 }}>{data.User.organizationType} {data.User.organization}</Text>
+              <Text style={{ fontSize: 10 }}>Rp {numeral(parseInt(data.minPrice, 0)).format('0,0')} - Rp {numeral(parseInt(data.minPrice, 0)).format('0,0')} /Kg</Text>
             </View>
             <CheckBox
               center
@@ -237,24 +242,26 @@ class RequestFormOrderSecondPage extends Component {
 
     return (
       <ScrollView>
-        <FlatList
-          data={[this.state.dataSupplier]}
-          renderItem={({ item }) => this.renderItem(item)}
-        />
+        <View style={{ flex: 1 }}>
+          <FlatList
+            data={[this.state.dataSupplier]}
+            renderItem={({ item }) => this.renderItem(item)}
+          />
 
-        {
-          dataSupplier.length === 0 ?
-            <View style={{ margin: 10 }}>
-              <Text style={{ textAlign: 'center' }}>Ups... Maaf tidak ada daftar nelayan.</Text>
-              <Text style={{ textAlign: 'center' }}>Silahkan coba ganti Nama Ikan / Provinsi / Kota.</Text>
-            </View>
-            :
-            <View style={{ margin: 10 }}>
-              <ContainerSection>
-                {this.renderButton()}
-              </ContainerSection>
-            </View>
-        }
+          {
+            dataSupplier.length === 0 ?
+              <View style={{ margin: 10 }}>
+                <Text style={{ textAlign: 'center' }}>Ups... Maaf tidak ada daftar nelayan.</Text>
+                <Text style={{ textAlign: 'center' }}>Silahkan coba ganti Nama Ikan / Provinsi / Kota.</Text>
+              </View>
+              :
+              <View style={{ margin: 10 }}>
+                <ContainerSection>
+                  {this.renderButton()}
+                </ContainerSection>
+              </View>
+          }
+        </View>
       </ScrollView>
     );
   }

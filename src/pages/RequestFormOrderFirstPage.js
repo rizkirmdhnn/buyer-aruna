@@ -72,7 +72,6 @@ class RequestFormOrderFirstPage extends Component {
   }
 
   componentWillMount() {
-    console.log(this.state.photo, 'POTO DEFAULT');
     this.setState({ loading: true });
 
     const { params } = this.props.navigation.state
@@ -238,6 +237,8 @@ class RequestFormOrderFirstPage extends Component {
   onRequested = () => {
     Keyboard.dismiss();
     const data = this.state;
+    console.log(data, 'DATA');
+    console.log(this.state.dataParams, 'DATA PARAMS');
     this.props.navigation.navigate('RequestFormOrderSecond', { datas: data, dataFirst: this.state.dataParams })
   }
 

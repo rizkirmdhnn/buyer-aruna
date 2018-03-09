@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Text, View, AsyncStorage, Image, ScrollView } from 'react-native';
 import axios from 'axios';
-
+import moment from 'moment';
+import numeral from 'numeral';
 import { Spinner, Container, CardSection, ContainerSection, Card } from '../components/common';
 import { BASE_URL, COLOR } from './../shared/lb.config';
 
@@ -57,7 +58,7 @@ class ProfileSupplierPage extends Component {
     }
 
     return (
-      <ScrollView style={{marginBottom: 20}}>
+      <ScrollView style={{ marginBottom: 20 }}>
         <View style={styles.profileImageContainer}>
           <Image
             style={styles.profileImage}
@@ -69,40 +70,48 @@ class ProfileSupplierPage extends Component {
           <ContainerSection>
             <View>
               <Text>Supplier Aruna</Text>
-              <Text style={{ marginTop: 10, fontSize: 18, fontFamily: 'Muli-Bold'}}>{this.state.dataProfile.name}</Text>
+              <Text style={{ marginTop: 10, fontSize: 18, fontFamily: 'Muli-Bold' }}>{this.state.dataProfile.name}</Text>
               <Text>
                 {this.state.dataProfile.organizationType}
                 {this.state.dataProfile.organization}
               </Text>
             </View>
           </ContainerSection>
-          
-          <View style={{borderWidth: 1, borderColor: '#eaeaea', margin: 5}} />
+
+          <View style={{ borderWidth: 1, borderColor: '#eaeaea', margin: 5 }} />
 
           <ContainerSection>
             <Text style={{ flex: 1 }}>Alamat</Text>
-            <Text style={{ flex: 1}}>{this.state.dataProfile.address}</Text>
+            <Text style={{ flex: 1 }}>{this.state.dataProfile.City.name}</Text>
           </ContainerSection>
           <ContainerSection>
             <Text style={{ flex: 1 }}>Point</Text>
             <Text style={{ flex: 1, justifyContent: 'flex-start' }}>{this.state.dataProfile.pointNow}</Text>
           </ContainerSection>
 
-          <View style={{borderWidth: 1, borderColor: '#eaeaea', margin: 5}} />
+          <View style={{ borderWidth: 1, borderColor: '#eaeaea', margin: 5 }} />
 
         </Container>
 
         <Text style={{ marginLeft: 25, paddingTop: 20, flex: 1, fontWeight: 'bold' }}> Komoditas Unggulan </Text>
 
         {
-           dataProfile.Products && dataProfile.Products.map(item =>
+          dataProfile.Products && dataProfile.Products.map(item =>
             <Card key={item.id}>
               <CardSection>
                 <Image
-                  style={{width: 100, height: 100}}
-                  source={{uri: `${BASE_URL}/images/${item.Fish.photo}`}} 
+                  style={{ width: 130, height: 130, margin: 10 }}
+                  source={{ uri: `${BASE_URL}/images/${item.Fish.photo}` }}
                 />
-                <Text style={{color: COLOR.secondary_a, fontSize: 20, marginLeft: 10}}>{item.Fish && item.Fish.name}</Text>
+                <View style={{ flex: 1, flexDirection: 'column', margin: 10 }}>
+                  <Text>{moment(item.updatedAt).format('DD MMM YYYY')}</Text>
+                  <Text style={{ color: COLOR.secondary_a, fontSize: 20 }}>{item.Fish && item.Fish.name}</Text>
+                  <Text>{item.Fish.internationalName}</Text>
+                  <View style={{ flexDirection: 'row', marginTop: 20, marginBottom: 20 }}>
+                    <Text>Total Fishlog:</Text>
+                    <Text style={{ textAlign: 'right', marginLeft: '40%', fontWeight: 'bold', fontSize: 20 }}>{numeral(parseInt(item.capacity, 0)).format('0,0')} {item.Fish.unit}</Text>
+                  </View>
+                </View>
               </CardSection>
             </Card>
           )

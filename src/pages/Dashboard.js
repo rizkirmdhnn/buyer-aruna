@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, FlatList, Text, TouchableNativeFeedback, Image, TouchableWithoutFeedback, AsyncStorage } from 'react-native';
+import { View, ScrollView, FlatList, RefreshControl, Text, TouchableNativeFeedback, Image, TouchableWithoutFeedback, AsyncStorage } from 'react-native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import axios from 'axios';
 import Swiper from 'react-native-swiper';
@@ -17,45 +17,56 @@ class Dashboard extends Component {
       showAlert: false,
       supplierList: '',
       productList: '',
-      loading: null,
       tokenUser: '',
+      refreshing: true
     }
   }
 
   componentWillMount() {
-    this.setState({ loading: true })
     AsyncStorage.getItem('loginCredential', (err, result) => {
       this.setState({ tokenUser: result });
-      axios.get(`${BASE_URL}/suppliers/popular`, {
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      })
-        .then(response => {
-          const res = response.data.data;
-          this.setState({ supplierList: res, loading: false });
-          console.log(res, 'Data Supplier Popular');
-
-          axios.get(`${BASE_URL}/products/popular`, {
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          })
-            .then(response2 => {
-              const res2 = response2.data.data;
-              console.log(res, 'Data Product Popular');
-              this.setState({ productList: res2, loading: false });
-            })
-            .catch(error => {
-              this.setState({ loading: false })
-              console.log('ERROR', error.response);
-            });
-        })
-        .catch(error => {
-          this.setState({ loading: false })
-          console.log('ERROR', error.response);
-        });
+      this.getData();
     });
+  }
+
+  onRefresh() {
+    this.setState({ 
+      refreshing: true 
+    }, () => {
+      this.getData();
+    });
+  }
+
+  getData() {
+    axios.get(`${BASE_URL}/suppliers/popular`, {
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+      .then(response => {
+        const res = response.data.data;
+        this.setState({ supplierList: res, refreshing: false });
+        console.log(res, 'Data Supplier Popular');
+
+        axios.get(`${BASE_URL}/products/popular`, {
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+          .then(response2 => {
+            const res2 = response2.data.data;
+            console.log(res2, 'Data Product Popular');
+            this.setState({ productList: res2, refreshing: false });
+          })
+          .catch(error => {
+            this.setState({ refreshing: false })
+            console.log('ERROR', error.response);
+          });
+      })
+      .catch(error => {
+        this.setState({ refreshing: false })
+        console.log('ERROR', error.response);
+      });
   }
 
 
@@ -114,11 +125,12 @@ class Dashboard extends Component {
 
   keyExtractor = (item) => item.id;
 
+
   renderProductItem = (itemProduct) => {
     const number = parseInt(itemProduct.index, 0) + 1;
     return (
       <View>
-        <TouchableWithoutFeedback onPress={() => { this.props.navi.navigate('DetailFishes', { datas: itemProduct.item.Fish }) }}>
+        <TouchableWithoutFeedback onPress={() => { this.props.navi.navigate('DetailFishes', { datas: itemProduct.item.User }) }}>
           <View>
             <Image
               style={styles.item}
@@ -208,7 +220,14 @@ class Dashboard extends Component {
           </Swiper>
         </View>
 
-        <ScrollView>
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this.onRefresh.bind(this)}
+            />
+          }
+        >
           <View style={{ padding: 15 }}>
             <Button onPress={() => { this.credentialButton() }}>
               Buat Permintaan
@@ -249,7 +268,6 @@ class Dashboard extends Component {
               />
             </View>
           </View>
-
         </ScrollView>
 
         <AwesomeAlert

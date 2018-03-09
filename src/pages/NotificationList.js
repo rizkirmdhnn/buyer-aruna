@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import moment from 'moment'
 import axios from 'axios'
 
-import { Spinner, Card } from '../components/common'
+import { Card } from '../components/common'
 import { notificationsFetch, unreadNotifFetch } from '../redux/actions'
 import { BASE_URL } from '../shared/lb.config';
 
@@ -16,61 +16,67 @@ class NotificationList extends Component {
 
 	constructor(props) {
 		super(props)
-	
+
 		this.state = {
 			loading: false,
+			refreshing: true
 		}
 	}
 
 	componentWillMount() {
-		this.props.notificationsFetch(this.props.user.token, '')
+		this.props.notificationsFetch(this.props.user.token, '', () => {
+			console.log('Exit 1')
+			this.setState({ refreshing: false })
+		});
 	}
 
 	componentDidMount() {
-		this.props.unreadNotifFetch(this.props.user.token)
+		this.props.unreadNotifFetch(this.props.user.token, () => {
+			console.log('Exit 2')
+			this.setState({ refreshing: false })
+		});
 	}
 
 	fetchDetail = (type, id) => {
-		this.setState({loading: true})
 		let token = this.props.user.token
 		let newType = type
 
 		if (type === 'messages') {
 			newType = 'orders'
 		}
-		
+
 		axios.get(`${BASE_URL}/buyer/${newType}/${id}`, {
-			headers: {token}
+			headers: { token }
 		})
-		.then(response => {
-			let link = 'DetailRequestOrder'
-			let additionalProps = {
-				datas: response.data.data
-			}
-
-			if (type === 'orders') {
-				link = 'DetailTransaction'
-			}
-			else if (type === 'messages') {
-				link = 'Message'
-				additionalProps = {
-					idData: response.data.data
+			.then(response => {
+				this.setState({ refreshing: false })
+				let link = 'DetailRequestOrder'
+				let additionalProps = {
+					datas: response.data.data
 				}
-			}
 
-			this.props.navigation.navigate(link, additionalProps)
-			this.setState({loading: false})
-		})
-		.catch(error => {
-			console.log(error)
-			if (error.response) {
-				ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
-			}
-			else {
-				ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
-			}
-			this.setState({loading: false})
-		})
+				if (type === 'orders') {
+					link = 'DetailTransaction'
+				}
+				else if (type === 'messages') {
+					link = 'Message'
+					additionalProps = {
+						idData: response.data.data
+					}
+				}
+
+				this.props.navigation.navigate(link, additionalProps)
+			})
+			.catch(error => {
+				console.log(error)
+				if (error.response) {
+					ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
+				}
+				else {
+					ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
+				}
+				this.setState({ refreshing: false })
+			})
 	}
 
 	renderItem = (item) => {
@@ -79,9 +85,9 @@ class NotificationList extends Component {
 				<TouchableNativeFeedback onPress={() => this.fetchDetail(item.type, item.typeId)}>
 					<View style={styles.itemContainerStyle}>
 						<View style={styles.headerContentStyle}>
-							<View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
-								<Text style={{flex: 1}}>{moment(item.createdAt).format('DD/MM/YYYY - HH:mm')} WIB</Text>
-								<View style={{margin: 2, height: 15, width: 15, backgroundColor: item.read ? '#eaeaea' : 'red', borderRadius: 25}} />
+							<View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+								<Text style={{ flex: 1 }}>{moment(item.createdAt).format('DD/MM/YYYY - HH:mm')} WIB</Text>
+								<View style={{ margin: 2, height: 15, width: 15, backgroundColor: item.read ? '#eaeaea' : 'red', borderRadius: 25 }} />
 							</View>
 							<Text style={styles.hedaerTextStyle}>{item.title}</Text>
 							<Text>{item.message}</Text>
@@ -93,20 +99,14 @@ class NotificationList extends Component {
 	}
 
 	render() {
-		if (this.props.notifications.loading || this.state.loading) {
-			return (
-				<View style={{flex: 1}}>
-					<Spinner size='large' />
-				</View>
-			)
-		}
-
 		return (
-			<View style={{flex: 1}}>
+			<View style={{ flex: 1 }}>
 				<FlatList
 					data={this.props.notifications.data}
-					renderItem={({item}) => this.renderItem(item)}
+					renderItem={({ item }) => this.renderItem(item)}
 					keyExtractor={(item, index) => index}
+					refreshing={this.props.notifications.loading || this.state.loading}
+					onRefresh={() => this.props.notificationsFetch(this.props.user.token)}
 				/>
 			</View>
 		)
@@ -115,7 +115,7 @@ class NotificationList extends Component {
 
 const styles = {
 	itemContainerStyle: {
-		borderBottomWidth: 1, 
+		borderBottomWidth: 1,
 		justifyContent: 'flex-start',
 		flexDirection: 'row',
 		borderColor: '#ddd',
@@ -150,4 +150,4 @@ const mapStateToProps = state => {
 	return { user, notifications }
 }
 
-export default connect(mapStateToProps, {notificationsFetch, unreadNotifFetch})(NotificationList)
+export default connect(mapStateToProps, { notificationsFetch, unreadNotifFetch })(NotificationList)

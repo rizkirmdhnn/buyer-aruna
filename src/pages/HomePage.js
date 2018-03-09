@@ -17,7 +17,7 @@ import { NavigationActions } from 'react-navigation';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { connect } from 'react-redux'
 
-import { ContainerSection, Spinner, InputSearch } from '../components/common'
+import { ContainerSection, InputSearch } from '../components/common'
 import Dashboard from './Dashboard';
 import RequestOrderPage from './RequestOrderPage';
 import TransactionPage from './TransactionPage';
@@ -106,17 +106,16 @@ class HomePage extends Component {
     const { navigate } = this.props.navigation;
     const {
       searchItem,
-      loading,
       screen,
       menuLoginExpanded,
-      redirectToNotification
+      // redirectToNotification
     } = this.state;
 
     // Redirect ke notification list
-    if (this.props.user.unreadNotif > 0 && redirectToNotification === false) {
-      this.props.navigation.navigate('NotificationList')
-      this.setState({ redirectToNotification: true })
-    }
+    // if (this.props.user.unreadNotif > 0 && redirectToNotification === false) {
+    //   this.props.navigation.navigate('NotificationList')
+    //   this.setState({ redirectToNotification: true })
+    // }
 
     const {
       menuContainerStyle, tabContainer, tabContainerActive, tabText, tabTextActive
@@ -353,17 +352,9 @@ class HomePage extends Component {
                 </TouchableNativeFeedback>
               </View>
             </View>
-            {
-              loading ?
-                <View style={{ marginTop: '70%' }}>
-                  <Spinner size="large" />
-                </View>
-                :
-                <View style={styles.menuContainerStyle}>
-                  {this.renderScreen()}
-                </View>
-            }
-
+            <View style={styles.menuContainerStyle}>
+              {this.renderScreen()}
+            </View>
           </View>
         </DrawerLayoutAndroid>
       </View>

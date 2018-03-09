@@ -218,7 +218,8 @@ class FormContractPage extends Component {
       dpAmount: this.state.dpAmount,
       dpDate: this.state.dpDate,
       fishReject: this.state.fishReject,
-      maxFishReject: this.state.maxFishReject
+      maxFishReject: this.state.maxFishReject,
+      totalPrice: this.state.hargaTot
     }
 
     const idTransaction = this.state.dataMaster.id;

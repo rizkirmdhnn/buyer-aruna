@@ -300,7 +300,7 @@ class FilterBeforePage extends Component {
                                   {
                                     routeName: 'RequestFormOrderFirst',
                                     params:
-                                      { dataFish: fishData, dataSearch: dataParams, dataSupplier: this.state.checkedSupplier }
+                                      { dataFish: fishData, navigation: 'SEARCH', dataSearch: dataParams, supplierData: this.state.checkedSupplier }
                                   }
                                 )
                               ]
@@ -343,6 +343,8 @@ class FilterBeforePage extends Component {
                                 <Text style={styles.headerTextStyle}>{item.User.name}</Text>
                                 <View style={{ flexDirection: 'column', flex: 1 }}>
                                   <Text>{item.Fish.name}</Text>
+                                  <Text>{item.User.organization}</Text>
+                                  <Text>{item.capacity}</Text>
                                 </View>
                                 <Text style={{ fontSize: 11 }}>Rp {numeral(parseInt(item.minPrice, 0)).format('0,0')} - Rp {numeral(parseInt(item.maxPrice, 0)).format('0,0')} /Kg</Text>
                               </View>

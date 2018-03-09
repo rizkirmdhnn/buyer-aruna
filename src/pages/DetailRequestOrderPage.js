@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, FlatList, Image, ScrollView, AsyncStorage, ToastAndroid } from 'react-native';
+import { Text, View, FlatList, Image, ScrollView, RefreshControl, AsyncStorage, ToastAndroid } from 'react-native';
 import { NavigationActions } from 'react-navigation'
 import { CheckBox } from 'react-native-elements';
 import moment from 'moment';
@@ -22,9 +22,11 @@ class DetailRequestOrderPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      refreshing: true,
       dataMaster: '',
       loading: null,
       idRequest: [],
+      idOrder: '',
       tokenUser: '',
       checkedSelected: [],
       checkedNotSelected: [],
@@ -40,33 +42,52 @@ class DetailRequestOrderPage extends Component {
   }
 
   componentWillMount() {
-    const idOrder = this.props.navigation.state.params.datas.id;
-    this.setState({ loading: true });
+    this.setState({ 
+      dataMaster: this.props.navigation.state.params.datas
+     });
     AsyncStorage.getItem('loginCredential', (err, result) => {
-      axios.get(`${BASE_URL}/buyer/requests/${idOrder}`, {
-        headers: {
-          token: result
-        }
-      }).then(response => {
-        res = response.data.data;
-        console.log(res, 'ARIP LUKAMAN');
-        if (res.Requests.length > 0) {
-          this.setState({ buttonExpanded: true });
-        }
+      if (result) {
         this.setState({
-          dataMaster: this.props.navigation.state.params.datas,
           tokenUser: result,
-          checkedSelected: res.Requests,
-          checkedContainer: true,
-          loading: false,
-        })
-      })
-        .catch(error => {
-          this.setState({ loading: false });
-          console.log(error.response, 'Erroor nya');
-          console.log('Error Request Order Get Data');
-        })
+          idOrder: this.props.navigation.state.params.datas.id
+        }, () => {
+          return this.getData();
+        });
+      }
     });
+  }
+
+  onRefresh() {
+    this.setState({ 
+      refreshing: true 
+    }, () => {
+      this.getData();
+    });
+  }
+
+  getData() {
+    const { idOrder, tokenUser } = this.state;
+    axios.get(`${BASE_URL}/buyer/requests/${idOrder}`, {
+      headers: {
+        token: tokenUser
+      }
+    }).then(response => {
+      res = response.data.data;
+      console.log(res, 'ARIP LUKAMAN');
+      if (res.Requests.length > 0) {
+        this.setState({ buttonExpanded: true });
+      }
+      this.setState({
+        checkedSelected: res.Requests,
+        checkedContainer: true,
+        refreshing: false
+      })
+    })
+      .catch(error => {
+        this.setState({ refreshing: false });
+        console.log(error, 'Erroor nya');
+        console.log('Error Request Order Get Data');
+      })
   }
 
   viewCheck() {
@@ -115,6 +136,7 @@ class DetailRequestOrderPage extends Component {
         this.props.navigation.dispatch(resetAction)
       })
       .catch(error => {
+        this.setState({ loading: false });
         if (error.response) {
           ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
         }
@@ -154,9 +176,6 @@ class DetailRequestOrderPage extends Component {
 
 
   renderFlatListSupplierUnChecked = () => {
-    if (this.state.loading) {
-      return <Spinner size="small" />
-    }
     return (
       <View>
         <FlatList
@@ -167,6 +186,7 @@ class DetailRequestOrderPage extends Component {
       </View>
     );
   }
+
 
   renderSupplierChecked = (item) => {
     console.log(item, 'DATA SUPPLIER CHECK');
@@ -329,19 +349,20 @@ class DetailRequestOrderPage extends Component {
       checkedContainer,
       unCheckedContainer,
       buttonExpanded,
-      loading,
       dataMaster
     } = this.state;
 
 
-    console.log(this.state.buttonExpanded, 'Button');
-
-    if (loading) {
-      return <Spinner size="large" />
-    }
-
+    console.log(dataMaster, 'Button');
     return (
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.onRefresh.bind(this)}
+          />
+        }
+      >
         <View style={{ flex: 1, paddingTop: 5 }}>
 
           <Card>
@@ -354,7 +375,7 @@ class DetailRequestOrderPage extends Component {
               </View>
               <View style={styles.headerContentStyle}>
                 <Text style={styles.headerTextStyle}>{dataMaster.Fish.name}</Text>
-                <Text style={styles.headerTextStyle}>{dataMaster.size} Kg</Text>
+                <Text style={styles.headerTextStyle}>{numeral(parseInt(dataMaster.quantity, 0)).format('0,0')} Kg</Text>
                 <View style={{ flex: 1 }} />
                 <View style={{ flex: 1 }} />
                 <View style={{ flex: 1 }} />

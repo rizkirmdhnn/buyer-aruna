@@ -8,7 +8,8 @@ import {
   Linking,
   AsyncStorage,
   TouchableWithoutFeedback,
-  ToastAndroid
+  ToastAndroid,
+  RefreshControl
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { NavigationActions } from 'react-navigation';
@@ -54,6 +55,7 @@ class DetailTransactionPage extends Component {
 
     this.state = {
       dataSampleSurvey: [],
+      refreshing: true,
       dataMaster: '',
       dataTransaction: '',
       dataDetail: '',
@@ -64,7 +66,6 @@ class DetailTransactionPage extends Component {
       dataSurvey: 0,
       dataSample: 0,
 
-      loading: null,
       loader: null,
       checked: false,
       isModalVisible: false,
@@ -133,7 +134,7 @@ class DetailTransactionPage extends Component {
   }
 
   componentWillMount() {
-    this.setState({ dataMaster: this.props.navigation.state.params.datas, loading: true });
+    this.setState({ dataMaster: this.props.navigation.state.params.datas });
     return this.getData();
   }
 
@@ -141,6 +142,13 @@ class DetailTransactionPage extends Component {
     this.setState({ [name]: v })
   }
 
+  onRefresh() {
+    this.setState({
+      refreshing: true
+    }, () => {
+      this.getData();
+    });
+  }
 
   getData() {
     const idTransaction = this.props.navigation.state.params.datas.id;
@@ -152,7 +160,7 @@ class DetailTransactionPage extends Component {
       })
         .then(response => {
           console.log(response, 'Data Transaction');
-          this.setState({ dataTransaction: response.data.data, dataDetail: response.data.data, loading: false });
+          this.setState({ dataTransaction: response.data.data, dataDetail: response.data.data, refreshing: false });
           console.log(this.state.dataMaster, 'DATA MASTER');
           console.log(this.state.dataTransaction, 'DATA TRANSACTION');
 
@@ -167,7 +175,7 @@ class DetailTransactionPage extends Component {
           // else {
           //     alert('Koneksi internet bermasalah Get All Data')
           // }
-          this.setState({ loading: false })
+          this.setState({ refreshing: false })
         })
     });
   }
@@ -177,6 +185,7 @@ class DetailTransactionPage extends Component {
     console.log('LOGIC 2 FIRE');
     //=================================================== LOGIC SECOND CONTAINER BOS ============================================
     const { dataTransaction } = this.state;
+    const SAMPLE = dataTransaction.Sample;
     const CONTRACT = dataTransaction.ContractId;
     const DEPOSIT = dataTransaction.deposit;
     const COLLECTION = dataTransaction.collection;
@@ -192,10 +201,18 @@ class DetailTransactionPage extends Component {
 
     switch (IDCONTRACT) {
       case 4:
-        return this.setState({ requestContainer: false, requestContainerLate: true, contractDone: true, contractPending: true, });
+        this.setState({ requestContainer: false, contractDone: true, contractPending: true });
+        if (SAMPLE === null) {
+          this.setState({ requestContainerLate: true })
+        }
+        break;
       case 5:
-        this.setState({ requestContainer: false, requestContainerLate: true, contractDone: true, contractApproved: true, depositContainer: true });
+        this.setState({ requestContainer: false, contractDone: true, contractApproved: true, depositContainer: true });
         {
+          if (SAMPLE === null) {
+            this.setState({ requestContainerLate: true })
+          }
+
           if (DEPOSIT === null) {
             return this.setState({ depositNotYet: true })
           }
@@ -272,7 +289,10 @@ class DetailTransactionPage extends Component {
           }
         }
       default:
-        return this.setState({ requestContainer: false, requestContainerLate: true, contractDone: true, contractRevision: true })
+        this.setState({ requestContainer: false, contractDone: true, contractRevision: true })
+        if (SAMPLE === null) {
+          this.setState({ requestContainerLate: true })
+        }
     }
 
     //=================================================== END LOGIC SECOND CONTAINER BOS ========================================
@@ -302,7 +322,7 @@ class DetailTransactionPage extends Component {
       case 16:
         return this.setState({ requestContainerWaiting: true })
       case 17:
-        return this.setState({ requestContainerApprove: true })
+        return this.setState({ requestContainerApprove: true, requestContainerLate: false })
       default:
         return this.setState({ requestContainerRejected: true })
     }
@@ -448,7 +468,7 @@ class DetailTransactionPage extends Component {
             else {
               alert('Koneksi internet bermasalah')
             }
-            this.setState({ loading: false })
+            this.setState({ refreshing: false })
           })
       }
     });
@@ -481,7 +501,8 @@ class DetailTransactionPage extends Component {
         const source = { uri: response.uri };
 
         this.setState({
-          photo: source.uri
+          photo: source.uri,
+          loader: true
         });
 
         const id = this.state.dataMaster.id;
@@ -504,6 +525,9 @@ class DetailTransactionPage extends Component {
           .then(result => {
             console.log('AIOSAIODAODISODIAD');
             console.log(result, 'Upload Payment');
+            this.setState({
+              loader: true
+            });
             ToastAndroid.show('Upload Bukti Penerimaan Sukses.', ToastAndroid.SHORT)
             const resetAction = NavigationActions.reset({
               index: 0,
@@ -524,7 +548,7 @@ class DetailTransactionPage extends Component {
             else {
               alert('Koneksi internet bermasalah')
             }
-            this.setState({ loading: false })
+            this.setState({ loader: false })
           })
       }
     });
@@ -557,7 +581,8 @@ class DetailTransactionPage extends Component {
         const source = { uri: response.uri };
 
         this.setState({
-          photo: source.uri
+          photo: source.uri,
+          loader: true
         });
 
         const id = this.state.dataMaster.id;
@@ -580,6 +605,9 @@ class DetailTransactionPage extends Component {
           .then(result => {
             console.log('AIOSAIODAODISODIAD');
             console.log(result, 'Upload Payment');
+            this.setState({
+              loader: true
+            });
             ToastAndroid.show('Upload Bukti Revisi Penerimaan Sukses.', ToastAndroid.SHORT)
             const resetAction = NavigationActions.reset({
               index: 0,
@@ -600,7 +628,7 @@ class DetailTransactionPage extends Component {
             else {
               alert('Koneksi internet bermasalah Revision')
             }
-            this.setState({ loading: false })
+            this.setState({ loader: false })
           })
       }
     });
@@ -711,18 +739,21 @@ class DetailTransactionPage extends Component {
 
 
       reviewKomentar,
-      loading,
       loader,
       dataTransaction,
       dataSampleSurvey
     } = this.state
 
-    if (loading) {
-      return <Spinner size='large' />
-    }
-
     return (
-      <ScrollView style={{ flex: 1, padding: 10 }}>
+      <ScrollView
+        style={{ flex: 1, padding: 10 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.onRefresh.bind(this)}
+          />
+        }
+      >
         <ContainerSection>
           <View style={{ flexDirection: 'column', flex: 1, marginLeft: 10, marginRight: 10 }}>
             <Image
@@ -787,7 +818,7 @@ class DetailTransactionPage extends Component {
                     requestContainerWaiting ?
                       <View style={{ flexDirection: 'column' }}>
                         <View>
-                          <Text>Anda sudah melakukan permintaan, silahkan tunggu persetujuan Admin / Nelayan </Text>
+                          <Text>Anda sudah melakukan permintaan, silahkan tunggu persetujuan Nelayan </Text>
                         </View>
                       </View>
                       :
@@ -983,7 +1014,7 @@ class DetailTransactionPage extends Component {
                           <View style={{ flexDirection: 'column', flex: 1 }}>
                             <View>
                               <Text>Kontrak anda telah disetujui</Text>
-                              <Text>Silahkan lakukan deposit sebesar Rp. {numeral(dataTransaction.Contract.price).format('0,0')}</Text>
+                              <Text>Silahkan lakukan deposit sebesar Rp. {numeral(dataTransaction.Contract.totalPrice).format('0,0')}</Text>
                             </View>
                             <View style={{ flex: 1 }}>
                               {
@@ -1009,7 +1040,7 @@ class DetailTransactionPage extends Component {
 
                           <View style={{ flexDirection: 'column', flex: 1 }}>
                             <View>
-                              <Text>Total Pembayaran Deposit Rp {numeral(dataTransaction.Contract.price).format('0,0')}</Text>
+                              <Text>Total Pembayaran Deposit Rp {numeral(dataTransaction.Contract.totalPrice).format('0,0')}</Text>
                               <Text>Status: Menunggu Verifikasi Admin</Text>
                             </View>
                           </View>
@@ -1050,7 +1081,7 @@ class DetailTransactionPage extends Component {
                               <Text>Status</Text>
                             </View>
                             <View style={{ flex: 1 }}>
-                              <Text style={{ textAlign: 'left' }}>Rp. {numeral(dataTransaction.Contract.price).format('0,0')}</Text>
+                              <Text style={{ textAlign: 'left' }}>Rp. {numeral(dataTransaction.Contract.totalPrice).format('0,0')}</Text>
                               <Text style={{ textAlign: 'left' }} >{moment(dataTransaction.deposit.updatedAt).format('DD MMM YYYY')}</Text>
                               <Text style={{ textAlign: 'left' }}>Pembayaran Deposit Telah Diverifikasi Admin</Text>
                             </View>
@@ -1400,7 +1431,7 @@ class DetailTransactionPage extends Component {
                     doneContainer ?
                       <TouchableWithoutFeedback onPress={() => this.setState({ doneExpanded: !doneExpanded })}>
                         <View style={{ flex: 1, flexDirection: 'row' }}>
-                          <Text style={{ flex: 1, fontSize: 20 }}>Review & Rating</Text>
+                          <Text style={{ fontSize: 20 }}>Review & Rating</Text>
                           <View style={{ flex: 1 }}>
                             <Icon size={30} style={{ alignSelf: 'flex-end' }} name={doneExpanded ? 'md-arrow-dropup' : 'md-arrow-dropdown'} />
                           </View>

@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { Text, FlatList, View, Image, TouchableWithoutFeedback, AsyncStorage, ScrollView } from 'react-native';
+import { Text, FlatList, View, Image, TouchableWithoutFeedback, AsyncStorage } from 'react-native';
 import axios from 'axios';
 import moment from 'moment';
 import {
-  Spinner,
-  Card
+  Card,
+  Button
 } from './../components/common';
 import { BASE_URL } from './../shared/lb.config';
 
@@ -19,7 +19,6 @@ class RequestOrderPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: true,
       tokenUser: '',
       dataReqOrder: [],
       expiredContainer: null,
@@ -31,6 +30,7 @@ class RequestOrderPage extends Component {
   }
 
   componentWillMount() {
+    this.setState({ refresh: true });
     AsyncStorage.getItem('loginCredential', (err, result) => {
       if (result) {
         console.log('Storage Tidak Kosong');
@@ -38,7 +38,7 @@ class RequestOrderPage extends Component {
         return this.getData();
       }
       console.log('Storage Kosong');
-      this.setState({ loading: false, noData: true });
+      this.setState({ noData: true });
       return this.getNoData();
     })
   }
@@ -48,6 +48,11 @@ class RequestOrderPage extends Component {
       <View style={{ flex: 1, marginTop: '50%' }}>
         <Text style={{ textAlign: 'center' }}>Ups... Kamu belum login.</Text>
         <Text style={{ textAlign: 'center' }}>Silahkan login terlebih dahulu. </Text>
+        <View style={{ padding: 15 }}>
+          <Button onPress={() => { this.loginFirst() }}>
+            Login
+          </Button>
+        </View>
       </View>
     )
   }
@@ -63,17 +68,21 @@ class RequestOrderPage extends Component {
     }).then(response => {
       res = response.data.data;
       console.log(res, 'Data Request Order');
+      console.log('Fetching Data Done');
       this.setState({
         dataReqOrder: res,
-        loading: false,
         refresh: false
       });
     })
       .catch(error => {
-        this.setState({ loading: false, refresh: false });
+        this.setState({ refresh: false });
         console.log(error, 'Erroor nya');
         console.log('Error Request Order Get Data');
       })
+  }
+
+  loginFirst() {
+    this.props.navi.navigate('isLogin');
   }
 
 
@@ -82,6 +91,7 @@ class RequestOrderPage extends Component {
     this.setState({
       refresh: true
     }, () => {
+      console.log('Fetch Again');
       this.getData();
     })
   }
@@ -100,9 +110,26 @@ class RequestOrderPage extends Component {
     }
   }
 
-  renderData = (item) => {
-    console.log(item, 'Data ReQ');
+  orderFirst() {
+    this.props.navi.navigate('RequestFormOrderFirst');
+  }
 
+  renderData = (item) => {
+    if (item === null || item === '') {
+      return (
+        <View style={{ flex: 1, marginTop: '20%' }}>
+          <Card>
+            <Text style={{ textAlign: 'center' }}>Anda Belum Melakukan Request Order</Text>
+            <Text style={{ textAlign: 'center' }}>Silahkan lakukan order komoditas</Text>
+            <View style={{ padding: 15 }}>
+              <Button onPress={() => { this.orderFirst() }}>
+                Buat Permintaan
+            </Button>
+            </View>
+          </Card>
+        </View>
+      )
+    }
     if (item.Status.id === 19) {
       if (item.sanggup === 0) {
         return (
@@ -186,22 +213,17 @@ class RequestOrderPage extends Component {
 
   render() {
     const { anyData, noData } = this.state;
-    if (this.state.loading) {
-      return <Spinner size="large" />
-    }
     return (
-      <ScrollView>
+      <View style={{ flex: 1 }}>
         {
           anyData ?
-            <View>
-              <FlatList
-                data={this.state.dataReqOrder}
-                renderItem={({ item }) => this.renderData(item)}
-                keyExtractor={(item, index) => index}
-                refreshing={this.state.refresh}
-                onRefresh={() => this.handleRefresh}
-              />
-            </View>
+            <FlatList
+              data={this.state.dataReqOrder}
+              renderItem={({ item }) => this.renderData(item)}
+              keyExtractor={(item, index) => index}
+              refreshing={this.state.refresh}
+              onRefresh={() => this.handleRefresh()}
+            />
             :
             <View />
         }
@@ -211,7 +233,7 @@ class RequestOrderPage extends Component {
             :
             <View />
         }
-      </ScrollView>
+      </View>
     );
   }
 }

@@ -86,6 +86,7 @@ class FormContractRevisionPage extends Component {
 
     const b = this.props.navigation.state.params.datas.Request.Transaction.quantity;
     const totLah = parseInt(this.state.hargaTot, 0) * parseInt(b, 0);
+    console.log(totLah, 'TOTTTTTTT');
     this.setState({ hargaTot: totLah });
 
     AsyncStorage.getItem('loginCredential', (err, result) => {
@@ -127,7 +128,7 @@ class FormContractRevisionPage extends Component {
 
   onChangeInput = (name, v) => {
     this.setState({ [name]: v }, () => {
-      console.log('Panggil Sum');
+      console.log(name, v, 'CEK');
       this.sum();
     });
   }
@@ -239,7 +240,7 @@ class FormContractRevisionPage extends Component {
       locationOfreception: this.state.shareLoc,
       dateOfReception: this.state.dateNowPickPengiriman,
       dpAmount: this.state.dpAmount,
-      dpDate: this.state.dateNowPickDP,
+      dpDate: this.state.dpDate,
       fishReject: this.state.fishReject,
       maxFishReject: this.state.maxFishReject
     }
@@ -579,6 +580,7 @@ class FormContractRevisionPage extends Component {
             isVisible={this.state.tanggalDP}
             onConfirm={this.handleDatePickedDP}
             onCancel={this.hideTanggalDP}
+            minimumDate={new Date()}
           />
 
           <TouchableWithoutFeedback onPress={this.showTanggalPengiriman}>
