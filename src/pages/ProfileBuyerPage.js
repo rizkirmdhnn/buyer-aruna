@@ -1,18 +1,14 @@
 import React, { Component } from 'react'
-import { ScrollView, View, Text, Image, AsyncStorage, TouchableOpacity, TouchableWithoutFeedback, TouchableNativeFeedback } from 'react-native'
-import { connect } from 'react-redux'
+import { View, Text, Image, AsyncStorage, ScrollView } from 'react-native'
 import axios from 'axios'
-import Icon from 'react-native-vector-icons/Ionicons'
-// import { Button } from 'react-native-elements'
 
-import { BASE_URL } from './../shared/lb.config';
-import { COLOR } from './../shared/lb.config';
-import { Card, CardSection, Spinner, ContainerSection, Button } from '../components/common'
+import { BASE_URL, COLOR } from '../shared/lb.config';
+import { Spinner, Button } from '../components/common'
 
 class ProfileBuyerPage extends Component {
-	static navigationOptions = ({ navigation }) => ({
+	static navigationOptions = () => ({
 		title: 'Profile',
-		headerTitleStyle: { paddingLeft: '33%' },
+		headerRight: <View />
 	})
 
 	constructor(props) {
@@ -35,9 +31,8 @@ class ProfileBuyerPage extends Component {
 	componentDidMount() {
 		AsyncStorage.getItem('loginCredential', (err, result) => {
 			if (result) {
-				console.log(result, 'Token');
 				axios.get(`${BASE_URL}/profile`, {
-					headers: { 'token': result }
+					headers: { token: result }
 				})
 					.then(response => {
 						this.setState({ data: response.data.user })
@@ -74,7 +69,8 @@ class ProfileBuyerPage extends Component {
 				<View style={styles.cardSection}>
 					<Text style={styles.labelStyle}>Alamat</Text>
 					<Text style={styles.dataStyle}>
-						{`${data.subDistrict} \n${data.village} \n${data.City && data.City.name}`}
+						{`${data.address}`}
+						{/* {`${data.subDistrict} \n${data.village} \n${data.City && data.City.name}`} */}
 					</Text>
 				</View>
 				<View style={styles.cardSection}>
@@ -97,10 +93,10 @@ class ProfileBuyerPage extends Component {
 	render() {
 		const {
 			containerStyle, headerHomeStyle, menuContainerStyle,
-			profileImageContainer, profileImage, profileName, coin, point, tabContainer, tabContainerActive, tabText, tabTextActive,
+			profileImageContainer, profileImage, profileName,
 		} = styles
 
-		const { data, loading, screen } = this.state
+		const { data, loading } = this.state
 
 		if (loading) {
 			return (
@@ -111,32 +107,34 @@ class ProfileBuyerPage extends Component {
 		}
 
 		return (
-			<View style={containerStyle}>
-				<View style={headerHomeStyle}>
-					<View style={profileImageContainer}>
-						<Image
-							style={profileImage}
-							source={{ uri: `${BASE_URL}/images/${data.photo}` }}
-						/>
+			<ScrollView>
+				<View style={containerStyle}>
+					<View style={headerHomeStyle}>
+						<View style={profileImageContainer}>
+							<Image
+								style={profileImage}
+								source={{ uri: `${BASE_URL}/images/${data.photo}` }}
+							/>
+						</View>
+						<Text style={profileName}>{data.name}</Text>
+						<Text style={profileName}>{data.organizationType} {data.organization} </Text>
 					</View>
-					<Text style={profileName}>{data.name}</Text>
-					<Text style={profileName}>{data.organizationType}  {data.organization} </Text>
-				</View>
-				<View style={menuContainerStyle}>
-					{this.renderProfile(data)}
-					<View style={{ height: 50, marginTop: 150 }}>
-						<Button
-							style={{ margin: 5, marginRight: 10 }}
-							onPress={() => {
-								console.log(this.props)
-								this.props.navigation.navigate('ProfileBuyerEdit');
-							}}
-						>
-							Ubah
+					<View style={menuContainerStyle}>
+						{this.renderProfile(data)}
+						<View style={{ height: 50, marginTop: 50 }}>
+							<Button
+								style={{ margin: 5, marginRight: 10 }}
+								onPress={() => {
+									console.log(this.props)
+									this.props.navigation.navigate('ProfileBuyerEdit');
+								}}
+							>
+								Ubah
 						</Button>
+						</View>
 					</View>
 				</View>
-			</View>
+			</ScrollView>
 		)
 	}
 }
@@ -146,8 +144,7 @@ const styles = {
 		flex: 1
 	},
 	headerHomeStyle: {
-		paddingTop: 3,
-		paddingBottom: 10,
+		paddingTop: 20,
 		flex: 2,
 		justifyContent: 'center',
 		alignSelf: 'center',
@@ -213,12 +210,6 @@ const styles = {
 		fontSize: 18
 	},
 	card: {
-		borderWidth: 1,
-		borderColor: '#ddd',
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 2 },
-		shadowOpacity: 0.1,
-		shadowRadius: 2,
 		elevation: 1,
 		marginLeft: 15,
 		marginRight: 15,
@@ -226,6 +217,7 @@ const styles = {
 		padding: 10,
 		paddingLeft: 15,
 		paddingRight: 15,
+		backgroundColor: '#fff'
 	},
 	cardSection: {
 		padding: 5,
@@ -235,9 +227,4 @@ const styles = {
 	}
 }
 
-const mapStateToProps = state => {
-	const { user } = state
-	return { user }
-}
-
-export default ProfileBuyerPage;
+export default ProfileBuyerPage

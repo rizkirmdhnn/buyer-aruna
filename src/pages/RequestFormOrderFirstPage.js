@@ -1,20 +1,23 @@
 import React, { Component } from 'react';
-import { NavigationActions } from 'react-navigation';
 import {
   View,
   ScrollView,
   Text,
-  Alert,
   Picker,
-  KeyboardAvoidingView,
   Keyboard,
-  TextInput,
   PixelRatio,
   AsyncStorage,
-  TouchableWithoutFeedback,
+  ToastAndroid,
   TouchableOpacity,
   Image,
 } from 'react-native';
+import numeral from 'numeral';
+import axios from 'axios';
+import DateTimePicker from 'react-native-modal-datetime-picker';
+import moment from 'moment';
+import ImagePicker from 'react-native-image-picker';
+import AutoComplete from '../components/AutoComplete';
+import { BASE_URL, COLOR } from '../shared/lb.config';
 import {
   Input,
   Button,
@@ -22,17 +25,9 @@ import {
   Container,
   Spinner
 } from './../components/common';
-import AwesomeAlert from 'react-native-awesome-alerts';
-import AutoComplete from '../components/AutoComplete';
-import { BASE_URL, COLOR } from '../shared/lb.config';
-import axios from 'axios';
-import DateTimePicker from 'react-native-modal-datetime-picker';
-import moment from 'moment';
 
-import ImagePicker from 'react-native-image-picker';
-import Icon from 'react-native-vector-icons/Ionicons';
 class RequestFormOrderFirstPage extends Component {
-  static navigationOptions = ({ navigation, screenProps }) => ({
+  static navigationOptions = ({ navigation }) => ({
     title: 'Buat Permintaan',
     headerLeft:
       <TouchableOpacity
@@ -40,19 +35,16 @@ class RequestFormOrderFirstPage extends Component {
       >
         <Image
           style={{ width: 20, height: 20, marginLeft: 30 }}
-          source={require('./../assets/images/back.png')} />
+          source={require('./../assets/images/back.png')}
+        />
       </TouchableOpacity>,
     headerRight: <View />
   });
 
-  goBack() {
-    const { navigate } = this.props.navigation;
-    navigate('Home');
-  }
-
   constructor(props) {
     super(props);
     this.state = {
+      dataParams: '',
       load: null,
       loading: null,
       loadButton: null,
@@ -74,103 +66,9 @@ class RequestFormOrderFirstPage extends Component {
       maxBudget: '',
       datePick: '',
       dateNowPick: '',
-      photo: null
+      photo: null,
+      isDateTimePickerVisible: false
     };
-  };
-
-
-  onChangeInput = (name, v) => {
-    this.setState({ [name]: v });
-    console.log(v);
-  }
-
-
-  state = {
-    isDateTimePickerVisible: false,
-  };
-
-  _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
-
-  _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
-
-  _handleDatePicked = (date) => {
-    console.log(date, 'Date Nya')
-    const dateTemp = moment(date).format('YYYY-MM-DD h:mm:ss');
-    const dateNow = moment(date).format('DD/MM/YYYY');
-    this.setState({ datePick: dateTemp, dateNowPick: dateNow })
-    this._hideDateTimePicker();
-  };
-
-  onSubmit = () => {
-    console.log(this.state, 'DATA FORM 1');
-
-    if (this.state.photo == require('./../assets/image/upload-foto.png')) {
-      alert('Anda belum upload Foto');
-    } else if (this.state.FishId == '') {
-      alert('Anda belum memilih Komoditas');
-    } else if (this.state.size == '') {
-      alert('Anda belum menentukan Ukuran');
-    } else if (this.state.quantity == '') {
-      alert('Anda belum menentukan Kuantitas');
-    } else if (this.state.deskripsi == '') {
-      alert('Anda belum menentukan Deskripsi Komoditas');
-    } else if (this.state.maxBudget == '') {
-      alert('Anda belum menentukan max Harga')
-    } else if (this.state.dateNowPick == '') {
-      alert('Anda belum menentuan tanggal Permintaan')
-    } else if (this.state.provinsiId == '') {
-      alert('anda belum memilih Provinsi');
-    } else if (this.state.cityId == '') {
-      alert('Anda belum memilih Kota')
-    } else {
-      console.log('LOLOS');
-      Keyboard.dismiss();
-      const data = this.state;
-      console.log(data, 'DATA LEMPAR');
-      this.props.navigation.navigate('RequestFormOrderSecond', { datas: data })
-    }
-  }
-
-  renderButton = () => {
-    if (this.state.loadButton) {
-      return <Spinner size='large' />
-    }
-
-    return (
-      <Button
-        onPress={
-          () => this.onSubmit()
-        }
-      >
-        Selanjutnya
-      </Button>
-    )
-  }
-
-
-  querySuggestion = (text) => {
-    this.setState({ value: text })
-    AsyncStorage.getItem('loginCredential', (err, result) => {
-
-      axios.get(`${BASE_URL}/fishes/search?key=${text}`, {
-        headers: { 'x-access-token': result }
-      })
-        .then(response => {
-          res = response.data.data
-          this.setState({ suggestions: res })
-          console.log(res, 'Auto Complete Nya')
-
-        })
-        .catch(error => {
-          if (error.response) {
-            alert(error.response.data.message)
-          }
-          else {
-            alert('Koneksi internet bermasalah')
-          }
-        })
-
-    });
   }
 
   componentWillMount() {
@@ -178,17 +76,17 @@ class RequestFormOrderFirstPage extends Component {
     this.setState({ loading: true });
 
     const { params } = this.props.navigation.state
-    console.log(params)
+    console.log(params, 'Data Form Order Parsing')
 
     if (params && params.FishId !== '') {
       this.setState({
-        value: params.value,
-        FishId: params.FishId
+        value: params.dataFish.name,
+        FishId: params.dataFish.id,
+        dataParams: params
       })
     }
 
     AsyncStorage.getItem('loginCredential', (err, resultToken) => {
-
       axios.get(`${BASE_URL}/provinces`, {
         headers: { 'x-access-token': resultToken }
       })
@@ -208,13 +106,20 @@ class RequestFormOrderFirstPage extends Component {
     });
   }
 
-  renderProvinceCity = () => {
-    const dataProvCity = this.state.dataProvinsi;
-    return dataProvCity.map(data => {
-      return <Picker.Item label={data.name} value={data.id} />
-    })
+
+  onChangeInput = (name, v) => {
+    this.setState({ [name]: v });
+    console.log(v);
   }
 
+  onItemSelected = (item) => {
+    console.log(item, 'Ikan terpilih');
+    this.setState({
+      suggestions: [],
+      FishId: item.id,
+      value: item.name
+    })
+  }
 
   onChangeProvince = (name, v) => {
     this.setState({ [name]: v });
@@ -241,25 +146,140 @@ class RequestFormOrderFirstPage extends Component {
     });
   }
 
-  renderPickerCity = () => {
-    if (this.state.dataMapCity == '') {
-      return <Picker.Item label='Pilih Kota' value='0' />
-    } else {
-      const resultRender = this.state.dataMapCity;
-      return resultRender.map((data) => {
-        return <Picker.Item label={data.name} value={data.id} />
-      })
+  onReqButtonPress() {
+    const {
+      photo,
+      FishId,
+      size,
+      quantity,
+      deskripsi,
+      maxBudget,
+      dateNowPick,
+      provinsiId,
+      cityId,
+      unitFish
+    } = this.state;
+
+    switch (photo) {
+      case '':
+        return ToastAndroid.show('Foto Ikan Tidak Boleh Kosong', ToastAndroid.SHORT);
+      case null:
+        return ToastAndroid.show('Foto Ikan Tidak Boleh Kosong', ToastAndroid.SHORT);
+      default:
+        console.log('Poto Tidak Kosong');
+        switch (FishId) {
+          case '':
+            return ToastAndroid.show('Nama Komoditas Tidak Boleh Kosong', ToastAndroid.SHORT);
+          default:
+            console.log('Nama Komoditas Tidak Boleh Kosong');
+            switch (size) {
+              case '':
+                return ToastAndroid.show('Ukuran Tidak Boleh Kosong', ToastAndroid.SHORT);
+              default:
+                console.log('Ukuran Tidak Kosong');
+                switch (quantity) {
+                  case '':
+                    return ToastAndroid.show('Jumlah/Kuantitas Tidak Boleh Kosong', ToastAndroid.SHORT);
+                  default:
+                    console.log('Kuantitas Tidak Kosong');
+                    switch (unitFish) {
+                      case '':
+                        return ToastAndroid.show('Ukuran Unit Tidak Boleh Kosong', ToastAndroid.SHORT);
+                      default:
+                        console.log('Ukuran Unit Tidak Kosong');
+                        if (unitFish === 'Kg') {
+                          if (quantity < size) {
+                            return ToastAndroid.show('Jumlah Tidak Boleh Lebih Kecil Dari Ukuran.', ToastAndroid.SHORT);
+                          }
+                        }
+
+                        switch (deskripsi) {
+                          case '':
+                            return ToastAndroid.show('Deskripsi Tidak Boleh Kosong', ToastAndroid.SHORT);
+                          default:
+                            console.log('Deskripsi Tidak Kosong');
+                            if (deskripsi.length <= 3) {
+                              return ToastAndroid.show('Deskripsi Minimal 4 Huruf', ToastAndroid.SHORT)
+                            }
+                            switch (maxBudget) {
+                              case '':
+                                return ToastAndroid.show('Harga Maksimal Tidak Boleh Kosong', ToastAndroid.SHORT);
+                              default:
+                                console.log('Harga Maksimal Tidak Kosong');
+                                switch (dateNowPick) {
+                                  case '':
+                                    return ToastAndroid.show('Tanggal Pengiriman Tidak Boleh Kosong', ToastAndroid.SHORT);
+                                  default:
+                                    console.log('Tanggal Pengiriman Tidak Kosong');
+                                    switch (provinsiId) {
+                                      case '':
+                                        return ToastAndroid.show('Provinsi Tidak Boleh Kosong', ToastAndroid.SHORT);
+                                      default:
+                                        console.log('Provinsi Tidak Kosong');
+                                        switch (cityId) {
+                                          case '':
+                                            return ToastAndroid.show('Kota Tidak Boleh Kosong', ToastAndroid.SHORT);
+                                          default:
+                                            console.log('Kota Tidak Kosong');
+                                            return this.onRequested();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
   }
 
-  onItemSelected = (item) => {
-    console.log(item, 'Ikan terpilih');
-    this.setState({
-      suggestions: [],
-      FishId: item.id,
-      value: item.name,
-      unitFish: item.unit
-    })
+
+  onRequested = () => {
+    Keyboard.dismiss();
+    const data = this.state;
+    this.props.navigation.navigate('RequestFormOrderSecond', { datas: data, dataFirst: this.state.dataParams })
+  }
+
+  showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
+
+  hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
+
+  handleDatePicked = (date) => {
+    console.log(date, 'Date Nya')
+    const dateTemp = moment(date).format('YYYY-MM-DD h:mm:ss');
+    const dateNow = moment(date).format('DD/MM/YYYY');
+    this.setState({ datePick: dateTemp, dateNowPick: dateNow })
+    this.hideDateTimePicker();
+  };
+
+
+  querySuggestion = (text) => {
+    this.setState({ value: text })
+    AsyncStorage.getItem('loginCredential', (err, result) => {
+      axios.get(`${BASE_URL}/fishes/search?key=${text}`, {
+        headers: { 'x-access-token': result }
+      })
+        .then(response => {
+          res = response.data.data
+          this.setState({ suggestions: res })
+          console.log(res, 'Auto Complete Nya')
+        })
+        .catch(error => {
+          if (error.response) {
+            alert('Internet anda Lemot')
+          }
+          else {
+            alert('Koneksi internet bermasalah')
+          }
+        })
+    });
+  }
+
+
+  goBack() {
+    const { navigate } = this.props.navigation;
+    navigate('Home');
   }
 
   selectPhotoTapped() {
@@ -298,24 +318,62 @@ class RequestFormOrderFirstPage extends Component {
     });
   }
 
+  renderUkuran = () => {
+    const x = ['Kg', 'Cm', 'Ekor/Kg']
+    return x.map((data, index) => {
+      console.log(data, index)
+      return <Picker.Item label={data} value={data} key={index} />
+    })
+  }
+
+
+  renderPickerCity = () => {
+    if (this.state.dataMapCity === '') {
+      return <Picker.Item label='Pilih Kota' value='0' />
+    }
+    const resultRender = this.state.dataMapCity;
+    return resultRender.map((data, index) => {
+      return <Picker.Item label={data.name} value={data.id} key={index} />
+    })
+  }
+
+  renderProvinceCity = () => {
+    const dataProvCity = this.state.dataProvinsi;
+    return dataProvCity.map((data, index) => {
+      return <Picker.Item label={data.name} value={data.id} key={index} />
+    })
+  }
+
+
+  renderButton = () => {
+    if (this.state.loadButton) {
+      return <Spinner size='large' />
+    }
+
+    return (
+      <Button
+        onPress={
+          () => this.onReqButtonPress()
+        }
+      >
+        Selanjutnya
+      </Button>
+    )
+  }
+
   render() {
     const {
-      dataMapCity,
-      dataCity,
-      dataProvinsi,
       suggestions,
       value,
       provinsiId,
       cityId,
       size,
       quantity,
-      minBudget,
       maxBudget,
       deskripsi,
-      datePick,
       dateNowPick,
-      photo,
-      loading
+      loading,
+      unitFish
     } = this.state
 
     if (loading) {
@@ -337,7 +395,7 @@ class RequestFormOrderFirstPage extends Component {
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginBottom: 20 }}>
               <TouchableOpacity onPress={this.selectPhotoTapped.bind(this)}>
                 <View>
-                  {this.state.photo === null ? 
+                  {this.state.photo === null ?
                     <Image
                       source={require('../assets/images/ic_add_a_photo.png')}
                     />
@@ -382,11 +440,21 @@ class RequestFormOrderFirstPage extends Component {
               label='Ukuran'
               placeholder=''
               keyboardType="numeric"
-              value={size}
-              onChangeText={v => this.onChangeInput('size', v)}
+              value={size ? numeral(parseInt(size, 0)).format('0,0') : ''}
+              onChangeText={v => this.onChangeInput('size', v.replace(/\./g, ''))}
             />
-            <View style={{flex: 1, paddingTop: 50, paddingLeft: 10}}>
-              <Text>{this.state.unitFish}</Text>
+            <View style={{ marginTop: 50, marginLeft: 10, flex: 1 }}>
+              <View style={styles.pickerUnitStyle}>
+                <Picker
+                  selectedValue={unitFish}
+                  onValueChange={v => this.onChangeInput('unitFish', v)}
+                >
+                  <Picker.Item label='Pilih Ukuran' value='' />
+                  <Picker.Item label='Kg' value='Kg' />
+                  <Picker.Item label='Cm' value='Cm' />
+                  <Picker.Item label='Ekor/Kg' value='Ekor/Kg' />
+                </Picker>
+              </View>
             </View>
           </ContainerSection>
 
@@ -395,10 +463,10 @@ class RequestFormOrderFirstPage extends Component {
               keyboardType="numeric"
               label='Jumlah'
               placeholder=''
-              value={quantity}
-              onChangeText={v => this.onChangeInput('quantity', v)}
+              value={quantity ? numeral(parseInt(quantity, 0)).format('0,0') : ''}
+              onChangeText={v => this.onChangeInput('quantity', v.replace(/\./g, ''))}
             />
-            <View style={{flex: 1, paddingTop: 50, paddingLeft: 10}}>
+            <View style={{ flex: 1, paddingTop: 50, paddingLeft: 10 }}>
               <Text>Kg</Text>
             </View>
           </ContainerSection>
@@ -422,8 +490,8 @@ class RequestFormOrderFirstPage extends Component {
               keyboardType="numeric"
               label='Harga Maksimal'
               placeholder='Rupiah/kg'
-              value={maxBudget}
-              onChangeText={v => this.onChangeInput('maxBudget', v)}
+              value={maxBudget ? numeral(parseInt(maxBudget, 0)).format('0,0') : ''}
+              onChangeText={v => this.onChangeInput('maxBudget', v.replace(/\./g, ''))}
             />
           </ContainerSection>
 
@@ -433,37 +501,37 @@ class RequestFormOrderFirstPage extends Component {
             </Text>
           </ContainerSection>
 
-          <TouchableOpacity onPress={this._showDateTimePicker}>
+          <TouchableOpacity onPress={this.showDateTimePicker}>
             <ContainerSection>
               <Input
                 label="Tanggal Pengiriman"
                 value={dateNowPick}
                 onChangeText={v => this.onChangeInput('dateNowPick', v)}
                 editable={false}
-                onPress={this._showDateTimePicker}
-                style={{width: '100%'}}
+                onPress={this.showDateTimePicker}
+                style={{ width: '100%' }}
               />
             </ContainerSection>
           </TouchableOpacity>
           <DateTimePicker
             isVisible={this.state.isDateTimePickerVisible}
-            onConfirm={this._handleDatePicked}
-            onCancel={this._hideDateTimePicker}
+            onConfirm={this.handleDatePicked}
+            onCancel={this.hideDateTimePicker}
             minimumDate={new Date()}
           />
 
           <ContainerSection>
             <View style={styles.pickerContainer}>
               <Text style={styles.pickerTextStyle}>Provinsi</Text>
-                <View style={styles.pickerStyle}>
-                  <Picker
-                    selectedValue={provinsiId}
-                    onValueChange={v => this.onChangeProvince('provinsiId', v)}
-                  >
-                    <Picker.Item label='Pilih Provinsi' value='0' />
-                    {this.renderProvinceCity()}
-                  </Picker>
-                </View>
+              <View style={styles.pickerStyle}>
+                <Picker
+                  selectedValue={provinsiId}
+                  onValueChange={v => this.onChangeProvince('provinsiId', v)}
+                >
+                  <Picker.Item label='Pilih Provinsi' value='0' />
+                  {this.renderProvinceCity()}
+                </Picker>
+              </View>
             </View>
           </ContainerSection>
 
@@ -493,7 +561,7 @@ class RequestFormOrderFirstPage extends Component {
       </ScrollView >
     )
   }
-};
+}
 
 
 const styles = {
@@ -502,7 +570,7 @@ const styles = {
     fontSize: 18,
   },
   pickerContainer: {
-    flex: 1, 
+    flex: 1,
     marginBottom: 5
   },
   pickerStyle: {
@@ -510,6 +578,14 @@ const styles = {
     borderRadius: 5,
     paddingLeft: 7,
     borderWidth: 1,
+  },
+  pickerUnitStyle: {
+    borderColor: '#a9a9a9',
+    borderRadius: 5,
+    paddingLeft: 7,
+    borderWidth: 1,
+    height: 46,
+    backgroundColor: '#fff'
   },
   pickerTextStyle: {
     color: '#5e5e5e',
@@ -551,7 +627,6 @@ const styles = {
   },
   avatarContainer: {
     borderRadius: 10,
-    borderWidth: 1,
     borderColor: 'black',
     borderWidth: 1 / PixelRatio.get(),
     justifyContent: 'center',

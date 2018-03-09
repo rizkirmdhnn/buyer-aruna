@@ -4,6 +4,10 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
+    "build-staging": "cd android && ./gradlew assembleReleaseStaging",
+    "build-prod": "cd android && ./gradlew assembleRelease",
+    "deploy-staging": "code-push release-react raosanfl/ArunaAppBuyer android",
+    "deploy-prod": "code-push promote raosanfl/ArunaAppBuyer Staging Production",
     "test": "jest"
   },
   "dependencies": {
@@ -29,7 +33,8 @@
     "react-native-vector-icons": "^4.4.3",
     "react-navigation": "^1.0.0-beta.23",
     "react-redux": "^5.0.6",
-    "redux": "^3.7.2"
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0"
   },
   "devDependencies": {
     "babel-jest": "22.0.4",

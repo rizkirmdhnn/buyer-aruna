@@ -22,7 +22,8 @@ class ProfileBuyerEditPage extends Component {
                             [
                                 { text: 'Tidak', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
                                 {
-                                    text: 'Ya', onPress: () => {
+                                    text: 'Ya',
+                                    onPress: () => {
                                         navigation.setParams({ change: false })
                                         navigation.goBack()
                                     }
@@ -73,7 +74,8 @@ class ProfileBuyerEditPage extends Component {
                     [
                         { text: 'Tidak', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
                         {
-                            text: 'Ya', onPress: () => {
+                            text: 'Ya',
+                            onPress: () => {
                                 this.props.navigation.setParams({ change: false })
                                 this.props.navigation.goBack()
                             }
@@ -110,7 +112,7 @@ class ProfileBuyerEditPage extends Component {
             if (result) {
                 this.setState({ tokenUser: result });
                 axios.get(`${BASE_URL}/profile`, {
-                    headers: { 'token': result }
+                    headers: { token: result }
                 })
                     .then(response => {
                         this.setState({ data: response.data.user })
@@ -220,28 +222,34 @@ class ProfileBuyerEditPage extends Component {
         formData.append('email', data.email)
         formData.append('password', data.password)
 
-        axios.post(`${BASE_URL}/supplier/profile`, formData, {
+        axios.post(`${BASE_URL}/buyer/profile`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
-                'token': this.state.tokenUser
+                token: this.state.tokenUser
             }
         })
 
             .then(response => {
                 console.log(response)
                 this.props.navigation.setParams({ change: false })
+                AsyncStorage.getItem('loginCredential', () => {
+                    AsyncStorage.removeItem('loginCredential', () => {
+                        AsyncStorage.setItem('loginCredential', response.data.refreshToken, () => {
+                            console.log('Sukses Ganti Token');
+                            const resetAction = NavigationActions.reset({
+                                index: 1,
+                                actions: [
+                                    NavigationActions.navigate({ routeName: 'Home' }),
+                                    NavigationActions.navigate({ routeName: 'ProfileBuyer' })
+                                ]
+                            })
+                            this.props.navigation.dispatch(resetAction)
 
-                const resetAction = NavigationActions.reset({
-                    index: 1,
-                    actions: [
-                        NavigationActions.navigate({ routeName: 'Home' }),
-                        NavigationActions.navigate({ routeName: 'ProfileBuyer' })
-                    ]
+                            this.setState({ loading: false })
+                            ToastAndroid.show('Ubah profil berhasil', ToastAndroid.SHORT)
+                        });
+                    });
                 })
-                this.props.navigation.dispatch(resetAction)
-
-                this.setState({ loading: false })
-                ToastAndroid.show('Ubah profil berhasil', ToastAndroid.SHORT)
             })
             .catch(error => {
                 console.log(error.response)
@@ -316,8 +324,9 @@ class ProfileBuyerEditPage extends Component {
                                     selectedValue={data ? data.organizationType : ''}
                                     onValueChange={v => this.onChangeInput('organizationType', v)}
                                 >
-                                    <Picker.Item label="Kelompok Nelayan" value="Kelompok Nelayan" />
-                                    <Picker.Item label="Personal" value="Personal" />
+                                    <Picker.Item label='PT' value='PT' />
+                                    <Picker.Item label='CV' value='CV' />
+                                    <Picker.Item label='Lainnya' value='Lainnya' />
                                 </Picker>
                             </View>
                         </View>
@@ -340,7 +349,7 @@ class ProfileBuyerEditPage extends Component {
                             label="Kota / Kabupaten"
                             suggestions={suggestionsCity}
                             onChangeText={text => this.queryCitySuggestion(text)}
-                            value={valueCity ? valueCity : data.City.name}
+                            value={valueCity || data.City.name}
                         >
                             {
                                 loadingCity ?
@@ -389,9 +398,7 @@ class ProfileBuyerEditPage extends Component {
                     <Text style={[styles.pickerTextStyle, { marginLeft: 5, marginTop: 10 }]}>Upload Foto Profil</Text>
                     <ContainerSection>
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                            <TouchableWithoutFeedback
-                            // onPress={() => this.selectPhotoTapped('photo')}
-                            >
+                            <TouchableWithoutFeedback>
                                 <View style={[styles.avatar, styles.avatarContainer, { marginBottom: 20 }]}>
                                     {photo === null ?
                                         <Image style={styles.avatar} source={{ uri: `${BASE_URL}/images/${data.photo}` }} />
@@ -424,9 +431,7 @@ class ProfileBuyerEditPage extends Component {
                     <Text style={[styles.pickerTextStyle, { marginLeft: 5, marginTop: 10 }]}>Upload Foto KTP</Text>
                     <ContainerSection>
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                            <TouchableWithoutFeedback
-                            // onPress={() => this.selectPhotoTapped('idPhoto')}
-                            >
+                            <TouchableWithoutFeedback>
                                 <View>
                                     {idPhoto === null ?
                                         <Image style={{ height: 200, width: 300 }} source={{ uri: `${BASE_URL}/images/${data.idPhoto}` }} />
@@ -457,7 +462,6 @@ class ProfileBuyerEditPage extends Component {
                     <ContainerSection>
                         <Input
                             label='Username'
-                            editable={false}
                             value={data ? data.username : ''}
                         />
                     </ContainerSection>

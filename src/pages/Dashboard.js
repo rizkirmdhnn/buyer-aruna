@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { View, ScrollView, FlatList, Text, TouchableNativeFeedback, Image, TouchableWithoutFeedback, TouchableOpacity, AsyncStorage } from 'react-native';
-import { COLOR } from './../shared/lb.config';
+import { View, ScrollView, FlatList, Text, TouchableNativeFeedback, Image, TouchableWithoutFeedback, AsyncStorage } from 'react-native';
 import AwesomeAlert from 'react-native-awesome-alerts';
-import { Card, Button, CardSection, Container, ContainerSection, Spinner } from '../components/common';
 import axios from 'axios';
-import { BASE_URL } from './../shared/lb.config';
 import Swiper from 'react-native-swiper';
+import { Button } from '../components/common';
+import { COLOR, BASE_URL } from './../shared/lb.config';
+
 class Dashboard extends Component {
   static navigationOptions = {
     header: null
@@ -20,6 +20,42 @@ class Dashboard extends Component {
       loading: null,
       tokenUser: '',
     }
+  }
+
+  componentWillMount() {
+    this.setState({ loading: true })
+    AsyncStorage.getItem('loginCredential', (err, result) => {
+      this.setState({ tokenUser: result });
+      axios.get(`${BASE_URL}/suppliers/popular`, {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+        .then(response => {
+          const res = response.data.data;
+          this.setState({ supplierList: res, loading: false });
+          console.log(res, 'Data Supplier Popular');
+
+          axios.get(`${BASE_URL}/products/popular`, {
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          })
+            .then(response2 => {
+              const res2 = response2.data.data;
+              console.log(res, 'Data Product Popular');
+              this.setState({ productList: res2, loading: false });
+            })
+            .catch(error => {
+              this.setState({ loading: false })
+              console.log('ERROR', error.response);
+            });
+        })
+        .catch(error => {
+          this.setState({ loading: false })
+          console.log('ERROR', error.response);
+        });
+    });
   }
 
 
@@ -67,42 +103,6 @@ class Dashboard extends Component {
     navigate('Filter');
   }
 
-  componentWillMount() {
-    this.setState({ loading: true })
-    AsyncStorage.getItem('loginCredential', (err, result) => {
-      console.log(result);
-      this.setState({ tokenUser: result });
-      axios.get(`${BASE_URL}/suppliers/popular`, {
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      })
-        .then(response => {
-          const res = response.data.data;
-          this.setState({ supplierList: res, loading: false });
-          console.log(res, 'Data Supplier Popular');
-
-          axios.get(`${BASE_URL}/products/popular`, {
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          })
-            .then(response => {
-              const res = response.data.data;
-              console.log(res, 'Data Product Popular');
-              this.setState({ productList: res, loading: false });
-            })
-            .catch(error => {
-              this.setState({ loading: false })
-              console.log('ERROR', error.response);
-            });
-        })
-        .catch(error => {
-          this.setState({ loading: false })
-          console.log('ERROR', error.response);
-        });
-    });
-  }
 
   goSupplier = (event) => {
     this.props.navi.navigate('ProfileSupplier', { datas: event });
@@ -112,24 +112,20 @@ class Dashboard extends Component {
     this.props.navi.navigate('Login', { datas: 'Home' });
   }
 
-  _keyExtractor = (item, index) => item.id;
+  keyExtractor = (item) => item.id;
 
   renderProductItem = (itemProduct) => {
-    const number = parseInt(itemProduct.index) + 1;
-
+    const number = parseInt(itemProduct.index, 0) + 1;
     return (
       <View>
-        <TouchableWithoutFeedback onPress={() => {
-          // this.goSupplier()
-          console.log('Item Popular');
-        }}>
+        <TouchableWithoutFeedback onPress={() => { this.props.navi.navigate('DetailFishes', { datas: itemProduct.item.Fish }) }}>
           <View>
             <Image
               style={styles.item}
               source={{ uri: `${BASE_URL}/images/${itemProduct.item.Fish.photo}` }}
               resizeMode='cover'
             />
-            <Text style={{textAlign: 'center', marginLeft: -10}}>
+            <Text style={{ textAlign: 'center', marginLeft: -10 }}>
               {`${number}. ${itemProduct.item.Fish.name}`}
             </Text>
           </View>
@@ -139,13 +135,10 @@ class Dashboard extends Component {
   }
 
   renderSupplierItem = (itemSupplier) => {
-    const number = parseInt(itemSupplier.index) + 1;
-    console.log(itemSupplier, ' ', itemSupplier.index, number, 'Data Supplier');
+    const number = parseInt(itemSupplier.index, 0) + 1;
 
     return (
-      <TouchableWithoutFeedback onPress={() => {
-        this.goSupplier(itemSupplier)
-      }}>
+      <TouchableWithoutFeedback onPress={() => { this.goSupplier(itemSupplier) }}>
         <View
           style={styles.itemContainerStyle}
           key={itemSupplier.index}
@@ -173,19 +166,15 @@ class Dashboard extends Component {
   }
 
 
-
   render() {
-    const {
-      menuItemStyle, menuIcon, containerStyle
-    } = styles;
-
     const {
       showAlert
     } = this.state;
+
     return (
       <View style={{ flex: 1 }}>
         <View style={{ height: 140 }}>
-          <Swiper style={styles.wrapper} showsButtons={true} autoplay={true}>
+          <Swiper style={styles.wrapper} showsButtons autoplay>
             <View style={styles.slide1}>
               <Image
                 style={styles.imageStyle}
@@ -220,33 +209,33 @@ class Dashboard extends Component {
         </View>
 
         <ScrollView>
-          <View style={{padding: 15}}>
-            <Button
-              onPress={() => {
-                this.credentialButton()
-              }}>
+          <View style={{ padding: 15 }}>
+            <Button onPress={() => { this.credentialButton() }}>
               Buat Permintaan
             </Button>
           </View>
 
-          <View style={{padding: 15, paddingTop: 10, backgroundColor: '#fff'}}>
+          <View style={{ padding: 15, paddingTop: 10, backgroundColor: '#fff' }}>
             <View style={styles.containerTextProductCard}>
               <Text style={styles.textCard}>Komoditas Favorit</Text>
+              <TouchableNativeFeedback onPress={() => { this.props.navi.navigate('ProductList'); }}>
+                <Text style={styles.textCardRight}>Lihat Semua</Text>
+              </TouchableNativeFeedback>
             </View>
 
             <View style={styles.containerFlatList}>
               <FlatList
                 data={this.state.productList}
-                horizontal={true}
-                keyExtractor={this._keyExtractor}
+                horizontal
+                keyExtractor={this.keyExtractor}
                 renderItem={this.renderProductItem.bind(this)}
               />
             </View>
           </View>
 
-          <View style={{height: 10, backgroundColor: '#fafafa'}} />
+          <View style={{ height: 10, backgroundColor: '#fafafa' }} />
 
-          <View style={{padding: 15, paddingTop: 10, backgroundColor: '#fff'}}>
+          <View style={{ padding: 15, paddingTop: 10, backgroundColor: '#fff' }}>
             <View style={styles.containerTextProductCard}>
               <Text style={styles.textCard}>Supplier Populer</Text>
             </View>
@@ -255,7 +244,7 @@ class Dashboard extends Component {
               <FlatList
                 data={this.state.supplierList}
                 horizontal={false}
-                keyExtractor={this._keyExtractor}
+                keyExtractor={this.keyExtractor}
                 renderItem={this.renderSupplierItem.bind(this)}
               />
             </View>
@@ -268,10 +257,10 @@ class Dashboard extends Component {
           showProgress={false}
           title=""
           message="Anda belum log in ?"
-          closeOnTouchOutside={true}
+          closeOnTouchOutside
           closeOnHardwareBackPress={false}
-          showCancelButton={true}
-          showConfirmButton={true}
+          showCancelButton
+          showConfirmButton
           cancelText="Daftar Akun"
           confirmText="Log in"
           confirmButtonColor="#006AAF"
@@ -337,9 +326,15 @@ const styles = {
     marginBottom: 10
   },
   textCard: {
-    flex: 1,
-    flexDirection: 'row',
+    // flex: 1,
+    // flexDirection: 'row',
     fontSize: 17,
+  },
+  textCardRight: {
+    textAlign: 'right',
+    marginRight: 10,
+    flex: 1,
+    fontSize: 17
   },
   textCardLink: {
     color: '#5D9FE2',
@@ -480,7 +475,7 @@ const styles = {
     marginRight: 20
   },
   wrapper: {
-    
+
   },
   slide1: {
     flex: 1,

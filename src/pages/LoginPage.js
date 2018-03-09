@@ -1,32 +1,48 @@
 import React, { Component } from 'react';
-import { Text, Image, View, TouchableOpacity, ScrollView, AsyncStorage, resizeMode } from 'react-native';
-import { Card, CardSection, Input, Spinner, Container, ContainerSection, Button } from './../components/common';
+import { Text, Image, View, TouchableOpacity, AsyncStorage } from 'react-native';
 import axios from 'axios';
 import OneSignal from 'react-native-onesignal';
-import RegistrationFormPage from './../pages/RegistrationFormPage';
-import { BASE_URL } from './../shared/lb.config';
-import { COLOR } from './../shared/lb.config';
 import jwtDecode from 'jwt-decode';
-import { NavigationActions } from 'react-navigation'
+import { NavigationActions } from 'react-navigation';
+import { Input, Spinner, Container, ContainerSection, Button } from './../components/common';
+import { BASE_URL, COLOR } from './../shared/lb.config';
+
 class LoginFormPage extends Component {
   static navigationOptions = {
     header: null
   }
   state = {
-    email: '',
+    username: '',
     password: '',
     error: '',
     loading: false,
     dataRedirect: ''
   };
 
-  onButtonPress() {
+  onLogin() {
+    const { username, password } = this.state;
+    switch (username) {
+      case '':
+        return ToastAndroid.show('Email/Username Tidak Boleh Kosong', ToastAndroid.SHORT);
+      default:
+        switch (password) {
+          case '':
+            return ToastAndroid.show('Password Tidak Boleh Kosong', ToastAndroid.SHORT);
+          default:
+            console.log('Password Tidak Kosong');
+            return this.onLoginFire();
+        }
+    }
+  }
+
+
+  onLoginFire() {
     this.setState({ error: '', loading: true });
 
-    const { email, password } = this.state;
+    const { username, password } = this.state;
     axios.post(`${BASE_URL}/login`, {
-      'email': email,
-      'password': password
+      username,
+      password
     }, {
         headers: {
           'Content-Type': 'application/json',
@@ -37,22 +53,21 @@ class LoginFormPage extends Component {
         const deco = jwtDecode(response.data.token);
         console.log(deco, 'Result Decode Token');
         this.setState({
-          email: '',
+          username: '',
           password: '',
           loading: false,
           error: ''
         });
         AsyncStorage.setItem('loginCredential', response.data.token, () => {
           console.log('Sukses');
-          OneSignal.sendTags({ 'userid': deco.user.id });
+          OneSignal.sendTags({ userid: deco.user.id });
           OneSignal.getTags((receivedTags) => {
             console.log(receivedTags, 'Get Tag');
           });
-          const { navigate } = this.props.navigation;
           const resetAction = NavigationActions.reset({
             index: 0,
             actions: [
-              NavigationActions.navigate({ routeName: 'Home'})
+              NavigationActions.navigate({ routeName: 'Home' })
             ]
           })
           this.props.navigation.dispatch(resetAction)
@@ -70,26 +85,17 @@ class LoginFormPage extends Component {
     this.setState({ [name]: value })
   }
 
+
   renderButton() {
     if (this.state.loading) {
       return <Spinner size="small" />
     }
 
     return (
-      <Button onPress={() => this.onButtonPress()}>
+      <Button onPress={() => this.onLogin()}>
         Login
       </Button>
     );
-  }
-
-  onLoginSuccess() {
-    this.setState({
-      email: '',
-      password: '',
-      loading: false,
-      error: ''
-    });
-    navigate('HomePage');
   }
 
   renderError = () => {
@@ -102,7 +108,7 @@ class LoginFormPage extends Component {
 
   render() {
     const { navigate } = this.props.navigation
-    const { email, password } = this.state
+    const { username, password } = this.state
     console.log(this.state)
 
     return (
@@ -118,9 +124,9 @@ class LoginFormPage extends Component {
           </ContainerSection>
           <ContainerSection>
             <Input
-              onChangeText={val => this.onChange('email', val)}
+              onChangeText={val => this.onChange('username', val)}
               placeholder="Username / Email"
-              value={email}
+              value={username}
               icon="ic_user"
             />
           </ContainerSection>
@@ -149,7 +155,7 @@ class LoginFormPage extends Component {
           </Text>
           <TouchableOpacity onPress={() => navigate('RegistrationForm')}>
             <Text style={{ color: COLOR.secondary_a }}>
-              {` Daftar`}
+              {'Daftar'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -174,7 +180,6 @@ const styles = {
     color: 'red'
   }
 }
-
 
 
 export default LoginFormPage;

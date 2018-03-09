@@ -1,17 +1,16 @@
 import React, { Component } from 'react';
 import { ScrollView, View, Text, TouchableOpacity, AsyncStorage, ToastAndroid } from 'react-native';
-import { connect } from 'react-redux';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
-import { Button } from 'react-native-elements';
-import { Card, CardSection, Container, ContainerSection, Spinner, InputChat } from '../components/common';
-import { BASE_URL } from './../shared/lb.config';
 import jwtDecode from 'jwt-decode'
+
+import { Card, ContainerSection, Spinner, Input } from '../components/common';
+import { BASE_URL, COLOR } from './../shared/lb.config';
 
 class MessagePage extends Component {
 	static navigationOptions = ({ navigation }) => ({
-		title: 'Diskusi',
+		title: `${navigation.state.params.idData.Request.Supplier.name}`,
 		headerRight: <View />
 	})
 
@@ -34,6 +33,11 @@ class MessagePage extends Component {
 			this.setState({ decoded: deco });
 		});
 		this.fetchMessage()
+		console.log(this.props.navigation.state.params, 'this.props.params')
+	}
+
+	componentWillUnmount() {
+		clearTimeout(this.timer);
 	}
 
 	onChangeInput = (name, v) => {
@@ -67,13 +71,9 @@ class MessagePage extends Component {
 		this.timer = setTimeout(() => this.fetchMessage(), 5000)
 	}
 
-	componentWillUnmount() {
-	 clearTimeout(this.timer);
-	}
-
 	postMessage = () => {
 		console.log(this.state.text, 'ISI PESAN');
-		if (this.state.text == '') {
+		if (this.state.text === '') {
 			alert('Pesan tidak boleh kosong')
 		} else {
 			AsyncStorage.getItem('loginCredential', (err, result) => {
@@ -87,6 +87,7 @@ class MessagePage extends Component {
 					headers: { token }
 				})
 					.then(response => {
+						console.log(response);
 						this.setState({ text: '' })
 						this.fetchMessage()
 					})
@@ -106,54 +107,64 @@ class MessagePage extends Component {
 	render() {
 		const { loading, datas, text, decoded } = this.state;
 		console.log(datas, 'Data Chat')
+
 		if (loading === true) {
 			return <Spinner size='large' />
 		}
-		else if (loading === false) {
-			console.log(this.state.decoded.user, 'DECODE TOKEN');
-			return (
-				<View style={styles.container}>
+		
+		console.log(decoded.user, 'DECODE TOKEN');
+		return (
+			<View style={styles.container}>
 
-					<ScrollView
-						style={styles.body}
-						ref={ref => this.scrollView = ref}
-						onContentSizeChange={(contentWidth, contentHeight) => {
-							this.scrollView.scrollToEnd({ animated: true })
-						}}
-					>
-						{
-							datas !== undefined && datas.map(item =>
-								<View key={item.id} style={styles.messageContainer}>
-									<Text style={{ textAlign: item.SupplierId === null ? 'right' : 'left', fontSize: 16 }}>{item.text}</Text>
-									<Text style={{ textAlign: item.SupplierId === null ? 'right' : 'left', fontSize: 9 }}>{moment(item.createdAt).format('DD/MM/YYYY | HH:mm')} WIB</Text>
-								</View>
-							)
-						}
-					</ScrollView>
-
-					<View style={styles.send}>
-						<Container>
-							<ContainerSection>
-								<InputChat
-									placeholder="Tulis pesan di sini"
-									multiline
-									value={text}
-									onChangeText={v => this.onChangeInput('text', v)}
-								/>
-								<Button
-									title='Kirim'
-									backgroundColor="blue"
-									containerViewStyle={{ marginTop: 15 }}
-									buttonStyle={{ padding: 10 }}
-									onPress={() => this.postMessage()}
-								/>
-							</ContainerSection>
-						</Container>
-
-					</View>
+				<View style={{marginTop: 5}}>
+					<Card style={{backgroundColor: '#fff', padding: 5, justifyContent: 'center', alignItems: 'center'}}>
+						<ContainerSection>
+							<Text style={{textAlign: 'center'}}>
+								No. PO {this.props.navigation.state.params.idData.Request.codeNumber}
+							</Text>
+						</ContainerSection>
+					</Card>
 				</View>
-			)
-		}
+
+				<ScrollView
+					style={styles.body}
+					ref={ref => { this.scrollView = ref }}
+					onContentSizeChange={() => {
+						this.scrollView.scrollToEnd({ animated: true })
+					}}
+				>
+					{
+						datas !== undefined && datas.map(item =>
+							<View key={item.id} style={styles.messageContainer}>
+								<Text style={{ textAlign: item.SupplierId === null ? 'right' : 'left', fontSize: 16 }}>{item.text}</Text>
+								<Text style={{ textAlign: item.SupplierId === null ? 'right' : 'left', fontSize: 9 }}>{moment(item.createdAt).format('DD/MM/YYYY | HH:mm')} WIB</Text>
+							</View>
+						)
+					}
+				</ScrollView>
+
+				<View style={styles.send}>
+					<ContainerSection>
+						<Input
+							onChangeText={v => this.onChangeInput('text', v)}
+							placeholder="Tulis Pesan..."
+							value={text}
+							multiline
+						/>
+				
+						<TouchableOpacity 
+							disabled={text === ''} 
+							onPress={() => this.postMessage()}
+						>
+							<View style={{marginLeft: 10}}>
+								<Icon size={46} color={text === '' ? '#eaeaea' : COLOR.secondary_a} name="md-send" />
+							</View>
+						</TouchableOpacity>
+					</ContainerSection>
+
+				</View>
+			</View>
+		)
 	}
 }
 
@@ -166,13 +177,14 @@ const styles = {
 		flex: 1
 	},
 	send: {
-		backgroundColor: '#eaeaea',
-		height: 80,
+		margin: 10,
+		marginLeft: 12,
+		marginRight: 12
 	},
 	messageContainer: {
 		padding: 15,
-		borderWidth: 1,
-		borderColor: '#eaeaea'
+		paddingLeft: 18,
+		paddingRight: 18,
 	},
 }
 

@@ -1,10 +1,9 @@
 import React from 'react';
-import { Text, StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 
 
-const HeaderHome = (props) => {
-    const { textStyle, header } = styles;
+const HeaderHome = () => {
     return (
         <View style={{ flex: 1, flexDirection: 'row', }}>
             <View>
@@ -17,7 +16,8 @@ const HeaderHome = (props) => {
             <View>
                 <SearchBar
                     style={styles.searchStyle}
-                    placeholder='Type Here...' />
+                    placeholder='Type Here...' 
+                />
             </View>
 
             <View>

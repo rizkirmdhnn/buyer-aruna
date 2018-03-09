@@ -6,12 +6,12 @@ import { Text, View } from 'react-native';
 
 class MasterPage extends Component {
     render() {
-        return(
+        return (
             <View>
                 <Text> Profile Nelayan </Text>
             </View>
         );
     }
-};
+}
 
 export default MasterPage;

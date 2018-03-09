@@ -6,29 +6,24 @@ import {
   View,
   Text,
   Image,
-  ScrollView,
-  Dimensions,
-  TouchableWithoutFeedback,
   TouchableOpacity,
-  TouchableHighlight,
   AsyncStorage,
-  FlatList,
   DrawerLayoutAndroid,
   TouchableNativeFeedback,
   ToastAndroid
 } from 'react-native';
-import { Card, Button, CardSection, Container, ContainerSection, Spinner, Input, InputSearch } from '../components/common'
+import OneSignal from 'react-native-onesignal';
 import { NavigationActions } from 'react-navigation';
-import { Header, SearchBar, SideMenu, List, ListItem } from 'react-native-elements';
-import axios from 'axios';
-import { BASE_URL } from './../shared/lb.config';
-import { COLOR } from './../shared/lb.config';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { connect } from 'react-redux'
 
-
+import { ContainerSection, Spinner, InputSearch } from '../components/common'
 import Dashboard from './Dashboard';
 import RequestOrderPage from './RequestOrderPage';
 import TransactionPage from './TransactionPage';
+import { COLOR } from './../shared/lb.config';
+import { setUserToken, unreadNotifFetch } from '../redux/actions'
+
 class HomePage extends Component {
 
   static navigationOptions = {
@@ -38,53 +33,36 @@ class HomePage extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      screen: 'Dashboard',
+      screen: '',
       searchItem: [],
       dataItemSearch: '',
       loading: true,
       menuLoginExpanded: false,
-      menuLogoutExpanded: false
+      menuLogoutExpanded: false,
+      redirectToNotification: false
     }
   }
 
-  querySuggestion(text) {
-    console.log(text, 'Text');
-    axios.get(`${BASE_URL}/fishes/search?key=${text}`, {
-      headers: { 'x-access-token': this.state.tokenUser }
-    })
-      .then(response => {
-        res = response.data.data
-        this.setState({ searchItem: res })
-        console.log(res, 'Auto Complete Nya')
-      })
-      .catch(error => {
-        console.log(error, 'Error');
-        if (error.response) {
-          alert(error.response.data.message)
-        }
-        else {
-          alert('Koneksi internet bermasalah')
-        }
-      })
-  }
+  componentWillMount() {
+    if (!this.props.navigation.state.params) {
+      console.log('Params tidak ada')
+      this.setState({ screen: 'Dashboard' })
+    } else {
+      console.log('Params Ada')
+      this.setState({ screen: this.props.navigation.state.params.screenDefault })
+    }
+    OneSignal.clearOneSignalNotifications();
+    AsyncStorage.getItem('loginCredential', (err, result) => {
+      if (result) {
+        this.props.setUserToken(result)
+        this.props.unreadNotifFetch(result)
 
-  querySuggestion(text) {
-    console.log(text, 'Text');
-    axios.get(`${BASE_URL}/fishes/search?key=${text}`)
-      .then(response => {
-        res = response.data.data
-        this.setState({ searchItem: res })
-        console.log(res, 'Auto Complete Nya')
-      })
-      .catch(error => {
-        console.log(error, 'Error');
-        if (error.response) {
-          alert(error.response.data.message)
-        }
-        else {
-          alert('Koneksi internet bermasalah')
-        }
-      })
+        this.setState({ menuLoginExpanded: true, loading: false });
+      }
+      if (!result) {
+        this.setState({ menuLogoutExpanded: true, loading: false });
+      }
+    })
   }
 
   onItemSelected = (item) => {
@@ -95,32 +73,11 @@ class HomePage extends Component {
     this.props.navigation.navigate('Filter', { datas: item });
   }
 
-  componentWillMount() {
-    AsyncStorage.getItem('loginCredential', (err, result) => {
-      if (result) {
-        this.setState({ menuLoginExpanded: true, loading: false });
-      }
-      if (!result) {
-        this.setState({ menuLogoutExpanded: true, loading: false });
-      }
-    })
-  }
-
-  renderScreen = () => {
-    if (this.state.screen === 'RequestOrderPage') {
-      return <RequestOrderPage navi={this.props.navigation} />
-    }
-    if (this.state.screen === 'TransactionPage') {
-      return <TransactionPage navi={this.props.navigation} />
-    }
-
-    return <Dashboard navi={this.props.navigation} />
-  }
-
   isLogout() {
     console.log('Logout Klik');
-    AsyncStorage.getItem('loginCredential', (err, result) => {
+    AsyncStorage.getItem('loginCredential', () => {
       AsyncStorage.removeItem('loginCredential', () => {
+        OneSignal.deleteTag('userid');
         ToastAndroid.show('Berhasil Logout', ToastAndroid.SHORT)
         console.log('Logout Klik Sukses');
         const resetAction = NavigationActions.reset({
@@ -134,20 +91,35 @@ class HomePage extends Component {
     });
   }
 
+  renderScreen = () => {
+    if (this.state.screen === 'RequestOrderPage') {
+      return <RequestOrderPage navi={this.props.navigation} />
+    }
+    if (this.state.screen === 'TransactionPage') {
+      return <TransactionPage navi={this.props.navigation} />
+    }
+
+    return <Dashboard navi={this.props.navigation} />
+  }
 
   render() {
     const { navigate } = this.props.navigation;
     const {
-      requestExpanded,
       searchItem,
       loading,
       screen,
-      menuLoginExpanded
+      menuLoginExpanded,
+      redirectToNotification
     } = this.state;
 
+    // Redirect ke notification list
+    if (this.props.user.unreadNotif > 0 && redirectToNotification === false) {
+      this.props.navigation.navigate('NotificationList')
+      this.setState({ redirectToNotification: true })
+    }
+
     const {
-      containerStyle, headerHomeStyle, menuContainerStyle,
-      profileImageContainer, profileImage, profileName, coin, point, tabContainer, tabContainerActive, tabText, tabTextActive
+      menuContainerStyle, tabContainer, tabContainerActive, tabText, tabTextActive
     } = styles;
 
     const menuLogin = [
@@ -157,7 +129,7 @@ class HomePage extends Component {
         screen: 'Home'
       },
       {
-        label: 'Profile',
+        label: 'Profil',
         icon: require('./../assets/images/ic_profile.png'),
         screen: 'ProfileBuyer'
       },
@@ -243,6 +215,18 @@ class HomePage extends Component {
           {
             menuLoginExpanded ?
               <View>
+                <TouchableOpacity onPress={() => this.props.navigation.navigate('Term')}>
+                  <View style={{ marginBottom: 20 }}>
+                    <ContainerSection>
+                      <Image
+                        style={styles.menuIcon}
+                        source={require('../assets/images/dokumen.png')}
+                      />
+                      <Text style={styles.drawerItemText}>Terms & Conditions</Text>
+                    </ContainerSection>
+                  </View>
+                </TouchableOpacity>
+
                 <TouchableOpacity onPress={() => this.props.navigation.navigate('Help')}>
                   <View style={{ marginBottom: 20 }}>
                     <ContainerSection>
@@ -288,8 +272,6 @@ class HomePage extends Component {
     )
 
 
-
-
     return (
       <View style={styles.container}>
         <DrawerLayoutAndroid
@@ -321,10 +303,10 @@ class HomePage extends Component {
                     <Image
                       style={{ height: 20, width: 15 }}
                       source={
-                        // this.props.user.unreadNotif > 0 ?
-                        //     require('./../assets/images/ic_notification_on.png')
-                        //     :
-                        require('./../assets/images/ic_notification.png')
+                        this.props.user.unreadNotif > 0 ?
+                          require('../assets/images/ic_notification_on.png')
+                          :
+                          require('../assets/images/ic_notification.png')
                       }
                     />
                   </TouchableOpacity>
@@ -387,7 +369,7 @@ class HomePage extends Component {
       </View>
     );
   }
-};
+}
 
 
 const styles = {
@@ -586,4 +568,10 @@ const styles = {
   }
 }
 
-export default HomePage;
+const mapStateToProps = (state) => {
+  const { user } = state
+
+  return { user }
+}
+
+export default connect(mapStateToProps, { setUserToken, unreadNotifFetch })(HomePage)

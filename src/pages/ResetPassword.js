@@ -65,7 +65,7 @@ class ResetPassword extends Component {
 
 			axios.post(`${BASE_URL}/reset-password`, data)
 			.then(() => {
-				Alert.alert('Berhasil', `Password berhasil disetel ulang. Silahkan coba login dengan password baru`)
+				Alert.alert('Berhasil', 'Password berhasil disetel ulang. Silahkan coba login dengan password baru')
 				this.setState({loading: false})
 
 				const resetAction = NavigationActions.reset({

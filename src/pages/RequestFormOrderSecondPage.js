@@ -4,29 +4,20 @@ import {
   View,
   Image,
   Text,
-  TouchableNativeFeedback,
   AsyncStorage,
   ScrollView,
-  Alert,
   ToastAndroid
 } from 'react-native'
-import {
-  CardRegistration,
-  CardSectionRegistration,
-  InputRegistration,
-  Button,
-  ContainerSection,
-  Container,
-  Spinner
-} from './../components/common';
 import { NavigationActions } from 'react-navigation'
 import axios from 'axios';
-
-import { BASE_URL, COLOR } from './../shared/lb.config';
+import numeral from 'numeral';
 import { CheckBox } from 'react-native-elements';
-import moment from 'moment';
-import { Card } from 'react-native-elements';
-
+import { BASE_URL, COLOR } from './../shared/lb.config';
+import {
+  Button,
+  ContainerSection,
+  Spinner
+} from './../components/common';
 
 class RequestFormOrderSecondPage extends Component {
 
@@ -39,42 +30,128 @@ class RequestFormOrderSecondPage extends Component {
     super(props);
     this.state = {
       datax: [{}],
-      dataSupplier: [{}],
+      dataSupplier: [],
       loading: true,
       loader: null,
       checkedSelected: [],
-      idSupplier: []
+      idSupplier: [],
+      dataFirstSearch: '',
+      dataSecondButton: '',
+      dataThirdHome: ''
     };
-  };
-
-  componentWillMount() {
-    console.log(this.props.navigation.state.params.datas, 'Data 1');
-    this.setState({ datax: this.props.navigation.state.params.datas });
   }
 
-  componentDidMount() {
-    console.log(this.state.datax, 'Data 2');
-    AsyncStorage.getItem('loginCredential', (err, result) => {
+  componentWillMount() {
+    const { params } = this.props.navigation.state;
+    console.log(params, 'Data Params');
+    // console.log(this.props.navigation.state.params.datas, 'Data 1');
+    this.setState({ datax: this.props.navigation.state.params.datas });
 
+    if (!params.dataFirst) {
+      this.getDefaultButton()
+      console.log('DataFirst Kosong')
+    }
+    if (params.dataFirst) {
+      console.log('Datas Tidak Kosong');
+      this.setState({ dataSupplier: params.dataFirst.dataSupplier, loading: false })
+    }
+  }
+
+  onPressReqButton() {
+    const { checkedSelected } = this.state;
+
+    if (checkedSelected.length === 0) {
+      return ToastAndroid.show('Anda Belum Memilih Supplier', ToastAndroid.SHORT);
+    }
+
+    return this.onSubmit();
+  }
+
+
+  onSubmit = () => {
+    this.setState({ loader: true })
+
+    AsyncStorage.getItem('loginCredential', (err, result) => {
+      const dataRequest = new FormData();
+      dataRequest.append('FishId', this.state.datax.FishId);
+      dataRequest.append('maxBudget', this.state.datax.maxBudget);
+      dataRequest.append('dueDate', this.state.datax.datePick);
+      dataRequest.append('quantity', this.state.datax.quantity);
+      dataRequest.append('size', this.state.datax.size);
+      dataRequest.append('describe', this.state.datax.deskripsi);
+      dataRequest.append('unit', this.state.datax.unitFish);
+
+      this.state.checkedSelected.map((item, index) => dataRequest.append(`ProductIds[${index}]`, item.id))
+
+      dataRequest.append('photo', {
+        uri: this.state.datax.photo.uri,
+        type: 'image/jpeg',
+        name: 'formrequest.png'
+      });
+
+      console.log(this.state.datax, 'Data Request');
+      console.log(dataRequest, 'Data Form Append');
+
+      axios.post(`${BASE_URL}/buyer/requests`,
+        dataRequest
+        , {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            token: result
+          }
+        }).then(response => {
+          res = response.data.data;
+          console.log(response, 'RES');
+          this.setState({ loader: false });
+
+          const resetAction = NavigationActions.reset({
+            index: 1,
+            actions: [
+              NavigationActions.navigate({ routeName: 'Home' }),
+              NavigationActions.navigate({ routeName: 'Request' })
+            ]
+          })
+          this.props.navigation.dispatch(resetAction)
+        })
+        .catch(error => {
+          if (error.response) {
+            ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
+          }
+          else {
+            ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
+          }
+          this.setState({ loader: false });
+        })
+    });
+  }
+
+  onChangeInput = (name, v) => {
+    this.setState({ [name]: v });
+    console.log(v);
+  }
+
+
+  getDefaultButton() {
+    AsyncStorage.getItem('loginCredential', (err, result) => {
       const token = result;
       console.log(token);
       axios.post(`${BASE_URL}/generate-request`, {
-        'FishId': this.state.datax.FishId,
-        'ProvinceId': this.state.datax.provinsiId,
-        'CityId': this.state.datax.cityId,
-        'maxPrice': this.state.datax.maxBudget
+        FishId: this.state.datax.FishId,
+        ProvinceId: this.state.datax.provinsiId,
+        CityId: this.state.datax.cityId,
+        maxPrice: this.state.datax.maxBudget
       }, {
           headers: {
-            'token': token,
+            token,
             'Content-Type': 'application/json'
           }
         })
         .then(response => {
           res = response.data.data;
           console.log(res, 'RES')
-          const result = res;
-          console.log(result, 'Result Supplier nya');
-          this.setState({ dataSupplier: result, checkedSelected: result, loading: false })
+          const resultRes = res;
+          console.log(resultRes, 'Result Supplier nya');
+          this.setState({ dataSupplier: resultRes, checkedSelected: resultRes, loading: false })
         })
         .catch(error => {
           console.log(error.message, 'Error nya');
@@ -97,100 +174,27 @@ class RequestFormOrderSecondPage extends Component {
     }
   };
 
-  onSubmit = () => {
-    this.setState({loader: true})
-
-    AsyncStorage.getItem('loginCredential', (err, result) => {
-      const token = result;
-      const { navigate } = this.props.navigation;
-      const dataRequest = new FormData();
-      dataRequest.append('FishId', this.state.datax.FishId);
-      dataRequest.append('maxBudget', this.state.datax.maxBudget);
-      dataRequest.append('dueDate', this.state.datax.datePick);
-      dataRequest.append('quantity', this.state.datax.quantity);
-      dataRequest.append('size', this.state.datax.size);
-
-      console.log(this.state.idSupplier, 'Submit Request');
-
-
-
-      this.state.checkedSelected.map((item, index) => {
-        console.log(item.id, ' ', index, 'MAPING');
-        dataRequest.append('ProductIds[' + index + ']', item.id)
-      })
-
-      dataRequest.append('photo', {
-        uri: this.state.datax.photo.uri,
-        type: 'image/jpeg',
-        name: 'formrequest'
-      });
-
-      console.log(this.state.datax, 'Data Request');
-      console.log(dataRequest, 'Data Form Append');
-
-      axios.post(`${BASE_URL}/buyer/requests`,
-        dataRequest
-        , {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'token': result
-          }
-        }).then(response => {
-          res = response.data.data;
-          console.log(response, 'RES');
-          this.setState({ loader: false });
-
-          const resetAction = NavigationActions.reset({
-            index: 1,
-            actions: [
-              NavigationActions.navigate({ routeName: 'Home'}),
-              NavigationActions.navigate({ routeName: 'Request'})
-            ]
-          })
-          this.props.navigation.dispatch(resetAction)
-
-        })
-        .catch(error => {
-          if (error.response) {
-            ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
-          }
-          else {
-            ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
-          }
-          this.setState({ loader: false });
-        })
-    });
-  }
-
   renderButton = () => {
-    const { navigate } = this.props.navigation;
     if (this.state.loader) {
       return <Spinner size='large' />
     }
     return (
       <Button
         onPress={
-          () => this.onSubmit()
+          () => this.onPressReqButton()
         }
       >
-        Next
+        Kirim Permintaan
     </Button>
     )
   }
 
-  onChangeInput = (name, v) => {
-    this.setState({ [name]: v });
-    console.log(v);
-  }
-
   renderItem = (item) => {
-    console.log(item, 'Item Data Supplier');
-    return item.map((data) => {
-      console.log(data, 'ID Supplier');
-      this.state.idSupplier.push(data.id);
-      console.log(this.state.idSupplier, 'ID PUSH SUPPLIER')
+    console.log(item, 'Render Data Supplier');
+    console.log(this.state.checkedSelected, 'Data Check');
+    return item.map((data, index) => {
       return (
-        <View style={styles.card}>
+        <View style={styles.card} key={index}>
           <View style={styles.itemContainerStyle}>
             <View style={styles.thumbnailContainerStyle}>
               <Image
@@ -205,7 +209,7 @@ class RequestFormOrderSecondPage extends Component {
                 // data.quantity ? data.quantity : '0'
               }
               </Text>
-              <Text>Rp {data.minBudget} - Rp {data.maxBudget} /Kg</Text>
+              <Text>Rp {numeral(parseInt(data.minPrice, 0)).format('0,0')} - Rp {numeral(parseInt(data.minPrice, 0)).format('0,0')} /Kg</Text>
             </View>
             <CheckBox
               center
@@ -226,7 +230,7 @@ class RequestFormOrderSecondPage extends Component {
   }
 
   render() {
-
+    const { dataSupplier } = this.state;
     if (this.state.loading) {
       return <Spinner size="large" />
     }
@@ -238,15 +242,23 @@ class RequestFormOrderSecondPage extends Component {
           renderItem={({ item }) => this.renderItem(item)}
         />
 
-        <View style={{ margin: 10 }}>
-          <ContainerSection>
-            {this.renderButton()}
-          </ContainerSection>
-        </View>
+        {
+          dataSupplier.length === 0 ?
+            <View style={{ margin: 10 }}>
+              <Text style={{ textAlign: 'center' }}>Ups... Maaf tidak ada daftar nelayan.</Text>
+              <Text style={{ textAlign: 'center' }}>Silahkan coba ganti Nama Ikan / Provinsi / Kota.</Text>
+            </View>
+            :
+            <View style={{ margin: 10 }}>
+              <ContainerSection>
+                {this.renderButton()}
+              </ContainerSection>
+            </View>
+        }
       </ScrollView>
     );
   }
-};
+}
 
 
 const styles = {

@@ -8,7 +8,7 @@ import { Spinner } from '../components/common'
 
 class ListSearchProductPage extends Component {
 
-    static navigationOptions = ({ navigation, screenProps }) => ({
+    static navigationOptions = ({ navigation }) => ({
         title: 'Searching',
         headerStyle: { backgroundColor: '#006AAF' },
         headerTitleStyle: { color: '#FFFFFF' },
@@ -18,7 +18,8 @@ class ListSearchProductPage extends Component {
             >
                 <Image
                     style={{ width: 20, height: 20, marginLeft: 30 }}
-                    source={require('./../assets/image/arr.png')} />
+                    source={require('./../assets/image/arr.png')} 
+                />
             </TouchableOpacity>
     });
 
@@ -42,7 +43,7 @@ class ListSearchProductPage extends Component {
     }
 
     renderData = (item) => {
-        return item.map((data, index) => {
+        return item.map((data) => {
             console.log(data, 'Data Map')
             return (
                 <TouchableWithoutFeedback
@@ -70,7 +71,6 @@ class ListSearchProductPage extends Component {
     }
 
     render() {
-
         const {
             loading
         } = this.state
@@ -88,7 +88,7 @@ class ListSearchProductPage extends Component {
             </View>
         );
     }
-};
+}
 
 const styles = {
     itemContainerStyle: {

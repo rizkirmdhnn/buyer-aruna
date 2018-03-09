@@ -1,1 +1,1 @@
-code-push release-react ArunaAppBuyer android
+code-push release-react raosanfl/ArunaAppBuyer android

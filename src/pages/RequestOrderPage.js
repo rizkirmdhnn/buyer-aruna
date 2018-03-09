@@ -1,77 +1,110 @@
 import React, { Component } from 'react';
-import { Text, FlatList, View, Image, TouchableWithoutFeedback, AsyncStorage, resizeMode, ScrollView } from 'react-native';
-import { Header, SearchBar, Icon } from 'react-native-elements';
-import { BASE_URL } from './../shared/lb.config';
+import { Text, FlatList, View, Image, TouchableWithoutFeedback, AsyncStorage, ScrollView } from 'react-native';
 import axios from 'axios';
+import moment from 'moment';
 import {
-  CardRegistration,
-  CardSectionRegistration,
-  InputRegistration,
-  Button,
-  ContainerSection,
-  Container,
   Spinner,
   Card
 } from './../components/common';
-import moment from 'moment';
+import { BASE_URL } from './../shared/lb.config';
 
 class RequestOrderPage extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      loading: true,
-      tokenUser: '',
-      dataReqOrder: '',
-      expiredContainer: null,
-      NoExpiredContainer: null
-    };
-  };
-
-  async componentWillMount() {
-    try {
-      const value = await AsyncStorage.getItem('loginCredential');
-      if (value !== null) {
-        console.log(value, 'Storage Request');
-        this.setState({ tokenUser: value })
-        return this.getData();
-      }
-    } catch (error) {
-      console.log(error, 'Error Storage Request');
-    }
-  }
-
-  getData() {
-    axios.get(`${BASE_URL}/buyer/requests?key=to&page=0&pageSize=30&sorting=desc`, {
-      headers: {
-        'token': this.state.tokenUser
-      }
-    }).then(response => {
-      res = response.data.data;
-      console.log(res, 'Data Request Order');
-      this.setState({ dataReqOrder: res, loading: false });
-    })
-      .catch(error => {
-        this.setState({ loading: false });
-        console.log(error.response, 'Erroor nya');
-        console.log('Error Request Order Get Data');
-      })
-  }
 
   static navigationOptions = {
     title: 'Permintaan',
     headerRight: <View />
   }
 
-  refreshRequest() {
-    return this.getData();
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: true,
+      tokenUser: '',
+      dataReqOrder: [],
+      expiredContainer: null,
+      NoExpiredContainer: null,
+      refresh: false,
+      anyData: null,
+      noData: null
+    };
+  }
+
+  componentWillMount() {
+    AsyncStorage.getItem('loginCredential', (err, result) => {
+      if (result) {
+        console.log('Storage Tidak Kosong');
+        this.setState({ tokenUser: result, anyData: true });
+        return this.getData();
+      }
+      console.log('Storage Kosong');
+      this.setState({ loading: false, noData: true });
+      return this.getNoData();
+    })
+  }
+
+  getNoData() {
+    return (
+      <View style={{ flex: 1, marginTop: '50%' }}>
+        <Text style={{ textAlign: 'center' }}>Ups... Kamu belum login.</Text>
+        <Text style={{ textAlign: 'center' }}>Silahkan login terlebih dahulu. </Text>
+      </View>
+    )
+  }
+
+  getData() {
+    axios.get(`${BASE_URL}/buyer/requests`, {
+      params: {
+        sorting: 'DESC'
+      },
+      headers: {
+        token: this.state.tokenUser
+      }
+    }).then(response => {
+      res = response.data.data;
+      console.log(res, 'Data Request Order');
+      this.setState({
+        dataReqOrder: res,
+        loading: false,
+        refresh: false
+      });
+    })
+      .catch(error => {
+        this.setState({ loading: false, refresh: false });
+        console.log(error, 'Erroor nya');
+        console.log('Error Request Order Get Data');
+      })
+  }
+
+
+  handleRefresh = () => {
+    console.log('Refresh');
+    this.setState({
+      refresh: true
+    }, () => {
+      this.getData();
+    })
+  }
+
+
+  detailOrder = (props) => {
+    const listData = props;
+    console.log(this.props, 'PROPS');
+    if (!this.props.navi) {
+      console.log('Bukan Navi')
+      this.props.navigation.navigate('DetailRequestOrder', { datas: listData })
+    }
+    if (this.props.navi) {
+      console.log('NAVI');
+      this.props.navi.navigate('DetailRequestOrder', { datas: listData })
+    }
   }
 
   renderData = (item) => {
     console.log(item, 'Data ReQ');
 
-    if (item.Status.id == 19) {
-      if (item.sanggup == 0) {
+    if (item.Status.id === 19) {
+      if (item.sanggup === 0) {
         return (
           <Card>
             <View style={styles.itemContainerStyle}>
@@ -95,7 +128,7 @@ class RequestOrderPage extends Component {
 
       if (item.sanggup > 0) {
         return (
-         
+
           <Card>
             <TouchableWithoutFeedback
               onPress={() => this.detailOrder(item)}
@@ -150,44 +183,46 @@ class RequestOrderPage extends Component {
     }
   }
 
-  renderFlatList = () => {
-    return (
-      <View>
-        <FlatList
-          data={this.state.dataReqOrder}
-          renderItem={({ item }) => this.renderData(item)}
-          keyExtractor={(item, index) => index}
-        />
-      </View>
-    );
-  }
-
-
-  detailOrder = (props) => {
-    const listData = props;
-    this.props.navi.navigate('DetailRequestOrder', { datas: listData })
-  }
-
 
   render() {
+    const { anyData, noData } = this.state;
     if (this.state.loading) {
       return <Spinner size="large" />
     }
     return (
       <ScrollView>
-        <View>
-          {this.renderFlatList()}
-        </View>
+        {
+          anyData ?
+            <View>
+              <FlatList
+                data={this.state.dataReqOrder}
+                renderItem={({ item }) => this.renderData(item)}
+                keyExtractor={(item, index) => index}
+                refreshing={this.state.refresh}
+                onRefresh={() => this.handleRefresh}
+              />
+            </View>
+            :
+            <View />
+        }
+        {
+          noData ?
+            this.getNoData()
+            :
+            <View />
+        }
       </ScrollView>
     );
   }
-};
+}
 
 const styles = {
   itemContainerStyle: {
     justifyContent: 'flex-start',
     flexDirection: 'row',
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderColor: '#ddd',
   },
   thumbnailContainerStyle: {
     justifyContent: 'center',

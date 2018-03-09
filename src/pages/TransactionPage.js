@@ -5,25 +5,16 @@ import {
   AsyncStorage,
   FlatList,
   Image,
-  TouchableWithoutFeedback,
   TouchableNativeFeedback,
   ScrollView
 } from 'react-native';
-import { Header, SearchBar, Icon } from 'react-native-elements';
 import axios from 'axios';
-import { BASE_URL } from './../shared/lb.config';
+import { BASE_URL, COLOR } from './../shared/lb.config';
 import {
-  CardRegistration,
-  CardSectionRegistration,
-  InputRegistration,
-  ContainerSection,
-  Container,
   Spinner,
   Button,
   Card
 } from './../components/common';
-import moment from 'moment';
-import { COLOR } from './../shared/lb.config';
 
 class TransactionPage extends Component {
   static navigationOptions = {
@@ -35,29 +26,41 @@ class TransactionPage extends Component {
     this.state = {
       loading: true,
       tokenUser: '',
-      dataTransaksi: []
+      dataTransaksi: [],
+      anyData: null,
+      noData: null
     };
-  };
+  }
 
 
-  async componentWillMount() {
-    try {
-      const value = await AsyncStorage.getItem('loginCredential');
-      if (value !== null) {
-        console.log(value, 'Storage Request');
-        this.setState({ tokenUser: value })
+  componentWillMount() {
+    AsyncStorage.getItem('loginCredential', (err, result) => {
+      if (result) {
+        console.log('Storage Tidak Kosong');
+        this.setState({ tokenUser: result, anyData: true });
         return this.getData();
       }
-    } catch (error) {
-      console.log(error, 'Error Storage Request');
-    }
+      console.log('Storage Kosong');
+      this.setState({ loading: false, noData: true });
+      return this.getNoData();
+    })
+  }
+
+
+  getNoData() {
+    return (
+      <View style={{ flex: 1, marginTop: '50%' }}>
+        <Text style={{ textAlign: 'center' }}>Ups... Kamu belum login.</Text>
+        <Text style={{ textAlign: 'center' }}>Silahkan login terlebih dahulu.</Text>
+      </View>
+    )
   }
 
   getData() {
     console.log('API FIRE!')
     axios.get(`${BASE_URL}/buyer/orders?page=0&pageSize=50&sorting=DESC`, {
       headers: {
-        'token': this.state.tokenUser
+        token: this.state.tokenUser
       }
     }).then(response => {
       const result = response.data.data;
@@ -73,7 +76,11 @@ class TransactionPage extends Component {
 
   detailTransaction = (props) => {
     const dataTransaction = props;
-    this.props.navi.navigate('DetailTransaction', { datas: dataTransaction })
+    if (this.props.navi) {
+      this.props.navi.navigate('DetailTransaction', { datas: dataTransaction })
+    } else {
+      this.props.navigation.navigate('DetailTransaction', { datas: dataTransaction })
+    }
   }
 
   refreshRequest() {
@@ -97,7 +104,7 @@ class TransactionPage extends Component {
           return require('../assets/images/status1f.png')
       }
     }
-    
+
     switch (index) {
       case 1:
         return require('../assets/images/status1.png')
@@ -128,7 +135,7 @@ class TransactionPage extends Component {
         </View>
       );
     }
-     
+
     return (
       <Card>
         <TouchableNativeFeedback
@@ -143,28 +150,28 @@ class TransactionPage extends Component {
               />
             </View>
             <View style={styles.headerContentStyle}>
-              <Text>No. PO {item.id}</Text>
+              <Text>No. PO {item.Request.codeNumber}</Text>
               <Text>{item.Request ? item.Request.Transaction.Fish.name : '-'}</Text>
               <Text>{item.Request ? item.Request.Supplier.name : ''}</Text>
-              <Text style={styles.hedaerTextStyle}>{item.StatusHistories && item.StatusHistories.length > 0 ? item.StatusHistories[item.StatusHistories.length - 1].Status.name : 'Kontrak Belum Dibuat'}</Text>
-              <View style={{flexDirection: 'row'}}>
-                <Image 
+              <Text style={styles.hedaerTextStyle}>{item.StatusHistories && item.StatusHistories.length > 0 ? item.StatusHistories[item.StatusHistories.length - 1].Status.name : 'Proses Kontrak'}</Text>
+              <View style={{ flexDirection: 'row' }}>
+                <Image
                   style={styles.statusIcon}
                   source={this.imageIcon(item, 1)}
                 />
-                <Image 
+                <Image
                   style={styles.statusIcon}
                   source={this.imageIcon(item, 2)}
                 />
-                <Image 
+                <Image
                   style={styles.statusIcon}
                   source={this.imageIcon(item, 3)}
                 />
-                <Image 
+                <Image
                   style={styles.statusIcon}
                   source={this.imageIcon(item, 4)}
                 />
-                <Image 
+                <Image
                   style={styles.statusIcon}
                   source={this.imageIcon(item, 5)}
                 />
@@ -178,26 +185,40 @@ class TransactionPage extends Component {
 
 
   render() {
+    const { anyData, noData } = this.state;
+
     if (this.state.loading) {
       return <Spinner size="large" />
     }
     return (
-      <View style={{flex: 1}}>
-        <FlatList
-          data={this.state.dataTransaksi}
-          renderItem={({ item }) => this.renderData(item)}
-          keyExtractor={(item, index) => index}
-        />
-      </View>
+      <ScrollView>
+        {
+          anyData ?
+            <View style={{ flex: 1 }}>
+              <FlatList
+                data={this.state.dataTransaksi}
+                renderItem={({ item }) => this.renderData(item)}
+                keyExtractor={(item, index) => index}
+              />
+            </View>
+            :
+            <View />
+        }
+        {
+          noData ?
+            this.getNoData()
+            :
+            <View />
+        }
+      </ScrollView>
     );
   }
-};
-
+}
 
 
 const styles = {
   itemContainerStyle: {
-    borderBottomWidth: 1, 
+    borderBottomWidth: 1,
     justifyContent: 'flex-start',
     flexDirection: 'row',
     borderColor: '#ddd',
