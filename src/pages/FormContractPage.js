@@ -6,6 +6,7 @@ import {
   ScrollView,
   Text,
   Alert,
+  Picker,
   PixelRatio,
   AsyncStorage,
   TouchableNativeFeedback,
@@ -82,7 +83,8 @@ class FormContractPage extends Component {
       maxFishReject: '',
       locationEdit: true,
       shareLoc: '',
-      hargaTot: 0
+      hargaTot: 0,
+      unitFish: ''
     }
   }
 
@@ -92,7 +94,7 @@ class FormContractPage extends Component {
     });
 
     console.log(this.props.navigation.state.params.datas, 'Data Lemparan');
-    
+
     this.setState({
       quantity: this.props.navigation.state.params.datas.Request.Transaction.quantity.toString(),
       size: this.props.navigation.state.params.datas.Request.Transaction.size,
@@ -378,7 +380,8 @@ class FormContractPage extends Component {
       size,
       dataMaster,
       locationEdit,
-      hargaTot
+      hargaTot,
+      unitFish
     } = this.state
 
     const addressBuyer = dataMaster.Request.Buyer.address;
@@ -411,10 +414,19 @@ class FormContractPage extends Component {
               onChangeText={v => this.onChangeInput('size', v.replace(/\./g, ''))}
               style={styles.textArea}
             />
-            <View style={{ flex: 1, paddingTop: 50, paddingLeft: 10 }}>
-              <Text>{this.state.dataMaster.Request.Transaction.unit}</Text>
+            <View style={{ marginTop: 50, marginLeft: 10, flex: 1 }}>
+              <View style={styles.pickerUnitStyle}>
+                <Picker
+                  selectedValue={unitFish === null || unitFish === '' ? this.state.dataMaster.Request.Transaction.unit : unitFish}
+                  onValueChange={v => this.onChangeInput('unitFish', v)}
+                >
+                  <Picker.Item label='Pilih Ukuran' value='' />
+                  <Picker.Item label='Kg' value='Kg' />
+                  <Picker.Item label='Cm' value='Cm' />
+                  <Picker.Item label='Ekor/Kg' value='Ekor/Kg' />
+                </Picker>
+              </View>
             </View>
-
           </ContainerSection>
 
           <ContainerSection>
@@ -678,7 +690,15 @@ const styles = {
   avatar: {
     width: 450,
     height: 180
-  }
+  },
+  pickerUnitStyle: {
+    borderColor: '#a9a9a9',
+    borderRadius: 5,
+    paddingLeft: 7,
+    borderWidth: 1,
+    height: 50,
+    backgroundColor: '#fff'
+  },
 }
 
 export default FormContractPage

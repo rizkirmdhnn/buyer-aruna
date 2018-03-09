@@ -14,3 +14,4 @@ export * from './ContainerSection';
 export * from './Container';
 export * from './InputSearch';
 export * from './InputChat';
+export * from './InputDate';
