@@ -112,8 +112,6 @@ class TransactionPage extends Component {
           return require('../assets/images/status3f.png')
         case 4:
           return require('../assets/images/status4f.png')
-        case 5:
-          return require('../assets/images/status5f.png')
         default:
           return require('../assets/images/status1f.png')
       }
@@ -128,8 +126,6 @@ class TransactionPage extends Component {
         return require('../assets/images/status3.png')
       case 4:
         return require('../assets/images/status4.png')
-      case 5:
-        return require('../assets/images/status5.png')
       default:
         return require('../assets/images/status1.png')
     }
@@ -190,10 +186,6 @@ class TransactionPage extends Component {
                 <Image
                   style={styles.statusIcon}
                   source={this.imageIcon(item, 4)}
-                />
-                <Image
-                  style={styles.statusIcon}
-                  source={this.imageIcon(item, 5)}
                 />
               </View>
             </View>
