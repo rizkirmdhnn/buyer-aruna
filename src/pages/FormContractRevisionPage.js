@@ -87,10 +87,6 @@ class FormContractRevisionPage extends Component {
       fishDescribe: this.props.navigation.state.params.datas.Request.Transaction.describe
     })
 
-    const b = this.props.navigation.state.params.datas.Request.Transaction.quantity;
-    const totLah = parseInt(this.state.hargaTot, 0) * parseInt(b, 0);
-    console.log(totLah, 'TOTTTTTTT');
-    this.setState({ hargaTot: totLah });
 
     AsyncStorage.getItem('loginCredential', (err, result) => {
       this.setState({ tokenUser: result })
@@ -114,12 +110,18 @@ class FormContractRevisionPage extends Component {
             price: res.Contract.price,
             dpAmount: res.Contract.dpAmount,
             dateNowPickDP: moment(res.Contract.dpDate).format('DD/MM/YYYY'),
+            dpDate: moment(res.Contract.dpDate).format('DD/MM/YYYY'),
             dateNowPickPengiriman: moment(res.Contract.dateOfReception).format('DD/MM/YYYY'),
             locationSupplier: res.Contract.Supplier.City.Province.name,
             dataTemp: res,
             loadingView: false,
             fishReject: res.Contract.fishReject,
             maxFishReject: res.Contract.maxFishReject
+          }, () => {
+            const a = this.props.navigation.state.params.datas.Request.Transaction.quantity;
+            const totLah = parseInt(this.state.price, 0) * parseInt(a, 0);
+            console.log(totLah, 'TOTTTTTTT');
+            this.setState({ hargaTot: totLah });
           })
         })
         .catch(error => {
@@ -227,7 +229,7 @@ class FormContractRevisionPage extends Component {
 
   onSubmit = () => {
     this.setState({ loading: true });
-    console.log(this.state.locationOfreception, 'RWRWRWRWRWRWRRWRWR');
+    console.log(this.state.dpDate, 'DP DATE');
     this.state.locationOfreception.map((data) => this.setState({ shareLoc: data }))
 
     const dataContract = {
@@ -266,6 +268,7 @@ class FormContractRevisionPage extends Component {
       })
       .catch(error => {
         console.log(error.response, 'Error');
+        this.setState({ loading: false });
         if (error.response) {
           ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
         }
@@ -293,8 +296,8 @@ class FormContractRevisionPage extends Component {
 
   handleDatePickedDP = (date) => {
     console.log(date, 'Date Nya')
-    const dateTemp = moment(date).format('YYYY-MM-DD h:mm:ss');
-    const dateNow = moment(date).format('DD/MM/YYYY');
+    const dateTemp = moment(date).format('YYYY-MM-DD h:mm:ss'); //Save To Database
+    const dateNow = moment(date).format('DD/MM/YYYY'); //View In Form
     this.setState({ dpDate: dateTemp, dateNowPickDP: dateNow })
     this.hideTanggalDP();
   };
