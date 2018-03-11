@@ -110,7 +110,7 @@ class FormContractRevisionPage extends Component {
             price: res.Contract.price,
             dpAmount: res.Contract.dpAmount,
             dateNowPickDP: moment(res.Contract.dpDate).format('DD/MM/YYYY'),
-            dpDate: moment(res.Contract.dpDate).format('DD/MM/YYYY'),
+            dpDate: moment(res.Contract.dpDate).format('YYYY-MM-DD h:mm:ss'),
             dateNowPickPengiriman: moment(res.Contract.dateOfReception).format('DD/MM/YYYY'),
             locationSupplier: res.Contract.Supplier.City.Province.name,
             dataTemp: res,
