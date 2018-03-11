@@ -48,7 +48,7 @@ class TransactionPage extends Component {
   getNoData() {
     return (
       <View style={{ flex: 1, marginTop: '50%' }}>
-        <Text style={{ textAlign: 'center' }}>Ups... Kamu belum login.</Text>
+        <Text style={{ textAlign: 'center' }}>Maaf... Anda belum login.</Text>
         <Text style={{ textAlign: 'center' }}>Silahkan login terlebih dahulu.</Text>
         <View style={{ flex: 1, marginBottom: '83%', marginLeft: 20, marginRight: 20, marginTop: 20 }}>
           <Button onPress={() => { this.loginFirst() }}>
