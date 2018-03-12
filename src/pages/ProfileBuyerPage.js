@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, Image, AsyncStorage, ScrollView } from 'react-native'
+import { View, Text, Image, AsyncStorage, ScrollView, RefreshControl } from 'react-native'
 import axios from 'axios'
 
 import { BASE_URL, COLOR } from '../shared/lb.config';
@@ -18,11 +18,11 @@ class ProfileBuyerPage extends Component {
 			loading: true,
 			data: {},
 			modalVisible: false,
-
+			tokenUser: '',
 			suggestions: [],
 			value: '',
 			FishId: '',
-
+			refreshing: true,
 			screen: 'Profile'
 
 		}
@@ -30,26 +30,39 @@ class ProfileBuyerPage extends Component {
 
 	componentDidMount() {
 		AsyncStorage.getItem('loginCredential', (err, result) => {
+			this.setState({ tokenUser: result });
 			if (result) {
-				axios.get(`${BASE_URL}/profile`, {
-					headers: { token: result }
-				})
-					.then(response => {
-						this.setState({ data: response.data.user })
-						this.setState({ loading: false })
-						console.log(response.data.user, 'Data Profile');
-					})
-					.catch(error => {
-						if (error.response) {
-							alert(error.response.data.message)
-						}
-						else {
-							alert('Koneksi internet bermasalah')
-						}
-						this.setState({ loading: false })
-					})
+				return this.getData();
 			}
 		})
+	}
+
+	onRefresh() {
+		this.setState({
+			refreshing: true
+		}, () => {
+			this.getData();
+		});
+	}
+
+	getData() {
+		axios.get(`${BASE_URL}/profile`, {
+			headers: { token: this.state.tokenUser }
+		})
+			.then(response => {
+				this.setState({ data: response.data.user })
+				this.setState({ loading: false })
+				console.log(response.data.user, 'Data Profile');
+			})
+			.catch(error => {
+				if (error.response) {
+					alert(error.response.data.message)
+				}
+				else {
+					alert('Koneksi internet bermasalah')
+				}
+				this.setState({ loading: false })
+			})
 	}
 
 	renderProfile = (data) => {
@@ -107,7 +120,14 @@ class ProfileBuyerPage extends Component {
 		}
 
 		return (
-			<ScrollView>
+			<ScrollView
+				refreshControl={
+					<RefreshControl
+						refreshing={this.state.refreshing}
+						onRefresh={this.onRefresh.bind(this)}
+					/>
+				}
+			>
 				<View style={containerStyle}>
 					<View style={headerHomeStyle}>
 						<View style={profileImageContainer}>

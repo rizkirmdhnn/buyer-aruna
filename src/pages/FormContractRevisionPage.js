@@ -10,7 +10,6 @@ import {
   AsyncStorage,
   TouchableWithoutFeedback,
   Image,
-  Picker,
   ToastAndroid,
 } from 'react-native';
 import axios from 'axios';
@@ -60,7 +59,8 @@ class FormContractRevisionPage extends Component {
       organization: '',
       location: '',
       shippingMethod: '',
-      locationOfreception: [],
+      locationOfreception: '',
+      locationOfreceptionTemp: [],
       dateOfReception: '',
       dpAmount: '',
       dpDate: '',
@@ -81,12 +81,6 @@ class FormContractRevisionPage extends Component {
       loadingView: true
     });
 
-    this.setState({
-      quantity: this.props.navigation.state.params.datas.Request.Transaction.quantity.toString(),
-      size: this.props.navigation.state.params.datas.Request.Transaction.size,
-      fishDescribe: this.props.navigation.state.params.datas.Request.Transaction.describe
-    })
-
 
     AsyncStorage.getItem('loginCredential', (err, result) => {
       this.setState({ tokenUser: result })
@@ -99,15 +93,26 @@ class FormContractRevisionPage extends Component {
           }
         }).then(response => {
           res = response.data.data;
-          console.log(res, 'Data Temp Res');
-          const { locationOfreception } = this.state;
+          console.log(res, 'Data Contract');
+          const { locationOfreceptionTemp } = this.state;
           if (res.Contract.locationOfreception === res.Contract.Buyer.address) {
-            this.setState({ locationOfreception: [...locationOfreception, res.Contract.Buyer.address] })
+            this.setState({ locationOfreceptionTemp: [...locationOfreceptionTemp, res.Contract.Buyer.address] }, () => {
+              this.state.locationOfreceptionTemp.map((data) => {
+                return this.setState({ locationOfreception: data })
+              })
+            })
           } else {
-            this.setState({ locationOfreception: [...locationOfreception, res.Contract.locationOfreception] })
+            this.setState({ locationOfreceptionTemp: [...locationOfreceptionTemp, res.Contract.locationOfreception] }, () => {
+              this.state.locationOfreceptionTemp.map((data) => {
+                return this.setState({ locationOfreception: data })
+              })
+            })
           }
           this.setState({
+            size: res.Contract.size,
             price: res.Contract.price,
+            quantity: res.Contract.quantity,
+            fishDescribe: res.Contract.fishDescribe,
             dpAmount: res.Contract.dpAmount,
             dateNowPickDP: moment(res.Contract.dpDate).format('DD/MM/YYYY'),
             dpDate: moment(res.Contract.dpDate).format('YYYY-MM-DD h:mm:ss'),
@@ -170,7 +175,7 @@ class FormContractRevisionPage extends Component {
               default:
                 console.log('Deskripsi Komoditas Tidak Kosong');
                 if (fishDescribe.length <= 3) {
-                  return ToastAndroid.show('Deskripsi Komoditas Minimal 4 Huruf')
+                  return ToastAndroid.show('Deskripsi Komoditas Minimal 4 Huruf', ToastAndroid.SHORT)
                 }
                 switch (price) {
                   case '':
@@ -229,30 +234,29 @@ class FormContractRevisionPage extends Component {
 
   onSubmit = () => {
     this.setState({ loading: true });
-    console.log(this.state.dpDate, 'DP DATE');
-    this.state.locationOfreception.map((data) => this.setState({ shareLoc: data }))
 
     const dataContract = {
-      fishDescribe: this.state.dataMaster.Request.Transaction.describe,
-      size: this.state.dataMaster.Request.Transaction.size,
-      quantity: this.state.dataMaster.Request.Transaction.quantity,
+      fishDescribe: this.state.fishDescribe,
+      size: this.state.size,
+      quantity: this.state.quantity,
       price: this.state.price,
       name: this.state.dataMaster.Request.Supplier.name,
       idNumber: this.state.dataMaster.Request.Supplier.idNumber,
       organization: this.state.dataMaster.Request.Supplier.organization,
       location: this.state.dataTemp.Contract.Supplier.City.Province.name,
       shippingMethod: 'JNE',
-      locationOfreception: this.state.shareLoc,
+      locationOfreception: this.state.locationOfreception,
       dateOfReception: this.state.dateNowPickPengiriman,
       dpAmount: this.state.dpAmount,
       dpDate: this.state.dpDate,
       fishReject: this.state.fishReject,
-      maxFishReject: this.state.maxFishReject
+      maxFishReject: this.state.maxFishReject,
+      totalPrice: this.state.hargaTot
     }
 
     const idContract = this.state.dataMaster.id;
     console.log(dataContract, 'Data Contract');
-    axios.post(`${BASE_URL}/buyer/orders/${idContract}/contracts`,
+    axios.put(`${BASE_URL}/buyer/orders/${idContract}/contracts`,
       dataContract
       , {
         headers: {
@@ -349,15 +353,15 @@ class FormContractRevisionPage extends Component {
 
   checkItem = data => {
     console.log(data, 'Data Check')
-    const { locationOfreception, locationEdit } = this.state;
-    if (!locationOfreception.includes(data)) {
+    const { locationOfreceptionTemp, locationEdit } = this.state;
+    if (!locationOfreceptionTemp.includes(data)) {
       this.setState({
-        locationOfreception: [...locationOfreception, data],
+        locationOfreceptionTemp: [...locationOfreceptionTemp, data],
         locationEdit: !locationEdit
       });
     } else {
       this.setState({
-        locationOfreception: locationOfreception.filter(a => a !== data),
+        locationOfreceptionTemp: locationOfreceptionTemp.filter(a => a !== data),
         locationEdit: !locationEdit
       });
     }
@@ -404,15 +408,11 @@ class FormContractRevisionPage extends Component {
       quantity,
       fishDescribe,
       locationEdit,
-      dataTemp,
-      hargaTot,
-      unitFish
+      hargaTot
     } = this.state
 
     const sizeConvert = { uri: `${BASE_URL}/images/${this.state.dataMaster.Request.Transaction.photo}` };
     const addressBuyer = dataMaster.Request.Buyer.address;
-    console.log(dataTemp, 'Data Temp');
-
 
     if (this.state.loadingView === true) {
       return <Spinner size='large' />
@@ -454,18 +454,8 @@ class FormContractRevisionPage extends Component {
               onChangeText={v => this.onChangeInput('size', v.replace(/\./g, ''))}
               style={styles.textArea}
             />
-            <View style={{ marginTop: 50, marginLeft: 10, flex: 1 }}>
-              <View style={styles.pickerUnitStyle}>
-                <Picker
-                  selectedValue={unitFish === null || unitFish === '' ? this.state.dataMaster.Request.Transaction.unit : unitFish}
-                  onValueChange={v => this.onChangeInput('unitFish', v)}
-                >
-                  <Picker.Item label='Pilih Ukuran' value='' />
-                  <Picker.Item label='Kg' value='Kg' />
-                  <Picker.Item label='Cm' value='Cm' />
-                  <Picker.Item label='Ekor/Kg' value='Ekor/Kg' />
-                </Picker>
-              </View>
+            <View style={{ flex: 1, paddingTop: 50, paddingLeft: 10 }}>
+              <Text>{this.state.dataMaster.Request.Transaction.unit}</Text>
             </View>
           </ContainerSection>
 

@@ -25,7 +25,8 @@ import {
   Button,
   ContainerSection,
   Container,
-  Spinner
+  Spinner,
+  InputDate
 } from './../components/common';
 import { BASE_URL, COLOR } from './../shared/lb.config';
 
@@ -113,6 +114,7 @@ class FormContractPage extends Component {
       this.sum();
     });
   }
+
 
   onContract() {
     console.log(this.state, 'State');
@@ -261,6 +263,18 @@ class FormContractPage extends Component {
     })
   }
 
+  
+  showTanggalDPFocus() {
+    console.log('FOCUS BRO');
+    this.setState({ tanggalDP: true });
+  }
+
+
+  showTanggalPengirimanFocus() {
+    console.log('Focus Bro')
+    this.setState({ tanggalPenggiriman: true });
+  }
+
 
   handleDatePickedPengiriman = (dateReceive) => {
     console.log(dateReceive, 'Date Nya Penerimaan')
@@ -380,8 +394,7 @@ class FormContractPage extends Component {
       size,
       dataMaster,
       locationEdit,
-      hargaTot,
-      unitFish
+      hargaTot
     } = this.state
 
     const addressBuyer = dataMaster.Request.Buyer.address;
@@ -414,18 +427,8 @@ class FormContractPage extends Component {
               onChangeText={v => this.onChangeInput('size', v.replace(/\./g, ''))}
               style={styles.textArea}
             />
-            <View style={{ marginTop: 50, marginLeft: 10, flex: 1 }}>
-              <View style={styles.pickerUnitStyle}>
-                <Picker
-                  selectedValue={unitFish === null || unitFish === '' ? this.state.dataMaster.Request.Transaction.unit : unitFish}
-                  onValueChange={v => this.onChangeInput('unitFish', v)}
-                >
-                  <Picker.Item label='Pilih Ukuran' value='' />
-                  <Picker.Item label='Kg' value='Kg' />
-                  <Picker.Item label='Cm' value='Cm' />
-                  <Picker.Item label='Ekor/Kg' value='Ekor/Kg' />
-                </Picker>
-              </View>
+            <View style={{ flex: 1, paddingTop: 50, paddingLeft: 10 }}>
+              <Text>{this.state.dataMaster.Request.Transaction.unit}</Text>
             </View>
           </ContainerSection>
 
@@ -554,11 +557,11 @@ class FormContractPage extends Component {
           <TouchableWithoutFeedback onPress={this.showTanggalDP}>
             <View>
               <ContainerSection>
-                <Input
+                <InputDate
                   label='Tanggal DP'
                   value={dateNowPickDP}
                   onChangeText={v => this.onChangeInput('dateNowPickDP', v)}
-                  editable={false}
+                  onFocus={() => this.showTanggalDPFocus()}
                 />
               </ContainerSection>
             </View>
@@ -573,11 +576,11 @@ class FormContractPage extends Component {
           <TouchableWithoutFeedback onPress={this.showTanggalPengiriman}>
             <View>
               <ContainerSection>
-                <Input
+                <InputDate
                   label='Tanggal Penerimaan'
                   value={dateNowPickPengiriman}
                   onChangeText={v => this.onChangeInput('dateNowPickPengiriman', v)}
-                  editable={false}
+                  onFocus={() => this.showTanggalPengirimanFocus()}
                 />
               </ContainerSection>
             </View>

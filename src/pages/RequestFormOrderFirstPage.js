@@ -23,7 +23,8 @@ import {
   Button,
   ContainerSection,
   Container,
-  Spinner
+  Spinner,
+  InputDate
 } from './../components/common';
 
 class RequestFormOrderFirstPage extends Component {
@@ -243,6 +244,13 @@ class RequestFormOrderFirstPage extends Component {
   }
 
   showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
+
+
+  showTanggalPengirimanFocus() {
+    console.log('Focus Bro')
+    this.setState({ isDateTimePickerVisible: true });
+  }
+
 
   hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
 
@@ -504,11 +512,11 @@ class RequestFormOrderFirstPage extends Component {
 
           <TouchableOpacity onPress={this.showDateTimePicker}>
             <ContainerSection>
-              <Input
+              <InputDate
                 label="Tanggal Pengiriman"
                 value={dateNowPick}
                 onChangeText={v => this.onChangeInput('dateNowPick', v)}
-                editable={false}
+                onFocus={() => this.showTanggalPengirimanFocus()}
                 onPress={this.showDateTimePicker}
                 style={{ width: '100%' }}
               />
@@ -585,7 +593,7 @@ const styles = {
     borderRadius: 5,
     paddingLeft: 7,
     borderWidth: 1,
-    height: 46,
+    height: 50,
     backgroundColor: '#fff'
   },
   pickerTextStyle: {

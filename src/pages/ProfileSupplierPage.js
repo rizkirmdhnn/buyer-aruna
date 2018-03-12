@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, AsyncStorage, Image, ScrollView } from 'react-native';
+import { Text, View, AsyncStorage, Image, ScrollView, RefreshControl } from 'react-native';
 import axios from 'axios';
 import moment from 'moment';
 import numeral from 'numeral';
@@ -17,34 +17,50 @@ class ProfileSupplierPage extends Component {
     super(props)
 
     this.state = {
-      loading: true,
+      refreshing: true,
       dataParsing: '',
-      dataProfile: ''
+      dataProfile: '',
+      tokenUser: ''
     }
   }
 
   componentWillMount() {
     this.setState({ dataParsing: this.props.navigation.state.params.datas })
-    const idSupplier = this.props.navigation.state.params.datas.item.id;
     AsyncStorage.getItem('loginCredential', (err, result) => {
-      axios.get(`${BASE_URL}/profile/${idSupplier}`, {
-        headers: { token: result }
-      })
-        .then(response => {
-          res = response.data.user
-          this.setState({ dataProfile: res, loading: false })
-          console.log(res, 'Profile')
-        })
-        .catch(error => {
-          console.log(error.response, 'Error');
-          if (error.response) {
-            alert(error.response.data.message)
-          }
-          else {
-            alert('Koneksi internet bermasalah')
-          }
-        })
+      if (result) {
+        this.setState({ tokenUser: result })
+        return this.getData();
+      }
     });
+  }
+
+  onRefresh() {
+    this.setState({
+      refreshing: true
+    }, () => {
+      this.getData();
+    });
+  }
+
+  getData() {
+    const idSupplier = this.props.navigation.state.params.datas.item.id;
+    axios.get(`${BASE_URL}/profile/${idSupplier}`, {
+      headers: { token: this.state.tokenUser }
+    })
+      .then(response => {
+        res = response.data.user
+        this.setState({ dataProfile: res, loading: false })
+        console.log(res, 'Profile')
+      })
+      .catch(error => {
+        console.log(error.response, 'Error');
+        if (error.response) {
+          alert(error.response.data.message)
+        }
+        else {
+          alert('Koneksi internet bermasalah')
+        }
+      })
   }
 
   render() {
@@ -58,7 +74,15 @@ class ProfileSupplierPage extends Component {
     }
 
     return (
-      <ScrollView style={{ marginBottom: 20 }}>
+      <ScrollView
+        style={{ marginBottom: 20 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.onRefresh.bind(this)}
+          />
+        }
+      >
         <View style={styles.profileImageContainer}>
           <Image
             style={styles.profileImage}

@@ -465,27 +465,6 @@ class ProfileBuyerEditPage extends Component {
                             value={data ? data.username : ''}
                         />
                     </ContainerSection>
-                    {
-                        // <ContainerSection>
-                        // 	<Input
-                        // 		label='Password'
-                        // 		placeholder='minimal 6 karakter'
-                        // 		secureTextEntry
-                        // 		value={data ? data.password : ''}
-                        // 		onChangeText={v => this.onChangeInput('password', v)}
-                        // 	/>
-                        // </ContainerSection>
-                        // <ContainerSection>
-                        // 	<Input
-                        // 		label='Konfirmasi Password'
-                        // 		placeholder='minimal 6 karakter'
-                        // 		secureTextEntry
-                        // 		value={data ? data.confirmPassword : ''}
-                        // 		onChangeText={v => this.onChangeInput('confirmPassword', v)}
-                        // 	/>
-                        // </ContainerSection>
-                    }
-
                     <View style={{ marginTop: 20, marginBottom: 20 }}>
                         <ContainerSection>
                             {this.renderButton()}
