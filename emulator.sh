@@ -1,1 +1,0 @@
-/Users/raosan/Library/Android/sdk/tools/emulator -avd Nexus-5-API-23 -netdelay none -netspeed full
