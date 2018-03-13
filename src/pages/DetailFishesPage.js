@@ -36,10 +36,10 @@ class DetailFishesPage extends Component {
 
     componentWillMount() {
         console.log(this.props.navigation.state.params, 'KAKAKAKAKKA');
-        this.setState({ 
+        this.setState({
             temp: this.props.navigation.state.params.datas.id,
             dataSup: this.props.navigation.state.params.datas
-         }, () => {
+        }, () => {
             const { temp } = this.state;
             this.setState({ idFish: temp }, () => {
                 return this.getData();
@@ -84,51 +84,54 @@ class DetailFishesPage extends Component {
     render() {
         const { dataFish } = this.state;
         return (
-            <ScrollView
-                refreshControl={
-                    <RefreshControl
-                        refreshing={this.state.refreshing}
-                        onRefresh={this.onRefresh.bind(this)}
-                    />
-                }
-            >
-                <View style={{ flex: 1, paddingTop: 5 }}>
-                    <ContainerSection>
-                        <View style={styles.thumbnailContainerStyle}>
-                            <View>
-                                <Image
-                                    style={styles.thumbnailStyle}
-                                    source={{ uri: `${BASE_URL}/images/${dataFish.photo}` }}
-                                />
+            <View style={{ flex: 1 }}>
+                <ScrollView
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.state.refreshing}
+                            onRefresh={this.onRefresh.bind(this)}
+                        />
+                    }
+                >
+                    <View style={{ flex: 1, paddingTop: 5 }}>
+                        <ContainerSection>
+                            <View style={styles.thumbnailContainerStyle}>
+                                <View>
+                                    <Image
+                                        style={styles.thumbnailStyle}
+                                        source={{ uri: `${BASE_URL}/images/${dataFish.photo}` }}
+                                    />
+                                </View>
                             </View>
-                        </View>
-                    </ContainerSection>
+                        </ContainerSection>
 
-                    <Card style={{ borderBottomWidth: 1, borderColor: '#eaeaea' }}>
-                        <View style={styles.card}>
-                            <ContainerSection>
-                                <View style={{ flex: 1, flexDirection: 'row' }}>
-                                    <Text style={{ flex: 1, fontSize: 20, fontWeight: 'bold' }}>{dataFish.name}</Text>
-                                </View>
-                            </ContainerSection>
-
-                            <ContainerSection>
-                                <View style={{ flexDirection: 'column' }}>
-                                    <View>
-                                        <Text style={{ flex: 1, fontSize: 13 }}>{dataFish.description}</Text>
+                        <Card style={{ borderBottomWidth: 1, borderColor: '#eaeaea' }}>
+                            <View style={styles.card}>
+                                <ContainerSection>
+                                    <View style={{ flex: 1, flexDirection: 'row' }}>
+                                        <Text style={{ flex: 1, fontSize: 20, fontWeight: 'bold' }}>{dataFish.name}</Text>
                                     </View>
-                                </View>
-                            </ContainerSection>
-                        </View>
-                    </Card>
-                    <View style={{ marginTop: 5, margin: 17 }}>
+                                </ContainerSection>
+
+                                <ContainerSection>
+                                    <View style={{ flexDirection: 'column' }}>
+                                        <View>
+                                            <Text style={{ flex: 1, fontSize: 13 }}>{dataFish.description}</Text>
+                                        </View>
+                                    </View>
+                                </ContainerSection>
+                            </View>
+                        </Card>
+                    </View>
+                </ScrollView>
+                <View style={{ margin: 10 }}>
+                    <ContainerSection>
                         <Button onPress={() => { this.createRequest(dataFish); }}>
                             Buat Permintaan
-                    </Button>
-                    </View>
-
+                        </Button>
+                    </ContainerSection>
                 </View>
-            </ScrollView>
+            </View>
         );
     }
 
@@ -138,7 +141,7 @@ class DetailFishesPage extends Component {
 const styles = {
     thumbnailStyle: {
         height: 290,
-        width: 470,
+        width: 350,
         borderWidth: 1,
         alignSelf: 'stretch',
         resizeMode: 'cover',

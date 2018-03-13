@@ -241,28 +241,28 @@ class RequestFormOrderSecondPage extends Component {
     }
 
     return (
-      <ScrollView>
-        <View style={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
+        <ScrollView style={{ marginBottom: '20%' }}>
           <FlatList
             data={[this.state.dataSupplier]}
             renderItem={({ item }) => this.renderItem(item)}
           />
+        </ScrollView>
 
-          {
-            dataSupplier.length === 0 ?
-              <View style={{ margin: 10 }}>
-                <Text style={{ textAlign: 'center' }}>Ups... Maaf tidak ada daftar nelayan.</Text>
-                <Text style={{ textAlign: 'center' }}>Silahkan coba ganti Nama Ikan / Provinsi / Kota.</Text>
-              </View>
-              :
-              <View style={{ margin: 10 }}>
-                <ContainerSection>
-                  {this.renderButton()}
-                </ContainerSection>
-              </View>
-          }
-        </View>
-      </ScrollView>
+        {
+          dataSupplier.length === 0 ?
+            <View style={{ margin: 10 }}>
+              <Text style={{ textAlign: 'center' }}>Ups... Maaf tidak ada daftar nelayan.</Text>
+              <Text style={{ textAlign: 'center' }}>Silahkan coba ganti Nama Ikan / Provinsi / Kota.</Text>
+            </View>
+            :
+            <View style={{ margin: 10 }}>
+              <ContainerSection>
+                {this.renderButton()}
+              </ContainerSection>
+            </View>
+        }
+      </View>
     );
   }
 }

@@ -130,7 +130,8 @@ class Dashboard extends Component {
     const number = parseInt(itemProduct.index, 0) + 1;
     return (
       <View>
-        <TouchableWithoutFeedback onPress={() => { this.props.navi.navigate('DetailFishes', { datas: itemProduct.item.User }) }}>
+        {/* <TouchableWithoutFeedback onPress={() => { this.props.navi.navigate('DetailFishes', { datas: itemProduct.item.User }) }}> */}
+        <TouchableWithoutFeedback onPress={() => { this.props.navi.navigate('DetailFishes', { datas: itemProduct.item.Fish }) }}>
           <View>
             <Image
               style={styles.item}

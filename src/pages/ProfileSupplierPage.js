@@ -20,17 +20,23 @@ class ProfileSupplierPage extends Component {
       refreshing: true,
       dataParsing: '',
       dataProfile: '',
-      tokenUser: ''
+      tokenUser: '',
+      idSupplier: ''
     }
   }
 
   componentWillMount() {
-    this.setState({ dataParsing: this.props.navigation.state.params.datas })
-    AsyncStorage.getItem('loginCredential', (err, result) => {
-      if (result) {
-        this.setState({ tokenUser: result })
-        return this.getData();
-      }
+    this.setState({
+      dataParsing: this.props.navigation.state.params.datas,
+      idSupplier: this.props.navigation.state.params.datas.item.id
+    }, () => {
+      AsyncStorage.getItem('loginCredential', (err, result) => {
+        if (result) {
+          this.setState({ tokenUser: result }, () => {
+            return this.getData();
+          })
+        }
+      });
     });
   }
 
@@ -43,16 +49,18 @@ class ProfileSupplierPage extends Component {
   }
 
   getData() {
-    const idSupplier = this.props.navigation.state.params.datas.item.id;
+    const { tokenUser, idSupplier} = this.state;
     axios.get(`${BASE_URL}/profile/${idSupplier}`, {
-      headers: { token: this.state.tokenUser }
+      headers: { token: tokenUser }
     })
       .then(response => {
-        res = response.data.user
-        this.setState({ dataProfile: res, loading: false })
+        console.log(response, 'Response');
+        res = response.data.user;
         console.log(res, 'Profile')
+        this.setState({ dataProfile: res, refreshing: false })
       })
       .catch(error => {
+        this.setState({ refreshing: false })
         console.log(error.response, 'Error');
         if (error.response) {
           alert(error.response.data.message)
@@ -65,20 +73,16 @@ class ProfileSupplierPage extends Component {
 
   render() {
     const {
-      loading,
-      dataProfile
+      dataProfile,
+      refreshing
     } = this.state
-
-    if (loading) {
-      return <Spinner size='large' />
-    }
-
+    
     return (
       <ScrollView
         style={{ marginBottom: 20 }}
         refreshControl={
           <RefreshControl
-            refreshing={this.state.refreshing}
+            refreshing={refreshing}
             onRefresh={this.onRefresh.bind(this)}
           />
         }
@@ -86,7 +90,7 @@ class ProfileSupplierPage extends Component {
         <View style={styles.profileImageContainer}>
           <Image
             style={styles.profileImage}
-            source={{ uri: `${BASE_URL}/images/${this.state.dataProfile.photo}` }}
+            source={{ uri: `${BASE_URL}/images/${dataProfile.photo}` }}
           />
         </View>
 
@@ -94,10 +98,10 @@ class ProfileSupplierPage extends Component {
           <ContainerSection>
             <View>
               <Text>Supplier Aruna</Text>
-              <Text style={{ marginTop: 10, fontSize: 18, fontFamily: 'Muli-Bold' }}>{this.state.dataProfile.name}</Text>
+              <Text style={{ marginTop: 10, fontSize: 18, fontFamily: 'Muli-Bold' }}>{dataProfile.name}</Text>
               <Text>
-                {this.state.dataProfile.organizationType}
-                {this.state.dataProfile.organization}
+                {dataProfile.organizationType}
+                {dataProfile.organization}
               </Text>
             </View>
           </ContainerSection>
@@ -106,11 +110,11 @@ class ProfileSupplierPage extends Component {
 
           <ContainerSection>
             <Text style={{ flex: 1 }}>Alamat</Text>
-            <Text style={{ flex: 1 }}>{this.state.dataProfile.City.name}</Text>
+            <Text style={{ flex: 1 }}>{dataProfile.City === undefined ? 'Alamat Tidak Tersedia' : dataProfile.City.name}</Text>
           </ContainerSection>
           <ContainerSection>
             <Text style={{ flex: 1 }}>Point</Text>
-            <Text style={{ flex: 1, justifyContent: 'flex-start' }}>{this.state.dataProfile.pointNow}</Text>
+            <Text style={{ flex: 1, justifyContent: 'flex-start' }}>{dataProfile.pointNow}</Text>
           </ContainerSection>
 
           <View style={{ borderWidth: 1, borderColor: '#eaeaea', margin: 5 }} />
