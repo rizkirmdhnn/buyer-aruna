@@ -287,9 +287,6 @@ class HomePage extends Component {
             </View>
             <View style={styles.headerText}>
               <InputSearch
-                // onChangeText={(text) => {
-                //   this.querySuggestion(text);
-                // }}
                 onFocus={() => navigate('FilterBefore')}
                 placeholder="Cari Komoditas..."
                 icon="ic_search"
