@@ -32,7 +32,6 @@ import FormContractPage from './pages/FormContractPage';
 import FormContractRevisionPage from './pages/FormContractRevisionPage';
 import MessagePage from './pages/MessagePage';
 import FilterPage from './pages/FilterPage';
-import ListSearchProductPage from './pages/ListSearchProductPage';
 import LoginPage from './pages/LoginPage';
 import ResetPassword from './pages/ResetPassword';
 import ForgotPassword from './pages/ForgotPassword';
@@ -129,7 +128,6 @@ class App extends React.Component {
       Message: { screen: MessagePage },
       ProfileSupplier: { screen: ProfileSupplierPage },
       Filter: { screen: FilterPage },
-      ListSearchProduct: { screen: ListSearchProductPage },
       isLogin: { screen: LoginPage },
       ResetPassword: { screen: ResetPassword },
       ForgotPassword: { screen: ForgotPassword },
