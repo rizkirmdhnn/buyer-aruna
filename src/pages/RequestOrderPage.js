@@ -45,10 +45,12 @@ class RequestOrderPage extends Component {
 
   getNoData() {
     return (
-      <View style={{ flex: 1, marginTop: '50%' }}>
-        <Text style={{ textAlign: 'center' }}>Maaf... Anda belum login.</Text>
-        <Text style={{ textAlign: 'center' }}>Silahkan login terlebih dahulu. </Text>
-        <View style={{ flex: 1, marginBottom: '83%', marginLeft: 20, marginRight: 20, marginTop: 20 }}>
+      <View style={{ flex: 1 }}>
+        <View style={{ marginBottom: '5%', marginTop: '30%' }}>
+          <Text style={{ textAlign: 'center' }}>Maaf... Anda belum login.</Text>
+          <Text style={{ textAlign: 'center' }}>Silahkan login terlebih dahulu. </Text>
+        </View>
+        <View style={{ padding: 15, height: 85, }}>
           <Button onPress={() => { this.loginFirst() }}>
             Login
           </Button>
@@ -229,7 +231,9 @@ class RequestOrderPage extends Component {
         }
         {
           noData ?
-            this.getNoData()
+            <View style={{ flex: 1 }}>
+              {this.getNoData()}
+            </View>
             :
             <View />
         }

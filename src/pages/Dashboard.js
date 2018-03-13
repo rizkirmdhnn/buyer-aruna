@@ -30,8 +30,8 @@ class Dashboard extends Component {
   }
 
   onRefresh() {
-    this.setState({ 
-      refreshing: true 
+    this.setState({
+      refreshing: true
     }, () => {
       this.getData();
     });
@@ -152,26 +152,30 @@ class Dashboard extends Component {
 
     return (
       <TouchableWithoutFeedback onPress={() => { this.goSupplier(itemSupplier) }}>
-        <View
-          style={styles.itemContainerStyle}
-          key={itemSupplier.index}
-        >
-          <View style={styles.headerNumber}>
-            <Text style={styles.headerTextStyleNumber}>{number}.</Text>
-          </View>
-          <View style={styles.headerContentStyle}>
-            <Text style={styles.headerTextStyle}>{itemSupplier.item.name}</Text>
-            <View style={{ flexDirection: 'column', flex: 1 }}>
-              <Text style={{ fontSize: 12 }}>
-                {itemSupplier.item.organizationType} {itemSupplier.item.organization}
-              </Text>
+        <View style={styles.card}>
+          <View style={{ padding: 2, paddingTop: 10, backgroundColor: '#FFF' }}>
+            <View
+              style={styles.itemContainerStyle}
+              key={itemSupplier.index}
+            >
+              <View style={styles.headerNumber}>
+                <Text style={styles.headerTextStyleNumber}>{number}.</Text>
+              </View>
+              <View style={styles.headerContentStyle}>
+                <Text style={styles.headerTextStyle}>{itemSupplier.item.name}</Text>
+                <View style={{ flexDirection: 'column', flex: 1 }}>
+                  <Text style={{ fontSize: 12 }}>
+                    {itemSupplier.item.organizationType} {itemSupplier.item.organization}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.thumbnailContainerStyle}>
+                <Image
+                  style={styles.thumbnailStyle}
+                  source={{ uri: `${BASE_URL}/images/${itemSupplier.item.photo}` }}
+                />
+              </View>
             </View>
-          </View>
-          <View style={styles.thumbnailContainerStyle}>
-            <Image
-              style={styles.thumbnailStyle}
-              source={{ uri: `${BASE_URL}/images/${itemSupplier.item.photo}` }}
-            />
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -235,7 +239,7 @@ class Dashboard extends Component {
             </Button>
           </View>
 
-          <View style={{ padding: 15, paddingTop: 10, backgroundColor: '#fff' }}>
+          <View style={{ padding: 15, paddingTop: 10, backgroundColor: 'transparent' }}>
             <View style={styles.containerTextProductCard}>
               <Text style={styles.textCard}>Komoditas Favorit</Text>
               <TouchableNativeFeedback onPress={() => { this.props.navi.navigate('ProductList'); }}>
@@ -255,9 +259,9 @@ class Dashboard extends Component {
 
           <View style={{ height: 10, backgroundColor: '#fafafa' }} />
 
-          <View style={{ padding: 15, paddingTop: 10, backgroundColor: '#fff' }}>
+          <View style={{ padding: 4, paddingTop: 10, backgroundColor: 'transparent' }}>
             <View style={styles.containerTextProductCard}>
-              <Text style={styles.textCard}>Supplier Populer</Text>
+              <Text style={[styles.textCard, { marginLeft: 10 }]}>Supplier Populer</Text>
             </View>
 
             <View style={styles.containerFlatListSupplier}>
@@ -347,9 +351,11 @@ const styles = {
   textCard: {
     // flex: 1,
     // flexDirection: 'row',
+    fontWeight: 'bold',
     fontSize: 17,
   },
   textCardRight: {
+    fontWeight: 'bold',
     textAlign: 'right',
     marginRight: 10,
     flex: 1,
@@ -511,6 +517,21 @@ const styles = {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  card: {
+    borderWidth: 2,
+    borderRadius: 4,
+    borderColor: '#ddd',
+    borderBottomWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+    // marginLeft: 3,
+    // marginRight: 3,
+    marginTop: 10,
+    marginBottom: '2%'
   },
 }
 
