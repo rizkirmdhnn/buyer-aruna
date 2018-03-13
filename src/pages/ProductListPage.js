@@ -3,7 +3,8 @@ import { Text, FlatList, View, Image, TouchableWithoutFeedback, ScrollView } fro
 import axios from 'axios';
 import {
     Spinner,
-    Card
+    Card,
+    InputSearch
 } from './../components/common';
 import { BASE_URL } from './../shared/lb.config';
 
@@ -76,11 +77,19 @@ class ProductListPage extends Component {
 
 
     render() {
+        const { navigate } = this.props.navigation;
         if (this.state.loading) {
             return <Spinner size="large" />
         }
         return (
             <ScrollView>
+                <View>
+                    <InputSearch
+                        onFocus={() => navigate('FilterBefore')}
+                        placeholder="Cari Komoditas..."
+                        icon="ic_search"
+                    />
+                </View>
                 <View>
                     <FlatList
                         data={this.state.dataProduct}
