@@ -242,7 +242,7 @@ class RequestFormOrderSecondPage extends Component {
 
     return (
       <View style={{ flex: 1 }}>
-        <ScrollView style={{ marginBottom: '20%' }}>
+        <ScrollView>
           <FlatList
             data={[this.state.dataSupplier]}
             renderItem={({ item }) => this.renderItem(item)}
@@ -273,7 +273,7 @@ const styles = {
     borderWidth: 1,
     borderRadius: 2,
     borderColor: '#ddd',
-    borderBottomWidth: 0,
+    borderBottomWidth: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -281,7 +281,8 @@ const styles = {
     elevation: 1,
     marginLeft: 15,
     marginRight: 15,
-    marginTop: 10
+    marginTop: 10,
+    marginBottom: '2%'
   },
   itemContainerStyle: {
     justifyContent: 'flex-start',

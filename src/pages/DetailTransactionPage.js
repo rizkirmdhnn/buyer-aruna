@@ -146,7 +146,55 @@ class DetailTransactionPage extends Component {
 
   onRefresh() {
     this.setState({
-      refreshing: true
+      refreshing: true,
+      requestContainer: null,
+      requestContainerApprove: null,
+      requestContainerRejected: null,
+      requestContainerWaiting: null,
+      requestContainerLate: null,
+
+      contractDone: null,
+      contractNotDone: null,
+      contractRevision: null,
+      contractApproved: null,
+      contractPending: null,
+
+      depositContainer: null,
+      depositPending: null,
+      depositApproved: null,
+      depositFailed: null,
+      depositNotYet: null,
+
+      collectionContainer: null,
+      collectionExpanded: null,
+      collectionNotYet: null,
+      collectionPending: null,
+      collectionApproved: null,
+      collectionRejected: null,
+
+
+      productionContainer: null,
+      productionExpanded: null,
+      productionNotYet: null,
+      productionPending: null,
+      productionApproved: null,
+      productionRejected: null,
+
+
+      shippingContainer: null,
+      shippingExpanded: null,
+      shippingNotYet: null,
+      shippingPending: null,
+      shippingApproved: null,
+      shippingRevision: null,
+
+      deliveryContainer: null,
+      deliveryNotYet: null,
+      deliveryPending: null,
+      deliveryRevision: null,
+      deliveryApproved: null,
+      deliveryApprovedAdminPending: null,
+      deliveryApprovedAdminRevision: null,
     }, () => {
       this.getData();
     });

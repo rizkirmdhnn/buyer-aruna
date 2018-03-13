@@ -117,6 +117,7 @@ class FormContractRevisionPage extends Component {
             dateNowPickDP: moment(res.Contract.dpDate).format('DD/MM/YYYY'),
             dpDate: moment(res.Contract.dpDate).format('YYYY-MM-DD h:mm:ss'),
             dateNowPickPengiriman: moment(res.Contract.dateOfReception).format('DD/MM/YYYY'),
+            dateOfReception: moment(res.Contract.dateOfReception).format('YYYY-MM-DD h:mm:ss'),
             locationSupplier: res.Contract.Supplier.City.Province.name,
             dataTemp: res,
             loadingView: false,
@@ -234,7 +235,7 @@ class FormContractRevisionPage extends Component {
 
   onSubmit = () => {
     this.setState({ loading: true });
-
+    console.log(this.state.dateNowPickPengiriman, 'DATE');
     const dataContract = {
       fishDescribe: this.state.fishDescribe,
       size: this.state.size,
@@ -246,7 +247,7 @@ class FormContractRevisionPage extends Component {
       location: this.state.dataTemp.Contract.Supplier.City.Province.name,
       shippingMethod: 'JNE',
       locationOfreception: this.state.locationOfreception,
-      dateOfReception: this.state.dateNowPickPengiriman,
+      dateOfReception: this.state.dateOfReception,
       dpAmount: this.state.dpAmount,
       dpDate: this.state.dpDate,
       fishReject: this.state.fishReject,
