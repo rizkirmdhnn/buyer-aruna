@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, FlatList, Image, ScrollView, RefreshControl, AsyncStorage, ToastAndroid } from 'react-native';
+import { Text, View, FlatList, Image, ScrollView, RefreshControl, AsyncStorage, ToastAndroid, TouchableWithoutFeedback } from 'react-native';
 import { NavigationActions } from 'react-navigation'
 import { CheckBox } from 'react-native-elements';
 import moment from 'moment';
@@ -42,9 +42,9 @@ class DetailRequestOrderPage extends Component {
   }
 
   componentWillMount() {
-    this.setState({ 
+    this.setState({
       dataMaster: this.props.navigation.state.params.datas
-     });
+    });
     AsyncStorage.getItem('loginCredential', (err, result) => {
       if (result) {
         this.setState({
@@ -58,8 +58,8 @@ class DetailRequestOrderPage extends Component {
   }
 
   onRefresh() {
-    this.setState({ 
-      refreshing: true 
+    this.setState({
+      refreshing: true
     }, () => {
       this.getData();
     });
@@ -244,9 +244,9 @@ class DetailRequestOrderPage extends Component {
   renderSupplierUnChecked = (item) => {
     if (item.length > 0) {
       console.log('Ada Data');
-      return item.map((data) => {
+      return item.map((data, index) => {
         return (
-          <Card>
+          <Card key={index}>
             <View style={styles.itemContainerStyleSupplier}>
               <View style={styles.thumbnailContainerStyle}>
                 <Image
@@ -257,8 +257,15 @@ class DetailRequestOrderPage extends Component {
               <View style={styles.headerContentStyle}>
                 <View style={{ flex: 1, flexDirection: 'row' }}>
                   <Text style={{ flex: 3, fontFamily: 'Muli-Regular', color: COLOR.secondary_a, fontSize: 16 }}>{data.Supplier.name}</Text>
-                  <View style={{ flex: 1 }}>
-                    <CheckBox
+                  <TouchableWithoutFeedback
+                    onPress={() => this.unCheckItem(data)}
+                  >
+                    <View style={{ height: 25, width: 45 }}>
+                      <Image
+                        style={{ height: 25, width: 30 }}
+                        source={require('../assets/images/return.png')}
+                      />
+                      {/* <CheckBox
                       containerStyle={{
                         borderWidth: 0,
                         padding: 0,
@@ -268,8 +275,9 @@ class DetailRequestOrderPage extends Component {
                       }}
                       onPress={() => this.unCheckItem(data)}
                       checked={this.state.checkedNotSelected.includes(data)}
-                    />
-                  </View>
+                    /> */}
+                    </View>
+                  </TouchableWithoutFeedback>
                 </View>
                 <View style={{ flexDirection: 'column' }}>
                   <Text style={{ flex: 1 }}>{data.Supplier.organization} </Text>

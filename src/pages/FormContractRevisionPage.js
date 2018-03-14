@@ -246,7 +246,7 @@ class FormContractRevisionPage extends Component {
       organization: this.state.dataMaster.Request.Supplier.organization,
       location: this.state.dataTemp.Contract.Supplier.City.Province.name,
       shippingMethod: 'JNE',
-      locationOfreception: this.state.locationOfreception,
+      locationOfreception: this.state.locationOfreception.toString(),
       dateOfReception: this.state.dateOfReception,
       dpAmount: this.state.dpAmount,
       dpDate: this.state.dpDate,

@@ -202,6 +202,7 @@ class FilterBeforePage extends Component {
           </View>
           <View style={styles.headerText}>
             <InputSearch
+              autoFocus
               onChangeText={(text) => {
                 this.querySuggestion(text);
               }}

@@ -6,7 +6,6 @@ import {
   ScrollView,
   Text,
   Alert,
-  Picker,
   PixelRatio,
   AsyncStorage,
   TouchableNativeFeedback,
@@ -205,8 +204,6 @@ class FormContractPage extends Component {
 
   onSubmit = () => {
     Keyboard.dismiss()
-    this.state.locationOfreception.map((data) => this.setState({ shareLoc: data }))
-
     const dataContract = {
       fishDescribe: this.state.fishDescribe,
       size: this.state.dataMaster.Request.Transaction.size,
@@ -217,7 +214,7 @@ class FormContractPage extends Component {
       organization: this.state.dataMaster.Request.Supplier.organization,
       location: this.state.dataMaster.Request.Supplier.City.name,
       shippingMethod: 'JNE',
-      locationOfreception: this.state.shareLoc,
+      locationOfreception: this.state.locationOfreception.toString(),
       dateOfReception: this.state.dateOfReception,
       dpAmount: this.state.dpAmount,
       dpDate: this.state.dpDate,

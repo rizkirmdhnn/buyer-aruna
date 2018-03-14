@@ -10,11 +10,6 @@ class InputSearch extends Component {
 		}
 	}
 
-	onFocus = () => {
-		this.setState({
-			isFocus: true,
-		})
-	}
 
 	onBlur = () => {
 		this.setState({
@@ -34,7 +29,7 @@ class InputSearch extends Component {
 	}
 
 	render() {
-		const { label, value, onChangeText, placeholder, onFocus, secureTextEntry, keyboardType, multiline, lines, editable, icon, textAlignVertical } = this.props
+		const { label, value, onChangeText, placeholder, onFocus, autoFocus, secureTextEntry, keyboardType, multiline, lines, editable, icon, textAlignVertical } = this.props
 		const { inputStyle, labelStyle, containerStyle } = styles
 
 		return (
@@ -60,6 +55,7 @@ class InputSearch extends Component {
 						editable={editable}
 						onBlur={() => this.onBlur()}
 						onFocus={onFocus}
+						autoFocus={autoFocus}
 						underlineColorAndroid={'transparent'}
 						numberOfLines={lines || 1}
 						textAlignVertical={textAlignVertical}
