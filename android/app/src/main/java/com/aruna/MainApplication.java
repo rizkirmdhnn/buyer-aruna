@@ -1,4 +1,4 @@
-package com.aruna;
+package com.arunaappbuyertesting;
 
 import android.app.Application;
 
