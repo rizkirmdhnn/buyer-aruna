@@ -220,6 +220,8 @@ class RequestFormOrderSecondPage extends Component {
               center
               onPress={() => this.checkItem(data)}
               checked={this.state.checkedSelected.includes(data)}
+              uncheckedColor='#000000'
+              checkedColor='#000000'
               containerStyle={{
                 borderWidth: 0,
                 padding: 0,

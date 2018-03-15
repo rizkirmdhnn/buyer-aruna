@@ -208,6 +208,8 @@ class DetailRequestOrderPage extends Component {
                     <Text style={{ flex: 3, fontFamily: 'Muli-Regular', color: COLOR.secondary_a, fontSize: 16 }}>{data.Supplier.name}</Text>
                     <View style={{ flex: 1 }}>
                       <CheckBox
+                        uncheckedColor='#000000'
+                        checkedColor='#000000'
                         containerStyle={{
                           borderWidth: 0,
                           padding: 0,
