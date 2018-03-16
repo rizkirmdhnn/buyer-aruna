@@ -38,8 +38,10 @@ class RequestFormOrderSecondPage extends Component {
       dataFirstSearch: '',
       dataSecondButton: '',
       dataThirdHome: '',
+      dataCheckedAll: '',
+      dataNot: '',
 
-      dataNot: ''
+      TempData: ''
     };
   }
 
@@ -160,7 +162,11 @@ class RequestFormOrderSecondPage extends Component {
           console.log(res, 'RES')
           const resultRes = res;
           console.log(resultRes, 'Result Supplier nya');
-          this.setState({ dataSupplier: resultRes, checkedSelected: resultRes, loading: false })
+          this.setState({
+            dataSupplier: resultRes,
+            checkedSelected: resultRes,
+            loading: false
+          });
         })
         .catch(error => {
           console.log(error.message, 'Error nya');
@@ -169,6 +175,37 @@ class RequestFormOrderSecondPage extends Component {
     });
   }
 
+  checkAll = dataSupplier => {
+    const { checkedSelected } = this.state;
+
+    console.log(dataSupplier, 'Data Supplier');
+    console.log(checkedSelected, 'Data checkedSelected');
+
+    if (checkedSelected !== dataSupplier) {
+      console.log('IF'); 
+      this.setState({
+        checkedSelected: dataSupplier
+      });
+    } else {
+      console.log('ELSE');
+      this.setState({
+        checkedSelected: checkedSelected.splice(0)
+      });
+    }
+  }
+
+  // if (!checkedSelected.includes(dataSupplier)) {
+  //   console.log(dataSupplier, 'Data IF');
+  //   this.setState({
+  //     checkedSelected: dataSupplier
+  //   });
+  // } else {
+  //   this.setState({
+  //     checkedSelected: checkedSelected.filter(a => a !== dataSupplier)
+  //   });
+  //   console.log(checkedSelected, 'DATA ELSE')
+  // }
+
 
   checkItem = data => {
     const { checkedSelected } = this.state;
@@ -176,10 +213,12 @@ class RequestFormOrderSecondPage extends Component {
       this.setState({
         checkedSelected: [...checkedSelected, data]
       });
+      console.log('CHECKLIST');
     } else {
       this.setState({
         checkedSelected: checkedSelected.filter(a => a !== data)
       });
+      console.log('UNCHECKLIST');
     }
   };
 
@@ -199,8 +238,7 @@ class RequestFormOrderSecondPage extends Component {
   }
 
   renderItem = (item) => {
-    console.log(item, 'Render Data Supplier');
-    console.log(this.state.checkedSelected, 'Data Check');
+    console.log(this.state.checkedSelected, 'DATAAAAAA');
     return item.map((data, index) => {
       return (
         <View style={styles.card} key={index}>
@@ -237,7 +275,7 @@ class RequestFormOrderSecondPage extends Component {
   }
 
   render() {
-    const { dataSupplier } = this.state;
+    const { dataSupplier, checkedSelected } = this.state;
     if (this.state.loading) {
       return <Spinner size="large" />
     }
@@ -245,12 +283,22 @@ class RequestFormOrderSecondPage extends Component {
     return (
       <View style={{ flex: 1 }}>
         <ScrollView>
+          <View style={{ paddingLeft: '73%' }}>
+            <View style={styles.itemContainerStyle}>
+              <CheckBox
+                center
+                title='Check All'
+                onPress={() => this.checkAll(dataSupplier)}
+                checked={checkedSelected === dataSupplier}
+              />
+            </View>
+          </View>
+
           <FlatList
             data={[this.state.dataSupplier]}
             renderItem={({ item }) => this.renderItem(item)}
           />
         </ScrollView>
-
         {
           dataSupplier.length === 0 ?
             <View style={{ margin: 10 }}>

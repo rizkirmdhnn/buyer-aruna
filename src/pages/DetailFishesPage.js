@@ -141,11 +141,11 @@ class DetailFishesPage extends Component {
 const styles = {
     thumbnailStyle: {
         height: 290,
-        width: 350,
+        width: 330,
         borderWidth: 1,
         alignSelf: 'stretch',
         resizeMode: 'cover',
-        margin: 15,
+        marginLeft: -5,
     },
     thumbnailContainerStyle: {
         justifyContent: 'center',

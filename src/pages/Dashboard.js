@@ -3,7 +3,7 @@ import { View, ScrollView, FlatList, RefreshControl, Text, TouchableNativeFeedba
 import AwesomeAlert from 'react-native-awesome-alerts';
 import axios from 'axios';
 import Swiper from 'react-native-swiper';
-import { Button } from '../components/common';
+import { ButtonOrder } from '../components/common';
 import { COLOR, BASE_URL } from './../shared/lb.config';
 
 class Dashboard extends Component {
@@ -90,6 +90,8 @@ class Dashboard extends Component {
       } else if (result == null) {
         this.setState({
           showAlert: true
+        }, () => {
+          return this.renderAlert();
         });
       }
     });
@@ -129,18 +131,30 @@ class Dashboard extends Component {
   renderProductItem = (itemProduct) => {
     const number = parseInt(itemProduct.index, 0) + 1;
     return (
-      <View>
-        {/* <TouchableWithoutFeedback onPress={() => { this.props.navi.navigate('DetailFishes', { datas: itemProduct.item.User }) }}> */}
+      <View style={{ marginRight: 10, marginLeft: -1 }}>
         <TouchableWithoutFeedback onPress={() => { this.props.navi.navigate('DetailFishes', { datas: itemProduct.item.Fish }) }}>
-          <View>
+          <View
+            style={{
+              borderWidth: 1,
+              borderRadius: 4,
+              borderColor: '#DDD',
+              shadowColor: '#000',
+              shadowOffset: { width: 10, height: 20 },
+              shadowOpacity: 0.1,
+              shadowRadius: 2,
+              elevation: 2,
+              backgroundColor: '#FFF'
+            }}
+          >
             <Image
               style={styles.item}
               source={{ uri: `${BASE_URL}/images/${itemProduct.item.Fish.photo}` }}
-              resizeMode='cover'
+            // resizeMode='cover'
             />
-            <Text style={{ textAlign: 'center', marginLeft: -10 }}>
+            <Text style={{ marginLeft: 15, backgroundColor: '#FFF' }}>
               {`${number}. ${itemProduct.item.Fish.name}`}
             </Text>
+            {/* </View> */}
           </View>
         </TouchableWithoutFeedback>
       </View>
@@ -153,28 +167,26 @@ class Dashboard extends Component {
     return (
       <TouchableWithoutFeedback onPress={() => { this.goSupplier(itemSupplier) }}>
         <View style={styles.card}>
-          <View style={{ padding: 2, paddingTop: 10, backgroundColor: '#FFF' }}>
-            <View
-              style={styles.itemContainerStyle}
-              key={itemSupplier.index}
-            >
-              <View style={styles.headerNumber}>
-                <Text style={styles.headerTextStyleNumber}>{number}.</Text>
+          <View
+            style={styles.itemContainerStyle}
+            key={itemSupplier.index}
+          >
+            <View style={styles.headerNumber}>
+              <Text style={styles.headerTextStyleNumber}>{number}.</Text>
+            </View>
+            <View style={styles.headerContentStyle}>
+              <Text style={styles.headerTextStyle}>{itemSupplier.item.name}</Text>
+              <View style={{ flexDirection: 'column', flex: 1 }}>
+                <Text style={{ fontSize: 10 }}>
+                  {itemSupplier.item.organizationType} {itemSupplier.item.organization}
+                </Text>
               </View>
-              <View style={styles.headerContentStyle}>
-                <Text style={styles.headerTextStyle}>{itemSupplier.item.name}</Text>
-                <View style={{ flexDirection: 'column', flex: 1 }}>
-                  <Text style={{ fontSize: 12 }}>
-                    {itemSupplier.item.organizationType} {itemSupplier.item.organization}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.thumbnailContainerStyle}>
-                <Image
-                  style={styles.thumbnailStyle}
-                  source={{ uri: `${BASE_URL}/images/${itemSupplier.item.photo}` }}
-                />
-              </View>
+            </View>
+            <View style={styles.thumbnailContainerStyle}>
+              <Image
+                style={styles.thumbnailStyle}
+                source={{ uri: `${BASE_URL}/images/${itemSupplier.item.photo}` }}
+              />
             </View>
           </View>
         </View>
@@ -182,12 +194,36 @@ class Dashboard extends Component {
     )
   }
 
+  renderAlert() {
+    const { showAlert } = this.state;
+    return (
+      <AwesomeAlert
+        show={showAlert}
+        showProgress={false}
+        title=""
+        message="Anda belum log in ?"
+        closeOnTouchOutside
+        closeOnHardwareBackPress={false}
+        showCancelButton
+        showConfirmButton
+        cancelText="Daftar Akun"
+        confirmText="Log in"
+        confirmButtonColor="#006AAF"
+        onCancelPressed={() => {
+          this.hideAlert();
+          console.log(this.props.navi.navigate, 'Navigate')
+          this.props.navi.navigate('RegistrationForm');
+        }}
+        onConfirmPressed={() => {
+          this.hideAlert();
+          this.props.navi.navigate('Login', { datas: 'RequestFormOrderFirst' })
+        }}
+      />
+    )
+  }
+
 
   render() {
-    const {
-      showAlert
-    } = this.state;
-
     return (
       <View style={{ flex: 1 }}>
         <View style={{ height: 140 }}>
@@ -233,13 +269,15 @@ class Dashboard extends Component {
             />
           }
         >
-          <View style={{ padding: 15 }}>
-            <Button onPress={() => { this.credentialButton() }}>
-              Buat Permintaan
-            </Button>
+          <View style={{ padding: 12, height: 60 }}>
+            <ButtonOrder onPress={() => { this.credentialButton() }}>
+              <Text style={{ marginTop: 1 }}>Buat Permintaan</Text>
+            </ButtonOrder>
           </View>
 
-          <View style={{ padding: 15, paddingTop: 10, backgroundColor: 'transparent' }}>
+          <View style={{ height: 5, backgroundColor: '#E6E6E6' }} />
+
+          <View style={{ paddingTop: 10, paddingLeft: 15, height: '23%', backgroundColor: '#F4F4F4' }}>
             <View style={styles.containerTextProductCard}>
               <Text style={styles.textCard}>Komoditas Favorit</Text>
               <TouchableNativeFeedback onPress={() => { this.props.navi.navigate('ProductList'); }}>
@@ -257,9 +295,9 @@ class Dashboard extends Component {
             </View>
           </View>
 
-          <View style={{ height: 10, backgroundColor: '#fafafa' }} />
+          <View style={{ height: 5, backgroundColor: '#E6E6E6' }} />
 
-          <View style={{ padding: 4, paddingTop: 10, backgroundColor: 'transparent' }}>
+          <View style={{ padding: 4, paddingTop: 10, paddingBottom: 30, backgroundColor: '#F4F4F4' }}>
             <View style={styles.containerTextProductCard}>
               <Text style={[styles.textCard, { marginLeft: 10 }]}>Supplier Populer</Text>
             </View>
@@ -275,28 +313,7 @@ class Dashboard extends Component {
           </View>
         </ScrollView>
 
-        <AwesomeAlert
-          show={showAlert}
-          showProgress={false}
-          title=""
-          message="Anda belum log in ?"
-          closeOnTouchOutside
-          closeOnHardwareBackPress={false}
-          showCancelButton
-          showConfirmButton
-          cancelText="Daftar Akun"
-          confirmText="Log in"
-          confirmButtonColor="#006AAF"
-          onCancelPressed={() => {
-            this.hideAlert();
-            console.log(this.props.navi.navigate, 'Navigate')
-            this.props.navi.navigate('RegistrationForm');
-          }}
-          onConfirmPressed={() => {
-            this.hideAlert();
-            this.props.navi.navigate('Login', { datas: 'RequestFormOrderFirst' })
-          }}
-        />
+        {this.renderAlert()}
       </View>
     )
   }
@@ -305,8 +322,8 @@ class Dashboard extends Component {
 const styles = {
   thumbnailStyle: {
     alignSelf: 'stretch',
-    height: 80,
-    width: 80,
+    height: 65,
+    width: 65,
     resizeMode: 'cover',
     borderRadius: 4
   },
@@ -316,20 +333,21 @@ const styles = {
     margin: 15,
   },
   itemContainerStyle: {
-    // borderBottomWidth: 1,
-    // padding: 5,
     justifyContent: 'flex-start',
     flexDirection: 'row',
-    // borderColor: '#ddd',
   },
   containerFlatList: {
     flex: 1,
-    flexDirection: 'column',
+    marginLeft: -3
+    // height: 100,
+    // width: 160,
+    // alignSelf: 'center',
   },
   containerFlatListSupplier: {
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'space-between',
+    paddingBottom: 10
   },
   container: {
     flex: 1
@@ -349,17 +367,15 @@ const styles = {
     marginBottom: 10
   },
   textCard: {
-    // flex: 1,
-    // flexDirection: 'row',
-    fontWeight: 'bold',
-    fontSize: 17,
+    fontSize: 15,
+    color: 'black'
   },
   textCardRight: {
-    fontWeight: 'bold',
+    color: 'blue',
     textAlign: 'right',
-    marginRight: 10,
+    marginRight: 4,
     flex: 1,
-    fontSize: 17
+    fontSize: 12
   },
   textCardLink: {
     color: '#5D9FE2',
@@ -381,32 +397,37 @@ const styles = {
     height: 93
   },
   item: {
-    width: 100,
-    height: 100,
-    marginRight: 10,
-    marginBottom: 10,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    height: 90,
+    width: 160,
+    borderRadius: 4,
+    alignSelf: 'stretch',
+    resizeMode: 'cover'
+  },
+  ConItem: {
+    backgroundColor: 'red',
+    flex: 1,
+    padding: 3
   },
   headerTextStyle: {
     marginTop: 10,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
   },
   headerTextStyleNumber: {
-    marginTop: 10,
-    fontSize: 25,
-    color: 'black'
+    marginTop: 4,
+    fontSize: 35,
+    color: 'blue'
   },
   headerNumber: {
-    margin: 20,
+    margin: 10,
     marginRight: 5,
+    marginLeft: 15,
     flexDirection: 'column',
   },
   headerContentStyle: {
     flex: 1,
     // marginRight: 15,
-    margin: 20,
+    margin: 13,
     flexDirection: 'column',
     justifyContent: 'space-around'
   },
@@ -519,7 +540,6 @@ const styles = {
     alignItems: 'center'
   },
   card: {
-    borderWidth: 2,
     borderRadius: 4,
     borderColor: '#ddd',
     borderBottomWidth: 1,
@@ -528,10 +548,11 @@ const styles = {
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
-    // marginLeft: 3,
-    // marginRight: 3,
-    marginTop: 10,
-    marginBottom: '2%'
+    marginLeft: 10,
+    marginRight: 10,
+    // marginTop: 2,
+    marginBottom: '2%',
+    backgroundColor: '#FFF'
   },
 }
 
