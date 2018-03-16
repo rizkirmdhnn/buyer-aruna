@@ -398,7 +398,7 @@ const styles = {
   },
   item: {
     height: 90,
-    width: 160,
+    width: 120,
     borderRadius: 4,
     alignSelf: 'stretch',
     resizeMode: 'cover'
@@ -409,12 +409,12 @@ const styles = {
     padding: 3
   },
   headerTextStyle: {
-    marginTop: 10,
+    marginTop: 14,
     fontSize: 14,
     fontWeight: 'bold',
   },
   headerTextStyleNumber: {
-    marginTop: 4,
+    marginTop: 7,
     fontSize: 35,
     color: 'blue'
   },
