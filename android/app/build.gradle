@@ -99,11 +99,11 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "com.aruna"
+        applicationId "com.arunaappbuyertesting"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 21
-        versionName "1.0.21"
+        versionCode 22
+        versionName "1.0.22"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
