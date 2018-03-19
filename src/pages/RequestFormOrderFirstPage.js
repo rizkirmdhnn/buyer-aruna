@@ -136,12 +136,8 @@ class RequestFormOrderFirstPage extends Component {
           console.log(this.state.dataMapCity, 'Lemparan ID City');
         })
         .catch(error => {
-          if (error.response) {
-            alert(error.response.data.message)
-          }
-          else {
-            alert('Koneksi internet bermasalah')
-          }
+          console.log(error)
+          alert('Koneksi internet bermasalah')
         })
     });
   }
