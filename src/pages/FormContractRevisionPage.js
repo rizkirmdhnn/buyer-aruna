@@ -11,6 +11,9 @@ import {
   TouchableWithoutFeedback,
   Image,
   ToastAndroid,
+  Keyboard,
+  Picker,
+  RefreshControl
 } from 'react-native';
 import axios from 'axios';
 import DateTimePicker from 'react-native-modal-datetime-picker';
@@ -42,6 +45,7 @@ class FormContractRevisionPage extends Component {
       tanggalPenggiriman: false,
       tanggalDP: false,
       loading: null,
+      refreshing: true,
       loadingView: null,
       photo: null,
       dataMaster: '',
@@ -69,7 +73,10 @@ class FormContractRevisionPage extends Component {
       shareLoc: '',
       locationEdit: false,
       hargaTot: 0,
-      unitFish: ''
+      unitFish: '',
+      dataMapCity: '',
+      cityId: '',
+      supplierCityId: ''
     };
   }
 
@@ -129,6 +136,8 @@ class FormContractRevisionPage extends Component {
             console.log(totLah, 'TOTTTTTTT');
             this.setState({ hargaTot: totLah });
           })
+
+          return this.getData(result);
         })
         .catch(error => {
           console.log(error, 'Error nya');
@@ -141,6 +150,14 @@ class FormContractRevisionPage extends Component {
     this.setState({ [name]: v }, () => {
       console.log(name, v, 'CEK');
       this.sum();
+    });
+  }
+
+  onRefresh() {
+    this.setState({
+      refreshing: true
+    }, () => {
+      this.getData();
     });
   }
 
@@ -157,7 +174,8 @@ class FormContractRevisionPage extends Component {
       dateNowPickDP,
       dateNowPickPengiriman,
       fishReject,
-      maxFishReject
+      maxFishReject,
+      cityId
     } = this.state;
 
     switch (size) {
@@ -219,7 +237,13 @@ class FormContractRevisionPage extends Component {
                                             return ToastAndroid.show('Presentase Maksimal Kodomitas Tidak Boleh Kosong', ToastAndroid.SHORT)
                                           default:
                                             console.log('Presentase Komoditas Reject Tidak Kosong');
-                                            return this.onSubmit();
+                                            console.log(cityId, 'ID KOTA');
+                                            switch (cityId) {
+                                              case '0':
+                                                return ToastAndroid.show('Kota Tidak Boleh Kosong', ToastAndroid.SHORT)
+                                              default:
+                                                return this.onSubmit();
+                                            }
                                         }
                                     }
                                 }
@@ -236,6 +260,7 @@ class FormContractRevisionPage extends Component {
   onSubmit = () => {
     this.setState({ loading: true });
     console.log(this.state.dateNowPickPengiriman, 'DATE');
+    console.log(this.state.dataMaster.Request.Supplier.City.id, 'SUPPLIER CITY');
     const dataContract = {
       fishDescribe: this.state.fishDescribe,
       size: this.state.size,
@@ -252,7 +277,9 @@ class FormContractRevisionPage extends Component {
       dpDate: this.state.dpDate,
       fishReject: this.state.fishReject,
       maxFishReject: this.state.maxFishReject,
-      totalPrice: this.state.hargaTot
+      totalPrice: this.state.hargaTot,
+      BuyerCityId: this.state.cityId,
+      SupplierCityId: this.state.dataMaster.Request.Supplier.City.id
     }
 
     const idContract = this.state.dataMaster.id;
@@ -282,6 +309,27 @@ class FormContractRevisionPage extends Component {
         }
       })
   }
+
+  getData(token) {
+    axios.get(`${BASE_URL}/cities`, {
+      headers: { 'x-access-token': token }
+    })
+      .then(response => {
+        res = response.data.data;
+        this.setState({ dataMapCity: res, refreshing: false });
+        console.log(res, 'DATA CITY');
+      })
+      .catch(error => {
+        this.setState({ refreshing: false })
+        if (error.response) {
+          alert(error.response.data.message)
+        }
+        else {
+          alert('Koneksi internet bermasalah Provinsi')
+        }
+      })
+  }
+
 
   sum() {
     const { price, quantity } = this.state;
@@ -368,6 +416,16 @@ class FormContractRevisionPage extends Component {
     }
   };
 
+  renderPickerCity = () => {
+    const resultRender = this.state.dataMapCity;
+    if (resultRender) {
+      return resultRender.map((data, index) => {
+        return <Picker.Item label={data.name} value={data.id} key={index} />
+      })
+    }
+    return <Picker.Item label='Tidak ada Kota' value='0' />
+  }
+
 
   renderButton = () => {
     if (this.state.loading) {
@@ -409,19 +467,22 @@ class FormContractRevisionPage extends Component {
       quantity,
       fishDescribe,
       locationEdit,
-      hargaTot
+      hargaTot,
+      cityId
     } = this.state
 
     const sizeConvert = { uri: `${BASE_URL}/images/${this.state.dataMaster.Request.Transaction.photo}` };
     const addressBuyer = dataMaster.Request.Buyer.address;
 
-    if (this.state.loadingView === true) {
-      return <Spinner size='large' />
-    }
-
     return (
       <ScrollView
         keyboardShouldPersistTaps="always"
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.onRefresh.bind(this)}
+          />
+        }
       >
         <Container>
 
@@ -567,6 +628,23 @@ class FormContractRevisionPage extends Component {
               numberOfLines={4}
               editable={locationEdit}
             />
+          </ContainerSection>
+
+          <ContainerSection>
+            <View style={styles.pickerContainer}>
+              <Text style={styles.pickerTextStyle}>Kota</Text>
+              <View style={styles.pickerStyleBox}>
+                <View style={styles.pickerStyle}>
+                  <Picker
+                    selectedValue={cityId}
+                    onValueChange={v => this.onChangeInput('cityId', v)}
+                  >
+                    <Picker.Item label='Pilih Kota' value='0' />
+                    {this.renderPickerCity()}
+                  </Picker>
+                </View>
+              </View>
+            </View>
           </ContainerSection>
 
           <ContainerSection>

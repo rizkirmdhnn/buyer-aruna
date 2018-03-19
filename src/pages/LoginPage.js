@@ -40,7 +40,7 @@ class LoginFormPage extends Component {
     this.setState({ error: '', loading: true });
 
     const { username, password } = this.state;
-    axios.post(`${BASE_URL}/login`, {
+    axios.post(`${BASE_URL}/buyer/login`, {
       username,
       password
     }, {

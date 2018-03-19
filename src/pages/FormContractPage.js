@@ -11,7 +11,9 @@ import {
   TouchableNativeFeedback,
   TouchableWithoutFeedback,
   ToastAndroid,
-  Keyboard
+  Keyboard,
+  Picker,
+  RefreshControl
 } from 'react-native';
 import axios from 'axios';
 import DateTimePicker from 'react-native-modal-datetime-picker';
@@ -61,6 +63,7 @@ class FormContractPage extends Component {
       tanggalPenggiriman: false,
       tanggalDP: false,
       loading: null,
+      refreshing: true,
       photo: null,
       dataMaster: '',
       dateNowPickPengiriman: '',
@@ -84,33 +87,43 @@ class FormContractPage extends Component {
       locationEdit: true,
       shareLoc: '',
       hargaTot: 0,
-      unitFish: ''
+      unitFish: '',
+      dataMapCity: '',
+      cityId: ''
     }
   }
 
   componentWillMount() {
-    this.setState({
-      dataMaster: this.props.navigation.state.params.datas
-    });
-
-    console.log(this.props.navigation.state.params.datas, 'Data Lemparan');
-
-    this.setState({
-      quantity: this.props.navigation.state.params.datas.Request.Transaction.quantity.toString(),
-      size: this.props.navigation.state.params.datas.Request.Transaction.size,
-      fishDescribe: this.props.navigation.state.params.datas.Request.Transaction.describe
-    });
-
-
     const b = this.props.navigation.state.params.datas.Request.Transaction.quantity;
     const totLah = parseInt(this.state.hargaTot, 0) * parseInt(b, 0);
-    this.setState({ hargaTot: totLah });
+
+    this.setState({
+      dataMaster: this.props.navigation.state.params.datas,
+      quantity: this.props.navigation.state.params.datas.Request.Transaction.quantity.toString(),
+      size: this.props.navigation.state.params.datas.Request.Transaction.size,
+      fishDescribe: this.props.navigation.state.params.datas.Request.Transaction.describe,
+      hargaTot: totLah
+    });
+
+    AsyncStorage.getItem('loginCredential', (err, resultToken) => {
+      if (resultToken) {
+        return this.getData(resultToken);
+      }
+    });
   }
 
   onChangeInput = (name, v) => {
     this.setState({ [name]: v }, () => {
       console.log('Panggil Sum');
       this.sum();
+    });
+  }
+
+  onRefresh() {
+    this.setState({
+      refreshing: true
+    }, () => {
+      this.getData();
     });
   }
 
@@ -127,7 +140,8 @@ class FormContractPage extends Component {
       dateNowPickDP,
       dateNowPickPengiriman,
       fishReject,
-      maxFishReject
+      maxFishReject,
+      cityId
     } = this.state;
 
     switch (size) {
@@ -189,7 +203,12 @@ class FormContractPage extends Component {
                                             return ToastAndroid.show('Presentase Maksimal Kodomitas Tidak Boleh Kosong', ToastAndroid.SHORT)
                                           default:
                                             console.log('Presentase Komoditas Reject Tidak Kosong');
-                                            return this.onSubmit();
+                                            switch (cityId) {
+                                              case '0':
+                                                return ToastAndroid.show('Kota Tidak Boleh Kosong', ToastAndroid.SHORT)
+                                              default:
+                                                return this.onSubmit();
+                                            }
                                         }
                                     }
                                 }
@@ -220,7 +239,9 @@ class FormContractPage extends Component {
       dpDate: this.state.dpDate,
       fishReject: this.state.fishReject,
       maxFishReject: this.state.maxFishReject,
-      totalPrice: this.state.hargaTot
+      totalPrice: this.state.hargaTot,
+      BuyerCityId: this.state.cityId,
+      SupplierCityId: this.state.dataMaster.Request.Supplier.City.id
     }
 
     const idTransaction = this.state.dataMaster.id;
@@ -260,7 +281,28 @@ class FormContractPage extends Component {
     })
   }
 
-  
+
+  getData(token) {
+    axios.get(`${BASE_URL}/cities`, {
+      headers: { 'x-access-token': token }
+    })
+      .then(response => {
+        res = response.data.data;
+        this.setState({ dataMapCity: res, refreshing: false });
+        console.log(res, 'DATA CITY');
+      })
+      .catch(error => {
+        this.setState({ refreshing: false })
+        if (error.response) {
+          alert(error.response.data.message)
+        }
+        else {
+          alert('Koneksi internet bermasalah Provinsi')
+        }
+      })
+  }
+
+
   showTanggalDPFocus() {
     console.log('FOCUS BRO');
     this.setState({ tanggalDP: true });
@@ -351,6 +393,17 @@ class FormContractPage extends Component {
     this.setState({ hargaTot: totLah })
   }
 
+  renderPickerCity = () => {
+    const resultRender = this.state.dataMapCity;
+    if (resultRender) {
+      return resultRender.map((data, index) => {
+        return <Picker.Item label={data.name} value={data.id} key={index} />
+      })
+    }
+    return <Picker.Item label='Tidak ada Kota' value='0' />
+  }
+
+
   renderButton = () => {
     if (this.state.loading) {
       return <Spinner size='large' />
@@ -391,7 +444,8 @@ class FormContractPage extends Component {
       size,
       dataMaster,
       locationEdit,
-      hargaTot
+      hargaTot,
+      cityId
     } = this.state
 
     const addressBuyer = dataMaster.Request.Buyer.address;
@@ -399,6 +453,12 @@ class FormContractPage extends Component {
     return (
       <ScrollView
         keyboardShouldPersistTaps="always"
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.onRefresh.bind(this)}
+          />
+        }
       >
         <Container>
 
@@ -534,6 +594,23 @@ class FormContractPage extends Component {
               numberOfLines={4}
               editable={locationEdit}
             />
+          </ContainerSection>
+
+          <ContainerSection>
+            <View style={styles.pickerContainer}>
+              <Text style={styles.pickerTextStyle}>Kota</Text>
+              <View style={styles.pickerStyleBox}>
+                <View style={styles.pickerStyle}>
+                  <Picker
+                    selectedValue={cityId}
+                    onValueChange={v => this.onChangeInput('cityId', v)}
+                  >
+                    <Picker.Item label='Pilih Kota' value='0' />
+                    {this.renderPickerCity()}
+                  </Picker>
+                </View>
+              </View>
+            </View>
           </ContainerSection>
 
           <ContainerSection>

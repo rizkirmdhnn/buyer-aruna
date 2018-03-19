@@ -283,7 +283,7 @@ class RequestFormOrderSecondPage extends Component {
     return (
       <View style={{ flex: 1 }}>
         <ScrollView>
-          <View style={{ paddingLeft: '73%' }}>
+          {/* <View style={{ paddingLeft: '73%' }}>
             <View style={styles.itemContainerStyle}>
               <CheckBox
                 center
@@ -292,7 +292,7 @@ class RequestFormOrderSecondPage extends Component {
                 checked={checkedSelected === dataSupplier}
               />
             </View>
-          </View>
+          </View> */}
 
           <FlatList
             data={[this.state.dataSupplier]}
