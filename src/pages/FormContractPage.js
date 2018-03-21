@@ -293,12 +293,13 @@ class FormContractPage extends Component {
       })
       .catch(error => {
         this.setState({ refreshing: false })
-        if (error.response) {
-          alert(error.response.data.message)
-        }
-        else {
-          alert('Koneksi internet bermasalah Provinsi')
-        }
+        ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
+        // if (error.response) {
+        //   alert(error.response.data.message)
+        // }
+        // else {
+        //   alert('Koneksi internet bermasalah Provinsi')
+        // }
       })
   }
 

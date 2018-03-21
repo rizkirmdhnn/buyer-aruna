@@ -80,12 +80,13 @@ class MessageAdminPage extends Component {
 			this.fetchMessage()
 		})
 		.catch(error => {
-			if (error.response) {
-				alert(error.response.data.message)
-			}
-			else {
-				alert('Koneksi internet bermasalah')
-			}
+			ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
+			// if (error.response) {
+			// 	alert(error.response.data.message)
+			// }
+			// else {
+			// 	alert('Koneksi internet bermasalah')
+			// }
 		})
 	}
 

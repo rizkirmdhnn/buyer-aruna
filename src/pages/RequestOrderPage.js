@@ -45,15 +45,21 @@ class RequestOrderPage extends Component {
 
   getNoData() {
     return (
-      <View style={{ flex: 1 }}>
-        <View style={{ marginBottom: '5%', marginTop: '30%' }}>
+      <View style={{ marginTop: '30%' }}>
+        <View style={styles.card}>
+          <View style={styles.thumbnailContainerStyle}>
+            <Image
+              style={styles.thumbnailStyle}
+              source={require('../assets/images/notLogin.png')}
+            />
+          </View>
           <Text style={{ textAlign: 'center' }}>Maaf... Anda belum login.</Text>
           <Text style={{ textAlign: 'center' }}>Silahkan login terlebih dahulu. </Text>
-        </View>
-        <View style={{ padding: 15, height: 85, }}>
-          <Button onPress={() => { this.loginFirst() }}>
-            Login
-          </Button>
+          <View style={{ padding: 15, height: 80 }}>
+            <Button onPress={() => { this.loginFirst() }}>
+              Login
+            </Button>
+          </View>
         </View>
       </View>
     )
@@ -117,21 +123,6 @@ class RequestOrderPage extends Component {
   }
 
   renderData = (item) => {
-    if (item === null || item === '') {
-      return (
-        <View style={{ flex: 1, marginTop: '20%' }}>
-          <Card>
-            <Text style={{ textAlign: 'center' }}>Anda Belum Melakukan Request Order</Text>
-            <Text style={{ textAlign: 'center' }}>Silahkan lakukan order komoditas</Text>
-            <View style={{ padding: 15 }}>
-              <Button onPress={() => { this.orderFirst() }}>
-                Buat Permintaan
-            </Button>
-            </View>
-          </Card>
-        </View>
-      )
-    }
     if (item.Status.id === 19) {
       if (item.sanggup === 0) {
         return (
@@ -214,18 +205,42 @@ class RequestOrderPage extends Component {
 
 
   render() {
-    const { anyData, noData } = this.state;
+    const { anyData, noData, dataReqOrder } = this.state;
+    console.log(dataReqOrder.length, 'LENGTH BOR')
     return (
       <View style={{ flex: 1 }}>
         {
           anyData ?
-            <FlatList
-              data={this.state.dataReqOrder}
-              renderItem={({ item }) => this.renderData(item)}
-              keyExtractor={(item, index) => index}
-              refreshing={this.state.refresh}
-              onRefresh={() => this.handleRefresh()}
-            />
+            <View>
+              {
+                dataReqOrder.length === 0 ?
+                  <View style={{ marginTop: '30%' }}>
+                    <View style={styles.card}>
+                      <View style={styles.thumbnailContainerStyle}>
+                        <Image
+                          style={styles.thumbnailStyle}
+                          source={require('../assets/images/empty_transaksi.png')}
+                        />
+                      </View>
+                      <Text style={{ textAlign: 'center' }}>Anda Belum Melakukan Request Order</Text>
+                      <Text style={{ textAlign: 'center' }}>Silahkan lakukan order komoditas</Text>
+                      <View style={{ padding: 15, height: 80 }}>
+                        <Button onPress={() => { this.orderFirst() }}>
+                          Buat Permintaan
+                          </Button>
+                      </View>
+                    </View>
+                  </View>
+                  :
+                  <FlatList
+                    data={this.state.dataReqOrder}
+                    renderItem={({ item }) => this.renderData(item)}
+                    keyExtractor={(item, index) => index}
+                    refreshing={this.state.refresh}
+                    onRefresh={() => this.handleRefresh()}
+                  />
+              }
+            </View>
             :
             <View />
         }
@@ -278,7 +293,22 @@ const styles = {
   titleTextStyle: {
     fontSize: 15,
     fontWeight: 'bold'
-  }
+  },
+  card: {
+    borderRadius: 4,
+    borderColor: '#ddd',
+    borderBottomWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+    marginLeft: 10,
+    marginRight: 10,
+    // marginTop: 2,
+    marginBottom: '2%',
+    backgroundColor: '#FFF'
+  },
 }
 
 export default RequestOrderPage;

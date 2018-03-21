@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, FlatList, RefreshControl, Text, TouchableNativeFeedback, Image, TouchableWithoutFeedback, AsyncStorage } from 'react-native';
+import { View, ScrollView, FlatList, RefreshControl, Text, ToastAndroid, TouchableNativeFeedback, Image, TouchableWithoutFeedback, AsyncStorage } from 'react-native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import axios from 'axios';
 import Swiper from 'react-native-swiper';
@@ -59,13 +59,15 @@ class Dashboard extends Component {
             this.setState({ productList: res2, refreshing: false });
           })
           .catch(error => {
-            this.setState({ refreshing: false })
+            this.setState({ refreshing: false });
+            ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
             console.log('ERROR', error.response);
           });
       })
       .catch(error => {
         this.setState({ refreshing: false })
         console.log('ERROR', error.response);
+        ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
       });
   }
 
@@ -149,12 +151,13 @@ class Dashboard extends Component {
             <Image
               style={styles.item}
               source={{ uri: `${BASE_URL}/images/${itemProduct.item.Fish.photo}` }}
-            // resizeMode='cover'
+              resizeMode='contain'
             />
-            <Text style={{ marginLeft: 15, backgroundColor: '#FFF' }}>
-              {`${number}. ${itemProduct.item.Fish.name}`}
+            <Text style={{ textAlign: 'center', backgroundColor: '#FFF' }}>
+            {
+              itemProduct.item.Fish.name.length >= 12 ? `${number}. ${itemProduct.item.Fish.name.substring(0, 12)}...` : `${number}. ${itemProduct.item.Fish.name}`
+            }
             </Text>
-            {/* </View> */}
           </View>
         </TouchableWithoutFeedback>
       </View>
@@ -299,7 +302,7 @@ class Dashboard extends Component {
 
           <View style={{ padding: 4, paddingTop: 10, paddingBottom: 30, backgroundColor: '#F4F4F4' }}>
             <View style={styles.containerTextProductCard}>
-              <Text style={[styles.textCard, { marginLeft: 10 }]}>Supplier Populer</Text>
+              <Text style={[styles.textCard, { marginLeft: 10 }]}>Nelayan Populer</Text>
             </View>
 
             <View style={styles.containerFlatListSupplier}>
@@ -338,7 +341,8 @@ const styles = {
   },
   containerFlatList: {
     flex: 1,
-    marginLeft: -3
+    marginLeft: -3,
+    marginTop: -40
     // height: 100,
     // width: 160,
     // alignSelf: 'center',
@@ -371,9 +375,9 @@ const styles = {
     color: 'black'
   },
   textCardRight: {
-    color: 'blue',
+    color: COLOR.secondary_a,
     textAlign: 'right',
-    marginRight: 4,
+    marginRight: 15,
     flex: 1,
     fontSize: 12
   },
@@ -416,7 +420,7 @@ const styles = {
   headerTextStyleNumber: {
     marginTop: 7,
     fontSize: 35,
-    color: 'blue'
+    color: COLOR.secondary_a
   },
   headerNumber: {
     margin: 10,

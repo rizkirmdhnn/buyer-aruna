@@ -8,7 +8,8 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
-  TouchableNativeFeedback
+  TouchableNativeFeedback,
+  ToastAndroid
 } from 'react-native';
 import numeral from 'numeral';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -70,7 +71,7 @@ class FilterBeforePage extends Component {
       .catch(error => {
         console.log(error, 'Error');
         this.setState({ loading: false })
-        alert('Koneksi internet bermasalah on item selected')
+        ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
         // if (error.response) {
         //     alert(error.response.data.message)
         // }
@@ -98,7 +99,7 @@ class FilterBeforePage extends Component {
         .catch(error => {
           console.log(error, 'Error');
           this.setState({ load: false })
-          alert('Error Fishes Key')
+          ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
           // if (error.response) {
           //     alert('Internet anda lemot Fishes.')
           // }
@@ -141,7 +142,7 @@ class FilterBeforePage extends Component {
       .catch(error => {
         console.log(error, 'Error');
         this.setState({ loading: false })
-        alert('Koneksi internet bermasalah province')
+        ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
         // if (error.response) {
         //     alert(error.response.data.message)
         // }
@@ -433,7 +434,7 @@ const styles = {
   },
   headerTextStyle: {
     fontSize: 15,
-    color: 'blue',
+    color: COLOR.secondary_a,
     fontFamily: 'Muli-Bold'
   },
   tabContainerActive: {

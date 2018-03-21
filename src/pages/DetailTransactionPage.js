@@ -437,12 +437,13 @@ class DetailTransactionPage extends Component {
         })
         .catch(error => {
           console.log(error, 'Error');
-          if (error.response) {
-            alert(error.response.data.message)
-          }
-          else {
-            alert('Koneksi internet bermasalah Sample')
-          }
+          ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
+          // if (error.response) {
+          //   alert(error.response.data.message)
+          // }
+          // else {
+          //   alert('Koneksi internet bermasalah Sample')
+          // }
         })
     });
   }
@@ -512,12 +513,13 @@ class DetailTransactionPage extends Component {
           })
           .catch(error => {
             console.log(error);
-            if (error.response) {
-              alert(error.response.data.message)
-            }
-            else {
-              alert('Koneksi internet bermasalah')
-            }
+            ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
+            // if (error.response) {
+            //   alert(error.response.data.message)
+            // }
+            // else {
+            //   alert('Koneksi internet bermasalah')
+            // }
             this.setState({ refreshing: false })
           })
       }
@@ -592,12 +594,13 @@ class DetailTransactionPage extends Component {
           })
           .catch(error => {
             console.log(error);
-            if (error.response) {
-              alert(error.response.data.message)
-            }
-            else {
-              alert('Koneksi internet bermasalah')
-            }
+            ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
+            // if (error.response) {
+            //   alert(error.response.data.message)
+            // }
+            // else {
+            //   alert('Koneksi internet bermasalah')
+            // }
             this.setState({ loader: false })
           })
       }
@@ -672,12 +675,13 @@ class DetailTransactionPage extends Component {
           })
           .catch(error => {
             console.log(error);
-            if (error.response) {
-              alert(error.response.data.message)
-            }
-            else {
-              alert('Koneksi internet bermasalah Revision')
-            }
+            ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
+            // if (error.response) {
+            //   alert(error.response.data.message)
+            // }
+            // else {
+            //   alert('Koneksi internet bermasalah Revision')
+            // }
             this.setState({ loader: false })
           })
       }
@@ -720,7 +724,7 @@ class DetailTransactionPage extends Component {
         })
         .catch(error => {
           this.setState({ loader: false });
-          alert('Admin Belum Melakukan Pelunasan. Silahkan Tunggu Pelunasan oleh admin');
+          ToastAndroid.show('Admin Belum Melakukan Pelunasan. Silahkan Tunggu Pelunasan oleh admin', ToastAndroid.SHORT);
           console.log('Failed');
           console.log(error.response, 'Error')
         });
@@ -1018,8 +1022,8 @@ class DetailTransactionPage extends Component {
                                       <Text style={{ textAlign: 'left' }}>Disetujui</Text>
                                       <TouchableOpacity onPress={() => Linking.openURL(`${BASE_URL}/files/${this.state.dataTransaction.Contract.file}`).catch(err => console.error('An error occurred', err))}>
                                         <View style={{ flexDirection: 'row' }}>
-                                          <Text style={{ color: 'blue' }}>File Kontrak.pdf</Text>
-                                          <Icon size={20} style={{ color: 'blue', marginLeft: 5 }} name="md-download" />
+                                          <Text style={{ color: COLOR.secondary_a }}>File Kontrak.pdf</Text>
+                                          <Icon size={20} style={{ color: COLOR.secondary_a, marginLeft: 5 }} name="md-download" />
                                         </View>
                                       </TouchableOpacity>
                                       <Text style={{ textAlign: 'left' }}>Kontrak anda telah disetujui Nelayan.</Text>

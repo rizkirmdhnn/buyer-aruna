@@ -85,6 +85,7 @@ class DetailRequestOrderPage extends Component {
     })
       .catch(error => {
         this.setState({ refreshing: false });
+        ToastAndroid.show('Koneksi Internet Bermasalah', ToastAndroid.SHORT);
         console.log(error, 'Erroor nya');
         console.log('Error Request Order Get Data');
       })

@@ -2,7 +2,7 @@
  *  Import Component
  */
 import React, { Component } from 'react';
-import { Text, View, TouchableWithoutFeedback, TouchableNativeFeedback, ScrollView } from 'react-native';
+import { Text, View, TouchableWithoutFeedback, ToastAndroid, TouchableNativeFeedback, ScrollView } from 'react-native';
 import numeral from 'numeral';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { CheckBox } from 'react-native-elements';
@@ -52,7 +52,7 @@ class FilterPage extends Component {
             .catch(error => {
                 this.setState({ loading: false });
                 console.log(error.response, 'error');
-                alert('Koneksi internet bermasalah Provinsi')
+                ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
                 // if (error.response) {
                 //     alert(error.response.data.message + 'DidMount Filter Page');
                 // }

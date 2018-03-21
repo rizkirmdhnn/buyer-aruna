@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { FlatList, View, Text, TouchableNativeFeedback, ToastAndroid } from 'react-native'
+import { FlatList, View, Text, Image, TouchableNativeFeedback, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import moment from 'moment'
 import axios from 'axios'
@@ -85,6 +85,7 @@ class NotificationList extends Component {
 				<TouchableNativeFeedback onPress={() => this.fetchDetail(item.type, item.typeId)}>
 					<View style={styles.itemContainerStyle}>
 						<View style={styles.headerContentStyle}>
+							<Text style={{ flex: 1, fontWeight: 'bold', fontSize: 18 }}>{item.codeNumber !== null ? item.codeNumber : '-'}</Text>
 							<View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
 								<Text style={{ flex: 1 }}>{moment(item.createdAt).format('DD/MM/YYYY - HH:mm')} WIB</Text>
 								<View style={{ margin: 2, height: 15, width: 15, backgroundColor: item.read ? '#eaeaea' : 'red', borderRadius: 25 }} />
@@ -99,15 +100,31 @@ class NotificationList extends Component {
 	}
 
 	render() {
+		console.log(this.props.notifications.data, 'ISI NOTIF')
 		return (
 			<View style={{ flex: 1 }}>
-				<FlatList
-					data={this.props.notifications.data}
-					renderItem={({ item }) => this.renderItem(item)}
-					keyExtractor={(item, index) => index}
-					refreshing={this.props.notifications.loading || this.state.loading}
-					onRefresh={() => this.props.notificationsFetch(this.props.user.token)}
-				/>
+				{
+					this.props.notifications.data.length === 0 ?
+						<View style={{ marginTop: '45%' }}>
+							<View style={styles.card}>
+								<View style={styles.thumbnailContainerStyle}>
+									<Image
+										style={styles.thumbnailStyle}
+										source={require('../assets/images/empty_notif.png')}
+									/>
+								</View>
+								<Text style={{ textAlign: 'center' }}>Tidak ada notifikasi</Text>
+							</View>
+						</View>
+						:
+						<FlatList
+							data={this.props.notifications.data}
+							renderItem={({ item }) => this.renderItem(item)}
+							keyExtractor={(item, index) => index}
+							refreshing={this.props.notifications.loading || this.state.loading}
+							onRefresh={() => this.props.notificationsFetch(this.props.user.token)}
+						/>
+				}
 			</View>
 		)
 	}

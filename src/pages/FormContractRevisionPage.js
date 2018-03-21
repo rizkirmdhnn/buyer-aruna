@@ -11,7 +11,6 @@ import {
   TouchableWithoutFeedback,
   Image,
   ToastAndroid,
-  Keyboard,
   Picker,
   RefreshControl
 } from 'react-native';
@@ -141,7 +140,7 @@ class FormContractRevisionPage extends Component {
         })
         .catch(error => {
           console.log(error, 'Error nya');
-          alert(error.message.data)
+          ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
         })
     })
   }
@@ -321,12 +320,13 @@ class FormContractRevisionPage extends Component {
       })
       .catch(error => {
         this.setState({ refreshing: false })
-        if (error.response) {
-          alert(error.response.data.message)
-        }
-        else {
-          alert('Koneksi internet bermasalah Provinsi')
-        }
+        ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
+        // if (error.response) {
+        //   alert(error.response.data.message)
+        // }
+        // else {
+        //   alert('Koneksi internet bermasalah Provinsi')
+        // }
       })
   }
 

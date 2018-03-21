@@ -173,7 +173,7 @@ class HomePage extends Component {
               </View>
             </View>
           </ContainerSection>
-          <View style={{ borderTopWidth: 1, borderColor: '#fff', width: '70%', marginLeft: 5, marginRight: 5, marginBottom: 20, marginTop: 10 }} />
+          <View style={{ borderTopWidth: 1, borderColor: '#fff', width: '80%', marginLeft: 5, marginRight: 5, marginBottom: 20, marginTop: 10 }} />
           {
             menuLoginExpanded ?
               menuLogin.map((item, index) =>
@@ -210,7 +210,7 @@ class HomePage extends Component {
                 </TouchableOpacity>
               )
           }
-          <View style={{ borderTopWidth: 1, borderColor: '#fff', width: '70%', marginLeft: 5, marginRight: 5, marginBottom: 20, marginTop: 10 }} />
+          <View style={{ borderTopWidth: 1, borderColor: '#fff', width: '80%', marginLeft: 5, marginRight: 5, marginBottom: 20, marginTop: 10 }} />
           {
             menuLoginExpanded ?
               <View>

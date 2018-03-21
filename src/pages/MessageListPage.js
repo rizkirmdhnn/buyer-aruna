@@ -86,7 +86,6 @@ class MessageListPage extends Component {
 							</View>
 
 							<View style={styles.headerContentStyle}>
-								<Text style={{ fontSize: 12 }}>{moment().format('DD MMM YYYY, HH:mm')}</Text>
 								<Text style={styles.hedaerTextStyle}>
 									Admin Aruna
 								</Text>
@@ -95,11 +94,26 @@ class MessageListPage extends Component {
 					</TouchableNativeFeedback>
 				</Card>
 
-				<FlatList
-					data={this.props.messages.data}
-					renderItem={({ item }) => this.renderItem(item)}
-					keyExtractor={(item, index) => index}
-				/>
+				{
+					this.props.messages.data.length === 0 ?
+						<View style={{ marginTop: '25%' }}>
+							<View style={styles.card}>
+								<View style={styles.thumbnailContainerStyle}>
+									<Image
+										style={styles.thumbnailStyle}
+										source={require('../assets/images/empty_chat.png')}
+									/>
+								</View>
+								<Text style={{ textAlign: 'center' }}>Tidak ada diskusi</Text>
+							</View>
+						</View>
+						:
+						<FlatList
+							data={this.props.messages.data}
+							renderItem={({ item }) => this.renderItem(item)}
+							keyExtractor={(item, index) => index}
+						/>
+				}
 			</View>
 		)
 	}

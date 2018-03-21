@@ -5,11 +5,12 @@ import {
     Text,
     AsyncStorage,
     Image,
+    ToastAndroid,
     RefreshControl
 } from 'react-native';
 import axios from 'axios';
 import {
-    Button,
+    ButtonOrder,
     ContainerSection,
     Card
 } from './../components/common';
@@ -64,6 +65,7 @@ class DetailFishesPage extends Component {
         })
             .catch(error => {
                 this.setState({ refreshing: false });
+                ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
                 console.log(error.response, 'Erroor nya');
                 console.log('Error Request Order Get Data');
             })
@@ -124,12 +126,10 @@ class DetailFishesPage extends Component {
                         </Card>
                     </View>
                 </ScrollView>
-                <View style={{ margin: 10 }}>
-                    <ContainerSection>
-                        <Button onPress={() => { this.createRequest(dataFish); }}>
-                            Buat Permintaan
-                        </Button>
-                    </ContainerSection>
+                <View style={{ padding: 12, margin: 30, marginBottom: 0, marginTop: 0, height: 60 }}>
+                    <ButtonOrder onPress={() => { this.createRequest(dataFish); }}>
+                        <Text style={{ marginTop: 1 }}>Buat Permintaan</Text>
+                    </ButtonOrder>
                 </View>
             </View>
         );

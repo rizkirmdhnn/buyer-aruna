@@ -557,7 +557,7 @@ class RegistrationFormPage extends Component {
             </ContainerSection>
             <ContainerSection>
               <Input
-                label='Alamat'
+                label='Alamat Lembaga'
                 value={addressInstitution}
                 onChangeText={v => this.onChangeInput('addressInstitution', v)}
               />

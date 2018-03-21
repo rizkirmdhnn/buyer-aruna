@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, Image, View, TouchableOpacity, AsyncStorage, ToastAndroid } from 'react-native';
+import { Text, Image, View, Alert, TouchableOpacity, AsyncStorage, ToastAndroid } from 'react-native';
 import axios from 'axios';
 import OneSignal from 'react-native-onesignal';
 import jwtDecode from 'jwt-decode';
@@ -156,9 +156,13 @@ class LoginFormPage extends Component {
                     <Text style={{ textAlign: 'center' }}>
                         Belum punya akun?
 					</Text>
-                    <TouchableOpacity onPress={() => navigate('RegistrationForm')}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            navigate('RegistrationForm')
+                        }}
+                    >
                         <Text style={{ color: COLOR.secondary_a }}>
-                            {' Daftar'}
+                            {' '}{'Daftar'}
                         </Text>
                     </TouchableOpacity>
                 </View>

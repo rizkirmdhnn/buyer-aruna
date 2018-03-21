@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, Image, Alert, AsyncStorage } from 'react-native'
+import { View, Text, Image, Alert, AsyncStorage, ToastAndroid } from 'react-native'
 import axios from 'axios'
 
 import { Container, ContainerSection, Input, Button, Spinner } from '../components/common'
@@ -43,13 +43,14 @@ class ForgotPassword extends Component {
 			})
 			.catch(error => {
 				console.log(error.response)
+				ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
 
-				if (error.response) {
-					alert(error.response.data.message)
-				}
-				else {
-					alert('Koneksi internet bermasalah')
-				}
+				// if (error.response) {
+				// 	alert(error.response.data.message)
+				// }
+				// else {
+				// 	alert('Koneksi internet bermasalah')
+				// }
 
 				this.setState({loading: false})
 			})
