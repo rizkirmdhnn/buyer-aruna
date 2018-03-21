@@ -10,6 +10,7 @@ import {
   ToastAndroid,
   TouchableOpacity,
   Image,
+  Alert
 } from 'react-native';
 import numeral from 'numeral';
 import axios from 'axios';
@@ -32,7 +33,21 @@ class RequestFormOrderFirstPage extends Component {
     title: 'Buat Permintaan',
     headerLeft:
       <TouchableOpacity
-        onPress={() => { navigation.navigate('Home') }}
+        onPress={() => { 
+          Alert.alert(
+            '',
+            'Batal membuat PO ?',
+            [
+              { text: 'Tidak', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+              {
+                text: 'Ya',
+                onPress: () => {
+                  navigation.navigate('Home')
+                }
+              },
+            ]
+          ) 
+        }}
       >
         <Image
           style={{ width: 20, height: 20, marginLeft: 30 }}
@@ -68,7 +83,8 @@ class RequestFormOrderFirstPage extends Component {
       datePick: '',
       dateNowPick: '',
       photo: null,
-      isDateTimePickerVisible: false
+      isDateTimePickerVisible: false,
+      isDisabled: true
     };
   }
 
@@ -77,12 +93,14 @@ class RequestFormOrderFirstPage extends Component {
 
     const { params } = this.props.navigation.state
     console.log(params, 'Data Form Order Parsing')
+    console.log(this.props, 'DATA PARSING');
 
     if (params && params.FishId !== '') {
       this.setState({
         value: params.dataFish.name,
         FishId: params.dataFish.id,
-        dataParams: params
+        dataParams: params,
+        isDisabled: params.private
       })
     }
 
@@ -378,6 +396,7 @@ class RequestFormOrderFirstPage extends Component {
       deskripsi,
       dateNowPick,
       loading,
+      isDisabled,
       unitFish
     } = this.state
 
@@ -425,6 +444,7 @@ class RequestFormOrderFirstPage extends Component {
               suggestions={suggestions}
               onChangeText={text => this.querySuggestion(text)}
               value={value}
+              editable={isDisabled}
             >
               {
                 suggestions && suggestions.map(item =>
@@ -589,7 +609,7 @@ const styles = {
     borderRadius: 5,
     paddingLeft: 7,
     borderWidth: 1,
-    height: 50,
+    height: 47,
     backgroundColor: '#fff'
   },
   pickerTextStyle: {

@@ -25,7 +25,7 @@ class TransactionPage extends Component {
       loading: true,
       tokenUser: '',
       dataTransaksi: [],
-      anyData: null,
+      anyData: true,
       noData: null
     };
   }
@@ -35,7 +35,7 @@ class TransactionPage extends Component {
     AsyncStorage.getItem('loginCredential', (err, result) => {
       if (result) {
         console.log('Storage Tidak Kosong');
-        this.setState({ tokenUser: result, anyData: true });
+        this.setState({ tokenUser: result });
         return this.getData();
       }
       console.log('Storage Kosong');
@@ -144,47 +144,69 @@ class TransactionPage extends Component {
   }
 
   renderData = (item) => {
-    return (
-      <Card>
-        <TouchableNativeFeedback
-          key={item.id}
-          onPress={() => this.detailTransaction(item)}
-        >
-          <View style={styles.itemContainerStyle}>
-            <View style={styles.thumbnailContainerStyle}>
-              <Image
-                style={styles.thumbnailStyle}
-                source={{ uri: `${BASE_URL}/images/${item.Request ? item.Request.Transaction.photo : ''}` }}
-              />
-            </View>
-            <View style={styles.headerContentStyle}>
-              <Text>No. PO {item.Request.codeNumber}</Text>
-              <Text>{item.Request ? item.Request.Transaction.Fish.name : '-'}</Text>
-              <Text>{item.Request ? item.Request.Supplier.name : ''}</Text>
-              <Text style={styles.hedaerTextStyle}>{item.StatusHistories && item.StatusHistories.length > 0 ? item.StatusHistories[item.StatusHistories.length - 1].Status.name : 'Proses Kontrak'}</Text>
-              <View style={{ flexDirection: 'row' }}>
+    if (item) {
+      return (
+        <Card>
+          <TouchableNativeFeedback
+            key={item.id}
+            onPress={() => this.detailTransaction(item)}
+          >
+            <View style={styles.itemContainerStyle}>
+              <View style={styles.thumbnailContainerStyle}>
                 <Image
-                  style={styles.statusIcon}
-                  source={this.imageIcon(item, 1)}
-                />
-                <Image
-                  style={styles.statusIcon}
-                  source={this.imageIcon(item, 2)}
-                />
-                <Image
-                  style={styles.statusIcon}
-                  source={this.imageIcon(item, 3)}
-                />
-                <Image
-                  style={styles.statusIcon}
-                  source={this.imageIcon(item, 4)}
+                  style={styles.thumbnailStyle}
+                  source={{ uri: `${BASE_URL}/images/${item.Request ? item.Request.Transaction.photo : ''}` }}
                 />
               </View>
+              <View style={styles.headerContentStyle}>
+                <Text>No. PO {item.Request.codeNumber}</Text>
+                <Text>{item.Request ? item.Request.Transaction.Fish.name : '-'}</Text>
+                <Text>{item.Request ? item.Request.Supplier.name : ''}</Text>
+                <Text style={styles.hedaerTextStyle}>{item.StatusHistories && item.StatusHistories.length > 0 ? item.StatusHistories[item.StatusHistories.length - 1].Status.name : 'Proses Kontrak'}</Text>
+                <View style={{ flexDirection: 'row' }}>
+                  <Image
+                    style={styles.statusIcon}
+                    source={this.imageIcon(item, 1)}
+                  />
+                  <Image
+                    style={styles.statusIcon}
+                    source={this.imageIcon(item, 2)}
+                  />
+                  <Image
+                    style={styles.statusIcon}
+                    source={this.imageIcon(item, 3)}
+                  />
+                  <Image
+                    style={styles.statusIcon}
+                    source={this.imageIcon(item, 4)}
+                  />
+                </View>
+              </View>
             </View>
+          </TouchableNativeFeedback>
+        </Card>
+      )
+    }
+
+    return (
+      <View style={{ marginTop: '30%' }}>
+        <View style={styles.card}>
+          <View style={styles.thumbnailContainerStyle}>
+            <Image
+              style={styles.thumbnailStyle}
+              source={require('../assets/images/empty_transaksi.png')}
+            />
           </View>
-        </TouchableNativeFeedback>
-      </Card>
-    )
+          <Text style={{ textAlign: 'center' }}>Anda Belum Melakukan Transaksi</Text>
+          <Text style={{ textAlign: 'center' }}>Silahkan lakukan order komoditas</Text>
+          <View style={{ padding: 15, height: 80 }}>
+            <Button onPress={() => { this.orderFirst() }}>
+              Buat Permintaan
+            </Button>
+          </View>
+        </View>
+      </View>
+    );
   }
 
 
@@ -194,36 +216,13 @@ class TransactionPage extends Component {
       <View style={{ flex: 1 }}>
         {
           anyData ?
-            <View>
-              {
-                dataTransaksi.length === 0 ?
-                  <View style={{ marginTop: '30%' }}>
-                    <View style={styles.card}>
-                      <View style={styles.thumbnailContainerStyle}>
-                        <Image
-                          style={styles.thumbnailStyle}
-                          source={require('../assets/images/empty_transaksi.png')}
-                        />
-                      </View>
-                      <Text style={{ textAlign: 'center' }}>Anda Belum Melakukan Transaksi</Text>
-                      <Text style={{ textAlign: 'center' }}>Silahkan lakukan order komoditas</Text>
-                      <View style={{ padding: 15, height: 80 }}>
-                        <Button onPress={() => { this.orderFirst() }}>
-                          Buat Permintaan
-                          </Button>
-                      </View>
-                    </View>
-                  </View>
-                  :
-                  <FlatList
-                    data={this.state.dataTransaksi}
-                    renderItem={({ item }) => this.renderData(item)}
-                    keyExtractor={(item, index) => index}
-                    refreshing={this.state.loading}
-                    onRefresh={() => this.handleRefresh()}
-                  />
-              }
-            </View>
+            <FlatList
+              data={this.state.dataTransaksi}
+              renderItem={({ item }) => this.renderData(item)}
+              keyExtractor={(item, index) => index}
+              refreshing={this.state.loading}
+              onRefresh={() => this.handleRefresh()}
+            />
             :
             <View />
         }

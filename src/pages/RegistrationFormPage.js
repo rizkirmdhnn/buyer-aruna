@@ -17,6 +17,7 @@ import ImagePicker from 'react-native-image-picker';
 /**
  *  Import Common
  */
+import AutoComplete from '../components/AutoComplete';
 import { Container, ContainerSection, Spinner, Input, Button } from './../components/common'
 import { BASE_URL, COLOR } from '../shared/lb.config';
 
@@ -56,7 +57,11 @@ class RegistrationFormPage extends Component {
 
       pathKtp: null,
       pathNpwp: null,
-      pathProfile: null
+      pathProfile: null,
+
+      loadingCity: false,
+			suggestionsCity: [],
+			valueCity: '',
     };
   }
 
@@ -88,6 +93,16 @@ class RegistrationFormPage extends Component {
     this.setState({ [name]: v })
   }
 
+
+  onCitySelected = (item) => {
+		this.setState({
+			suggestionsCity: [],
+			idCity: item.id,
+			valueCity: item.name
+		})
+  }
+  
+
   onRegister() {
     this.setState({ loader: true })
 
@@ -101,6 +116,7 @@ class RegistrationFormPage extends Component {
     dataPhoto.append('organizationType', this.state.organizationType);
     dataPhoto.append('idNumber', this.state.idNumber);
     dataPhoto.append('address', this.state.address);
+    dataPhoto.append('CityId', this.state.idCity);
     dataPhoto.append('idPhoto', {
       uri: this.state.idPhoto.uri,
       type: 'image/jpeg',
@@ -149,6 +165,30 @@ class RegistrationFormPage extends Component {
         }
       })
   }
+
+
+  queryCitySuggestion = (text) => {
+		this.setState({
+			valueCity: text,
+			loadingCity: true,
+			idCity: ''
+		})
+		
+		axios.get(`${BASE_URL}/cities?key=${text}&pageSize=5sorting=ASC`)
+		.then(response => {
+			res = response.data.data
+			this.setState({suggestionsCity: res, loadingCity: false})			
+		})
+		.catch(error => {
+			if (error.response) {
+				alert(error.response.data.message)
+			}
+			else {
+				alert('Koneksi internet bermasalah')
+			}
+			this.setState({loadingCity: false})
+		})
+	}
 
 
   regexEmail = (email) => {
@@ -487,7 +527,9 @@ class RegistrationFormPage extends Component {
       username,
       password,
       repassword,
-      idCity
+      valueCity,
+      suggestionsCity,
+      loadingCity
     } = this.state
 
     if (this.state.loading) {
@@ -636,17 +678,31 @@ class RegistrationFormPage extends Component {
               />
             </ContainerSection>
             <ContainerSection>
-              <View style={styles.pickerContainer}>
-                <Text style={styles.pickerTextStyle}>Kota</Text>
-                <View style={styles.pickerStyle}>
-                  <Picker
-                    selectedValue={idCity}
-                    onValueChange={v => this.onChangeInput('idCity', v)}
-                  >
-                    {this.renderPickerCity()}
-                  </Picker>
-                </View>
-              </View>
+              <AutoComplete
+                label="Kota / Kabupaten"
+                suggestions={suggestionsCity}
+                onChangeText={text => this.queryCitySuggestion(text)}
+                value={valueCity}
+                ref="input"
+              >
+                {
+                  loadingCity ?
+                    <View style={{ flex: 1 }}>
+                      <Spinner size='large' />
+                    </View>
+                    :
+                    suggestionsCity && suggestionsCity.map(item =>
+                      <TouchableOpacity
+                        key={item.id}
+                        onPress={() => this.onCitySelected(item)}
+                      >
+                        <View style={styles.containerItemAutoSelect}>
+                          <Text>{item.name}</Text>
+                        </View>
+                      </TouchableOpacity>
+                    )
+                }
+              </AutoComplete>
             </ContainerSection>
             <ContainerSection>
               <Input

@@ -76,7 +76,7 @@ class DetailFishesPage extends Component {
         AsyncStorage.getItem('loginCredential', (err, result) => {
             if (result) {
                 console.log(item, 'Data Ikan Terpilih')
-                this.props.navigation.navigate('RequestFormOrderFirst', { dataFish: item, navigation: 'LIST' })
+                this.props.navigation.navigate('RequestFormOrderFirst', { dataFish: item, navigation: 'LIST', private: false })
             } else {
                 alert('Anda belum login. Silahkan lakukan login terlebih dahulu');
             }

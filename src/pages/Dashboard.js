@@ -86,7 +86,7 @@ class Dashboard extends Component {
 
   credentialButton() {
     AsyncStorage.getItem('loginCredential', (err, result) => {
-      console.log(result, 'Token');
+      // console.log(result, 'Token');
       if (result !== null) {
         this.props.navi.navigate('RequestFormOrderFirst');
       } else if (result == null) {
@@ -103,7 +103,8 @@ class Dashboard extends Component {
     AsyncStorage.getItem('loginCredential', (err, result) => {
       console.log(result, 'Token');
       if (result !== null) {
-        this.props.navi.navigate('FormProductRequest');
+        const x = 'false';
+        this.props.navi.navigate('FormProductRequest', { datas: x });
       } else if (result == null) {
         this.setState({
           showAlert: true
@@ -154,9 +155,9 @@ class Dashboard extends Component {
               resizeMode='contain'
             />
             <Text style={{ textAlign: 'center', backgroundColor: '#FFF' }}>
-            {
-              itemProduct.item.Fish.name.length >= 12 ? `${number}. ${itemProduct.item.Fish.name.substring(0, 12)}...` : `${number}. ${itemProduct.item.Fish.name}`
-            }
+              {
+                itemProduct.item.Fish.name.length >= 12 ? `${number}. ${itemProduct.item.Fish.name.substring(0, 12)}...` : `${number}. ${itemProduct.item.Fish.name}`
+              }
             </Text>
           </View>
         </TouchableWithoutFeedback>
@@ -351,7 +352,7 @@ const styles = {
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'space-between',
-    paddingBottom: 10
+    paddingBottom: '13%'
   },
   container: {
     flex: 1

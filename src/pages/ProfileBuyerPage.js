@@ -7,7 +7,7 @@ import { Spinner, Button } from '../components/common'
 
 class ProfileBuyerPage extends Component {
 	static navigationOptions = () => ({
-		title: 'Profile',
+		title: 'Profil',
 		headerRight: <View />
 	})
 
@@ -15,7 +15,6 @@ class ProfileBuyerPage extends Component {
 		super(props)
 
 		this.state = {
-			loading: true,
 			data: {},
 			modalVisible: false,
 			tokenUser: '',
@@ -51,7 +50,7 @@ class ProfileBuyerPage extends Component {
 		})
 			.then(response => {
 				this.setState({ data: response.data.user })
-				this.setState({ loading: false })
+				this.setState({ refreshing: false })
 				console.log(response.data.user, 'Data Profile');
 			})
 			.catch(error => {
@@ -61,15 +60,16 @@ class ProfileBuyerPage extends Component {
 				else {
 					alert('Koneksi internet bermasalah')
 				}
-				this.setState({ loading: false })
+				this.setState({ refreshing: false })
 			})
 	}
 
 	renderProfile = (data) => {
+		console.log(data)
 		return (
 			<View style={styles.card}>
 				<View style={styles.cardSection}>
-					<Text style={{ color: COLOR.secondary_a }}>Data Pribadi</Text>
+					<Text style={{ color: COLOR.secondary_a, fontSize: 20 }}>Data Pribadi</Text>
 				</View>
 
 				<View style={{ borderWidth: 1, borderColor: '#eaeaea', width: '96%', marginLeft: '2%', margin: 5 }} />
@@ -82,8 +82,8 @@ class ProfileBuyerPage extends Component {
 				<View style={styles.cardSection}>
 					<Text style={styles.labelStyle}>Alamat</Text>
 					<Text style={styles.dataStyle}>
-						{`${data.address}`}
-						{/* {`${data.subDistrict} \n${data.village} \n${data.City && data.City.name}`} */}
+						{data.address !== undefined ? data.address : ''}
+						{`\n${data.City !== undefined ? data.City.name : ''}`}
 					</Text>
 				</View>
 				<View style={styles.cardSection}>
@@ -109,52 +109,46 @@ class ProfileBuyerPage extends Component {
 			profileImageContainer, profileImage, profileName,
 		} = styles
 
-		const { data, loading } = this.state
-
-		if (loading) {
-			return (
-				<View style={{ flex: 1 }}>
-					<Spinner size='large' />
-				</View>
-			)
-		}
-
+		const { data } = this.state;
+		console.log(data, 'Cuy');
 		return (
-			<ScrollView
-				refreshControl={
-					<RefreshControl
-						refreshing={this.state.refreshing}
-						onRefresh={this.onRefresh.bind(this)}
-					/>
-				}
-			>
-				<View style={containerStyle}>
-					<View style={headerHomeStyle}>
-						<View style={profileImageContainer}>
-							<Image
-								style={profileImage}
-								source={{ uri: `${BASE_URL}/images/${data.photo}` }}
-							/>
+			<View>
+				<ScrollView
+					refreshControl={
+						<RefreshControl
+							refreshing={this.state.refreshing}
+							onRefresh={this.onRefresh.bind(this)}
+						/>
+					}
+				>
+					<View style={containerStyle}>
+						<View style={headerHomeStyle}>
+							<View style={profileImageContainer}>
+								<Image
+									style={profileImage}
+									source={{ uri: `${BASE_URL}/images/${data.photo}` }}
+								/>
+							</View>
+							<Text style={profileName}>{data.name}</Text>
+							<Text style={{ textAlign: 'center', paddingTop: 2, marginBottom: 5, color: '#fff', fontSize: 13, fontFamily: 'Muli-Bold' }}>{data.organizationType} {data.organization} </Text>
 						</View>
-						<Text style={profileName}>{data.name}</Text>
-						<Text style={profileName}>{data.organizationType} {data.organization} </Text>
-					</View>
-					<View style={menuContainerStyle}>
-						{this.renderProfile(data)}
-						<View style={{ height: 50, marginTop: 50 }}>
-							<Button
-								style={{ margin: 5, marginRight: 10 }}
-								onPress={() => {
-									console.log(this.props)
-									this.props.navigation.navigate('ProfileBuyerEdit');
-								}}
-							>
-								Ubah
-						</Button>
+						<View style={menuContainerStyle}>
+							{this.renderProfile(data)}
 						</View>
 					</View>
+				</ScrollView >
+				<View style={{ height: 50, marginTop: 10 }}>
+					<Button
+						style={{ margin: 5, marginLeft: 35, marginRight: 35 }}
+						onPress={() => {
+							console.log(this.props)
+							this.props.navigation.navigate('ProfileBuyerEdit');
+						}}
+					>
+						Ubah
+					</Button>
 				</View>
-			</ScrollView>
+			</View>
 		)
 	}
 }
@@ -169,7 +163,8 @@ const styles = {
 		justifyContent: 'center',
 		alignSelf: 'center',
 		backgroundColor: COLOR.secondary_a,
-		width: '100%'
+		width: '100%',
+		height: 210
 	},
 	menuContainerStyle: {
 		flex: 4,

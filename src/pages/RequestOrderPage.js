@@ -23,18 +23,17 @@ class RequestOrderPage extends Component {
       dataReqOrder: [],
       expiredContainer: null,
       NoExpiredContainer: null,
-      refresh: false,
-      anyData: null,
+      refresh: true,
+      anyData: true,
       noData: null
     };
   }
 
   componentWillMount() {
-    this.setState({ refresh: true });
     AsyncStorage.getItem('loginCredential', (err, result) => {
       if (result) {
         console.log('Storage Tidak Kosong');
-        this.setState({ tokenUser: result, anyData: true });
+        this.setState({ tokenUser: result });
         return this.getData();
       }
       console.log('Storage Kosong');
@@ -123,32 +122,62 @@ class RequestOrderPage extends Component {
   }
 
   renderData = (item) => {
-    if (item.Status.id === 19) {
-      if (item.sanggup === 0) {
-        return (
-          <Card>
-            <View style={styles.itemContainerStyle}>
-              <View style={styles.thumbnailContainerStyle}>
-                <Image
-                  style={styles.thumbnailStyle}
-                  source={{ uri: `${BASE_URL}/images/${item.photo}` }}
-                />
-              </View>
-              <View style={styles.headerContentStyle}>
-                <Text style={styles.headerTextStyle}>{item.Fish.name}</Text>
-                <View style={{ flexDirection: 'column', flex: 1 }}>
-                  <Text style={{ fontSize: 13 }}>Batas Waktu: {moment(item.expiredAt).format('DD/MM/YYYY')} Pukul: {moment(item.expiredAt).format('h:mm:ss')} </Text>
-                  <Text style={{ color: 'red', fontWeight: 'bold' }}>Expired</Text>
+    console.log(item, 'Tes');
+    if (item) {
+      if (item.Status.id === 19) {
+        if (item.sanggup === 0) {
+          return (
+            <Card>
+              <View style={styles.itemContainerStyle}>
+                <View style={styles.thumbnailContainerStyle}>
+                  <Image
+                    style={styles.thumbnailStyle}
+                    source={{ uri: `${BASE_URL}/images/${item.photo}` }}
+                  />
+                </View>
+                <View style={styles.headerContentStyle}>
+                  <Text style={styles.headerTextStyle}>{item.Fish.name}</Text>
+                  <View style={{ flexDirection: 'column', flex: 1 }}>
+                    <Text style={{ fontSize: 13 }}>Batas Waktu: {moment(item.expiredAt).format('DD/MM/YYYY')} Pukul: {moment(item.expiredAt).format('h:mm:ss')} </Text>
+                    <Text style={{ color: 'red', fontWeight: 'bold' }}>Expired</Text>
+                  </View>
                 </View>
               </View>
-            </View>
-          </Card>
-        );
+            </Card>
+          );
+        }
+
+        if (item.sanggup > 0) {
+          return (
+
+            <Card>
+              <TouchableWithoutFeedback
+                onPress={() => this.detailOrder(item)}
+                key={item.id}
+              >
+                <View style={styles.itemContainerStyle}>
+                  <View style={styles.thumbnailContainerStyle}>
+                    <Image
+                      style={styles.thumbnailStyle}
+                      source={{ uri: `${BASE_URL}/images/${item.photo}` }}
+                    />
+                  </View>
+                  <View style={styles.headerContentStyle}>
+                    <Text style={styles.headerTextStyle}>{item.Fish.name}</Text>
+                    <View style={{ flexDirection: 'column', flex: 1 }}>
+                      <Text style={{ fontSize: 13 }}>Batas Waktu: {moment(item.expiredAt).format('DD/MM/YYYY')} Pukul: {moment(item.expiredAt).format('h:mm:ss')} </Text>
+                      <Text>{item.sanggup} Sanggup | {item.tidakSanggup} Menolak | {item.menunggu} Menunggu</Text>
+                    </View>
+                  </View>
+                </View>
+              </TouchableWithoutFeedback>
+            </Card>
+          );
+        }
       }
 
-      if (item.sanggup > 0) {
+      if (item.Status.id === 20) {
         return (
-
           <Card>
             <TouchableWithoutFeedback
               onPress={() => this.detailOrder(item)}
@@ -175,32 +204,25 @@ class RequestOrderPage extends Component {
       }
     }
 
-    if (item.Status.id === 20) {
-      return (
-        <Card>
-          <TouchableWithoutFeedback
-            onPress={() => this.detailOrder(item)}
-            key={item.id}
-          >
-            <View style={styles.itemContainerStyle}>
-              <View style={styles.thumbnailContainerStyle}>
-                <Image
-                  style={styles.thumbnailStyle}
-                  source={{ uri: `${BASE_URL}/images/${item.photo}` }}
-                />
-              </View>
-              <View style={styles.headerContentStyle}>
-                <Text style={styles.headerTextStyle}>{item.Fish.name}</Text>
-                <View style={{ flexDirection: 'column', flex: 1 }}>
-                  <Text style={{ fontSize: 13 }}>Batas Waktu: {moment(item.expiredAt).format('DD/MM/YYYY')} Pukul: {moment(item.expiredAt).format('h:mm:ss')} </Text>
-                  <Text>{item.sanggup} Sanggup | {item.tidakSanggup} Menolak | {item.menunggu} Menunggu</Text>
-                </View>
-              </View>
-            </View>
-          </TouchableWithoutFeedback>
-        </Card>
-      );
-    }
+    return (
+      <View style={{ marginTop: '30%' }}>
+        <View style={styles.card}>
+          <View style={styles.thumbnailContainerStyle}>
+            <Image
+              style={styles.thumbnailStyle}
+              source={require('../assets/images/empty_transaksi.png')}
+            />
+          </View>
+          <Text style={{ textAlign: 'center' }}>Anda Belum Melakukan Request Order</Text>
+          <Text style={{ textAlign: 'center' }}>Silahkan lakukan order komoditas</Text>
+          <View style={{ padding: 15, height: 80 }}>
+            <Button onPress={() => { this.orderFirst() }}>
+              Buat Permintaan
+        </Button>
+          </View>
+        </View>
+      </View>
+    );
   }
 
 
@@ -211,36 +233,13 @@ class RequestOrderPage extends Component {
       <View style={{ flex: 1 }}>
         {
           anyData ?
-            <View>
-              {
-                dataReqOrder.length === 0 ?
-                  <View style={{ marginTop: '30%' }}>
-                    <View style={styles.card}>
-                      <View style={styles.thumbnailContainerStyle}>
-                        <Image
-                          style={styles.thumbnailStyle}
-                          source={require('../assets/images/empty_transaksi.png')}
-                        />
-                      </View>
-                      <Text style={{ textAlign: 'center' }}>Anda Belum Melakukan Request Order</Text>
-                      <Text style={{ textAlign: 'center' }}>Silahkan lakukan order komoditas</Text>
-                      <View style={{ padding: 15, height: 80 }}>
-                        <Button onPress={() => { this.orderFirst() }}>
-                          Buat Permintaan
-                          </Button>
-                      </View>
-                    </View>
-                  </View>
-                  :
-                  <FlatList
-                    data={this.state.dataReqOrder}
-                    renderItem={({ item }) => this.renderData(item)}
-                    keyExtractor={(item, index) => index}
-                    refreshing={this.state.refresh}
-                    onRefresh={() => this.handleRefresh()}
-                  />
-              }
-            </View>
+            <FlatList
+              data={this.state.dataReqOrder}
+              renderItem={({ item }) => this.renderData(item)}
+              keyExtractor={(item, index) => index}
+              refreshing={this.state.refresh}
+              onRefresh={() => this.handleRefresh()}
+            />
             :
             <View />
         }

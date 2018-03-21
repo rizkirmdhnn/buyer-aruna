@@ -218,7 +218,11 @@ class HomePage extends Component {
                   <View style={{ marginBottom: 20 }}>
                     <ContainerSection>
                       <Image
-                        style={styles.menuIcon}
+                        style={{
+                          height: 15,
+                          width: 15,
+                          marginRight: 20
+                        }}
                         source={require('../assets/images/dokumen.png')}
                       />
                       <Text style={styles.drawerItemText}>Terms & Conditions</Text>

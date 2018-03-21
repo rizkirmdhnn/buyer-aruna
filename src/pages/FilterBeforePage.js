@@ -6,10 +6,11 @@ import {
   View,
   Text,
   Image,
-  ScrollView,
   TouchableOpacity,
   TouchableNativeFeedback,
-  ToastAndroid
+  ToastAndroid,
+  FlatList,
+  AsyncStorage
 } from 'react-native';
 import numeral from 'numeral';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -17,7 +18,7 @@ import axios from 'axios';
 import { NavigationActions } from 'react-navigation';
 import { CheckBox } from 'react-native-elements';
 import { BASE_URL, COLOR } from './../shared/lb.config';
-import { Spinner, InputSearch, Card } from '../components/common'
+import { InputSearch } from '../components/common'
 
 
 class FilterBeforePage extends Component {
@@ -29,18 +30,19 @@ class FilterBeforePage extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      tokenUser: '',
       checkedSupplier: [],
-      searchItem: [],
-      searchItemAll: [],
+      searchItem: '',
+      searchItemAll: '',
       dataItemSearch: '',
       viewExpanded: true,
       searchResult: null,
       searchResultAll: null,
-      loading: false,
-      load: false,
       dataParams: '',
       fishData: '',
-      idProvince: []
+      idProvince: [],
+      refreshing: true,
+      refresh: true
     }
   }
 
@@ -51,12 +53,18 @@ class FilterBeforePage extends Component {
     if (params) {
       this.updateSelected(params)
     }
+
+    AsyncStorage.getItem('loginCredential', (err, result) => {
+      if (result) {
+        this.setState({ tokenUser: result });
+      }
+    })
   }
 
   onItemSelected = (item) => {
     console.log('On Item Selected');
     console.log(item, 'Ikan terpilih');
-    this.setState({ searchResultAll: true, fishData: item, searchResult: false, loading: true })
+    this.setState({ searchResultAll: true, fishData: item, searchResult: false })
     axios.get(`${BASE_URL}/products`, {
       params: {
         key: item.name,
@@ -65,19 +73,13 @@ class FilterBeforePage extends Component {
     })
       .then(response => {
         res = response.data.data
-        this.setState({ searchItemAll: res, loading: false })
+        this.setState({ searchItemAll: res, refreshing: false })
         console.log(res, 'Semua Ikan')
       })
       .catch(error => {
         console.log(error, 'Error');
-        this.setState({ loading: false })
+        this.setState({ refreshing: false })
         ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
-        // if (error.response) {
-        //     alert(error.response.data.message)
-        // }
-        // else {
-        //     alert('Koneksi internet bermasalah on item selected')
-        // }
       })
   }
 
@@ -85,28 +87,24 @@ class FilterBeforePage extends Component {
     console.log(text, 'Text');
     if (text !== '') {
       console.log('Text Tidak Kosong');
-      this.setState({ searchResult: true, searchResultAll: false, viewExpanded: false, load: true });
-      axios.get(`${BASE_URL}/fishes/search?key=${text}`, {
-        params: {
-          sorting: 'ASC'
-        }
-      })
-        .then(response => {
-          res = response.data.data
-          this.setState({ searchItem: res, load: false })
-          console.log(res, 'Auto Complete Nya')
-        })
-        .catch(error => {
-          console.log(error, 'Error');
-          this.setState({ load: false })
-          ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
-          // if (error.response) {
-          //     alert('Internet anda lemot Fishes.')
-          // }
-          // else {
-          //     alert('Internet anda lemot Fishes Key')
-          // }
-        })
+      this.setState({
+        searchItem: '',
+        searchResult: true,
+        searchResultAll: false,
+        viewExpanded: false
+      }, () => {
+        axios.get(`${BASE_URL}/fishes?key=${text}&pageSize=5sorting=ASC`)
+          .then(response => {
+            res = response.data.data
+            console.log(res, 'Data Ikan');
+            this.setState({ searchItem: res, refresh: false })
+          })
+          .catch(error => {
+            console.log(error, 'Error');
+            this.setState({ refresh: false })
+            ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
+          })
+      });
     } else {
       console.log('Text Kosong');
       this.setState({ viewExpanded: true, searchResult: false, searchResultAll: false });
@@ -125,7 +123,7 @@ class FilterBeforePage extends Component {
       ProvinceIds: this.state.idProvince
     }
 
-    this.setState({ searchResultAll: true, searchResult: false, viewExpanded: false, loading: true })
+    this.setState({ searchResultAll: true, searchResult: false, viewExpanded: false })
     axios.get(`${BASE_URL}/products`, {
       params: {
         key: item.fishDatas.datas.name,
@@ -136,19 +134,13 @@ class FilterBeforePage extends Component {
     })
       .then(response => {
         res = response.data.data
-        this.setState({ searchItemAll: res, loading: false })
+        this.setState({ searchItemAll: res, refresh: false })
         console.log(res, 'Semua Ikan Update')
       })
       .catch(error => {
         console.log(error, 'Error');
-        this.setState({ loading: false })
+        this.setState({ refresh: false })
         ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
-        // if (error.response) {
-        //     alert(error.response.data.message)
-        // }
-        // else {
-        //     alert('Koneksi internet bermasalah province')
-        // }
       })
   }
 
@@ -166,12 +158,84 @@ class FilterBeforePage extends Component {
     }
   };
 
+
+  handleRefresh = () => {
+    console.log('Refresh');
+    this.setState({
+      refresh: true
+    }, () => {
+      console.log('Fetch Again');
+      this.setState({ refresh: false });
+    })
+  }
+
+
+  renderData = (item) => {
+    return (
+      <View style={styles.card}>
+        <View style={styles.itemContainerStyle}>
+          <View style={styles.thumbnailContainerStyle}>
+            <Image
+              style={styles.thumbnailStyle}
+              source={{ uri: `${BASE_URL}/images/${item.User.photo}` }}
+            />
+          </View>
+          <View style={styles.headerContentStyle}>
+            <Text style={styles.headerTextStyle}>{item.User.name}</Text>
+            <View style={{ flexDirection: 'column', flex: 1 }}>
+              <Text>{item.Fish.name}</Text>
+              <Text>{item.User.organization}</Text>
+              <Text>{item.capacity}</Text>
+            </View>
+            <Text style={{ fontSize: 11 }}>Rp {numeral(parseInt(item.minPrice, 0)).format('0,0')} - Rp {numeral(parseInt(item.maxPrice, 0)).format('0,0')} /Kg</Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            <CheckBox
+              containerStyle={{
+                borderWidth: 0,
+                padding: 0,
+                margin: 0,
+                marginTop: 10,
+                width: 25
+              }}
+              onPress={() => this.checkItem(item)}
+              checked={this.state.checkedSupplier.includes(item)}
+            />
+          </View>
+        </View>
+      </View>
+    );
+  }
+
+  renderDataSearch = (item) => {
+    return (
+      <View style={styles.card}>
+        <TouchableOpacity
+          key={item.id}
+          onPress={() => this.onItemSelected(item)}
+        >
+          <View style={styles.itemContainerStyle}>
+            <View style={styles.thumbnailContainerStyle}>
+              <Image
+                style={styles.thumbnailStyle}
+                source={{ uri: `${BASE_URL}/images/${item.photo}` }}
+                resizeMode='contain'
+              />
+            </View>
+            <View style={styles.headerContentStyle}>
+              <Text style={styles.headerTextStyle}>{item.name}</Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+
   render() {
     const {
       searchItem,
       searchItemAll,
-      loading,
-      load,
       viewExpanded,
       searchResult,
       searchResultAll,
@@ -213,52 +277,11 @@ class FilterBeforePage extends Component {
           </View>
         </View>
 
-        <View>
-          {
-            searchResult ?
-              <View>
-                <ScrollView>
-                  {
-                    load ?
-                      <View style={{ marginTop: '70%' }}>
-                        <Spinner size="large" />
-                      </View>
-                      :
-                      <View />
-                  }
-                  {
-                    searchItem && searchItem.map((item, index) =>
-                      <View key={index}>
-                        <Card>
-                          <TouchableOpacity
-                            key={item.id}
-                            onPress={() => this.onItemSelected(item)}
-                          >
-                            <View style={styles.itemContainerStyle}>
-                              <View style={styles.thumbnailContainerStyle}>
-                                <Image
-                                  style={styles.thumbnailStyle}
-                                  source={{ uri: `${BASE_URL}/images/${item.photo}` }}
-                                />
-                              </View>
-                              <View style={styles.headerContentStyle}>
-                                <Text style={styles.headerTextStyle}>{item.name}</Text>
-                              </View>
-                            </View>
-                          </TouchableOpacity>
-                        </Card>
-                      </View>
-                    )
-                  }
-                </ScrollView>
-              </View>
-              :
-              <View />
-          }
+        <View style={{ flex: 1 }}>
           {
             viewExpanded ?
               <View>
-                <View style={{ flex: 1, marginTop: '50%' }}>
+                <View style={{ flex: 1, marginTop: '30%' }}>
                   <Image
                     style={{ alignSelf: 'center' }}
                     source={require('./../assets/images/ga_search.png')}
@@ -272,110 +295,82 @@ class FilterBeforePage extends Component {
               :
               <View />
           }
+
+          {
+            searchResult ?
+              <View style={{ flex: 1 }}>
+                {
+                  <FlatList
+                    data={searchItem}
+                    renderItem={({ item }) => this.renderDataSearch(item)}
+                    keyExtractor={(item, index) => index}
+                    refreshing={this.state.refresh}
+                    onRefresh={() => this.handleRefresh()}
+                    keyboardShouldPersistTaps="always"
+                  />
+                }
+              </View>
+              :
+              <View />
+          }
           {
             searchResultAll ?
-              <View>
-                <View style={{ flexDirection: 'row' }}>
-                  <View style={{ flex: 1 }}>
-                    <TouchableNativeFeedback
-                      onPress={() => {
-                        console.log(fishData, 'Data Ikan Before Filter');
-                        this.props.navigation.navigate('Filter', { datas: fishData })
-                      }}
-                    >
-                      <View style={tabContainer}>
-                        <Text style={tabText}>Filter</Text>
-                      </View>
-                    </TouchableNativeFeedback>
-                  </View>
+              <View style={{ flex: 1 }}>
+                <View style={{ height: 50 }}>
+                  <TouchableNativeFeedback
+                    onPress={() => {
+                      console.log(fishData, 'Data Ikan Before Filter');
+                      this.props.navigation.navigate('Filter', { datas: fishData })
+                    }}
+                  >
+                    <View style={tabContainer}>
+                      <Text style={tabText}>Filter</Text>
+                    </View>
+                  </TouchableNativeFeedback>
                 </View>
-                <View style={{ flexDirection: 'row' }}>
-                  {
-                    checkedSupplier.length > 0 ?
-                      <View style={{ flex: 1 }}>
-                        <TouchableNativeFeedback
-                          onPress={() => {
-                            const resetAction = NavigationActions.reset({
-                              index: 0,
-                              actions: [
-                                NavigationActions.navigate(
-                                  {
-                                    routeName: 'RequestFormOrderFirst',
-                                    params:
-                                      { dataFish: fishData, navigation: 'SEARCH', dataSearch: dataParams, supplierData: this.state.checkedSupplier }
-                                  }
-                                )
-                              ]
-                            })
-                            this.props.navigation.dispatch(resetAction)
-                          }}
-                        >
-                          <View style={tabContainer}>
-                            <Text style={tabText}>Buat Permintaan Sekarang</Text>
-                          </View>
-                        </TouchableNativeFeedback>
-                      </View>
-                      :
-                      <View />
-                  }
+
+                <View style={{ flex: 1 }}>
+                  <FlatList
+                    data={searchItemAll}
+                    renderItem={({ item }) => this.renderData(item)}
+                    keyExtractor={(item, index) => index}
+                    refreshing={this.state.refreshing}
+                    onRefresh={() => this.handleRefresh()}
+                    keyboardShouldPersistTaps="always"
+                  />
                 </View>
-                <ScrollView>
-                  {
-                    loading ?
-                      <View style={{ marginTop: '70%' }}>
-                        <Spinner size="large" />
-                      </View>
-                      :
-                      <View />
-                  }
-                  {
-                    searchItemAll && searchItemAll.map((item, index) => {
-                      console.log(item, 'DATA NELAYAN');
-                      return (
-                        <View key={index}>
-                          <Card>
-                            <View style={styles.itemContainerStyle}>
-                              <View style={styles.thumbnailContainerStyle}>
-                                <Image
-                                  style={styles.thumbnailStyle}
-                                  source={{ uri: `${BASE_URL}/images/${item.User.photo}` }}
-                                />
-                              </View>
-                              <View style={styles.headerContentStyle}>
-                                <Text style={styles.headerTextStyle}>{item.User.name}</Text>
-                                <View style={{ flexDirection: 'column', flex: 1 }}>
-                                  <Text>{item.Fish.name}</Text>
-                                  <Text>{item.User.organization}</Text>
-                                  <Text>{item.capacity}</Text>
-                                </View>
-                                <Text style={{ fontSize: 11 }}>Rp {numeral(parseInt(item.minPrice, 0)).format('0,0')} - Rp {numeral(parseInt(item.maxPrice, 0)).format('0,0')} /Kg</Text>
-                              </View>
-                              <View style={{ flex: 1 }}>
-                                <CheckBox
-                                  containerStyle={{
-                                    borderWidth: 0,
-                                    padding: 0,
-                                    margin: 0,
-                                    marginTop: 10,
-                                    width: 25
-                                  }}
-                                  onPress={() => this.checkItem(item)}
-                                  checked={this.state.checkedSupplier.includes(item)}
-                                />
-                              </View>
-                            </View>
-                          </Card>
+
+                {
+                  checkedSupplier.length > 0 ?
+                    <View style={{ height: 50 }}>
+                      <TouchableNativeFeedback
+                        onPress={() => {
+                          if (this.state.tokenUser === '') {
+                            return ToastAndroid.show('Silahkan login untuk membuat PO', ToastAndroid.SHORT);
+                          }
+                          const resetAction = NavigationActions.reset({
+                            index: 0,
+                            actions: [
+                              NavigationActions.navigate(
+                                {
+                                  routeName: 'RequestFormOrderFirst',
+                                  params:
+                                    { dataFish: fishData, navigation: 'SEARCH', dataSearch: dataParams, supplierData: this.state.checkedSupplier, private: false }
+                                }
+                              )
+                            ]
+                          })
+                          this.props.navigation.dispatch(resetAction)
+                        }}
+                      >
+                        <View style={tabContainer}>
+                          <Text style={tabText}>Buat Permintaan Sekarang</Text>
                         </View>
-                      )
-                    })
-                  }
-                </ScrollView>
-                {/* <Button
-                  onPress={() => {
-                    this.saveFilter()
-                  }}>
-                  Terapkan
-                  </Button> */}
+                      </TouchableNativeFeedback>
+                    </View>
+                    :
+                    <View />
+                }
               </View>
               :
               <View />
@@ -448,7 +443,7 @@ const styles = {
     justifyContent: 'center'
   },
   tabText: {
-    color: '#67a6e3',
+    color: 'white',
     textAlign: 'center',
     fontSize: 16
   },
@@ -456,7 +451,22 @@ const styles = {
     color: '#fff',
     textAlign: 'center',
     fontSize: 16
-  }
+  },
+  card: {
+    borderRadius: 4,
+    borderColor: '#ddd',
+    borderBottomWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+    marginLeft: 10,
+    marginRight: 10,
+    marginTop: '2%',
+    marginBottom: '2%',
+    backgroundColor: '#FFF'
+  },
 }
 
 export default FilterBeforePage;

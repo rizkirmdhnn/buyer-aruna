@@ -360,11 +360,12 @@ class DetailRequestOrderPage extends Component {
       checkedContainer,
       unCheckedContainer,
       buttonExpanded,
+      checkedSelected,
       dataMaster
     } = this.state;
 
 
-    console.log(dataMaster, 'Button');
+    console.log(checkedSelected, 'TES');
     return (
       <ScrollView
         refreshControl={
@@ -432,7 +433,7 @@ class DetailRequestOrderPage extends Component {
                     keyExtractor={(item, index) => index}
                   />
                   {
-                    buttonExpanded ?
+                    checkedSelected.length > 0 ?
                       <View style={{ flex: 1 }}>
                         {this.renderButton()}
                       </View>

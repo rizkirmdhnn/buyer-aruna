@@ -16,12 +16,13 @@ class MessageAdminPage extends Component {
 
 	constructor(props) {
 		super(props)
-	
+
 		this.state = {
 			loading: true,
 			data: {},
 			text: '',
-			decoded: '',
+			textTemp: '',
+			decoded: ''
 		}
 	}
 
@@ -39,7 +40,9 @@ class MessageAdminPage extends Component {
 	}
 
 	onChangeInput = (name, v) => {
-		this.setState({[name]: v})
+		this.setState({ [name]: v }, () => {
+			this.setState({ text: this.state.textTemp })
+		})
 	}
 
 	fetchMessage = () => {
@@ -47,20 +50,20 @@ class MessageAdminPage extends Component {
 		let token = this.props.user.token
 
 		axios.get(`${BASE_URL}/messages/contact-admin/client?sorting=ASC`, {
-			headers: {token}
+			headers: { token }
 		})
-		.then(response => {
-			this.setState({data: response.data.data, loading: false})
-		})
-		.catch(error => {
-			if (error.response) {
-				ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
-			}
-			else {
-				ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
-			}
-			this.setState({loading: false})
-		})
+			.then(response => {
+				this.setState({ data: response.data.data, loading: false })
+			})
+			.catch(error => {
+				if (error.response) {
+					ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
+				}
+				else {
+					ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
+				}
+				this.setState({ loading: false })
+			})
 
 		this.timer = setTimeout(() => this.fetchMessage(), 5000)
 	}
@@ -72,26 +75,20 @@ class MessageAdminPage extends Component {
 		formData.append('text', this.state.text)
 
 		axios.post(`${BASE_URL}/messages/contact-admin`, formData, {
-			headers: {token}
+			headers: { token }
 		})
-		.then((result) => {
-			console.log(result)
-			this.setState({text: ''})
-			this.fetchMessage()
-		})
-		.catch(error => {
-			ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
-			// if (error.response) {
-			// 	alert(error.response.data.message)
-			// }
-			// else {
-			// 	alert('Koneksi internet bermasalah')
-			// }
-		})
+			.then((result) => {
+				console.log(result)
+				this.setState({ text: '' })
+				this.fetchMessage()
+			})
+			.catch(error => {
+				ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
+			})
 	}
 
 	render() {
-		const { loading, data, text } = this.state
+		const { loading, data, textTemp } = this.state
 		console.log(data)
 
 		if (loading) {
@@ -101,10 +98,10 @@ class MessageAdminPage extends Component {
 		return (
 			<View style={styles.container}>
 
-				<View style={{marginTop: 5}}>
-					<Card style={{backgroundColor: '#fff', padding: 5, justifyContent: 'center', alignItems: 'center'}}>
+				<View style={{ marginTop: 5 }}>
+					<Card style={{ backgroundColor: '#fff', padding: 5, justifyContent: 'center', alignItems: 'center' }}>
 						<ContainerSection>
-							<Text style={{textAlign: 'center'}}>
+							<Text style={{ textAlign: 'center' }}>
 								Akun Resmi Admin Aruna
 							</Text>
 						</ContainerSection>
@@ -115,14 +112,14 @@ class MessageAdminPage extends Component {
 					style={styles.body}
 					ref={ref => this.scrollView = ref}
 					onContentSizeChange={() => {
-						this.scrollView.scrollToEnd({animated: true})
+						this.scrollView.scrollToEnd({ animated: true })
 					}}
 				>
 					{
 						data !== undefined && data.map(item =>
 							<View key={item.id} style={styles.messageContainer}>
-								<Text style={{textAlign: item.AdminId === null ? 'right' : 'left', fontSize: 16}}>{item.text}</Text>
-								<Text style={{textAlign: item.AdminId === null ? 'right' : 'left', fontSize: 9}}>{moment(item.createdAt).format('DD/MM/YYYY | HH:mm')} WIB</Text>
+								<Text style={{ textAlign: item.AdminId === null ? 'right' : 'left', fontSize: 16 }}>{item.text}</Text>
+								<Text style={{ textAlign: item.AdminId === null ? 'right' : 'left', fontSize: 9 }}>{moment(item.createdAt).format('DD/MM/YYYY | HH:mm')} WIB</Text>
 							</View>
 						)
 					}
@@ -131,21 +128,21 @@ class MessageAdminPage extends Component {
 				<View style={styles.send}>
 					<ContainerSection>
 						<Input
-							onChangeText={val => this.onChangeInput('text', val)}
+							onChangeText={val => this.onChangeInput('textTemp', val)}
 							placeholder="Tulis Pesan..."
-							value={text}
+							value={textTemp}
 							multiline
 						/>
-						<TouchableOpacity 
-							disabled={text === ''} 
-							onPress={() => this.postMessage()}
+						<TouchableOpacity
+							disabled={textTemp === ''}
+							onPress={() => this.setState({ textTemp: ''}, () => { this.postMessage() })}
 						>
-							<View style={{marginLeft: 10}}>
-								<Icon size={46} color={text === '' ? '#eaeaea' : COLOR.secondary_a} name="md-send" />
+							<View style={{ marginLeft: 10 }}>
+								<Icon size={46} color={textTemp === '' ? '#eaeaea' : COLOR.secondary_a} name="md-send" />
 							</View>
 						</TouchableOpacity>
 					</ContainerSection>
-				
+
 				</View>
 			</View>
 		)

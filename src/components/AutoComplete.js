@@ -39,6 +39,7 @@ class AutoComplete extends Component {
 						underlineColorAndroid={'transparent'}
 						onChangeText={onChangeText}
 						style={inputStyle}
+						editable={editable}
 					/>
 				</View>
 				{
