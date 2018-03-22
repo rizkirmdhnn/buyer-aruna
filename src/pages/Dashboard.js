@@ -134,7 +134,7 @@ class Dashboard extends Component {
   renderProductItem = (itemProduct) => {
     const number = parseInt(itemProduct.index, 0) + 1;
     return (
-      <View style={{ marginRight: 10, marginLeft: -1 }}>
+      <View style={{ marginLeft: -1 }}>
         <TouchableWithoutFeedback onPress={() => { this.props.navi.navigate('DetailFishes', { datas: itemProduct.item.Fish }) }}>
           <View
             style={{
@@ -349,6 +349,7 @@ const styles = {
   containerFlatList: {
     flex: 1,
     marginLeft: -3,
+    paddingRight: 13,
     marginTop: -20
     // height: 100,
     // width: 160,
