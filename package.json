@@ -15,6 +15,7 @@
     "axios": "^0.17.1",
     "jwt-decode": "^2.2.0",
     "moment": "^2.20.1",
+    "npm": "^5.7.1",
     "numeral": "^2.0.6",
     "react": "16.0.0",
     "react-native": "0.51.0",
