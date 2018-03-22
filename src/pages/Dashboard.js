@@ -231,7 +231,12 @@ class Dashboard extends Component {
     return (
       <View style={{ flex: 1 }}>
         <View style={{ height: 140 }}>
-          <Swiper style={styles.wrapper} showsButtons autoplay>
+          <Swiper 
+            style={styles.wrapper}
+            autoplay
+            showsButtons={false}
+            dot={<View style={{ backgroundColor: '#FFFFFF', width: 5, height: 5, borderRadius: 4, marginLeft: 3, marginRight: 3, marginTop: 3, marginBottom: 3 }} />}
+          >
             <View style={styles.slide1}>
               <Image
                 style={styles.imageStyle}
@@ -279,9 +284,9 @@ class Dashboard extends Component {
             </ButtonOrder>
           </View>
 
-          <View style={{ height: 5, backgroundColor: '#E6E6E6' }} />
+          <View style={{ height: 2, backgroundColor: '#EFEFEF' }} />
 
-          <View style={{ paddingTop: 10, paddingLeft: 15, height: '23%', backgroundColor: '#F4F4F4' }}>
+          <View style={{ paddingTop: 10, paddingLeft: 15, height: '18%', backgroundColor: '#F4F4F4' }}>
             <View style={styles.containerTextProductCard}>
               <Text style={styles.textCard}>Komoditas Favorit</Text>
               <TouchableNativeFeedback onPress={() => { this.props.navi.navigate('ProductList'); }}>
@@ -295,11 +300,12 @@ class Dashboard extends Component {
                 horizontal
                 keyExtractor={this.keyExtractor}
                 renderItem={this.renderProductItem.bind(this)}
+                showsHorizontalScrollIndicator={false}
               />
             </View>
           </View>
 
-          <View style={{ height: 5, backgroundColor: '#E6E6E6' }} />
+          <View style={{ height: 2, backgroundColor: '#EFEFEF' }} />
 
           <View style={{ padding: 4, paddingTop: 10, paddingBottom: 30, backgroundColor: '#F4F4F4' }}>
             <View style={styles.containerTextProductCard}>
@@ -343,7 +349,7 @@ const styles = {
   containerFlatList: {
     flex: 1,
     marginLeft: -3,
-    marginTop: -40
+    marginTop: -20
     // height: 100,
     // width: 160,
     // alignSelf: 'center',

@@ -20,8 +20,7 @@ import { BASE_URL, COLOR } from './../shared/lb.config';
 class FilterPage extends Component {
     static navigationOptions = {
         title: 'Filter',
-        headerStyle: { backgroundColor: '#006AAF' },
-        headerTitleStyle: { color: '#FFFFFF' }
+        headerRight: <View />
     }
 
     constructor(props) {
@@ -29,7 +28,7 @@ class FilterPage extends Component {
         this.state = {
             screen: '',
             supplier: '',
-            cityExpanded: null,
+            cityExpanded: true,
             dataProvince: '',
             provinsiId: [],
             loading: true,
@@ -109,16 +108,24 @@ class FilterPage extends Component {
 
         if (this.state.screen === 'Price') {
             return (
-                <ContainerSection>
-                    <View style={{ flex: 1, flexDirection: 'row' }}>
+                <View style={{ flex: 1, marginLeft: 20, marginTop: 20, marginRight: 20 }}>
+                    <ContainerSection>
                         <Input
+                            label='Rentang Harga'
                             keyboardType="numeric"
                             placeholder='Max'
                             value={maxPrice ? numeral(parseInt(maxPrice, 0)).format('0,0') : ''}
                             onChangeText={v => this.onChangeInput('maxPrice', v.replace(/\./g, ''))}
                         />
+                    </ContainerSection >
+                    <View style={{ height: 50, marginTop: '80%' }}>
+                        <ContainerSection>
+                            <Button onPress={() => { this.saveFilter() }}>
+                                Terapkan
+                            </Button>
+                        </ContainerSection>
                     </View>
-                </ContainerSection >
+                </View>
             );
         }
 
@@ -127,18 +134,13 @@ class FilterPage extends Component {
             <Card style={{ borderBottomWidth: 1, borderColor: '#eaeaea' }}>
                 <View style={styles.card}>
                     <ContainerSection>
-                        <TouchableWithoutFeedback onPress={() => { this.setState({ cityExpanded: !cityExpanded }); console.log(this.state.cityExpanded, 'Request Klik') }}>
-                            <View style={{ flex: 1, flexDirection: 'row' }}>
-                                <Text style={{ flex: 1, fontSize: 20 }}>Provinsi</Text>
-                                <View style={{ flex: 1 }}>
-                                    <Icon size={30} style={{ alignSelf: 'flex-end' }} name={cityExpanded ? 'md-arrow-dropup' : 'md-arrow-dropdown'} />
-                                </View>
-                            </View>
-                        </TouchableWithoutFeedback>
+                        <View style={{ flex: 1, flexDirection: 'row' }}>
+                            <Text style={{ flex: 1, fontSize: 20 }}>Provinsi</Text>
+                        </View>
                     </ContainerSection>
                     {
                         cityExpanded ?
-                            <View style={{ height: 500 }}>
+                            <View style={{ height: 390 }}>
                                 <ScrollView>
                                     {
                                         dataProvince.map((item, index) => {
@@ -160,15 +162,17 @@ class FilterPage extends Component {
                                         })
                                     }
                                 </ScrollView>
+                                <View style={{ marginTop: '2%' }}>
+                                    <ContainerSection>
+                                        <Button onPress={() => { this.saveFilter() }}>
+                                            Terapkan
+                                    </Button>
+                                    </ContainerSection>
+                                </View>
                             </View>
                             :
                             <View />
                     }
-                    <ContainerSection>
-                        <Button onPress={() => { this.saveFilter() }}>
-                            Terapkan
-                        </Button>
-                    </ContainerSection>
                 </View>
             </Card>
         );
@@ -179,22 +183,24 @@ class FilterPage extends Component {
         const {
             loading
         } = this.state
-
+        console.log(this.state.screen, 'SCREEN');
         return (
             <View style={{ flex: 4 }}>
                 <View style={{ flexDirection: 'row' }}>
-                    <View style={{ flex: 1, borderColor: '#3484d7', borderRightWidth: 0.3 }}>
+                    <View style={{ flex: 1, borderColor: 'white', borderRightWidth: 0.3 }}>
                         <TouchableNativeFeedback onPress={() => this.setState({ screen: '' })}>
                             <View
                                 style={{
-                                    backgroundColor: COLOR.element_a3,
+                                    backgroundColor: 'white',
                                     height: 50,
-                                    justifyContent: 'center'
+                                    justifyContent: 'center',
+                                    borderBottomWidth: 2,
+                                    borderBottomColor: this.state.screen === 'Price' ? 'white' : COLOR.secondary_a
                                 }}
                             >
                                 <Text
                                     style={{
-                                        color: '#67a6e3',
+                                        color: 'black',
                                         textAlign: 'center',
                                         fontSize: 16
                                     }}
@@ -202,18 +208,20 @@ class FilterPage extends Component {
                             </View>
                         </TouchableNativeFeedback>
                     </View>
-                    <View style={{ flex: 1, borderColor: '#3484d7', borderRightWidth: 0.3 }}>
+                    <View style={{ flex: 1, borderColor: 'white', borderRightWidth: 0.3 }}>
                         <TouchableNativeFeedback onPress={() => this.setState({ screen: 'Price' })}>
                             <View
                                 style={{
-                                    backgroundColor: COLOR.element_a3,
+                                    backgroundColor: 'white',
                                     height: 50,
-                                    justifyContent: 'center'
+                                    justifyContent: 'center',
+                                    borderBottomWidth: 2,
+                                    borderBottomColor: this.state.screen === 'Price' ? COLOR.secondary_a : 'white'
                                 }}
                             >
                                 <Text
                                     style={{
-                                        color: '#67a6e3',
+                                        color: 'black',
                                         textAlign: 'center',
                                         fontSize: 16
                                     }}

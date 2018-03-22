@@ -26,7 +26,8 @@ class TransactionPage extends Component {
       tokenUser: '',
       dataTransaksi: [],
       anyData: true,
-      noData: null
+      noData: null,
+      noListData: null
     };
   }
 
@@ -40,28 +41,26 @@ class TransactionPage extends Component {
       }
       console.log('Storage Kosong');
       this.setState({ loading: false, noData: true });
-      return this.getNoData();
+      // return this.getNoData();
     })
   }
 
 
   getNoData() {
     return (
-      <View style={{ marginTop: '30%' }}>
-        <View style={styles.card}>
-          <View style={styles.thumbnailContainerStyle}>
-            <Image
-              style={styles.thumbnailStyle}
-              source={require('../assets/images/notLogin.png')}
-            />
-          </View>
-          <Text style={{ textAlign: 'center' }}>Maaf... Anda belum login.</Text>
-          <Text style={{ textAlign: 'center' }}>Silahkan login terlebih dahulu. </Text>
-          <View style={{ padding: 15, height: 80 }}>
-            <Button onPress={() => { this.loginFirst() }}>
-              Login
+      <View>
+        <View style={styles.thumbnailContainerStyle}>
+          <Image
+            style={styles.thumbnailStyle}
+            source={require('../assets/images/notLogin.png')}
+          />
+        </View>
+        <Text style={{ textAlign: 'center' }}>Maaf... Anda belum login.</Text>
+        <Text style={{ textAlign: 'center' }}>Silahkan login terlebih dahulu. </Text>
+        <View style={{ padding: 15, height: 80 }}>
+          <Button onPress={() => { this.loginFirst() }}>
+            Login
           </Button>
-          </View>
         </View>
       </View>
     )
@@ -76,7 +75,11 @@ class TransactionPage extends Component {
     }).then(response => {
       const result = response.data.data;
       console.log(response, 'Data Transaksi');
-      this.setState({ dataTransaksi: result, loading: false });
+      this.setState({ dataTransaksi: result, loading: false }, () => {
+        if (result.length === 0) {
+          this.setState({ noListData: true });
+        }
+      });
     })
       .catch(error => {
         this.setState({ loading: false });
@@ -211,7 +214,7 @@ class TransactionPage extends Component {
 
 
   render() {
-    const { anyData, noData, dataTransaksi } = this.state;
+    const { anyData, noData, noListData } = this.state;
     return (
       <View style={{ flex: 1 }}>
         {
@@ -227,8 +230,30 @@ class TransactionPage extends Component {
             <View />
         }
         {
+          noListData ?
+            <View style={{ flex: 1, marginTop: '-60%' }}>
+              <View style={styles.thumbnailContainerStyle}>
+                <Image
+                  style={styles.thumbnailStyle}
+                  source={require('../assets/images/empty_transaksi.png')}
+                />
+              </View>
+              <Text style={{ textAlign: 'center' }}>Anda Belum Melakukan Request Order</Text>
+              <Text style={{ textAlign: 'center' }}>Silahkan lakukan order komoditas</Text>
+              <View style={{ padding: 15, height: 80 }}>
+                <Button onPress={() => { this.orderFirst() }}>
+                  Buat Permintaan
+              </Button>
+              </View>
+            </View>
+            :
+            <View />
+        }
+        {
           noData ?
-            this.getNoData()
+            <View style={{ flex: 1, marginTop: '-60%' }}>
+              {this.getNoData()}
+            </View>
             :
             <View />
         }

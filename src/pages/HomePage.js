@@ -542,12 +542,12 @@ const styles = {
   tabText: {
     color: '#67a6e3',
     textAlign: 'center',
-    fontSize: 16
+    fontSize: 14
   },
   tabTextActive: {
     color: '#fff',
     textAlign: 'center',
-    fontSize: 16
+    fontSize: 14
   },
   drawerItemText: {
     color: '#fff',

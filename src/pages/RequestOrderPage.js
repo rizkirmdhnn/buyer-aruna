@@ -25,7 +25,8 @@ class RequestOrderPage extends Component {
       NoExpiredContainer: null,
       refresh: true,
       anyData: true,
-      noData: null
+      noData: null,
+      noListData: null
     };
   }
 
@@ -37,28 +38,26 @@ class RequestOrderPage extends Component {
         return this.getData();
       }
       console.log('Storage Kosong');
-      this.setState({ noData: true });
-      return this.getNoData();
+      this.setState({ noData: true, refresh: false });
+      // return this.getNoData();
     })
   }
 
   getNoData() {
     return (
-      <View style={{ marginTop: '30%' }}>
-        <View style={styles.card}>
-          <View style={styles.thumbnailContainerStyle}>
-            <Image
-              style={styles.thumbnailStyle}
-              source={require('../assets/images/notLogin.png')}
-            />
-          </View>
-          <Text style={{ textAlign: 'center' }}>Maaf... Anda belum login.</Text>
-          <Text style={{ textAlign: 'center' }}>Silahkan login terlebih dahulu. </Text>
-          <View style={{ padding: 15, height: 80 }}>
-            <Button onPress={() => { this.loginFirst() }}>
-              Login
+      <View>
+        <View style={styles.thumbnailContainerStyle}>
+          <Image
+            style={styles.thumbnailStyle}
+            source={require('../assets/images/notLogin.png')}
+          />
+        </View>
+        <Text style={{ textAlign: 'center' }}>Maaf... Anda belum login.</Text>
+        <Text style={{ textAlign: 'center' }}>Silahkan login terlebih dahulu. </Text>
+        <View style={{ padding: 15, height: 80 }}>
+          <Button onPress={() => { this.loginFirst() }}>
+            Login
             </Button>
-          </View>
         </View>
       </View>
     )
@@ -79,6 +78,10 @@ class RequestOrderPage extends Component {
       this.setState({
         dataReqOrder: res,
         refresh: false
+      }, () => {
+        if (res.length === 0) {
+          this.setState({ noListData: true });
+        }
       });
     })
       .catch(error => {
@@ -203,31 +206,11 @@ class RequestOrderPage extends Component {
         );
       }
     }
-
-    return (
-      <View style={{ marginTop: '30%' }}>
-        <View style={styles.card}>
-          <View style={styles.thumbnailContainerStyle}>
-            <Image
-              style={styles.thumbnailStyle}
-              source={require('../assets/images/empty_transaksi.png')}
-            />
-          </View>
-          <Text style={{ textAlign: 'center' }}>Anda Belum Melakukan Request Order</Text>
-          <Text style={{ textAlign: 'center' }}>Silahkan lakukan order komoditas</Text>
-          <View style={{ padding: 15, height: 80 }}>
-            <Button onPress={() => { this.orderFirst() }}>
-              Buat Permintaan
-        </Button>
-          </View>
-        </View>
-      </View>
-    );
   }
 
 
   render() {
-    const { anyData, noData, dataReqOrder } = this.state;
+    const { anyData, noData, dataReqOrder, noListData } = this.state;
     console.log(dataReqOrder.length, 'LENGTH BOR')
     return (
       <View style={{ flex: 1 }}>
@@ -244,8 +227,28 @@ class RequestOrderPage extends Component {
             <View />
         }
         {
+          noListData ?
+            <View style={{ flex: 1, marginTop: '-60%' }}>
+              <View style={styles.thumbnailContainerStyle}>
+                <Image
+                  style={styles.thumbnailStyle}
+                  source={require('../assets/images/empty_transaksi.png')}
+                />
+              </View>
+              <Text style={{ textAlign: 'center' }}>Anda Belum Melakukan Request Order</Text>
+              <Text style={{ textAlign: 'center' }}>Silahkan lakukan order komoditas</Text>
+              <View style={{ padding: 15, height: 80 }}>
+                <Button onPress={() => { this.orderFirst() }}>
+                  Buat Permintaan
+              </Button>
+              </View>
+            </View>
+            :
+            <View />
+        }
+        {
           noData ?
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, marginTop: '-60%' }}>
               {this.getNoData()}
             </View>
             :

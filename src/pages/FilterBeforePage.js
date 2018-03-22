@@ -42,7 +42,8 @@ class FilterBeforePage extends Component {
       fishData: '',
       idProvince: [],
       refreshing: true,
-      refresh: true
+      refresh: true,
+      noListData: null
     }
   }
 
@@ -89,15 +90,23 @@ class FilterBeforePage extends Component {
       console.log('Text Tidak Kosong');
       this.setState({
         searchItem: '',
+        checkedSupplier: [],
         searchResult: true,
         searchResultAll: false,
-        viewExpanded: false
+        viewExpanded: false,
+        noListData: false
       }, () => {
         axios.get(`${BASE_URL}/fishes?key=${text}&pageSize=5sorting=ASC`)
           .then(response => {
             res = response.data.data
             console.log(res, 'Data Ikan');
-            this.setState({ searchItem: res, refresh: false })
+            this.setState({ searchItem: res, refresh: false }, () => {
+              if (res.length === 0) {
+                this.setState({ noListData: true, searchResult: false })
+              } else {
+                this.setState({ noListData: false, searchResult: true })
+              }
+            })
           })
           .catch(error => {
             console.log(error, 'Error');
@@ -241,7 +250,8 @@ class FilterBeforePage extends Component {
       searchResultAll,
       fishData,
       dataParams,
-      checkedSupplier
+      checkedSupplier,
+      noListData
     } = this.state;
 
     const { tabContainer, tabText } = styles;
@@ -313,6 +323,25 @@ class FilterBeforePage extends Component {
               :
               <View />
           }
+
+          {
+            noListData ?
+              <View style={{ marginTop: '30%' }}>
+                <View style={{ flex: 1 }}>
+                  <Image
+                    style={{ alignSelf: 'center' }}
+                    source={require('./../assets/images/ga_search.png')}
+                  />
+                </View>
+                <View style={{ marginTop: '40%' }}>
+                  <Text style={{ textAlign: 'center', marginTop: '3%' }}>Komoditas tidak ditemukan</Text>
+                  <Text style={{ textAlign: 'center', marginTop: '3%' }}>Coba dengan nama Komoditas lain.</Text>
+                </View>
+              </View>
+              :
+              <View />
+          }
+
           {
             searchResultAll ?
               <View style={{ flex: 1 }}>

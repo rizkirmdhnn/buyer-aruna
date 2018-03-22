@@ -137,7 +137,7 @@ class ProfileBuyerPage extends Component {
 						</View>
 					</View>
 				</ScrollView >
-				<View style={{ height: 50, marginTop: 10 }}>
+				<View style={{ height: 50, marginTop: -10 }}>
 					<Button
 						style={{ margin: 5, marginLeft: 35, marginRight: 35 }}
 						onPress={() => {
@@ -228,7 +228,8 @@ const styles = {
 		elevation: 1,
 		marginLeft: 15,
 		marginRight: 15,
-		marginTop: 10,
+		marginTop: 5,
+		marginBottom: 8,
 		padding: 10,
 		paddingLeft: 15,
 		paddingRight: 15,
