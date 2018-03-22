@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, Image, View, Alert, TouchableOpacity, AsyncStorage, ToastAndroid } from 'react-native';
+import { Text, Image, View, TouchableOpacity, AsyncStorage, ToastAndroid } from 'react-native';
 import axios from 'axios';
 import OneSignal from 'react-native-onesignal';
 import jwtDecode from 'jwt-decode';
