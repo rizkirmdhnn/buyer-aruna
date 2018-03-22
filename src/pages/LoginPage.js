@@ -155,7 +155,7 @@ class LoginFormPage extends Component {
           </Text>
           <TouchableOpacity onPress={() => navigate('RegistrationForm')}>
             <Text style={{ color: COLOR.secondary_a }}>
-              {'Daftar'}
+              {' '}{'Daftar'}
             </Text>
           </TouchableOpacity>
         </View>

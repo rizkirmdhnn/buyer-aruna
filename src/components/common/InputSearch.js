@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, View, TextInput, Image } from 'react-native'
+import { Text, View, TextInput, Image, TouchableOpacity } from 'react-native'
 import { COLOR } from './../../shared/lb.config';
 
 class InputSearch extends Component {
@@ -21,15 +21,23 @@ class InputSearch extends Component {
 		switch (icon) {
 			case 'ic_user':
 				return require('./../../assets/images/ic_user.png')
-					case 'ic_search':
-						return require('./../../assets/images/ic_search.png')
+			case 'ic_search':
+				return require('./../../assets/images/ic_search.png')
+			case 'ic_cancel':
+				return require('./../../assets/images/ic_cancel.png')
 			default:
 				return require('./../../assets/images/ic_password.png')
 		}
 	}
 
+	isCancel = (txt) => {
+		console.log(txt, 'Cancel');
+		console.log(this.props, 'Props');
+		this.props.isErrase();
+	}
+
 	render() {
-		const { label, value, onChangeText, placeholder, onFocus, autoFocus, secureTextEntry, keyboardType, multiline, lines, editable, icon, textAlignVertical } = this.props
+		const { label, value, onChangeText, isErrase, placeholder, onFocus, autoFocus, secureTextEntry, keyboardType, multiline, lines, editable, icon, textAlignVertical } = this.props
 		const { inputStyle, labelStyle, containerStyle } = styles
 
 		return (
@@ -37,13 +45,13 @@ class InputSearch extends Component {
 				{
 					label ?
 						<Text style={labelStyle}>{label}</Text>
-					:
+						:
 						<View />
 				}
 
-				<View style={{...styles.formWrapper, ...((editable === false) ? styles.lockedForm : {}), ...((this.state.isFocus === true) ? styles.onFocus : {}) }}>
-					
-					<TextInput 
+				<View style={{ ...styles.formWrapper, ...((editable === false) ? styles.lockedForm : {}), ...((this.state.isFocus === true) ? styles.onFocus : {}) }}>
+
+					<TextInput
 						secureTextEntry={secureTextEntry}
 						placeholder={placeholder}
 						autoCorrect={false}
@@ -59,10 +67,15 @@ class InputSearch extends Component {
 						underlineColorAndroid={'transparent'}
 						numberOfLines={lines || 1}
 						textAlignVertical={textAlignVertical}
+						isErrase={isErrase}
 					/>
-                    
-                    {
-						icon ? <Image source={this.imageIcon(icon)} style={{width: 20, height: 20, marginRight: 10}} /> : <View />
+
+					{
+						icon ?
+							<TouchableOpacity onPress={() => this.isCancel(value)}>
+								<Image source={this.imageIcon(icon)} style={{ width: 20, height: 20, marginRight: 10 }} />
+							</TouchableOpacity>
+							: <View />
 					}
 				</View>
 			</View>

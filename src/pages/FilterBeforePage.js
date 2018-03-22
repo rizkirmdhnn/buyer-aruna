@@ -18,7 +18,7 @@ import axios from 'axios';
 import { NavigationActions } from 'react-navigation';
 import { CheckBox } from 'react-native-elements';
 import { BASE_URL, COLOR } from './../shared/lb.config';
-import { InputSearch } from '../components/common'
+import { InputSearch } from '../components/common';
 
 
 class FilterBeforePage extends Component {
@@ -29,6 +29,7 @@ class FilterBeforePage extends Component {
 
   constructor(props) {
     super(props)
+    this.isErrase = this.isErrase.bind(this)
     this.state = {
       tokenUser: '',
       checkedSupplier: [],
@@ -43,7 +44,8 @@ class FilterBeforePage extends Component {
       idProvince: [],
       refreshing: true,
       refresh: true,
-      noListData: null
+      noListData: null,
+      txt: ''
     }
   }
 
@@ -61,6 +63,7 @@ class FilterBeforePage extends Component {
       }
     })
   }
+
 
   onItemSelected = (item) => {
     console.log('On Item Selected');
@@ -86,6 +89,7 @@ class FilterBeforePage extends Component {
 
   querySuggestion(text) {
     console.log(text, 'Text');
+    this.setState({ txt: text });
     if (text !== '') {
       console.log('Text Tidak Kosong');
       this.setState({
@@ -179,13 +183,19 @@ class FilterBeforePage extends Component {
   }
 
 
+  isErrase = (name, v) => {
+    console.log(v, 'OIT')
+    this.setState({ txt: '' });
+  }
+
+
   renderData = (item) => {
     return (
       <View style={styles.card}>
         <View style={styles.itemContainerStyle}>
           <View style={styles.thumbnailContainerStyle}>
             <Image
-              style={styles.thumbnailStyle}
+              style={styles.thumbnailStyleSupplier}
               source={{ uri: `${BASE_URL}/images/${item.User.photo}` }}
             />
           </View>
@@ -218,7 +228,7 @@ class FilterBeforePage extends Component {
 
   renderDataSearch = (item) => {
     return (
-      <View style={styles.card}>
+      <View>
         <TouchableOpacity
           key={item.id}
           onPress={() => this.onItemSelected(item)}
@@ -251,12 +261,11 @@ class FilterBeforePage extends Component {
       fishData,
       dataParams,
       checkedSupplier,
-      noListData
+      noListData,
+      txt
     } = this.state;
 
     const { tabContainer, tabText } = styles;
-
-    console.log(checkedSupplier, 'Supplier Check');
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -281,8 +290,11 @@ class FilterBeforePage extends Component {
               onChangeText={(text) => {
                 this.querySuggestion(text);
               }}
+              value={txt}
+              // onChangeText={v => this.onChangeInput('txt', v)}
               placeholder="Cari Komoditas..."
-              icon="ic_search"
+              icon={txt === '' ? 'ic_search' : 'ic_cancel'}
+              isErrase={v => this.isErrase('txt', v)}
             />
           </View>
         </View>
@@ -444,6 +456,11 @@ const styles = {
     margin: 10,
   },
   thumbnailStyle: {
+    height: 30,
+    width: 30,
+    borderWidth: 1
+  },
+  thumbnailStyleSupplier: {
     height: 100,
     width: 100,
     borderWidth: 1
@@ -452,13 +469,13 @@ const styles = {
     flex: 1,
     marginRight: 15,
     marginBottom: 10,
-    marginTop: 15,
+    marginTop: 8,
     flexDirection: 'column',
     justifyContent: 'space-around',
   },
   headerTextStyle: {
-    fontSize: 15,
-    color: COLOR.secondary_a,
+    fontSize: 13,
+    color: 'black',
     fontFamily: 'Muli-Bold'
   },
   tabContainerActive: {
@@ -483,8 +500,8 @@ const styles = {
   },
   card: {
     borderRadius: 4,
-    borderColor: '#ddd',
-    borderBottomWidth: 1,
+    // borderColor: '#ddd',
+    // borderBottomWidth: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

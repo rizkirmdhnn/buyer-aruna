@@ -320,10 +320,10 @@ class RequestFormOrderSecondPage extends Component {
 
 const styles = {
   card: {
-    borderWidth: 1,
+    // borderWidth: 1,
     borderRadius: 2,
-    borderColor: '#ddd',
-    borderBottomWidth: 1,
+    // borderColor: '#ddd',
+    // borderBottomWidth: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

@@ -137,7 +137,7 @@ class ProfileBuyerPage extends Component {
 						</View>
 					</View>
 				</ScrollView >
-				<View style={{ height: 50, marginTop: -10 }}>
+				<View style={{ height: 50 }}>
 					<Button
 						style={{ margin: 5, marginLeft: 35, marginRight: 35 }}
 						onPress={() => {

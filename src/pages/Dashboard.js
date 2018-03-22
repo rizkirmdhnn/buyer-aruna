@@ -284,7 +284,7 @@ class Dashboard extends Component {
             </ButtonOrder>
           </View>
 
-          <View style={{ height: 2, backgroundColor: '#EFEFEF' }} />
+          <View style={{ height: 4, backgroundColor: '#EFEFEF' }} />
 
           <View style={{ paddingTop: 10, paddingLeft: 15, height: '18%', backgroundColor: '#F4F4F4' }}>
             <View style={styles.containerTextProductCard}>
@@ -305,7 +305,7 @@ class Dashboard extends Component {
             </View>
           </View>
 
-          <View style={{ height: 2, backgroundColor: '#EFEFEF' }} />
+          <View style={{ height: 3, backgroundColor: '#EFEFEF' }} />
 
           <View style={{ padding: 4, paddingTop: 10, paddingBottom: 30, backgroundColor: '#F4F4F4' }}>
             <View style={styles.containerTextProductCard}>
@@ -552,8 +552,8 @@ const styles = {
   },
   card: {
     borderRadius: 4,
-    borderColor: '#ddd',
-    borderBottomWidth: 1,
+    // borderColor: '#ddd',
+    // borderBottomWidth: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

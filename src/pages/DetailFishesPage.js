@@ -107,7 +107,7 @@ class DetailFishesPage extends Component {
                             </View>
                         </ContainerSection>
 
-                        <Card style={{ borderBottomWidth: 1, borderColor: '#eaeaea' }}>
+                        <View style={{ borderBottomWidth: 1, borderColor: '#eaeaea' }}>
                             <View style={styles.card}>
                                 <ContainerSection>
                                     <View style={{ flex: 1, flexDirection: 'row' }}>
@@ -123,7 +123,7 @@ class DetailFishesPage extends Component {
                                     </View>
                                 </ContainerSection>
                             </View>
-                        </Card>
+                        </View>
                     </View>
                 </ScrollView>
                 <View style={{ padding: 12, margin: 30, marginBottom: 0, marginTop: 0, height: 60 }}>
@@ -152,6 +152,21 @@ const styles = {
         alignItems: 'center',
         margin: 15,
     },
+    card: {
+        borderRadius: 4,
+        // borderColor: '#ddd',
+        // borderBottomWidth: 1,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 2,
+        marginLeft: 10,
+        marginRight: 10,
+        // marginTop: 2,
+        marginBottom: '2%',
+        backgroundColor: '#FFF'
+      }
 };
 
 export default DetailFishesPage;
