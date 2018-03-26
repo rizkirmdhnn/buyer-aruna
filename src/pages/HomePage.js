@@ -235,7 +235,7 @@ class HomePage extends Component {
                     <ContainerSection>
                       <Image
                         style={styles.menuIcon}
-                        source={require('./../assets/images/ic_pusatbantuan_white.png')}
+                        source={require('./../assets/images/help.png')}
                       />
                       <Text style={styles.drawerItemText}>Pusat Bantuan</Text>
                     </ContainerSection>
