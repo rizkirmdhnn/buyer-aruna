@@ -127,6 +127,14 @@ class BidAuctionPage extends Component {
             });
     }
 
+    isMinus() {
+
+    }
+
+    isPlus() {
+        
+    }
+
 
     render() {
         const { Auction, dateNow, start, end, bidAmount, loading } = this.state;
@@ -216,7 +224,7 @@ class BidAuctionPage extends Component {
                                                         </View>
 
                                                         <View style={{ flexDirection: 'row' }}>
-                                                            <Text style={{ flex: 1 }}>Rp. {item.bidAmount === null ? '0' : item.bidAmount}</Text>
+                                                            <Text style={{ flex: 1 }}>Rp. {item.bidAmount === null ? '0' : numeral(parseInt(item.bidAmount, 0)).format('0,0')}</Text>
                                                             <Text style={{ flex: 1 }}>{moment(item.createdAt).format('DD/MM/YYYY HH:mm:ss')}</Text>
                                                         </View>
                                                     </View>

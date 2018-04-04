@@ -17,11 +17,13 @@ class InputNumber extends Component {
 	}
 
 	minus = (props) => {
-		console.log(props, 'PROPS MINUS');
+		// console.log(props, 'PROPS MINUS');
+		this.props.isMinus();
 	}
 
 	plus = (props) => {
-		console.log(props, 'PROPS PLUS');
+		// console.log(props, 'PROPS PLUS');
+		this.props.isPlus();
 	}
 
 	imageIcon = (icon) => {
