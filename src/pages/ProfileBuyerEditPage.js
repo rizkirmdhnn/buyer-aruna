@@ -326,7 +326,7 @@ class ProfileBuyerEditPage extends Component {
                                 >
                                     <Picker.Item label='PT' value='PT' />
                                     <Picker.Item label='CV' value='CV' />
-                                    <Picker.Item label='Lainnya' value='Lainnya' />
+                                    {/* <Picker.Item label='Lainnya' value='Lainnya' /> */}
                                 </Picker>
                             </View>
                         </View>

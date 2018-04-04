@@ -5,7 +5,7 @@ import React from 'react';
 import { StackNavigator } from 'react-navigation';
 import numeral from 'numeral';
 import OneSignal from 'react-native-onesignal';
-import codePush from 'react-native-code-push';
+// import codePush from 'react-native-code-push';
 import { setCustomText } from 'react-native-global-props';
 import { Provider } from 'react-redux'
 import ReduxThunk from 'redux-thunk'
@@ -45,6 +45,9 @@ import DetailFishesPage from './pages/DetailFishesPage';
 import NotificationList from './pages/NotificationList';
 import Term from './pages/Term';
 import MessageAdminPage from './pages/MessageAdminPage';
+import AuctionPage from './pages/AuctionPage';
+import BidAuctionPage from './pages/BidAuctionPage';
+import RegisterAuctionPage from './pages/RegisterAuctionPage';
 /**
  *  List Component
  */
@@ -140,7 +143,10 @@ class App extends React.Component {
       DetailFishes: { screen: DetailFishesPage },
       NotificationList: { screen: NotificationList },
       Term: { screen: Term },
-      MessageAdmin: { screen: MessageAdminPage }
+      MessageAdmin: { screen: MessageAdminPage },
+      Auction: { screen: AuctionPage },
+      BidAuction: { screen: BidAuctionPage },
+      RegisterAuction: { screen: RegisterAuctionPage }
     }, {
         cardStyle: { backgroundColor: '#fafafa' },
         navigationOptions: {
@@ -168,6 +174,6 @@ class App extends React.Component {
 }
 
 
-App = codePush({ checkFrequency: codePush.CheckFrequency.ON_APP_RESUME, installMode: codePush.InstallMode.ON_NEXT_RESUME })(App)
+// App = codePush({ checkFrequency: codePush.CheckFrequency.ON_APP_RESUME, installMode: codePush.InstallMode.ON_NEXT_RESUME })(App)
 
 export default App;

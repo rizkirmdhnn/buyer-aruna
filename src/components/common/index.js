@@ -16,3 +16,4 @@ export * from './InputSearch';
 export * from './InputChat';
 export * from './InputDate';
 export * from './ButtonOrder';
+export * from './InputNumber';

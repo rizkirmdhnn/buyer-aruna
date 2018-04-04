@@ -133,6 +133,11 @@ class HomePage extends Component {
         screen: 'ProfileBuyer'
       },
       {
+        label: 'Lelang',
+        icon: require('./../assets/images/ic_profile.png'),
+        screen: 'Auction'
+      },
+      {
         label: 'Permintaan (PO)',
         icon: require('./../assets/images/ic_po.png'),
         screen: 'Request'
