@@ -81,7 +81,7 @@ class AuctionPage extends Component {
                                 <View style={styles.thumbnailContainerStyle}>
                                     <Image
                                         style={styles.image}
-                                        source={{ uri: `${BASE_URL}/images/${item.data.Fish.photo}` }}
+                                        source={{ uri: `${BASE_URL}/images/${item.Fish.photo}` }}
                                         resizeMode='contain'
                                     />
                                 </View>
