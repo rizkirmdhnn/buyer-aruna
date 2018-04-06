@@ -64,11 +64,11 @@ class InputNumber extends Component {
 				<View style={{ ...styles.formWrapper, ...((editable === false) ? styles.lockedForm : {}), ...((this.state.isFocus === true) ? styles.onFocus : {}) }}>
 					{
 						icon ?
-							<TouchableNativeFeedback
-								onPress={() => this.minus(props)}
-							>
+							// <TouchableNativeFeedback
+							// 	onPress={() => this.minus(props)}
+							// >
 								<Image source={this.imageIcon(icon)} style={{ width: 24, height: 24 }} />
-							</TouchableNativeFeedback>
+							// </TouchableNativeFeedback>
 							:
 							<View />
 					}
@@ -90,11 +90,11 @@ class InputNumber extends Component {
 					/>
 					{
 						icons ?
-							<TouchableNativeFeedback
-								onPress={() => this.plus(props)}
-							>
+							// <TouchableNativeFeedback
+							// 	onPress={() => this.plus(props)}
+							// >
 								<Image source={this.imageIcons(icons)} style={{ width: 21, height: 21 }} />
-							</TouchableNativeFeedback>
+							// </TouchableNativeFeedback>
 							:
 							<View />
 					}
