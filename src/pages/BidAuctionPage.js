@@ -33,18 +33,17 @@ class BidAuctionPage extends Component {
 
     componentDidMount() {
         console.log(this.props.navigation.state.params.datax, 'Data parsing');
+        console.log(this.props.navigation.state.params.idBos.id, 'BOSBOSBOS');
         if (this.props.navigation.state.params.datax.isRegistered !== null) {
             this.setState({
                 isRegister: true
             });
         }
-        for (let i = 0; i < this.props.navigation.state.params.datax.data.length; i++) {
-            const idLelang = this.props.navigation.state.params.datax.data[i].id;
-            this.setState({
-                idAuction: idLelang,
-                dateNow: moment(new Date()).format('YYYY-MM-DD')
-            });
-        }
+        this.setState({
+            idAuction: this.props.navigation.state.params.idBos.id,
+            dateNow: moment(new Date()).format('YYYY-MM-DD')
+        });
+        
         AsyncStorage.getItem('loginCredential', (err, result) => {
             this.setState({ tokenUser: result }, () => { return this.getData(); });
         });
@@ -56,6 +55,7 @@ class BidAuctionPage extends Component {
     }
 
     getData() {
+        console.log(this.state.idAuction, 'IDIDIDIDIDIDID');
         axios.get(`${BASE_URL}/buyer/auctions-list/${this.state.idAuction}`, {
             headers: {
                 token: this.state.tokenUser

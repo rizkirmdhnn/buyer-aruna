@@ -74,7 +74,7 @@ class AuctionPage extends Component {
                             key={item.id}
                             onPress={() => {
                                 const { navigate } = this.props.navigation
-                                navigate('BidAuction', { datax: this.state.status });
+                                navigate('BidAuction', { datax: this.state.status, idBos: item });
                             }}
                         >
                             <View style={styles.card}>
@@ -92,6 +92,7 @@ class AuctionPage extends Component {
                                     </View>
                                     <View style={{ flexDirection: 'row', flex: 1 }}>
                                         <Text style={{ flex: 1 }}>{item.AuctionHistories.length} Tawaran</Text>
+                                        {/* kalo topbid kosong ganti openprice */}
                                         <Text style={{ flex: 1 }}>Rp. {numeral(parseInt(item.openingPrice, 0)).format('0,0')}</Text>
                                     </View>
                                 </View>
