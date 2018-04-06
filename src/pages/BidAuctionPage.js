@@ -26,16 +26,25 @@ class BidAuctionPage extends Component {
             end: '',
 
             bidAmount: '',
-            loading: ''
+            loading: '',
+            isRegister: false
         }
     }
 
     componentDidMount() {
-        this.setState({
-            idAuction: this.props.navigation.state.params.datax.id,
-            dateNow: moment(new Date()).format('YYYY-MM-DD')
-        });
-
+        console.log(this.props.navigation.state.params.datax, 'Data parsing');
+        if (this.props.navigation.state.params.datax.isRegistered !== null) {
+            this.setState({
+                isRegister: true
+            });
+        }
+        for (let i = 0; i < this.props.navigation.state.params.datax.data.length; i++) {
+            const idLelang = this.props.navigation.state.params.datax.data[i].id;
+            this.setState({
+                idAuction: idLelang,
+                dateNow: moment(new Date()).format('YYYY-MM-DD')
+            });
+        }
         AsyncStorage.getItem('loginCredential', (err, result) => {
             this.setState({ tokenUser: result }, () => { return this.getData(); });
         });
@@ -117,12 +126,14 @@ class BidAuctionPage extends Component {
             })
             .catch(error => {
                 if (error.response) {
-                    alert(error.response.data.message)
+                    // alert(error.response.data.message)
+                    console.log(error.response.data.message, 'ERROR')
+                    console.log(error.response.data, 'ERROR')
                 }
                 else {
                     alert('Koneksi internet bermasalah Provinsi')
                 }
-                ToastAndroid.show('Sukses Bid.', ToastAndroid.SHORT);
+                ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT);
                 this.setState({ loading: false })
             });
     }
@@ -132,12 +143,12 @@ class BidAuctionPage extends Component {
     }
 
     isPlus() {
-        
+
     }
 
 
     render() {
-        const { Auction, dateNow, start, end, bidAmount, loading } = this.state;
+        const { Auction, dateNow, start, end, bidAmount, loading, isRegister } = this.state;
         return (
             <View>
                 <ScrollView
@@ -184,7 +195,7 @@ class BidAuctionPage extends Component {
                         </View>
                     </View>
                     {
-                        Auction.isRegistered ?
+                        isRegister ?
                             <View>
                                 <View style={styles.card}>
                                     <ContainerSection>

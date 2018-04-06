@@ -18,7 +18,7 @@ class AuctionPage extends Component {
             listAuction: '',
             refreshing: true,
             tokenUser: '',
-            status: 1
+            status: ''
         }
     }
 
@@ -36,8 +36,10 @@ class AuctionPage extends Component {
         })
             .then(response => {
                 const res = response.data.data;
+                const last = response.data;
+                console.log(last, 'Data Lelang Mundur');
                 console.log(res, 'Data Lelang');
-                this.setState({ listAuction: res, refreshing: false });
+                this.setState({ listAuction: res, status: last, refreshing: false });
             })
             .catch(error => {
                 this.setState({ refreshing: false });
@@ -67,19 +69,19 @@ class AuctionPage extends Component {
         return (
             <View>
                 {
-                    this.state.status === 1 ?
+                    this.state.status.isRegistered ?
                         <TouchableNativeFeedback
                             key={item.id}
                             onPress={() => {
                                 const { navigate } = this.props.navigation
-                                navigate('BidAuction', { datax: item });
+                                navigate('BidAuction', { datax: this.state.status });
                             }}
                         >
                             <View style={styles.card}>
                                 <View style={styles.thumbnailContainerStyle}>
                                     <Image
                                         style={styles.image}
-                                        source={{ uri: `${BASE_URL}/images/${item.Fish.photo}` }}
+                                        source={{ uri: `${BASE_URL}/images/${item.data.Fish.photo}` }}
                                         resizeMode='contain'
                                     />
                                 </View>
@@ -98,7 +100,7 @@ class AuctionPage extends Component {
                         :
                         <TouchableNativeFeedback
                             key={item.id}
-                            onPress={() => this.detailAuction(item)}
+                            onPress={() => this.detailAuction(this.state.status)}
                         >
 
                             <View style={styles.card}>

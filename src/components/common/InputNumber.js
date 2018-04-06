@@ -16,14 +16,14 @@ class InputNumber extends Component {
 		})
 	}
 
-	minus = (props) => {
-		// console.log(props, 'PROPS MINUS');
-		this.props.isMinus();
+	minus = () => {
+		console.log('PROPS MINUS');
+		// this.props.isMinus();
 	}
 
-	plus = (props) => {
-		// console.log(props, 'PROPS PLUS');
-		this.props.isPlus();
+	plus = () => {
+		console.log('PROPS PLUS');
+		// this.props.isPlus();
 	}
 
 	imageIcon = (icon) => {
@@ -93,7 +93,7 @@ class InputNumber extends Component {
 							<TouchableNativeFeedback
 								onPress={() => this.plus(props)}
 							>
-								<Image source={this.imageIcons(icons)} style={{ width: 24, height: 24 }} />
+								<Image source={this.imageIcons(icons)} style={{ width: 21, height: 21 }} />
 							</TouchableNativeFeedback>
 							:
 							<View />
