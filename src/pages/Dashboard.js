@@ -230,46 +230,6 @@ class Dashboard extends Component {
   render() {
     return (
       <View style={{ flex: 1 }}>
-        <View style={{ height: 140 }}>
-          <Swiper 
-            style={styles.wrapper}
-            autoplay
-            showsButtons={false}
-            dot={<View style={{ backgroundColor: '#FFFFFF', width: 5, height: 5, borderRadius: 4, marginLeft: 3, marginRight: 3, marginTop: 3, marginBottom: 3 }} />}
-          >
-            <View style={styles.slide1}>
-              <Image
-                style={styles.imageStyle}
-                source={require('./../assets/images/banner-5.jpg')}
-              />
-            </View>
-            <View style={styles.slide2}>
-              <Image
-                style={styles.imageStyle}
-                source={require('./../assets/images/banner-4.png')}
-              />
-            </View>
-            <View style={styles.slide3}>
-              <Image
-                style={styles.imageStyle}
-                source={require('./../assets/images/banner-3.jpg')}
-              />
-            </View>
-            <View style={styles.slide3}>
-              <Image
-                style={styles.imageStyle}
-                source={require('./../assets/images/banner-2.png')}
-              />
-            </View>
-            <View style={styles.slide3}>
-              <Image
-                style={styles.imageStyle}
-                source={require('./../assets/images/banner-1.jpg')}
-              />
-            </View>
-          </Swiper>
-        </View>
-
         <ScrollView
           refreshControl={
             <RefreshControl
@@ -278,9 +238,48 @@ class Dashboard extends Component {
             />
           }
         >
-          <View style={{ padding: 12, height: 60 }}>
+          <View style={{ height: 140 }}>
+            <Swiper 
+              style={styles.wrapper}
+              autoplay
+              showsButtons={false}
+              dot={<View style={{ backgroundColor: '#FFFFFF', width: 5, height: 5, borderRadius: 4, marginLeft: 3, marginRight: 3, marginTop: 3, marginBottom: 3 }} />}
+            >
+              <View style={styles.slide1}>
+                <Image
+                  style={styles.imageStyle}
+                  source={require('./../assets/images/banner-5.jpg')}
+                />
+              </View>
+              <View style={styles.slide2}>
+                <Image
+                  style={styles.imageStyle}
+                  source={require('./../assets/images/banner-4.png')}
+                />
+              </View>
+              <View style={styles.slide3}>
+                <Image
+                  style={styles.imageStyle}
+                  source={require('./../assets/images/banner-3.jpg')}
+                />
+              </View>
+              <View style={styles.slide3}>
+                <Image
+                  style={styles.imageStyle}
+                  source={require('./../assets/images/banner-2.png')}
+                />
+              </View>
+              <View style={styles.slide3}>
+                <Image
+                  style={styles.imageStyle}
+                  source={require('./../assets/images/banner-1.jpg')}
+                />
+              </View>
+            </Swiper>
+          </View>
+          <View style={{ padding: 12, height: 65 }}>
             <ButtonOrder onPress={() => { this.credentialButton() }}>
-              <Text style={{ marginTop: 1 }}>Buat Permintaan</Text>
+              Buat Permintaan
             </ButtonOrder>
           </View>
 
@@ -288,7 +287,7 @@ class Dashboard extends Component {
 
           <View style={{ paddingTop: 10, paddingLeft: 15, height: '18%', backgroundColor: '#F4F4F4' }}>
             <View style={styles.containerTextProductCard}>
-              <Text style={styles.textCard}>Komoditas Favorit</Text>
+              <Text style={styles.textCard}>Komoditas Populer</Text>
               <TouchableNativeFeedback onPress={() => { this.props.navi.navigate('ProductList'); }}>
                 <Text style={styles.textCardRight}>Lihat Semua</Text>
               </TouchableNativeFeedback>
@@ -380,14 +379,16 @@ const styles = {
   },
   textCard: {
     fontSize: 15,
-    color: 'black'
+    color: 'black',
+    fontFamily: 'Muli-Bold'
   },
   textCardRight: {
     color: COLOR.secondary_a,
     textAlign: 'right',
     marginRight: 15,
     flex: 1,
-    fontSize: 12
+    fontSize: 12,
+    fontFamily: 'Muli-Bold'
   },
   textCardLink: {
     color: '#5D9FE2',

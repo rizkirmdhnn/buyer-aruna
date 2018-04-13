@@ -547,7 +547,8 @@ const styles = {
   tabTextActive: {
     color: '#fff',
     textAlign: 'center',
-    fontSize: 14
+    fontSize: 14,
+    fontFamily: 'Muli-Bold'
   },
   drawerItemText: {
     color: '#fff',
