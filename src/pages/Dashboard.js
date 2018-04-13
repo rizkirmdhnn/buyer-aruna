@@ -134,34 +134,28 @@ class Dashboard extends Component {
   renderProductItem = (itemProduct) => {
     const number = parseInt(itemProduct.index, 0) + 1;
     return (
-      <View style={{ marginLeft: -1 }}>
-        <TouchableWithoutFeedback onPress={() => { this.props.navi.navigate('DetailFishes', { datas: itemProduct.item.Fish }) }}>
-          <View
-            style={{
-              borderWidth: 1,
-              borderRadius: 4,
-              borderColor: '#DDD',
-              shadowColor: '#000',
-              shadowOffset: { width: 10, height: 20 },
-              shadowOpacity: 0.1,
-              shadowRadius: 2,
-              elevation: 2,
-              backgroundColor: '#FFF'
-            }}
-          >
-            <Image
-              style={styles.item}
-              source={{ uri: `${BASE_URL}/images/${itemProduct.item.Fish.photo}` }}
-              resizeMode='contain'
-            />
-            <Text style={{ textAlign: 'center', backgroundColor: '#FFF' }}>
-              {
-                itemProduct.item.Fish.name.length >= 12 ? `${number}. ${itemProduct.item.Fish.name.substring(0, 12)}...` : `${number}. ${itemProduct.item.Fish.name}`
-              }
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>
-      </View>
+      <TouchableWithoutFeedback onPress={() => { this.props.navi.navigate('DetailFishes', { datas: itemProduct.item.Fish }) }}>
+        <View
+          style={{
+            borderRadius: 4,
+            elevation: 2,
+            backgroundColor: '#fff',
+            marginRight: 10,
+            height: 110
+          }}
+        >
+          <Image
+            style={styles.item}
+            source={{ uri: `${BASE_URL}/images/${itemProduct.item.Fish.photo}` }}
+            resizeMode='contain'
+          />
+          <Text style={{ textAlign: 'center', backgroundColor: '#FFF', fontSize: 11 }}>
+            {
+              itemProduct.item.Fish.name.length >= 12 ? `${itemProduct.item.Fish.name.substring(0, 12)}...` : `${itemProduct.item.Fish.name}`
+            }
+          </Text>
+        </View>
+      </TouchableWithoutFeedback>
     )
   }
 
@@ -283,9 +277,9 @@ class Dashboard extends Component {
             </ButtonOrder>
           </View>
 
-          <View style={{ height: 4, backgroundColor: '#EFEFEF' }} />
+          <View style={{ height: 10, backgroundColor: '#EFEFEF' }} />
 
-          <View style={{ paddingTop: 10, paddingLeft: 15, height: '18%', backgroundColor: '#F4F4F4' }}>
+          <View style={{ paddingTop: 10, paddingLeft: 15, height: '17%', backgroundColor: '#fafafa' }}>
             <View style={styles.containerTextProductCard}>
               <Text style={styles.textCard}>Komoditas Populer</Text>
               <TouchableNativeFeedback onPress={() => { this.props.navi.navigate('ProductList'); }}>
@@ -304,9 +298,9 @@ class Dashboard extends Component {
             </View>
           </View>
 
-          <View style={{ height: 3, backgroundColor: '#EFEFEF' }} />
+          <View style={{ height: 10, backgroundColor: '#EFEFEF' }} />
 
-          <View style={{ padding: 4, paddingTop: 10, paddingBottom: 30, backgroundColor: '#F4F4F4' }}>
+          <View style={{ padding: 4, paddingTop: 10, paddingBottom: 30, backgroundColor: '#fafafa' }}>
             <View style={styles.containerTextProductCard}>
               <Text style={[styles.textCard, { marginLeft: 10 }]}>Nelayan Populer</Text>
             </View>
@@ -339,7 +333,7 @@ const styles = {
   thumbnailContainerStyle: {
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 15,
+    margin: 10,
   },
   itemContainerStyle: {
     justifyContent: 'flex-start',
