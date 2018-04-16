@@ -88,7 +88,7 @@ const styles = {
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'center',
-		borderWidth: 1,
+		// borderWidth: 1,
 		borderColor: '#a9a9a9',
 		borderRadius: 5,
 		paddingLeft: 7,
