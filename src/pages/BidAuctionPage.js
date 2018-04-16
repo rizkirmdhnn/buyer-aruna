@@ -33,7 +33,7 @@ class BidAuctionPage extends Component {
 
     componentDidMount() {
         console.log(this.props.navigation.state.params.datax, 'Data parsing');
-        console.log(this.props.navigation.state.params.idBos.id, 'BOSBOSBOS');
+        console.log(this.props.navigation.state.params.idBos, 'ID BOSS');
         if (this.props.navigation.state.params.datax.isRegistered !== null) {
             this.setState({
                 isRegister: true
@@ -43,7 +43,7 @@ class BidAuctionPage extends Component {
             idAuction: this.props.navigation.state.params.idBos.id,
             dateNow: moment(new Date()).format('YYYY-MM-DD')
         });
-        
+
         AsyncStorage.getItem('loginCredential', (err, result) => {
             this.setState({ tokenUser: result }, () => { return this.getData(); });
         });
@@ -173,24 +173,20 @@ class BidAuctionPage extends Component {
                                     <Text style={{ fontSize: 18, color: COLOR.secondary_a, flex: 1 }}>{Auction.Fish === undefined ? 'Ikan Apa ya ?' : Auction.Fish.name}</Text>
                                     <Text style={{ fontSize: 18, color: COLOR.secondary_a, flex: 1 }}>{Auction.Fish === undefined ? 'Berapa Ton Ya ?' : Auction.quantity} Ton</Text>
                                 </View>
-                                <Text>{Auction.Fish === undefined ? '' : Auction.address}</Text>
-                                <Text style={{ fontSize: 12, }}>Tujuan Pengiriman {Auction.DestinationCity === undefined ? 'Kemana ya ?' : Auction.DestinationCity.name}</Text>
-                            </View>
-                        </View>
-                        <View style={{ marginLeft: '5%', marginBottom: '5%', flexDirection: 'column' }}>
-                            <View style={{ flexDirection: 'row' }}>
-                                <Text style={{ flex: 1 }}>Harga Pembuka</Text>
-                                <Text style={{ flex: 1 }}>Rp. {Auction.Fish === undefined ? '0' : numeral(parseInt(Auction.openingPrice, 0)).format('0,0')}</Text>
-                            </View>
+                                <View style={{ flexDirection: 'row', marginTop: '5%' }}>
+                                    <Text style={{ flex: 1 }}>Harga Pembuka</Text>
+                                    <Text style={{ flex: 1 }}>Rp. {Auction.Fish === undefined ? '0' : numeral(parseInt(Auction.openingPrice, 0)).format('0,0')}</Text>
+                                </View>
 
-                            <View style={{ flexDirection: 'row' }}>
-                                <Text style={{ flex: 1 }}>Kelipatan</Text>
-                                <Text style={{ flex: 1 }}>Rp. {Auction.Fish === undefined ? '0' : numeral(parseInt(Auction.minIncrement, 0)).format('0,0')}</Text>
-                            </View>
+                                <View style={{ flexDirection: 'row' }}>
+                                    <Text style={{ flex: 1 }}>Kelipatan</Text>
+                                    <Text style={{ flex: 1 }}>Rp. {Auction.Fish === undefined ? '0' : numeral(parseInt(Auction.minIncrement, 0)).format('0,0')}</Text>
+                                </View>
 
-                            <View style={{ flexDirection: 'row' }}>
-                                <Text style={{ flex: 1 }}>Tawaran Tertinggi</Text>
-                                <Text style={{ flex: 1 }}>Rp. {Auction.Fish === undefined ? '0' : numeral(parseInt(Auction.TopBid.bidAmount, 0)).format('0,0')}</Text>
+                                <View style={{ flexDirection: 'row' }}>
+                                    <Text style={{ flex: 1, fontWeight: 'bold' }}>Tawaran Tertinggi</Text>
+                                    <Text style={{ flex: 1, fontWeight: 'bold' }}>Rp. {Auction.Fish === undefined ? '0' : numeral(parseInt(Auction.TopBid.bidAmount, 0)).format('0,0')}</Text>
+                                </View>
                             </View>
                         </View>
                     </View>
@@ -199,7 +195,7 @@ class BidAuctionPage extends Component {
                             <View>
                                 <View style={styles.card}>
                                     <ContainerSection>
-                                        <View style={{ flex: 1, padding: '3%' }}>
+                                        <View style={{ flex: 1, paddingTop: '3%', paddingRight: '20%', paddingLeft: '20%' }}>
                                             <InputNumber
                                                 placeholder='Rp. 8.000.000'
                                                 icon="minus"
@@ -208,7 +204,9 @@ class BidAuctionPage extends Component {
                                                 onChangeText={v => this.onChangeInput('bidAmount', v.replace(/\./g, ''))}
                                             />
                                         </View>
-                                        <View style={{ flex: 1, padding: '3%' }}>
+                                    </ContainerSection>
+                                    <ContainerSection>
+                                        <View style={{ flex: 1, paddingTop: '3%', paddingRight: '20%', paddingLeft: '20%' }}>
                                             {
                                                 loading ?
                                                     <Spinner size='large' />

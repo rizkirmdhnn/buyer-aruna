@@ -48,6 +48,8 @@ import MessageAdminPage from './pages/MessageAdminPage';
 import AuctionPage from './pages/AuctionPage';
 import BidAuctionPage from './pages/BidAuctionPage';
 import RegisterAuctionPage from './pages/RegisterAuctionPage';
+import AuctionList from './pages/AuctionList';
+import AuctionAll from './pages/AuctionAll';
 /**
  *  List Component
  */
@@ -146,7 +148,9 @@ class App extends React.Component {
       MessageAdmin: { screen: MessageAdminPage },
       Auction: { screen: AuctionPage },
       BidAuction: { screen: BidAuctionPage },
-      RegisterAuction: { screen: RegisterAuctionPage }
+      RegisterAuction: { screen: RegisterAuctionPage },
+      AuctionLists: { screen: AuctionList },
+      AuctionAlls: { screen: AuctionAll }
     }, {
         cardStyle: { backgroundColor: '#fafafa' },
         navigationOptions: {

@@ -3,22 +3,22 @@ import { Text, View, AsyncStorage, FlatList, Image, ToastAndroid, TouchableNativ
 import axios from 'axios'
 import numeral from 'numeral'
 import moment from 'moment'
-import { ContainerSection, Button } from '../components/common'
+// import { ContainerSection, Button } from '../components/common';
 import { COLOR, BASE_URL } from './../shared/lb.config';
 
-class AuctionPage extends Component {
+class AuctionAll extends Component {
     static navigationOptions = {
-        title: 'Lelang Saya',
+        title: 'Semua Lelang',
         headerRight: <View />
     }
 
     constructor(props) {
         super(props)
         this.state = {
-            listAuction: '',
+            listAuctionAll: '',
             refreshing: true,
             tokenUser: '',
-            status: ''
+            registerStatus: ''
         }
     }
 
@@ -29,17 +29,17 @@ class AuctionPage extends Component {
     }
 
     getData() {
-        axios.get(`${BASE_URL}/buyer/auctions-list`, {
+        axios.get(`${BASE_URL}/auctions`, {
             headers: {
                 token: this.state.tokenUser
             }
         })
             .then(response => {
                 const res = response.data.data;
-                const last = response.data;
-                console.log(last, 'Data Lelang Mundur');
-                console.log(res, 'Data Lelang');
-                this.setState({ listAuction: res, status: last, refreshing: false });
+                const registered = response.data;
+                console.log(res, 'Data Semua Lelang');
+                console.log(registered, 'Data Register');
+                this.setState({ listAuctionAll: res, registerStatus: registered, refreshing: false });
             })
             .catch(error => {
                 this.setState({ refreshing: false });
@@ -60,19 +60,20 @@ class AuctionPage extends Component {
         })
     }
 
-    detailAuction(data, item) {
+    detailAuctionAll(data, item) {
         this.props.navi.navigate('BidAuction', { datax: data, idBos: item })
     }
 
     renderList = (item) => {
+        const { registerStatus } = this.state;
         return (
             <View>
                 {
-                    this.state.status.isRegistered ?
+                    registerStatus.isRegistered ?
                         <TouchableNativeFeedback
                             key={item.id}
                             onPress={() => {
-                                this.props.navi.navigate('BidAuction', { datax: this.state.status, idBos: item });
+                                this.props.navi.navigate('BidAuction', { datax: registerStatus, idBos: item });
                             }}
                         >
                             <View style={styles.card}>
@@ -89,7 +90,7 @@ class AuctionPage extends Component {
                                         <Text style={{ fontSize: 18, color: COLOR.secondary_a, flex: 1 }}>{moment(item.startDate).format('HH:mm:ss')}</Text>
                                     </View>
                                     <View style={{ flexDirection: 'row', flex: 1 }}>
-                                        <Text style={{ flex: 1 }}>{item.AuctionHistories.length} Tawaran</Text>
+                                        <Text style={{ flex: 1 }}>{item.countBid} Tawaran</Text>
                                         {/* kalo topbid kosong ganti openprice */}
                                         <Text style={{ flex: 1 }}>Rp. {numeral(parseInt(item.openingPrice, 0)).format('0,0')}</Text>
                                     </View>
@@ -99,7 +100,7 @@ class AuctionPage extends Component {
                         :
                         <TouchableNativeFeedback
                             key={item.id}
-                            onPress={() => this.detailAuction(this.state.status, item)}
+                            onPress={() => this.detailAuctionAll(registerStatus, item)}
                         >
 
                             <View style={styles.card}>
@@ -116,7 +117,7 @@ class AuctionPage extends Component {
                                         <Text style={{ fontSize: 18, color: COLOR.secondary_a, flex: 1 }}>{moment(item.startDate).format('HH:mm:ss')}</Text>
                                     </View>
                                     <Text>Rp. {numeral(parseInt(item.openingPrice, 0)).format('0,0')}</Text>
-                                    <Text>{item.AuctionHistories.length} Tawaran</Text>
+                                    <Text>{item.countBid} Tawaran</Text>
                                 </View>
                             </View>
                         </TouchableNativeFeedback>
@@ -129,7 +130,7 @@ class AuctionPage extends Component {
         return (
             <View style={{ flex: 1 }}>
                 <FlatList
-                    data={this.state.listAuction}
+                    data={this.state.listAuctionAll}
                     renderItem={({ item }) => this.renderList(item)}
                     keyExtractor={(item, index) => index}
                     refreshing={this.state.refreshing}
@@ -180,4 +181,4 @@ const styles = {
     },
 }
 
-export default AuctionPage
+export default AuctionAll

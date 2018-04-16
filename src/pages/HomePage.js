@@ -135,7 +135,7 @@ class HomePage extends Component {
       {
         label: 'Lelang',
         icon: require('./../assets/images/ic_profile.png'),
-        screen: 'Auction'
+        screen: 'AuctionLists'
       },
       {
         label: 'Permintaan (PO)',
