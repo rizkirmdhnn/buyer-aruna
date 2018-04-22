@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import { View, Text, Image, Linking, TouchableOpacity } from 'react-native'
-import { Container, ContainerSection } from '../components/common'
+import Config from 'react-native-config'
+
+import { Container } from '../components/common'
 
 class HelpPage extends Component {
 	static navigationOptions = {
@@ -12,14 +14,14 @@ class HelpPage extends Component {
 		return (
 			<View style={{flex: 1, marginTop: 50}}>
 				<Container>
-					<ContainerSection>
-						<View style={{flex: 1, marginBottom: 30}}>
-							<Image
-								style={{alignSelf: 'center'}}
-								source={require('./../assets/images/logo.png')} 
-							/>
-						</View>
-					</ContainerSection>
+					<View>
+						<Image
+							style={{alignSelf: 'center'}}
+							source={require('./../assets/images/logo.png')} 
+						/>
+					</View>
+					<Text style={{marginBottom: 30, marginTop: 10, textAlign: 'center'}}>v{Config.VERSION_NAME} - build {Config.BUILD_TYPE}</Text>
+
 					<View style={{justifyContent: 'center', alignItems: 'center'}}>
 						<Text>Hubungi</Text>
 						<Text>Pusat Bantuan</Text>

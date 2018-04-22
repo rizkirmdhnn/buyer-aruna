@@ -11,6 +11,7 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
+import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +38,7 @@ public class MainApplication extends Application implements ReactApplication {
             new ReactNativeOneSignalPackage(),
             new ImagePickerPackage(),
             new CodePush(BuildConfig.CODEPUSH_KEY, MainApplication.this, BuildConfig.DEBUG),
+            new ReactNativeConfigPackage()
       );
     }
 
