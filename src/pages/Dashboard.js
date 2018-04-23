@@ -3,7 +3,9 @@ import { View, ScrollView, FlatList, RefreshControl, Text, ToastAndroid, Touchab
 import AwesomeAlert from 'react-native-awesome-alerts';
 import axios from 'axios';
 import Swiper from 'react-native-swiper';
+import { connect } from 'react-redux'
 import { ButtonOrder } from '../components/common';
+import { homeProductsFetch, homeSupplierFetch } from './../redux/actions'
 import { COLOR, BASE_URL } from './../shared/lb.config';
 
 class Dashboard extends Component {
@@ -18,59 +20,25 @@ class Dashboard extends Component {
       supplierList: '',
       productList: '',
       tokenUser: '',
-      refreshing: true
+      loading: true
     }
   }
 
   componentWillMount() {
-    AsyncStorage.getItem('loginCredential', (err, result) => {
-      this.setState({ tokenUser: result });
-      this.getData();
-    });
+    this.props.homeProductsFetch();
+    this.props.homeSupplierFetch();
+    this.setState({ loading: false });
   }
 
   onRefresh() {
     this.setState({
-      refreshing: true
+      loading: true
     }, () => {
-      this.getData();
+      this.props.homeProductsFetch();
+      this.props.homeSupplierFetch();
+      this.setState({ loading: false });
     });
   }
-
-  getData() {
-    axios.get(`${BASE_URL}/suppliers/popular`, {
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    })
-      .then(response => {
-        const res = response.data.data;
-        this.setState({ supplierList: res, refreshing: false });
-        console.log(res, 'Data Supplier Popular');
-
-        axios.get(`${BASE_URL}/products/popular`, {
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        })
-          .then(response2 => {
-            const res2 = response2.data.data;
-            console.log(res2, 'Data Product Popular');
-            this.setState({ productList: res2, refreshing: false });
-          })
-          .catch(error => {
-            this.setState({ refreshing: false });
-            ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
-            console.log('ERROR', error.response);
-          });
-      })
-      .catch(error => {
-        this.setState({ refreshing: false })
-        console.log('ERROR', error.response);
-        ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
-      });
-  }
-
 
   showAlert = () => {
     this.setState({
@@ -222,18 +190,19 @@ class Dashboard extends Component {
 
 
   render() {
+    console.log(this.props, 'KOKOKOK');
     return (
       <View style={{ flex: 1 }}>
         <ScrollView
           refreshControl={
             <RefreshControl
-              refreshing={this.state.refreshing}
+              refreshing={this.state.loading}
               onRefresh={this.onRefresh.bind(this)}
             />
           }
         >
           <View style={{ height: 140 }}>
-            <Swiper 
+            <Swiper
               style={styles.wrapper}
               autoplay
               showsButtons={false}
@@ -289,7 +258,7 @@ class Dashboard extends Component {
 
             <View style={styles.containerFlatList}>
               <FlatList
-                data={this.state.productList}
+                data={this.props.productsPopular.data}
                 horizontal
                 keyExtractor={this.keyExtractor}
                 renderItem={this.renderProductItem.bind(this)}
@@ -307,7 +276,7 @@ class Dashboard extends Component {
 
             <View style={styles.containerFlatListSupplier}>
               <FlatList
-                data={this.state.supplierList}
+                data={this.props.supplierPopular.data}
                 horizontal={false}
                 keyExtractor={this.keyExtractor}
                 renderItem={this.renderSupplierItem.bind(this)}
@@ -564,4 +533,9 @@ const styles = {
 }
 
 
-export default Dashboard;
+const mapStateToProps = state => {
+  const { user, supplierPopular, productsPopular } = state
+  return { user, supplierPopular, productsPopular }
+}
+
+export default connect(mapStateToProps, { homeSupplierFetch, homeProductsFetch })(Dashboard);
