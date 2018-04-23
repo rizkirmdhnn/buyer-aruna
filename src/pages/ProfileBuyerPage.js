@@ -3,7 +3,7 @@ import { View, Text, Image, AsyncStorage, ScrollView, RefreshControl } from 'rea
 import axios from 'axios'
 
 import { BASE_URL, COLOR } from '../shared/lb.config';
-import { Spinner, Button } from '../components/common'
+import { Button } from '../components/common'
 
 class ProfileBuyerPage extends Component {
 	static navigationOptions = () => ({
