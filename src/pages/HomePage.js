@@ -10,7 +10,8 @@ import {
   AsyncStorage,
   DrawerLayoutAndroid,
   TouchableNativeFeedback,
-  ToastAndroid
+  ToastAndroid,
+  StatusBar
 } from 'react-native';
 import OneSignal from 'react-native-onesignal';
 import { NavigationActions } from 'react-navigation';
@@ -277,6 +278,10 @@ class HomePage extends Component {
 
     return (
       <View style={styles.container}>
+        <StatusBar
+          backgroundColor={COLOR.primary}
+          barStyle="light-content"
+        />
         <DrawerLayoutAndroid
           ref="drawer"
           drawerWidth={300}

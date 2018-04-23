@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, Image, View, TouchableOpacity, AsyncStorage, ToastAndroid } from 'react-native';
+import { Text, Image, View, TouchableOpacity, AsyncStorage, ToastAndroid, StatusBar } from 'react-native';
 import axios from 'axios';
 import OneSignal from 'react-native-onesignal';
 import jwtDecode from 'jwt-decode';
@@ -113,6 +113,10 @@ class LoginFormPage extends Component {
 
     return (
       <View style={styles.container}>
+        <StatusBar
+          backgroundColor={COLOR.primary}
+          barStyle="light-content"
+        />
         <Container>
           <ContainerSection>
             <View style={{ flex: 1, marginBottom: 30 }}>

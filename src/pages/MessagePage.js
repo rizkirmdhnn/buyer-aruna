@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ScrollView, View, Text, TouchableOpacity, AsyncStorage, ToastAndroid } from 'react-native';
+import { ScrollView, View, Text, TouchableOpacity, AsyncStorage, ToastAndroid, StatusBar } from 'react-native';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
@@ -53,19 +53,19 @@ class MessagePage extends Component {
 			axios.get(`${BASE_URL}/orders/${id}/messages`, {
 				headers: { token }
 			})
-			.then(response => {
-				console.log(response, 'Data Fetch');
-				this.setState({ datas: response.data.data, loading: false })
-			})
-			.catch(error => {
-				if (error.response) {
-					ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
-				}
-				else {
-					ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
-				}
-				this.setState({ loading: false })
-			})
+				.then(response => {
+					console.log(response, 'Data Fetch');
+					this.setState({ datas: response.data.data, loading: false })
+				})
+				.catch(error => {
+					if (error.response) {
+						ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
+					}
+					else {
+						ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
+					}
+					this.setState({ loading: false })
+				})
 		});
 
 		this.timer = setTimeout(() => this.fetchMessage(), 5000)
@@ -111,15 +111,19 @@ class MessagePage extends Component {
 		if (loading === true) {
 			return <Spinner size='large' />
 		}
-		
+
 		console.log(decoded.user, 'DECODE TOKEN');
 		return (
 			<View style={styles.container}>
-
-				<View style={{marginTop: 5}}>
-					<Card style={{backgroundColor: '#fff', padding: 5, justifyContent: 'center', alignItems: 'center'}}>
+				<StatusBar
+					backgroundColor={COLOR.primary}
+					barStyle="light-content"
+				/>
+				
+				<View style={{ marginTop: 5 }}>
+					<Card style={{ backgroundColor: '#fff', padding: 5, justifyContent: 'center', alignItems: 'center' }}>
 						<ContainerSection>
-							<Text style={{textAlign: 'center'}}>
+							<Text style={{ textAlign: 'center' }}>
 								No. PO {this.props.navigation.state.params.idData.Request.codeNumber}
 							</Text>
 						</ContainerSection>
@@ -151,12 +155,12 @@ class MessagePage extends Component {
 							value={text}
 							multiline
 						/>
-				
-						<TouchableOpacity 
-							disabled={text === ''} 
+
+						<TouchableOpacity
+							disabled={text === ''}
 							onPress={() => this.postMessage()}
 						>
-							<View style={{marginLeft: 10}}>
+							<View style={{ marginLeft: 10 }}>
 								<Icon size={46} color={text === '' ? '#eaeaea' : COLOR.secondary_a} name="md-send" />
 							</View>
 						</TouchableOpacity>

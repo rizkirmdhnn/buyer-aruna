@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, FlatList, View, Image, TouchableWithoutFeedback, AsyncStorage } from 'react-native';
+import { Text, FlatList, View, Image, TouchableWithoutFeedback, AsyncStorage, StatusBar } from 'react-native';
 import axios from 'axios';
 import moment from 'moment';
 import {
@@ -214,6 +214,10 @@ class RequestOrderPage extends Component {
     console.log(dataReqOrder.length, 'LENGTH BOR')
     return (
       <View style={{ flex: 1 }}>
+        <StatusBar
+          backgroundColor={COLOR.primary}
+          barStyle="light-content"
+        />
         {
           anyData ?
             <FlatList

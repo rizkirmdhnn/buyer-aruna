@@ -5,7 +5,8 @@ import {
   AsyncStorage,
   FlatList,
   Image,
-  TouchableNativeFeedback
+  TouchableNativeFeedback,
+  StatusBar
 } from 'react-native';
 import axios from 'axios';
 import { BASE_URL, COLOR } from './../shared/lb.config';
@@ -217,6 +218,10 @@ class TransactionPage extends Component {
     const { anyData, noData, noListData } = this.state;
     return (
       <View style={{ flex: 1 }}>
+        <StatusBar
+          backgroundColor={COLOR.primary}
+          barStyle="light-content"
+        />
         {
           anyData ?
             <FlatList

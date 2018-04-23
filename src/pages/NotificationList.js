@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { FlatList, View, Text, Image, TouchableNativeFeedback, ToastAndroid } from 'react-native'
+import { FlatList, View, Text, Image, TouchableNativeFeedback, ToastAndroid, StatusBar } from 'react-native'
 import { connect } from 'react-redux'
 import moment from 'moment'
 import axios from 'axios'
@@ -103,6 +103,10 @@ class NotificationList extends Component {
 		console.log(this.props.notifications.data, 'ISI NOTIF')
 		return (
 			<View style={{ flex: 1 }}>
+				<StatusBar
+					backgroundColor={COLOR.primary}
+					barStyle="light-content"
+				/>
 				{
 					this.props.notifications.data.length === 0 ?
 						<View style={{ marginTop: '45%' }}>
