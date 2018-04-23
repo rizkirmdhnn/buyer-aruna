@@ -885,7 +885,7 @@ class DetailTransactionPage extends Component {
                       requestContainerApprove ?
                         <View style={{ flexDirection: 'column' }}>
                           <View>
-                            <Text style={{ textAlign: 'center' }}>Permintaan {dataSampleSurvey} anda telah disetujui.</Text>
+                            <Text style={{ textAlign: 'center' }}>Permintaan {dataSampleSurvey} anda sudah disetujui.</Text>
                           </View>
                         </View>
                         :
@@ -895,7 +895,7 @@ class DetailTransactionPage extends Component {
                       requestContainerRejected ?
                         <View style={{ flexDirection: 'column' }}>
                           <View>
-                            <Text>Permintaan anda telah ditolak.</Text>
+                            <Text>Permintaan {dataSampleSurvey} anda sudah ditolak.</Text>
                           </View>
                         </View>
                         :

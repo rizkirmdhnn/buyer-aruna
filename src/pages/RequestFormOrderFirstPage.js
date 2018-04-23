@@ -10,7 +10,8 @@ import {
   ToastAndroid,
   TouchableOpacity,
   Image,
-  Alert
+  Alert,
+  StatusBar
 } from 'react-native';
 import numeral from 'numeral';
 import axios from 'axios';
@@ -33,7 +34,7 @@ class RequestFormOrderFirstPage extends Component {
     title: 'Buat Permintaan',
     headerLeft:
       <TouchableOpacity
-        onPress={() => { 
+        onPress={() => {
           Alert.alert(
             '',
             'Batal membuat PO ?',
@@ -46,7 +47,7 @@ class RequestFormOrderFirstPage extends Component {
                 }
               },
             ]
-          ) 
+          )
         }}
       >
         <Image
@@ -408,6 +409,10 @@ class RequestFormOrderFirstPage extends Component {
         keyboardShouldPersistTaps="always"
       >
         <Container>
+          <StatusBar
+            backgroundColor={COLOR.primary}
+            barStyle="light-content"
+          />
 
           <ContainerSection>
             <Text style={styles.headerStyle}>

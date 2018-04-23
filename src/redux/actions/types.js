@@ -8,3 +8,6 @@ export const USER_FETCH_UNREAD_SUCCESS = 'user_fetch_unread_success'
 export const MESSAGES_FETCH_SUCCESS = 'messages_fetch_success'
 
 export const NOTIFICATIONS_FETCH_SUCCESS = 'notifications_fetch_success'
+
+export const SUPPLIER_POPULAR_FETCH_SUCCESS = 'supplier_popular_fetch_success'
+export const PRODUCTS_POPULAR_FETCH_SUCCESS = 'products_popular_fetch_success'

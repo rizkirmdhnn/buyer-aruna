@@ -111,7 +111,9 @@ class DetailFishesPage extends Component {
                             <View style={styles.card}>
                                 <ContainerSection>
                                     <View style={{ flex: 1, flexDirection: 'row' }}>
-                                        <Text style={{ flex: 1, fontSize: 20, fontWeight: 'bold' }}>{dataFish.name}</Text>
+                                        <Text style={{ flex: 1, fontSize: 20, fontWeight: 'bold' }}>{dataFish.name} /</Text>
+                                        <Text style={{ flex: 1, fontSize: 16 }}>{dataFish.localName === null ? '' : dataFish.localName} /</Text>
+                                        <Text style={{ flex: 1, fontSize: 16 }}>{dataFish.habitat === null ? '' : dataFish.habitat}</Text>
                                     </View>
                                 </ContainerSection>
 
@@ -166,7 +168,7 @@ const styles = {
         // marginTop: 2,
         marginBottom: '2%',
         backgroundColor: '#FFF'
-      }
+    }
 };
 
 export default DetailFishesPage;

@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { Text, FlatList, View, Image, TouchableWithoutFeedback, AsyncStorage } from 'react-native';
+import { Text, FlatList, View, Image, TouchableWithoutFeedback, AsyncStorage, StatusBar } from 'react-native';
 import axios from 'axios';
 import moment from 'moment';
 import {
   Card,
   Button
 } from './../components/common';
-import { BASE_URL } from './../shared/lb.config';
+import { BASE_URL, COLOR } from './../shared/lb.config';
 
 class RequestOrderPage extends Component {
 
@@ -214,6 +214,10 @@ class RequestOrderPage extends Component {
     console.log(dataReqOrder.length, 'LENGTH BOR')
     return (
       <View style={{ flex: 1 }}>
+        <StatusBar
+          backgroundColor={COLOR.primary}
+          barStyle="light-content"
+        />
         {
           anyData ?
             <FlatList
@@ -235,8 +239,8 @@ class RequestOrderPage extends Component {
                   source={require('../assets/images/empty_transaksi.png')}
                 />
               </View>
-              <Text style={{ textAlign: 'center' }}>Anda Belum Melakukan Request Order</Text>
-              <Text style={{ textAlign: 'center' }}>Silahkan lakukan order komoditas</Text>
+              <Text style={{ textAlign: 'center' }}>Anda belum membuat PO.</Text>
+              <Text style={{ textAlign: 'center' }}>Silahkan lakukan pembuatan PO.</Text>
               <View style={{ padding: 15, height: 80 }}>
                 <Button onPress={() => { this.orderFirst() }}>
                   Buat Permintaan

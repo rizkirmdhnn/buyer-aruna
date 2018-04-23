@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
-import { View, Text, Image, AsyncStorage, ScrollView, RefreshControl } from 'react-native'
+import { View, Text, Image, AsyncStorage, ScrollView, RefreshControl, StatusBar } from 'react-native'
 import axios from 'axios'
 
 import { BASE_URL, COLOR } from '../shared/lb.config';
-import { Spinner, Button } from '../components/common'
+import { Button } from '../components/common'
 
 class ProfileBuyerPage extends Component {
 	static navigationOptions = () => ({
@@ -113,6 +113,10 @@ class ProfileBuyerPage extends Component {
 		console.log(data, 'Cuy');
 		return (
 			<View>
+				<StatusBar
+					backgroundColor={COLOR.primary}
+					barStyle="light-content"
+				/>
 				<ScrollView
 					refreshControl={
 						<RefreshControl

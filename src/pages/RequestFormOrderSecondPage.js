@@ -6,7 +6,8 @@ import {
   Text,
   AsyncStorage,
   ScrollView,
-  ToastAndroid
+  ToastAndroid,
+  StatusBar
 } from 'react-native'
 import { NavigationActions } from 'react-navigation'
 import axios from 'axios';
@@ -182,7 +183,7 @@ class RequestFormOrderSecondPage extends Component {
     console.log(checkedSelected, 'Data checkedSelected');
 
     if (checkedSelected !== dataSupplier) {
-      console.log('IF'); 
+      console.log('IF');
       this.setState({
         checkedSelected: dataSupplier
       });
@@ -282,6 +283,10 @@ class RequestFormOrderSecondPage extends Component {
 
     return (
       <View style={{ flex: 1 }}>
+        <StatusBar
+          backgroundColor={COLOR.primary}
+          barStyle="light-content"
+        />
         <ScrollView>
           {/* <View style={{ paddingLeft: '73%' }}>
             <View style={styles.itemContainerStyle}>

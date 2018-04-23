@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, Image, ScrollView, RefreshControl } from 'react-native';
+import { Text, View, Image, ScrollView, RefreshControl, StatusBar } from 'react-native';
 import axios from 'axios';
 import moment from 'moment';
 import numeral from 'numeral';
@@ -79,6 +79,11 @@ class ProfileSupplierPage extends Component {
           />
         }
       >
+        <StatusBar
+          backgroundColor={COLOR.primary}
+          barStyle="light-content"
+        />
+        
         <View style={styles.profileImageContainer}>
           <Image
             style={styles.profileImage}
@@ -93,7 +98,7 @@ class ProfileSupplierPage extends Component {
               <Text>Nelayan Aruna</Text>
               <Text style={{ marginTop: 10, fontSize: 18, fontFamily: 'Muli-Bold' }}>{dataProfile.name}</Text>
               <Text>
-                {dataProfile.organizationType}{' '} 
+                {dataProfile.organizationType}{' '}
                 {dataProfile.organization}
               </Text>
             </View>
