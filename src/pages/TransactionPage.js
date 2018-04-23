@@ -200,8 +200,8 @@ class TransactionPage extends Component {
               source={require('../assets/images/empty_transaksi.png')}
             />
           </View>
-          <Text style={{ textAlign: 'center' }}>Anda Belum Melakukan Transaksi</Text>
-          <Text style={{ textAlign: 'center' }}>Silahkan lakukan order komoditas</Text>
+          <Text style={{ textAlign: 'center' }}>Anda belum melakukan PO.</Text>
+          <Text style={{ textAlign: 'center' }}>Silahkan lakukan pembuatan PO.</Text>
           <View style={{ padding: 15, height: 80 }}>
             <Button onPress={() => { this.orderFirst() }}>
               Buat Permintaan

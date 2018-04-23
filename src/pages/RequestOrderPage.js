@@ -235,8 +235,8 @@ class RequestOrderPage extends Component {
                   source={require('../assets/images/empty_transaksi.png')}
                 />
               </View>
-              <Text style={{ textAlign: 'center' }}>Anda Belum Melakukan Request Order</Text>
-              <Text style={{ textAlign: 'center' }}>Silahkan lakukan order komoditas</Text>
+              <Text style={{ textAlign: 'center' }}>Anda belum membuat PO.</Text>
+              <Text style={{ textAlign: 'center' }}>Silahkan lakukan pembuatan PO.</Text>
               <View style={{ padding: 15, height: 80 }}>
                 <Button onPress={() => { this.orderFirst() }}>
                   Buat Permintaan
