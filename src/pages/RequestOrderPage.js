@@ -6,7 +6,7 @@ import {
   Card,
   Button
 } from './../components/common';
-import { BASE_URL } from './../shared/lb.config';
+import { BASE_URL, COLOR } from './../shared/lb.config';
 
 class RequestOrderPage extends Component {
 
