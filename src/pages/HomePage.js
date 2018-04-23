@@ -22,7 +22,7 @@ import { ContainerSection, InputSearch } from '../components/common'
 import Dashboard from './Dashboard';
 import RequestOrderPage from './RequestOrderPage';
 import TransactionPage from './TransactionPage';
-import { COLOR } from './../shared/lb.config';
+import { COLOR, BASE_URL } from './../shared/lb.config';
 import { setUserToken, unreadNotifFetch } from '../redux/actions'
 
 class HomePage extends Component {
@@ -119,7 +119,8 @@ class HomePage extends Component {
     // }
 
     const {
-      menuContainerStyle, tabContainer, tabContainerActive, tabText, tabTextActive
+      menuContainerStyle, tabContainer, tabContainerActive, tabText, tabTextActive,
+      profileImageContainerDrawer, profileImageDrawer
     } = styles;
 
     const menuLogin = [
@@ -158,22 +159,40 @@ class HomePage extends Component {
       }
     ]
 
-
+    console.log(this.props.user.data, 'POPOPOPOPOP');
     const menuDrawer = (
       <View style={{ flex: 1, backgroundColor: COLOR.secondary_a }}>
-        <View style={{ padding: 30 }}>
-          <ContainerSection>
-            <View style={{ flexDirection: 'row', flex: 1 }}>
-              <Text style={styles.drawerItemText}>Marketplace Aruna</Text>
-              <View style={{ flex: 1 }}>
-                <TouchableOpacity onPress={() => this.refs.drawer.closeDrawer()}>
-                  <View>
-                    <Icon style={{ color: '#fff', alignSelf: 'flex-end' }} st name="md-arrow-back" size={24} />
-                  </View>
-                </TouchableOpacity>
-              </View>
+        <View style={{ backgroundColor: COLOR.primary, paddingTop: 20, padding: 16 }}>
+          <TouchableOpacity onPress={() => this.props.navigation.navigate('ProfileBuyer')}>
+            <View style={profileImageContainerDrawer}>
+              <Image
+                style={profileImageDrawer}
+                source={{ uri: `${BASE_URL}/images/${this.props.user.data.photo}` }}
+              />
             </View>
-          </ContainerSection>
+          </TouchableOpacity>
+          <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row', marginTop: 40 }}>
+            <TouchableOpacity onPress={() => this.props.navigation.navigate('ProfileBuyerEdit')}>
+              <View>
+                <Text style={styles.drawerItemText}>{this.props.user.data.name}</Text>
+                <View style={{ height: 5 }} />
+                <Text style={{ color: 'white', fontSize: 11 }}>Ubah profile</Text>
+              </View>
+            </TouchableOpacity>
+            <View style={{ flex: 1 }}>
+              <TouchableOpacity
+                style={{ height: 45, position: 'absolute', right: -10, width: 50, paddingRight: 20, marginTop: -23, paddingTop: 10 }}
+                onPress={() => this.refs.drawer.closeDrawer()}
+              >
+                <View>
+                  <Icon style={{ color: '#fff', alignSelf: 'flex-end' }} st name="md-arrow-back" size={24} />
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+
+        <View style={{ padding: 30 }}>
           <View style={{ borderTopWidth: 1, borderColor: '#fff', width: '80%', marginLeft: 5, marginRight: 5, marginBottom: 20, marginTop: 10 }} />
           {
             menuLoginExpanded ?
@@ -563,7 +582,16 @@ const styles = {
     height: 20,
     width: 20,
     marginRight: 20
-  }
+  },
+  profileImageContainerDrawer: {
+    height: 80,
+    width: 80,
+  },
+  profileImageDrawer: {
+    height: 80,
+    width: 80,
+    borderRadius: 50,
+  },
 }
 
 const mapStateToProps = (state) => {
