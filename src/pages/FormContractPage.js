@@ -624,6 +624,7 @@ class FormContractPage extends Component {
             <Input
               label="Nominal Dp"
               keyboardType="numeric"
+              editable={false}
               value={dpAmount ? numeral(parseInt(dpAmount, 0)).format('0,0') : ''}
               onChangeText={v => this.onChangeInput('dpAmount', v.replace(/\./g, ''))}
             />
