@@ -129,7 +129,8 @@ class FormContractRevisionPage extends Component {
             dataTemp: res,
             loadingView: false,
             fishReject: res.Contract.fishReject,
-            maxFishReject: res.Contract.maxFishReject
+            maxFishReject: res.Contract.maxFishReject,
+            cityId: res.Contract.BuyerCityId
           }, () => {
             const a = this.props.navigation.state.params.datas.Request.Transaction.quantity;
             const totLah = parseInt(this.state.price, 0) * parseInt(a, 0);
@@ -334,8 +335,16 @@ class FormContractRevisionPage extends Component {
 
   sum() {
     const { price, quantity } = this.state;
-    const totLah = parseInt(price, 0) * parseInt(quantity, 0);
+    // total
+     const totLah = parseInt(price, 0) * parseInt(quantity, 0);
     this.setState({ hargaTot: totLah })
+
+    // dp
+    const dp = parseInt((totLah * 0.3), 0)
+    this.setState({ 
+      hargaTot: totLah,
+      dpAmount: dp
+    })
   }
 
 
@@ -664,8 +673,8 @@ class FormContractRevisionPage extends Component {
             <Input
               label='Nominal DP'
               keyboardType="numeric"
+              editable={false}
               value={dpAmount ? numeral(parseInt(dpAmount, 0)).format('0,0') : ''}
-              onChangeText={v => this.onChangeInput('dpAmount', v.replace(/\./g, ''))}
             />
           </ContainerSection>
 
