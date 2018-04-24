@@ -1203,7 +1203,7 @@ class DetailTransactionPage extends Component {
                           {
                             collectionPending ?
                               <View>
-                                <Text>Nelayan sudah melakukan upload foto pengumupulan, sedang diverifikasi oleh admin</Text>
+                                <Text>Nelayan sudah melakukan upload foto pengumpulan, sedang diverifikasi oleh admin</Text>
                               </View>
                               :
                               <View />
