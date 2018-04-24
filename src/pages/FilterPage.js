@@ -2,10 +2,10 @@
  *  Import Component
  */
 import React, { Component } from 'react';
-import { Text, View, TouchableWithoutFeedback, ToastAndroid, TouchableNativeFeedback, ScrollView } from 'react-native';
+import { Text, View, ToastAndroid, TouchableNativeFeedback, ScrollView } from 'react-native';
 import numeral from 'numeral';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { CheckBox } from 'react-native-elements';
+// import { CheckBox } from 'react-native-elements';
+import CheckBox from 'react-native-check-box'
 import axios from 'axios';
 import { NavigationActions } from 'react-navigation';
 import {
@@ -150,10 +150,15 @@ class FilterPage extends Component {
                                                         <View >
                                                             <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
                                                                 <CheckBox
+                                                                    rightText={item.name}
+                                                                    onClick={() => this.provinsiCheck(item.id)}
+                                                                    isChecked={provinsiId.includes(item.id)}
+                                                                />
+                                                                {/* <CheckBox
                                                                     title={item.name}
                                                                     onPress={() => this.provinsiCheck(item.id)}
                                                                     checked={provinsiId.includes(item.id)}
-                                                                />
+                                                                /> */}
                                                             </View>
                                                         </View>
                                                     </View>

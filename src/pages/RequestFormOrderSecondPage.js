@@ -12,7 +12,8 @@ import {
 import { NavigationActions } from 'react-navigation'
 import axios from 'axios';
 import numeral from 'numeral';
-import { CheckBox } from 'react-native-elements';
+import CheckBox from 'react-native-check-box'
+// import { CheckBox } from 'react-native-elements';
 import { BASE_URL, COLOR } from './../shared/lb.config';
 import {
   Button,
@@ -47,6 +48,7 @@ class RequestFormOrderSecondPage extends Component {
   }
 
   componentWillMount() {
+    console.log(BASE_URL, 'TEMBAK AKU MAS');
     const { params } = this.props.navigation.state;
     console.log(params, 'DATA PARAMMMMMMSSSSSSS');
     this.setState({ datax: this.props.navigation.state.params.datas });
@@ -143,6 +145,8 @@ class RequestFormOrderSecondPage extends Component {
 
 
   getDefaultButton() {
+    console.log(this.state.datax.FishId, 'Fish Id', this.state.dataNot.id);
+
     this.setState({ loading: true })
     AsyncStorage.getItem('loginCredential', (err, result) => {
       const token = result;
@@ -256,6 +260,17 @@ class RequestFormOrderSecondPage extends Component {
               <Text style={{ fontSize: 10 }}>Rp {numeral(parseInt(data.minPrice, 0)).format('0,0')} - Rp {numeral(parseInt(data.minPrice, 0)).format('0,0')} /Kg</Text>
             </View>
             <CheckBox
+              style={{
+                borderWidth: 0,
+                padding: 0,
+                margin: 0,
+                marginTop: 10,
+                width: 40
+              }}
+              onClick={() => this.checkItem(data)}
+              isChecked={this.state.checkedSelected.includes(data)}
+            />
+            {/* <CheckBox
               center
               onPress={() => this.checkItem(data)}
               checked={this.state.checkedSelected.includes(data)}
@@ -268,7 +283,7 @@ class RequestFormOrderSecondPage extends Component {
                 marginTop: 10,
                 width: 40
               }}
-            />
+            /> */}
           </View>
         </View>
       )
@@ -287,34 +302,36 @@ class RequestFormOrderSecondPage extends Component {
           backgroundColor={COLOR.primary}
           barStyle="light-content"
         />
-        <ScrollView>
-          {/* <View style={{ paddingLeft: '73%' }}>
-            <View style={styles.itemContainerStyle}>
-              <CheckBox
-                center
-                title='Check All'
-                onPress={() => this.checkAll(dataSupplier)}
-                checked={checkedSelected === dataSupplier}
-              />
-            </View>
-          </View> */}
-
-          <FlatList
-            data={[this.state.dataSupplier]}
-            renderItem={({ item }) => this.renderItem(item)}
-          />
-        </ScrollView>
         {
           dataSupplier.length === 0 ?
-            <View style={{ margin: 10 }}>
+            <View style={{ marginTop: '50%' }}>
               <Text style={{ textAlign: 'center' }}>Ups... Maaf tidak ada daftar nelayan.</Text>
               <Text style={{ textAlign: 'center' }}>Silahkan coba ganti Nama Ikan / Provinsi / Kota.</Text>
             </View>
             :
-            <View style={{ margin: 10 }}>
-              <ContainerSection>
-                {this.renderButton()}
-              </ContainerSection>
+            <View>
+              <ScrollView>
+                {/* <View style={{ paddingLeft: '73%' }}>
+              <View style={styles.itemContainerStyle}>
+                <CheckBox
+                  center
+                  title='Check All'
+                  onPress={() => this.checkAll(dataSupplier)}
+                  checked={checkedSelected === dataSupplier}
+                />
+              </View>
+            </View> */}
+
+                <FlatList
+                  data={[this.state.dataSupplier]}
+                  renderItem={({ item }) => this.renderItem(item)}
+                />
+              </ScrollView>
+              <View style={{ margin: 10 }}>
+                <ContainerSection>
+                  {this.renderButton()}
+                </ContainerSection>
+              </View>
             </View>
         }
       </View>

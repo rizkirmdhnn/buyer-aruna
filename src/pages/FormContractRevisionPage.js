@@ -17,7 +17,8 @@ import {
 import axios from 'axios';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
-import { CheckBox } from 'react-native-elements'
+// import { CheckBox } from 'react-native-elements'
+import CheckBox from 'react-native-check-box'
 import numeral from 'numeral';
 import {
   Input,
@@ -612,10 +613,16 @@ class FormContractRevisionPage extends Component {
           </ContainerSection>
 
           <CheckBox
+            rightText='Lokasi penerimaan komoditas sama dengan lokasi pembeli'
+            onClick={() => this.checkItem(addressBuyer)}
+            isChecked={locationOfreception.includes(addressBuyer)}
+          />
+
+          {/* <CheckBox
             title='Lokasi penerimaan komoditas sama dengan lokasi pembeli'
             onPress={() => this.checkItem(addressBuyer)}
             checked={locationOfreception.includes(addressBuyer)}
-          />
+          /> */}
 
           <ContainerSection>
             <Input

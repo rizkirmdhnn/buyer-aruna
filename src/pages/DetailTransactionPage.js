@@ -16,7 +16,8 @@ import { NavigationActions } from 'react-navigation';
 import moment from 'moment';
 import numeral from 'numeral';
 import axios from 'axios';
-import { CheckBox, Rating } from 'react-native-elements';
+import CheckBox from 'react-native-check-box'
+import { Rating } from 'react-native-elements';
 import ImagePicker from 'react-native-image-picker';
 import { Card, Button, ContainerSection, Spinner, Input } from '../components/common'
 import { BASE_URL, COLOR } from './../shared/lb.config';
@@ -849,15 +850,27 @@ class DetailTransactionPage extends Component {
                           <View style={{ paddingTop: 10 }}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
                               <CheckBox
+                                rightText='Survei'
+                                onClick={() => this.checkBoxSurvey()}
+                                isChecked={survey}
+                              />
+
+                              <CheckBox
+                                rightText='Sample'
+                                onClick={() => this.checkBoxSample()}
+                                isChecked={sample}
+                              />
+                              
+                              {/* <CheckBox
                                 title='Survei'
                                 checked={survey}
                                 onPress={() => this.checkBoxSurvey()}
-                              />
-                              <CheckBox
+                              /> */}
+                              {/* <CheckBox
                                 title='Sample'
                                 checked={sample}
                                 onPress={() => this.checkBoxSample()}
-                              />
+                              /> */}
                             </View>
                           </View>
                           <View style={{ marginTop: 10 }}>
