@@ -976,7 +976,7 @@ class DetailTransactionPage extends Component {
                                     <Text>File</Text>
                                     <Text>Keterangan</Text>
                                   </View>
-                                  <View style={{ flex: 1 }}>
+                                  <View style={{ flex: 2 }}>
                                     <Text>{this.state.dataTransaction.Contract.Status.name}</Text>
                                     <TouchableOpacity onPress={() => Linking.openURL(`${BASE_URL}/files/${this.state.dataTransaction.Contract.file}`).catch(err => console.error('An error occurred', err))}>
                                       <View style={{ flexDirection: 'row' }}>
