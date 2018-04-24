@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { ScrollView, View, Text, TouchableOpacity, AsyncStorage, ToastAndroid, StatusBar } from 'react-native';
 import moment from 'moment';
+import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode'
@@ -119,7 +120,7 @@ class MessagePage extends Component {
 					backgroundColor={COLOR.primary}
 					barStyle="light-content"
 				/>
-				
+
 				<View style={{ marginTop: 5 }}>
 					<Card style={{ backgroundColor: '#fff', padding: 5, justifyContent: 'center', alignItems: 'center' }}>
 						<ContainerSection>
@@ -140,8 +141,19 @@ class MessagePage extends Component {
 					{
 						datas !== undefined && datas.map(item =>
 							<View key={item.id} style={styles.messageContainer}>
-								<Text style={{ textAlign: item.SupplierId === null ? 'right' : 'left', fontSize: 16 }}>{item.text}</Text>
-								<Text style={{ textAlign: item.SupplierId === null ? 'right' : 'left', fontSize: 9 }}>{moment(item.createdAt).format('DD/MM/YYYY | HH:mm')} WIB</Text>
+								<View style={item.BuyerId === this.props.user.data.id ? styles.myCard : styles.card}>
+									<Text style={item.BuyerId === this.props.user.data.id ? styles.textMyCard : styles.textCard}>{item.text}</Text>
+								</View>
+								<View style={item.BuyerId === this.props.user.data.id ? styles.statusMyCard : styles.statusCard}>
+									<Text style={{ textAlign: item.BuyerId === this.props.user.data.id ? 'right' : 'left', fontSize: 9 }}>{moment(item.createdAt).format('DD/MM/YYYY | HH:mm')} WIB</Text>
+									{
+										item.BuyerId === this.props.user.data.id &&
+										<View style={{ flexDirection: 'row' }}>
+											<Icon size={12} style={{ marginLeft: 5 }} color={item.read ? COLOR.primary : '#65636363'} name="md-checkmark" />
+											<Icon size={12} style={{ marginLeft: -5 }} color={item.read ? COLOR.primary : '#65636363'} name="md-checkmark" />
+										</View>
+									}
+								</View>
 							</View>
 						)
 					}
@@ -190,7 +202,51 @@ const styles = {
 		paddingLeft: 18,
 		paddingRight: 18,
 	},
+	card: {
+		elevation: 1,
+		padding: 15,
+		paddingTop: 10,
+		paddingBottom: 10,
+		backgroundColor: '#eaeaea',
+		justifyContent: 'flex-end',
+		borderRadius: 25,
+		alignSelf: 'flex-start',
+		marginBottom: 2
+	},
+	textCard: {
+		textAlign: 'left',
+		fontSize: 16
+	},
+	statusCard: {
+		flexDirection: 'row',
+		alignSelf: 'flex-start',
+	},
+	myCard: {
+		elevation: 1,
+		paddingTop: 10,
+		paddingBottom: 10,
+		padding: 15,
+		backgroundColor: COLOR.secondary_b,
+		justifyContent: 'flex-end',
+		borderRadius: 25,
+		alignSelf: 'flex-end',
+		marginBottom: 2
+	},
+	textMyCard: {
+		textAlign: 'left',
+		fontSize: 16,
+		color: '#fff'
+	},
+	statusMyCard: {
+		flexDirection: 'row',
+		alignSelf: 'flex-end',
+	}
 }
 
 
-export default MessagePage;
+const mapStateToProps = state => {
+	const { user } = state
+	return { user }
+}
+
+export default connect(mapStateToProps)(MessagePage)

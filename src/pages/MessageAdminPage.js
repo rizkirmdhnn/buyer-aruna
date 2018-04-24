@@ -132,10 +132,6 @@ class MessageAdminPage extends Component {
 									}
 								</View>
 							</View>
-							// <View key={item.id} style={styles.messageContainer}>
-							// 	<Text style={{ textAlign: item.AdminId === null ? 'right' : 'left', fontSize: 16 }}>{item.text}</Text>
-							// 	<Text style={{ textAlign: item.AdminId === null ? 'right' : 'left', fontSize: 9 }}>{moment(item.createdAt).format('DD/MM/YYYY | HH:mm')} WIB</Text>
-							// </View>
 						)
 					}
 				</ScrollView>
