@@ -799,6 +799,9 @@ class DetailTransactionPage extends Component {
       dataSampleSurvey
     } = this.state
 
+    const surpei = 'Survei';
+    const sampel = 'Sample';
+
     return (
       <View
         style={{ flex: 1 }}
@@ -850,17 +853,19 @@ class DetailTransactionPage extends Component {
                           <View style={{ paddingTop: 10 }}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
                               <CheckBox
-                                rightText='Survei'
+                                style={{ flex: 1, padding: 10 }}
+                                rightText={surpei}
                                 onClick={() => this.checkBoxSurvey()}
                                 isChecked={survey}
                               />
 
                               <CheckBox
-                                rightText='Sample'
+                                style={{ flex: 1, padding: 10 }}
+                                rightText={sampel}
                                 onClick={() => this.checkBoxSample()}
                                 isChecked={sample}
                               />
-                              
+
                               {/* <CheckBox
                                 title='Survei'
                                 checked={survey}
