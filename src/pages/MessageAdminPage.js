@@ -89,7 +89,7 @@ class MessageAdminPage extends Component {
 
 	render() {
 		const { loading, data, textTemp } = this.state
-		console.log(data)
+		console.log(data, 'Data Pesan');
 
 		if (loading) {
 			return <Spinner size='large' />
@@ -118,9 +118,24 @@ class MessageAdminPage extends Component {
 					{
 						data !== undefined && data.map(item =>
 							<View key={item.id} style={styles.messageContainer}>
-								<Text style={{ textAlign: item.AdminId === null ? 'right' : 'left', fontSize: 16 }}>{item.text}</Text>
-								<Text style={{ textAlign: item.AdminId === null ? 'right' : 'left', fontSize: 9 }}>{moment(item.createdAt).format('DD/MM/YYYY | HH:mm')} WIB</Text>
+								<View style={item.BuyerId === this.props.user.data.id ? styles.myCard : styles.card}>
+									<Text style={item.BuyerId === this.props.user.data.id ? styles.textMyCard : styles.textCard}>{item.text}</Text>
+								</View>
+								<View style={item.BuyerId === this.props.user.data.id ? styles.statusMyCard : styles.statusCard}>
+									<Text style={{ textAlign: item.BuyerId === this.props.user.data.id ? 'right' : 'left', fontSize: 9 }}>{moment(item.createdAt).format('DD/MM/YYYY | HH:mm')} WIB</Text>
+									{
+										item.BuyerId === this.props.user.data.id &&
+										<View style={{ flexDirection: 'row' }}>
+											<Icon size={12} style={{ marginLeft: 5 }} color={item.read ? COLOR.primary : '#65636363'} name="md-checkmark" />
+											<Icon size={12} style={{ marginLeft: -5 }} color={item.read ? COLOR.primary : '#65636363'} name="md-checkmark" />
+										</View>
+									}
+								</View>
 							</View>
+							// <View key={item.id} style={styles.messageContainer}>
+							// 	<Text style={{ textAlign: item.AdminId === null ? 'right' : 'left', fontSize: 16 }}>{item.text}</Text>
+							// 	<Text style={{ textAlign: item.AdminId === null ? 'right' : 'left', fontSize: 9 }}>{moment(item.createdAt).format('DD/MM/YYYY | HH:mm')} WIB</Text>
+							// </View>
 						)
 					}
 				</ScrollView>
@@ -135,7 +150,7 @@ class MessageAdminPage extends Component {
 						/>
 						<TouchableOpacity
 							disabled={textTemp === ''}
-							onPress={() => this.setState({ textTemp: ''}, () => { this.postMessage() })}
+							onPress={() => this.setState({ textTemp: '' }, () => { this.postMessage() })}
 						>
 							<View style={{ marginLeft: 10 }}>
 								<Icon size={46} color={textTemp === '' ? '#eaeaea' : COLOR.secondary_a} name="md-send" />
@@ -166,6 +181,45 @@ const styles = {
 		padding: 15,
 		paddingLeft: 18,
 		paddingRight: 18,
+	},
+	card: {
+		elevation: 1,
+		padding: 15,
+		paddingTop: 10,
+		paddingBottom: 10,
+		backgroundColor: '#eaeaea',
+		justifyContent: 'flex-end',
+		borderRadius: 25,
+		alignSelf: 'flex-start',
+		marginBottom: 2
+	},
+	textCard: {
+		textAlign: 'left',
+		fontSize: 16
+	},
+	statusCard: {
+		flexDirection: 'row',
+		alignSelf: 'flex-start',
+	},
+	myCard: {
+		elevation: 1,
+		paddingTop: 10,
+		paddingBottom: 10,
+		padding: 15,
+		backgroundColor: COLOR.secondary_b,
+		justifyContent: 'flex-end',
+		borderRadius: 25,
+		alignSelf: 'flex-end',
+		marginBottom: 2
+	},
+	textMyCard: {
+		textAlign: 'left',
+		fontSize: 16,
+		color: '#fff'
+	},
+	statusMyCard: {
+		flexDirection: 'row',
+		alignSelf: 'flex-end',
 	},
 }
 
