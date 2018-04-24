@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Text, View, FlatList, Image, ScrollView, RefreshControl, AsyncStorage, ToastAndroid, TouchableWithoutFeedback } from 'react-native';
 import { NavigationActions } from 'react-navigation'
-import { CheckBox } from 'react-native-elements';
+import CheckBox from 'react-native-check-box'
+// import { CheckBox } from 'react-native-elements';
 import moment from 'moment';
 import axios from 'axios';
 import numeral from 'numeral';
@@ -209,6 +210,17 @@ class DetailRequestOrderPage extends Component {
                     <Text style={{ flex: 3, fontFamily: 'Muli-Regular', color: COLOR.secondary_a, fontSize: 16 }}>{data.Supplier.name}</Text>
                     <View style={{ flex: 1 }}>
                       <CheckBox
+                        style={{
+                          borderWidth: 0,
+                          padding: 0,
+                          margin: 0,
+                          marginTop: 10,
+                          width: 40
+                        }}
+                        onClick={() => this.checkItem(data)}
+                        isChecked={this.state.checkedSelected.includes(data)}
+                      />
+                      {/* <CheckBox
                         uncheckedColor='#000000'
                         checkedColor='#000000'
                         containerStyle={{
@@ -220,7 +232,7 @@ class DetailRequestOrderPage extends Component {
                         }}
                         onPress={() => this.checkItem(data)}
                         checked={this.state.checkedSelected.includes(data)}
-                      />
+                      /> */}
                     </View>
                   </View>
                   <View style={{ flexDirection: 'column' }}>
