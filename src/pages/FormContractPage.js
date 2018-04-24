@@ -10,6 +10,7 @@ import {
   AsyncStorage,
   TouchableNativeFeedback,
   TouchableWithoutFeedback,
+  TouchableOpacity,
   ToastAndroid,
   Keyboard,
   Picker,
@@ -21,6 +22,7 @@ import moment from 'moment';
 // import { CheckBox } from 'react-native-elements'
 import CheckBox from 'react-native-check-box'
 import Icon from 'react-native-vector-icons/Ionicons'
+import AutoComplete from '../components/AutoComplete';
 
 import {
   Input,
@@ -90,7 +92,10 @@ class FormContractPage extends Component {
       hargaTot: 0,
       unitFish: '',
       dataMapCity: '',
-      cityId: ''
+      cityId: '',
+      suggestions: [],
+      value: '',
+      isDisabled: true
     }
   }
 
@@ -223,6 +228,7 @@ class FormContractPage extends Component {
   }
 
   onSubmit = () => {
+    console.log(this.state, 'STATE');
     Keyboard.dismiss()
     const dataContract = {
       fishDescribe: this.state.fishDescribe,
@@ -282,6 +288,15 @@ class FormContractPage extends Component {
     })
   }
 
+  onItemSelected = (item) => {
+    console.log(item, 'Ikan terpilih');
+    this.setState({
+      suggestions: [],
+      cityId: item.id,
+      value: item.name
+    })
+  }
+
 
   getData(token) {
     axios.get(`${BASE_URL}/cities`, {
@@ -302,6 +317,28 @@ class FormContractPage extends Component {
         //   alert('Koneksi internet bermasalah Provinsi')
         // }
       })
+  }
+
+  querySuggestion = (text) => {
+    this.setState({ value: text })
+    AsyncStorage.getItem('loginCredential', (err, result) => {
+      axios.get(`${BASE_URL}/fishes?key=${text}&pageSize=5sorting=ASC`, {
+        headers: { 'x-access-token': result }
+      })
+        .then(response => {
+          res = response.data.data
+          this.setState({ suggestions: res })
+          console.log(res, 'Auto Complete Nya')
+        })
+        .catch(error => {
+          if (error.response) {
+            alert('Internet anda Lemot')
+          }
+          else {
+            alert('Koneksi internet bermasalah')
+          }
+        })
+    });
   }
 
 
@@ -396,7 +433,7 @@ class FormContractPage extends Component {
 
     // dp
     const dp = parseInt((totLah * 0.3), 0)
-    this.setState({ 
+    this.setState({
       hargaTot: totLah,
       dpAmount: dp
     })
@@ -454,7 +491,9 @@ class FormContractPage extends Component {
       dataMaster,
       locationEdit,
       hargaTot,
-      cityId
+      value,
+      suggestions,
+      isDisabled
     } = this.state
 
     const addressBuyer = dataMaster.Request.Buyer.address;
@@ -592,12 +631,6 @@ class FormContractPage extends Component {
             isChecked={locationOfreception.includes(addressBuyer)}
           />
 
-          {/* <CheckBox
-            title='Lokasi penerimaan komoditas sama dengan lokasi pembeli'
-            onPress={() => this.checkItem(addressBuyer)}
-            checked={locationOfreception.includes(addressBuyer)}
-          /> */}
-
           <ContainerSection>
             <Input
               label='Lokasi Penerimaan'
@@ -612,20 +645,27 @@ class FormContractPage extends Component {
           </ContainerSection>
 
           <ContainerSection>
-            <View style={styles.pickerContainer}>
-              <Text style={styles.pickerTextStyle}>Kota</Text>
-              <View style={styles.pickerStyleBox}>
-                <View style={styles.pickerStyle}>
-                  <Picker
-                    selectedValue={cityId}
-                    onValueChange={v => this.onChangeInput('cityId', v)}
+            <AutoComplete
+              label="Kota"
+              placeholder="Kota"
+              suggestions={suggestions}
+              onChangeText={text => this.querySuggestion(text)}
+              value={value}
+              editable={isDisabled}
+            >
+              {
+                suggestions && suggestions.map(item =>
+                  <TouchableOpacity
+                    key={item.id}
+                    onPress={() => this.onItemSelected(item)}
                   >
-                    <Picker.Item label='Pilih Kota' value='0' />
-                    {this.renderPickerCity()}
-                  </Picker>
-                </View>
-              </View>
-            </View>
+                    <View style={styles.containerItemAutoSelect}>
+                      <Text>{item.name}</Text>
+                    </View>
+                  </TouchableOpacity>
+                )
+              }
+            </AutoComplete>
           </ContainerSection>
 
           <ContainerSection>

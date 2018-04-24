@@ -12,7 +12,8 @@ import {
   Image,
   ToastAndroid,
   Picker,
-  RefreshControl
+  RefreshControl,
+  TouchableOpacity
 } from 'react-native';
 import axios from 'axios';
 import DateTimePicker from 'react-native-modal-datetime-picker';
@@ -29,6 +30,7 @@ import {
   InputDate
 } from './../components/common';
 import { BASE_URL, COLOR } from './../shared/lb.config';
+import AutoComplete from '../components/AutoComplete';
 
 class FormContractRevisionPage extends Component {
 
@@ -76,7 +78,10 @@ class FormContractRevisionPage extends Component {
       unitFish: '',
       dataMapCity: '',
       cityId: '',
-      supplierCityId: ''
+      supplierCityId: '',
+      suggestions: [],
+      value: '',
+      isDisabled: true
     };
   }
 
@@ -311,6 +316,15 @@ class FormContractRevisionPage extends Component {
       })
   }
 
+  onItemSelected = (item) => {
+    console.log(item, 'Ikan terpilih');
+    this.setState({
+      suggestions: [],
+      cityId: item.id,
+      value: item.name
+    })
+  }
+
   getData(token) {
     axios.get(`${BASE_URL}/cities`, {
       headers: { 'x-access-token': token }
@@ -332,16 +346,38 @@ class FormContractRevisionPage extends Component {
       })
   }
 
+  querySuggestion = (text) => {
+    this.setState({ value: text })
+    AsyncStorage.getItem('loginCredential', (err, result) => {
+      axios.get(`${BASE_URL}/fishes?key=${text}&pageSize=5sorting=ASC`, {
+        headers: { 'x-access-token': result }
+      })
+        .then(response => {
+          res = response.data.data
+          this.setState({ suggestions: res })
+          console.log(res, 'Auto Complete Nya')
+        })
+        .catch(error => {
+          if (error.response) {
+            alert('Internet anda Lemot')
+          }
+          else {
+            alert('Koneksi internet bermasalah')
+          }
+        })
+    });
+  }
+
 
   sum() {
     const { price, quantity } = this.state;
     // total
-     const totLah = parseInt(price, 0) * parseInt(quantity, 0);
+    const totLah = parseInt(price, 0) * parseInt(quantity, 0);
     this.setState({ hargaTot: totLah })
 
     // dp
     const dp = parseInt((totLah * 0.3), 0)
-    this.setState({ 
+    this.setState({
       hargaTot: totLah,
       dpAmount: dp
     })
@@ -478,7 +514,9 @@ class FormContractRevisionPage extends Component {
       fishDescribe,
       locationEdit,
       hargaTot,
-      cityId
+      value,
+      suggestions,
+      isDisabled
     } = this.state
 
     const sizeConvert = { uri: `${BASE_URL}/images/${this.state.dataMaster.Request.Transaction.photo}` };
@@ -627,12 +665,6 @@ class FormContractRevisionPage extends Component {
             isChecked={locationOfreception.includes(addressBuyer)}
           />
 
-          {/* <CheckBox
-            title='Lokasi penerimaan komoditas sama dengan lokasi pembeli'
-            onPress={() => this.checkItem(addressBuyer)}
-            checked={locationOfreception.includes(addressBuyer)}
-          /> */}
-
           <ContainerSection>
             <Input
               label='Lokasi Penerimaan'
@@ -647,20 +679,27 @@ class FormContractRevisionPage extends Component {
           </ContainerSection>
 
           <ContainerSection>
-            <View style={styles.pickerContainer}>
-              <Text style={styles.pickerTextStyle}>Kota</Text>
-              <View style={styles.pickerStyleBox}>
-                <View style={styles.pickerStyle}>
-                  <Picker
-                    selectedValue={cityId}
-                    onValueChange={v => this.onChangeInput('cityId', v)}
+            <AutoComplete
+              label="Kota"
+              placeholder="Kota"
+              suggestions={suggestions}
+              onChangeText={text => this.querySuggestion(text)}
+              value={value}
+              editable={isDisabled}
+            >
+              {
+                suggestions && suggestions.map(item =>
+                  <TouchableOpacity
+                    key={item.id}
+                    onPress={() => this.onItemSelected(item)}
                   >
-                    <Picker.Item label='Pilih Kota' value='0' />
-                    {this.renderPickerCity()}
-                  </Picker>
-                </View>
-              </View>
-            </View>
+                    <View style={styles.containerItemAutoSelect}>
+                      <Text>{item.name}</Text>
+                    </View>
+                  </TouchableOpacity>
+                )
+              }
+            </AutoComplete>
           </ContainerSection>
 
           <ContainerSection>
