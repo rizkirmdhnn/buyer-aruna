@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "build-staging": "cd android && gradlew assembleReleaseStaging",
-    "build-prod": "cd android && gradlew assembleRelease",
+    "build-staging": "export ENVFILE=.env.staging && cd android && ./gradlew assembleReleaseStaging",
+    "build-prod": "export ENVFILE=.env.prod && cd android && ./gradlew assembleRelease",
     "build-clean": "cd android && gradlew clean",
     "deploy-staging": "code-push release-react raosanfl/ArunaAppBuyer android",
     "deploy-prod": "code-push promote raosanfl/ArunaAppBuyer Staging Production",
