@@ -11,7 +11,8 @@ import {
   DrawerLayoutAndroid,
   TouchableNativeFeedback,
   ToastAndroid,
-  StatusBar
+  StatusBar,
+  ScrollView
 } from 'react-native';
 import OneSignal from 'react-native-onesignal';
 import { NavigationActions } from 'react-navigation';
@@ -161,137 +162,139 @@ class HomePage extends Component {
 
     console.log(this.props.user.data, 'POPOPOPOPOP');
     const menuDrawer = (
-      <View style={{ flex: 1, backgroundColor: COLOR.secondary_a }}>
-        <View style={{ backgroundColor: COLOR.primary, paddingTop: 20, padding: 16 }}>
-          <TouchableOpacity onPress={() => this.props.navigation.navigate('ProfileBuyer')}>
-            <View style={profileImageContainerDrawer}>
-              <Image
-                style={profileImageDrawer}
-                source={{ uri: `${BASE_URL}/images/${this.props.user.data.photo}` }}
-              />
-            </View>
-          </TouchableOpacity>
-          <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row', marginTop: 40 }}>
-            <TouchableOpacity onPress={() => this.props.navigation.navigate('ProfileBuyerEdit')}>
-              <View>
-                <Text style={styles.drawerItemText}>{this.props.user.data.name}</Text>
-                <View style={{ height: 5 }} />
-                <Text style={{ color: 'white', fontSize: 11 }}>Ubah profile</Text>
+      <ScrollView>
+        <View style={{ flex: 1, backgroundColor: COLOR.secondary_a }}>
+          <View style={{ backgroundColor: COLOR.primary, paddingTop: 20, padding: 16 }}>
+            <TouchableOpacity onPress={() => this.props.navigation.navigate('ProfileBuyer')}>
+              <View style={profileImageContainerDrawer}>
+                <Image
+                  style={profileImageDrawer}
+                  source={{ uri: `${BASE_URL}/images/${this.props.user.data.photo}` }}
+                />
               </View>
             </TouchableOpacity>
-            <View style={{ flex: 1 }}>
-              <TouchableOpacity
-                style={{ height: 45, position: 'absolute', right: -10, width: 50, paddingRight: 20, marginTop: -23, paddingTop: 10 }}
-                onPress={() => this.refs.drawer.closeDrawer()}
-              >
+            <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row', marginTop: 40 }}>
+              <TouchableOpacity onPress={() => this.props.navigation.navigate('ProfileBuyerEdit')}>
                 <View>
-                  <Icon style={{ color: '#fff', alignSelf: 'flex-end' }} st name="md-arrow-back" size={24} />
+                  <Text style={styles.drawerItemText}>{this.props.user.data.name}</Text>
+                  <View style={{ height: 5 }} />
+                  <Text style={{ color: 'white', fontSize: 11 }}>Ubah profile</Text>
                 </View>
               </TouchableOpacity>
+              <View style={{ flex: 1 }}>
+                <TouchableOpacity
+                  style={{ height: 45, position: 'absolute', right: -10, width: 50, paddingRight: 20, marginTop: -23, paddingTop: 10 }}
+                  onPress={() => this.refs.drawer.closeDrawer()}
+                >
+                  <View>
+                    <Icon style={{ color: '#fff', alignSelf: 'flex-end' }} st name="md-arrow-back" size={24} />
+                  </View>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
 
-        <View style={{ padding: 30 }}>
-          <View style={{ borderTopWidth: 1, borderColor: '#fff', width: '80%', marginLeft: 5, marginRight: 5, marginBottom: 20, marginTop: 10 }} />
-          {
-            menuLoginExpanded ?
-              menuLogin.map((item, index) =>
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => this.props.navigation.navigate(item.screen)}
-                >
-                  <View style={{ marginBottom: 20 }}>
-                    <ContainerSection>
-                      <Image
-                        style={styles.menuIcon}
-                        source={item.icon}
-                      />
-                      <Text style={styles.drawerItemText}>{item.label}</Text>
-                    </ContainerSection>
-                  </View>
-                </TouchableOpacity>
-              )
-              :
-              menuLogout.map((item, index) =>
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => this.props.navigation.navigate(item.screen)}
-                >
-                  <View style={{ marginBottom: 20 }}>
-                    <ContainerSection>
-                      <Image
-                        style={styles.menuIcon}
-                        source={item.icon}
-                      />
-                      <Text style={styles.drawerItemText}>{item.label}</Text>
-                    </ContainerSection>
-                  </View>
-                </TouchableOpacity>
-              )
-          }
-          <View style={{ borderTopWidth: 1, borderColor: '#fff', width: '80%', marginLeft: 5, marginRight: 5, marginBottom: 20, marginTop: 10 }} />
-          {
-            menuLoginExpanded ?
-              <View>
-                <TouchableOpacity onPress={() => this.props.navigation.navigate('Term')}>
-                  <View style={{ marginBottom: 20 }}>
-                    <ContainerSection>
-                      <Image
-                        style={{
-                          height: 15,
-                          width: 15,
-                          marginRight: 20
-                        }}
-                        source={require('../assets/images/dokumen.png')}
-                      />
-                      <Text style={styles.drawerItemText}>Terms & Conditions</Text>
-                    </ContainerSection>
-                  </View>
-                </TouchableOpacity>
+          <View style={{ padding: 30 }}>
+            <View style={{ borderTopWidth: 1, borderColor: '#fff', width: '80%', marginLeft: 5, marginRight: 5, marginBottom: 20, marginTop: 10 }} />
+            {
+              menuLoginExpanded ?
+                menuLogin.map((item, index) =>
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => this.props.navigation.navigate(item.screen)}
+                  >
+                    <View style={{ marginBottom: 20 }}>
+                      <ContainerSection>
+                        <Image
+                          style={styles.menuIcon}
+                          source={item.icon}
+                        />
+                        <Text style={styles.drawerItemText}>{item.label}</Text>
+                      </ContainerSection>
+                    </View>
+                  </TouchableOpacity>
+                )
+                :
+                menuLogout.map((item, index) =>
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => this.props.navigation.navigate(item.screen)}
+                  >
+                    <View style={{ marginBottom: 20 }}>
+                      <ContainerSection>
+                        <Image
+                          style={styles.menuIcon}
+                          source={item.icon}
+                        />
+                        <Text style={styles.drawerItemText}>{item.label}</Text>
+                      </ContainerSection>
+                    </View>
+                  </TouchableOpacity>
+                )
+            }
+            <View style={{ borderTopWidth: 1, borderColor: '#fff', width: '80%', marginLeft: 5, marginRight: 5, marginBottom: 20, marginTop: 10 }} />
+            {
+              menuLoginExpanded ?
+                <View>
+                  <TouchableOpacity onPress={() => this.props.navigation.navigate('Term')}>
+                    <View style={{ marginBottom: 20 }}>
+                      <ContainerSection>
+                        <Image
+                          style={{
+                            height: 15,
+                            width: 15,
+                            marginRight: 20
+                          }}
+                          source={require('../assets/images/dokumen.png')}
+                        />
+                        <Text style={styles.drawerItemText}>Terms & Conditions</Text>
+                      </ContainerSection>
+                    </View>
+                  </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => this.props.navigation.navigate('Help')}>
-                  <View style={{ marginBottom: 20 }}>
-                    <ContainerSection>
-                      <Image
-                        style={styles.menuIcon}
-                        source={require('./../assets/images/help.png')}
-                      />
-                      <Text style={styles.drawerItemText}>Pusat Bantuan</Text>
-                    </ContainerSection>
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => this.isLogout()}
-                >
-                  <View style={{ marginBottom: 20 }}>
-                    <ContainerSection>
-                      <Image
-                        style={styles.menuIcon}
-                        source={require('./../assets/images/ic_keluar_white.png')}
-                      />
-                      <Text style={styles.drawerItemText}>Keluar</Text>
-                    </ContainerSection>
-                  </View>
-                </TouchableOpacity>
-              </View>
-              :
-              <View>
-                <TouchableOpacity onPress={() => this.props.navigation.navigate('Help')}>
-                  <View style={{ marginBottom: 20 }}>
-                    <ContainerSection>
-                      <Image
-                        style={styles.menuIcon}
-                        source={require('./../assets/images/ic_pusatbantuan_white.png')}
-                      />
-                      <Text style={styles.drawerItemText}>Pusat Bantuan</Text>
-                    </ContainerSection>
-                  </View>
-                </TouchableOpacity>
-              </View>
-          }
+                  <TouchableOpacity onPress={() => this.props.navigation.navigate('Help')}>
+                    <View style={{ marginBottom: 20 }}>
+                      <ContainerSection>
+                        <Image
+                          style={styles.menuIcon}
+                          source={require('./../assets/images/help.png')}
+                        />
+                        <Text style={styles.drawerItemText}>Pusat Bantuan</Text>
+                      </ContainerSection>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => this.isLogout()}
+                  >
+                    <View style={{ marginBottom: 20 }}>
+                      <ContainerSection>
+                        <Image
+                          style={styles.menuIcon}
+                          source={require('./../assets/images/ic_keluar_white.png')}
+                        />
+                        <Text style={styles.drawerItemText}>Keluar</Text>
+                      </ContainerSection>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+                :
+                <View>
+                  <TouchableOpacity onPress={() => this.props.navigation.navigate('Help')}>
+                    <View style={{ marginBottom: 20 }}>
+                      <ContainerSection>
+                        <Image
+                          style={styles.menuIcon}
+                          source={require('./../assets/images/ic_pusatbantuan_white.png')}
+                        />
+                        <Text style={styles.drawerItemText}>Pusat Bantuan</Text>
+                      </ContainerSection>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+            }
+          </View>
         </View>
-      </View>
+      </ScrollView>
     )
 
 
@@ -309,7 +312,10 @@ class HomePage extends Component {
         >
           <View style={styles.header}>
             <View style={{ paddingLeft: 15, paddingRight: 15 }}>
-              <TouchableOpacity onPress={() => this.refs.drawer.openDrawer()}>
+              <TouchableOpacity
+                style={{ height: 45, paddingTop: 10, width: 40, paddingLeft: 5 }}
+                onPress={() => this.refs.drawer.openDrawer()}
+              >
                 <Icon size={24} name="md-menu" color="#fff" />
               </TouchableOpacity>
             </View>
@@ -323,7 +329,10 @@ class HomePage extends Component {
             {
               this.state.menuLoginExpanded ?
                 <View style={{ paddingLeft: 15, paddingRight: 15 }}>
-                  <TouchableOpacity onPress={() => this.props.navigation.navigate('NotificationList')}>
+                  <TouchableOpacity
+                    style={{ marginRight: -20, height: 45, paddingTop: 15, width: 40, paddingLeft: 1 }}
+                    onPress={() => this.props.navigation.navigate('NotificationList')}
+                  >
                     <Image
                       style={{ height: 20, width: 15 }}
                       source={
