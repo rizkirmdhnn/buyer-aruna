@@ -510,7 +510,7 @@ const styles = {
   },
   headerTextStyle: {
     fontSize: 20,
-    fontWeight: 'bold'
+    fontFamily: 'Muli-Bold'
   },
   titleTextStyle: {
     fontSize: 15,

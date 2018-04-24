@@ -6,7 +6,7 @@ import axios from 'axios'
 
 import { Card } from '../components/common'
 import { notificationsFetch, unreadNotifFetch } from '../redux/actions'
-import { BASE_URL } from '../shared/lb.config';
+import { BASE_URL, COLOR } from '../shared/lb.config';
 
 class NotificationList extends Component {
 	static navigationOptions = {
