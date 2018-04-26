@@ -12,7 +12,8 @@ import {
 import { NavigationActions } from 'react-navigation'
 import axios from 'axios';
 import numeral from 'numeral';
-import { CheckBox } from 'react-native-elements';
+import CheckBox from 'react-native-check-box'
+// import { CheckBox } from 'react-native-elements';
 import { BASE_URL, COLOR } from './../shared/lb.config';
 import {
   Button,
@@ -47,6 +48,7 @@ class RequestFormOrderSecondPage extends Component {
   }
 
   componentWillMount() {
+    console.log(BASE_URL, 'TEMBAK AKU MAS');
     const { params } = this.props.navigation.state;
     console.log(params, 'DATA PARAMMMMMMSSSSSSS');
     this.setState({ datax: this.props.navigation.state.params.datas });
@@ -143,6 +145,8 @@ class RequestFormOrderSecondPage extends Component {
 
 
   getDefaultButton() {
+    console.log(this.state.datax.FishId, 'Fish Id', this.state.dataNot.id);
+
     this.setState({ loading: true })
     AsyncStorage.getItem('loginCredential', (err, result) => {
       const token = result;
@@ -176,37 +180,26 @@ class RequestFormOrderSecondPage extends Component {
     });
   }
 
-  checkAll = dataSupplier => {
+  checkAll = (dataSupplier) => {
     const { checkedSelected } = this.state;
+    console.log(dataSupplier, dataSupplier.length, 'Data Supplier First');
+    console.log(checkedSelected, checkedSelected.length, 'Data checkedSelected');
 
-    console.log(dataSupplier, 'Data Supplier');
-    console.log(checkedSelected, 'Data checkedSelected');
-
-    if (checkedSelected !== dataSupplier) {
+    if (checkedSelected.length === dataSupplier.length) {
       console.log('IF');
-      this.setState({
-        checkedSelected: dataSupplier
+      this.setState({ checkedSelected: checkedSelected.splice(0, checkedSelected.length) }, () => {
+        console.log(checkedSelected, 'HOHO');
+        console.log(this.state.dataSupplier, 'HIHI');
       });
     } else {
       console.log('ELSE');
-      this.setState({
-        checkedSelected: checkedSelected.splice(0)
+      this.setState({ checkedSelected: [] }, () => {
+        this.setState({ checkedSelected: dataSupplier })
+      }, () => {
+        console.log(checkedSelected, 'CKCK');
       });
     }
   }
-
-  // if (!checkedSelected.includes(dataSupplier)) {
-  //   console.log(dataSupplier, 'Data IF');
-  //   this.setState({
-  //     checkedSelected: dataSupplier
-  //   });
-  // } else {
-  //   this.setState({
-  //     checkedSelected: checkedSelected.filter(a => a !== dataSupplier)
-  //   });
-  //   console.log(checkedSelected, 'DATA ELSE')
-  // }
-
 
   checkItem = data => {
     const { checkedSelected } = this.state;
@@ -239,7 +232,8 @@ class RequestFormOrderSecondPage extends Component {
   }
 
   renderItem = (item) => {
-    console.log(this.state.checkedSelected, 'DATAAAAAA');
+    console.log(item, 'Item');
+    console.log(this.state.dataSupplier, 'DATAAAAAA');
     return item.map((data, index) => {
       return (
         <View style={styles.card} key={index}>
@@ -256,18 +250,15 @@ class RequestFormOrderSecondPage extends Component {
               <Text style={{ fontSize: 10 }}>Rp {numeral(parseInt(data.minPrice, 0)).format('0,0')} - Rp {numeral(parseInt(data.minPrice, 0)).format('0,0')} /Kg</Text>
             </View>
             <CheckBox
-              center
-              onPress={() => this.checkItem(data)}
-              checked={this.state.checkedSelected.includes(data)}
-              uncheckedColor='#000000'
-              checkedColor='#000000'
-              containerStyle={{
+              style={{
                 borderWidth: 0,
                 padding: 0,
                 margin: 0,
                 marginTop: 10,
                 width: 40
               }}
+              onClick={() => this.checkItem(data)}
+              isChecked={this.state.checkedSelected.includes(data)}
             />
           </View>
         </View>
@@ -281,40 +272,49 @@ class RequestFormOrderSecondPage extends Component {
       return <Spinner size="large" />
     }
 
+    console.log(dataSupplier, 'COTLAH');
     return (
       <View style={{ flex: 1 }}>
         <StatusBar
           backgroundColor={COLOR.primary}
           barStyle="light-content"
         />
-        <ScrollView>
-          {/* <View style={{ paddingLeft: '73%' }}>
-            <View style={styles.itemContainerStyle}>
-              <CheckBox
-                center
-                title='Check All'
-                onPress={() => this.checkAll(dataSupplier)}
-                checked={checkedSelected === dataSupplier}
-              />
-            </View>
-          </View> */}
-
-          <FlatList
-            data={[this.state.dataSupplier]}
-            renderItem={({ item }) => this.renderItem(item)}
-          />
-        </ScrollView>
         {
           dataSupplier.length === 0 ?
-            <View style={{ margin: 10 }}>
+            <View style={{ marginTop: '50%' }}>
               <Text style={{ textAlign: 'center' }}>Ups... Maaf tidak ada daftar nelayan.</Text>
               <Text style={{ textAlign: 'center' }}>Silahkan coba ganti Nama Ikan / Provinsi / Kota.</Text>
             </View>
             :
-            <View style={{ margin: 10 }}>
-              <ContainerSection>
-                {this.renderButton()}
-              </ContainerSection>
+            <View>
+              <ScrollView>
+                {/* <View style={{ paddingLeft: '73%' }}>
+                  <View style={styles.itemContainerStyle}>
+                    <CheckBox
+                      style={{
+                        borderWidth: 0,
+                        padding: 0,
+                        margin: 0,
+                        marginTop: 10,
+                        width: 40
+                      }}
+                      rightText='Check Semua'
+                      onClick={() => this.checkAll(dataSupplier)}
+                      isChecked={checkedSelected.length === dataSupplier.length}
+                    />
+                  </View>
+                </View> */}
+
+                <FlatList
+                  data={[dataSupplier]}
+                  renderItem={({ item }) => this.renderItem(item)}
+                />
+              </ScrollView>
+              <View style={{ margin: 10 }}>
+                <ContainerSection>
+                  {this.renderButton()}
+                </ContainerSection>
+              </View>
             </View>
         }
       </View>
@@ -325,10 +325,7 @@ class RequestFormOrderSecondPage extends Component {
 
 const styles = {
   card: {
-    // borderWidth: 1,
     borderRadius: 2,
-    // borderColor: '#ddd',
-    // borderBottomWidth: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

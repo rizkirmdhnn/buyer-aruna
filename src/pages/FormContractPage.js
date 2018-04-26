@@ -10,6 +10,7 @@ import {
   AsyncStorage,
   TouchableNativeFeedback,
   TouchableWithoutFeedback,
+  TouchableOpacity,
   ToastAndroid,
   Keyboard,
   Picker,
@@ -18,8 +19,10 @@ import {
 import axios from 'axios';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
-import { CheckBox } from 'react-native-elements'
+// import { CheckBox } from 'react-native-elements'
+import CheckBox from 'react-native-check-box'
 import Icon from 'react-native-vector-icons/Ionicons'
+import AutoComplete from '../components/AutoComplete';
 
 import {
   Input,
@@ -63,7 +66,6 @@ class FormContractPage extends Component {
       tanggalPenggiriman: false,
       tanggalDP: false,
       loading: null,
-      refreshing: true,
       photo: null,
       dataMaster: '',
       dateNowPickPengiriman: '',
@@ -89,7 +91,10 @@ class FormContractPage extends Component {
       hargaTot: 0,
       unitFish: '',
       dataMapCity: '',
-      cityId: ''
+      cityId: '',
+      suggestions: [],
+      value: '',
+      isDisabled: true
     }
   }
 
@@ -104,26 +109,12 @@ class FormContractPage extends Component {
       fishDescribe: this.props.navigation.state.params.datas.Request.Transaction.describe,
       hargaTot: totLah
     });
-
-    AsyncStorage.getItem('loginCredential', (err, resultToken) => {
-      if (resultToken) {
-        return this.getData(resultToken);
-      }
-    });
   }
 
   onChangeInput = (name, v) => {
     this.setState({ [name]: v }, () => {
       console.log('Panggil Sum');
       this.sum();
-    });
-  }
-
-  onRefresh() {
-    this.setState({
-      refreshing: true
-    }, () => {
-      this.getData();
     });
   }
 
@@ -204,7 +195,7 @@ class FormContractPage extends Component {
                                           default:
                                             console.log('Presentase Komoditas Reject Tidak Kosong');
                                             switch (cityId) {
-                                              case '0':
+                                              case '':
                                                 return ToastAndroid.show('Kota Tidak Boleh Kosong', ToastAndroid.SHORT)
                                               default:
                                                 return this.onSubmit();
@@ -222,6 +213,7 @@ class FormContractPage extends Component {
   }
 
   onSubmit = () => {
+    console.log(this.state, 'STATE');
     Keyboard.dismiss()
     const dataContract = {
       fishDescribe: this.state.fishDescribe,
@@ -271,6 +263,7 @@ class FormContractPage extends Component {
           this.setState({ loading: false })
         })
         .catch(error => {
+          console.log(error.response.data.message, 'Error Kontrak');
           if (error.response) {
             ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
           }
@@ -281,26 +274,35 @@ class FormContractPage extends Component {
     })
   }
 
-
-  getData(token) {
-    axios.get(`${BASE_URL}/cities`, {
-      headers: { 'x-access-token': token }
+  onItemSelected = (item) => {
+    console.log(item, 'Ikan terpilih');
+    this.setState({
+      suggestions: [],
+      cityId: item.id,
+      value: item.name
     })
-      .then(response => {
-        res = response.data.data;
-        this.setState({ dataMapCity: res, refreshing: false });
-        console.log(res, 'DATA CITY');
+  }
+
+  querySuggestion = (text) => {
+    this.setState({ value: text })
+    AsyncStorage.getItem('loginCredential', (err, result) => {
+      axios.get(`${BASE_URL}/cities/search?key=${text}&pageSize=5sorting=ASC`, {
+        headers: { 'x-access-token': result }
       })
-      .catch(error => {
-        this.setState({ refreshing: false })
-        ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
-        // if (error.response) {
-        //   alert(error.response.data.message)
-        // }
-        // else {
-        //   alert('Koneksi internet bermasalah Provinsi')
-        // }
-      })
+        .then(response => {
+          res = response.data.data
+          this.setState({ suggestions: res })
+          console.log(res, 'Auto Complete Nya')
+        })
+        .catch(error => {
+          if (error.response) {
+            alert('Internet anda Lemot')
+          }
+          else {
+            alert('Koneksi internet bermasalah')
+          }
+        })
+    });
   }
 
 
@@ -390,8 +392,15 @@ class FormContractPage extends Component {
 
   sum() {
     const { price, quantity } = this.state;
+    // total
     const totLah = parseInt(price, 0) * parseInt(quantity, 0);
-    this.setState({ hargaTot: totLah })
+
+    // dp
+    const dp = parseInt((totLah * 0.3), 0)
+    this.setState({
+      hargaTot: totLah,
+      dpAmount: dp
+    })
   }
 
   renderPickerCity = () => {
@@ -446,7 +455,9 @@ class FormContractPage extends Component {
       dataMaster,
       locationEdit,
       hargaTot,
-      cityId
+      value,
+      suggestions,
+      isDisabled
     } = this.state
 
     const addressBuyer = dataMaster.Request.Buyer.address;
@@ -454,12 +465,6 @@ class FormContractPage extends Component {
     return (
       <ScrollView
         keyboardShouldPersistTaps="always"
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.refreshing}
-            onRefresh={this.onRefresh.bind(this)}
-          />
-        }
       >
         <Container>
 
@@ -579,9 +584,9 @@ class FormContractPage extends Component {
           </ContainerSection>
 
           <CheckBox
-            title='Lokasi penerimaan komoditas sama dengan lokasi pembeli'
-            onPress={() => this.checkItem(addressBuyer)}
-            checked={locationOfreception.includes(addressBuyer)}
+            rightText='Lokasi penerimaan komoditas sama dengan lokasi pembeli'
+            onClick={() => this.checkItem(addressBuyer)}
+            isChecked={locationOfreception.includes(addressBuyer)}
           />
 
           <ContainerSection>
@@ -598,20 +603,27 @@ class FormContractPage extends Component {
           </ContainerSection>
 
           <ContainerSection>
-            <View style={styles.pickerContainer}>
-              <Text style={styles.pickerTextStyle}>Kota</Text>
-              <View style={styles.pickerStyleBox}>
-                <View style={styles.pickerStyle}>
-                  <Picker
-                    selectedValue={cityId}
-                    onValueChange={v => this.onChangeInput('cityId', v)}
+            <AutoComplete
+              label="Kota"
+              placeholder="Kota"
+              suggestions={suggestions}
+              onChangeText={text => this.querySuggestion(text)}
+              value={value}
+              editable={isDisabled}
+            >
+              {
+                suggestions && suggestions.map(item =>
+                  <TouchableOpacity
+                    key={item.id}
+                    onPress={() => this.onItemSelected(item)}
                   >
-                    <Picker.Item label='Pilih Kota' value='0' />
-                    {this.renderPickerCity()}
-                  </Picker>
-                </View>
-              </View>
-            </View>
+                    <View style={styles.containerItemAutoSelect}>
+                      <Text>{item.name}</Text>
+                    </View>
+                  </TouchableOpacity>
+                )
+              }
+            </AutoComplete>
           </ContainerSection>
 
           <ContainerSection>
@@ -626,7 +638,6 @@ class FormContractPage extends Component {
               keyboardType="numeric"
               editable={false}
               value={dpAmount ? numeral(parseInt(dpAmount, 0)).format('0,0') : ''}
-              onChangeText={v => this.onChangeInput('dpAmount', v.replace(/\./g, ''))}
             />
           </ContainerSection>
 

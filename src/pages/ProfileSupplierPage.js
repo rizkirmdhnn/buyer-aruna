@@ -134,7 +134,7 @@ class ProfileSupplierPage extends Component {
                   <Text style={{ color: COLOR.secondary_a, fontSize: 18 }}>{item.Fish && item.Fish.name}</Text>
                   <View style={{ flexDirection: 'row', marginTop: 10, marginBottom: 10 }}>
                     <Text>Kapasitas :</Text>
-                    <Text style={{ textAlign: 'right', marginLeft: '20%', fontWeight: 'bold', fontSize: 16 }}>{numeral(parseInt(item.capacity, 0)).format('0,0')}</Text>
+                    <Text style={{ textAlign: 'right', marginLeft: '20%', fontWeight: 'bold', fontSize: 16 }}>{numeral(parseInt(item.capacity, 0)).format('0,0')} Kg</Text>
                   </View>
                 </View>
               </CardSection>

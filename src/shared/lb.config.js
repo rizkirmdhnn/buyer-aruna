@@ -20,7 +20,7 @@ export const COLOR = {
   element_a3: '#006aaf',
   element_a4: '#005181',
 
-  secondary_b: '#faa51a',
+  secondary_b: '#42A5F5',
   element_b1: '#f8bb7c',
   element_b2: '#faa51a',
   element_b3: '#f36e21',

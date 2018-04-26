@@ -102,6 +102,7 @@ class DetailFishesPage extends Component {
                                     <Image
                                         style={styles.thumbnailStyle}
                                         source={{ uri: `${BASE_URL}/images/${dataFish.photo}` }}
+                                        resizeMode='contain'
                                     />
                                 </View>
                             </View>
@@ -110,25 +111,25 @@ class DetailFishesPage extends Component {
                         <View style={{ borderBottomWidth: 1, borderColor: '#eaeaea' }}>
                             <View style={styles.card}>
                                 <ContainerSection>
-                                    <View style={{ flex: 1, flexDirection: 'row' }}>
-                                        <Text style={{ flex: 1, fontSize: 20, fontWeight: 'bold' }}>{dataFish.name} /</Text>
-                                        <Text style={{ flex: 1, fontSize: 16 }}>{dataFish.localName === null ? '' : dataFish.localName} /</Text>
-                                        <Text style={{ flex: 1, fontSize: 16 }}>{dataFish.habitat === null ? '' : dataFish.habitat}</Text>
+                                    <View style={{ flex: 1, flexDirection: 'column' }}>
+                                        <Text style={{ flex: 1, fontSize: 20, fontWeight: 'bold', paddingLeft: '5%', paddingTop: '7%' }}>{dataFish.name}</Text>
+                                        <Text style={{ flex: 1, fontSize: 14, paddingLeft: '5%', paddingTop: '-2%' }}>{dataFish.localName === null ? '' : dataFish.localName} </Text>
+                                        <Text style={{ flex: 1, fontSize: 14, paddingLeft: '6%', paddingTop: '2%', fontWeight: 'bold' }}>{dataFish.description === null ? '' : dataFish.description}</Text>
+                                        <View style={{ borderTopWidth: 1, borderColor: '#e2e2e2', width: '90%', marginLeft: '5%', marginRight: '5%', marginBottom: 20, marginTop: 5 }} />
                                     </View>
                                 </ContainerSection>
 
                                 <ContainerSection>
                                     <View style={{ flexDirection: 'column' }}>
-                                        <View>
-                                            <Text style={{ flex: 1, fontSize: 13 }}>{dataFish.description}</Text>
-                                        </View>
+                                        <Text style={{ flex: 1, fontSize: 16, paddingLeft: '5%', paddingTop: '-2%', fontWeight: 'bold' }}>Habitat Komoditas</Text>
+                                        <Text style={{ flex: 1, fontSize: 14, paddingLeft: '5%', paddingTop: '-2%', textAlign: 'center' }}>{dataFish.habitat === null ? '' : dataFish.habitat}</Text>
                                     </View>
                                 </ContainerSection>
                             </View>
                         </View>
                     </View>
                 </ScrollView>
-                <View style={{ padding: 12, margin: 30, marginBottom: 0, marginTop: 0, height: 60 }}>
+                <View style={{ padding: 12, paddingLeft: 5, paddingRight: 5, margin: 5, marginBottom: 0, marginTop: 0, height: 60 }}>
                     <ButtonOrder onPress={() => { this.createRequest(dataFish); }}>
                         <Text style={{ marginTop: 1 }}>Buat Permintaan</Text>
                     </ButtonOrder>
@@ -143,11 +144,11 @@ class DetailFishesPage extends Component {
 const styles = {
     thumbnailStyle: {
         height: 290,
-        width: 330,
+        width: 350,
         borderWidth: 1,
         alignSelf: 'stretch',
         resizeMode: 'cover',
-        marginLeft: -5,
+        marginLeft: -4,
     },
     thumbnailContainerStyle: {
         justifyContent: 'center',

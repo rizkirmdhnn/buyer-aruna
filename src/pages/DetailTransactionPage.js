@@ -16,7 +16,8 @@ import { NavigationActions } from 'react-navigation';
 import moment from 'moment';
 import numeral from 'numeral';
 import axios from 'axios';
-import { CheckBox, Rating } from 'react-native-elements';
+import CheckBox from 'react-native-check-box'
+import { Rating } from 'react-native-elements';
 import ImagePicker from 'react-native-image-picker';
 import { Card, Button, ContainerSection, Spinner, Input } from '../components/common'
 import { BASE_URL, COLOR } from './../shared/lb.config';
@@ -128,7 +129,8 @@ class DetailTransactionPage extends Component {
       doneExpanded: false,
 
 
-      reviewKomentar: ''
+      reviewKomentar: '',
+      rate: ''
     }
   }
 
@@ -676,16 +678,15 @@ class DetailTransactionPage extends Component {
           .catch(error => {
             console.log(error);
             ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
-            // if (error.response) {
-            //   alert(error.response.data.message)
-            // }
-            // else {
-            //   alert('Koneksi internet bermasalah Revision')
-            // }
             this.setState({ loader: false })
           })
       }
     });
+  }
+
+  ratingCompleted = (rating) => {
+    this.setState({ rate: rating });
+    console.log(rating, 'Rating');
   }
 
 
@@ -694,7 +695,7 @@ class DetailTransactionPage extends Component {
     const idOrder = this.state.dataTransaction.id;
     this.setState({ loader: true });
     const dataReviews = {
-      rating: 4,
+      rating: this.state.rate,
       comment: this.state.reviewKomentar
     }
     console.log(idOrder, '', dataReviews)
@@ -798,6 +799,9 @@ class DetailTransactionPage extends Component {
       dataSampleSurvey
     } = this.state
 
+    const surpei = 'Survei';
+    const sampel = 'Sample';
+
     return (
       <View
         style={{ flex: 1 }}
@@ -849,14 +853,17 @@ class DetailTransactionPage extends Component {
                           <View style={{ paddingTop: 10 }}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
                               <CheckBox
-                                title='Survei'
-                                checked={survey}
-                                onPress={() => this.checkBoxSurvey()}
+                                style={{ flex: 1, padding: 10 }}
+                                rightText={surpei}
+                                onClick={() => this.checkBoxSurvey()}
+                                isChecked={survey}
                               />
+
                               <CheckBox
-                                title='Sample'
-                                checked={sample}
-                                onPress={() => this.checkBoxSample()}
+                                style={{ flex: 1, padding: 10 }}
+                                rightText={sampel}
+                                onClick={() => this.checkBoxSample()}
+                                isChecked={sample}
                               />
                             </View>
                           </View>
@@ -963,7 +970,7 @@ class DetailTransactionPage extends Component {
                                     <Text>File</Text>
                                     <Text>Keterangan</Text>
                                   </View>
-                                  <View style={{ flex: 1 }}>
+                                  <View style={{ flex: 2 }}>
                                     <Text>{this.state.dataTransaction.Contract.Status.name}</Text>
                                     <TouchableOpacity onPress={() => Linking.openURL(`${BASE_URL}/files/${this.state.dataTransaction.Contract.file}`).catch(err => console.error('An error occurred', err))}>
                                       <View style={{ flexDirection: 'row' }}>
@@ -1190,7 +1197,7 @@ class DetailTransactionPage extends Component {
                           {
                             collectionPending ?
                               <View>
-                                <Text>Nelayan sudah melakukan upload foto pengumupulan, sedang diverifikasi oleh admin</Text>
+                                <Text>Nelayan sudah melakukan upload foto pengumpulan, sedang diverifikasi oleh admin</Text>
                               </View>
                               :
                               <View />
@@ -1511,7 +1518,8 @@ class DetailTransactionPage extends Component {
                               <View style={{ alignItems: 'center', flex: 1, marginBottom: 20 }}>
                                 <Rating
                                   imageSize={20}
-                                  startingValue={3.5}
+                                  startingValue={0}
+                                  onFinishRating={this.ratingCompleted}
                                 />
                               </View>
                               <Input

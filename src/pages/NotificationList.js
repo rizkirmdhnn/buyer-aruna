@@ -6,7 +6,7 @@ import axios from 'axios'
 
 import { Card } from '../components/common'
 import { notificationsFetch, unreadNotifFetch } from '../redux/actions'
-import { BASE_URL } from '../shared/lb.config';
+import { BASE_URL, COLOR } from '../shared/lb.config';
 
 class NotificationList extends Component {
 	static navigationOptions = {
@@ -41,42 +41,55 @@ class NotificationList extends Component {
 		let token = this.props.user.token
 		let newType = type
 
-		if (type === 'messages') {
-			newType = 'orders'
-		}
+		if (type === 'Contact Admin') {
+			link = 'MessageAdmin'
 
-		axios.get(`${BASE_URL}/buyer/${newType}/${id}`, {
-			headers: { token }
-		})
-			.then(response => {
-				this.setState({ refreshing: false })
-				let link = 'DetailRequestOrder'
-				let additionalProps = {
-					datas: response.data.data
-				}
+			additionalProps = {
+				id: 1,
+				codeNumber: 'chat admin',
+				organizationType: 'Admin Aruna',
+			}
 
-				if (type === 'orders') {
-					link = 'DetailTransaction'
-				}
-				else if (type === 'messages') {
-					link = 'Message'
-					additionalProps = {
-						idData: response.data.data
+			this.props.navigation.navigate(link, additionalProps)
+			this.setState({ loading: false })
+		} else {
+			if (type === 'messages') {
+				newType = 'orders'
+			}
+
+			axios.get(`${BASE_URL}/buyer/${newType}/${id}`, {
+				headers: { token }
+			})
+				.then(response => {
+					this.setState({ refreshing: false })
+					let link = 'DetailRequestOrder'
+					let additionalProps = {
+						datas: response.data.data
 					}
-				}
 
-				this.props.navigation.navigate(link, additionalProps)
-			})
-			.catch(error => {
-				console.log(error)
-				if (error.response) {
-					ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
-				}
-				else {
-					ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
-				}
-				this.setState({ refreshing: false })
-			})
+					if (type === 'orders') {
+						link = 'DetailTransaction'
+					}
+					else if (type === 'messages') {
+						link = 'Message'
+						additionalProps = {
+							idData: response.data.data
+						}
+					}
+
+					this.props.navigation.navigate(link, additionalProps)
+				})
+				.catch(error => {
+					console.log(error)
+					if (error.response) {
+						ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
+					}
+					else {
+						ToastAndroid.show('Koneksi internet bermasalah', ToastAndroid.SHORT)
+					}
+					this.setState({ refreshing: false })
+				});
+		}
 	}
 
 	renderItem = (item) => {

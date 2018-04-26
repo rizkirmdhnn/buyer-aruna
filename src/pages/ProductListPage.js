@@ -4,7 +4,7 @@ import axios from 'axios';
 import {
     InputSearch
 } from './../components/common';
-import { BASE_URL } from './../shared/lb.config';
+import { BASE_URL, COLOR } from './../shared/lb.config';
 
 class ProductListPage extends Component {
 
@@ -103,6 +103,7 @@ class ProductListPage extends Component {
                             <Image
                                 style={styles.thumbnailStyle}
                                 source={{ uri: `${BASE_URL}/images/${item.photo}` }}
+                                resizeMode='contain'
                             />
                         </View>
                         <View style={styles.headerContentStyle}>
@@ -123,6 +124,7 @@ class ProductListPage extends Component {
                             <Image
                                 style={styles.thumbnailStyle}
                                 source={{ uri: `${BASE_URL}/images/${item.photo}` }}
+                                resizeMode='contain'
                             />
                         </View>
                         <View style={styles.headerContentStyle}>
@@ -203,8 +205,8 @@ const styles = {
     },
     headerTextStyle: {
         fontSize: 20,
-        color: 'black',
-        fontWeight: 'bold'
+        color: COLOR.secondary_b,
+        fontFamily: 'Muli-Bold'
     },
     titleTextStyle: {
         fontSize: 15,

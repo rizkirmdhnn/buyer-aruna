@@ -294,7 +294,7 @@ const styles = {
   headerTextStyle: {
     fontSize: 20,
     color: 'black',
-    fontWeight: 'bold'
+    fontFamily: 'Muli-Bold'
   },
   titleTextStyle: {
     fontSize: 15,

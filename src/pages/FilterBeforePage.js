@@ -16,7 +16,8 @@ import numeral from 'numeral';
 import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import { NavigationActions } from 'react-navigation';
-import { CheckBox } from 'react-native-elements';
+import CheckBox from 'react-native-check-box'
+// import { CheckBox } from 'react-native-elements';
 import { BASE_URL, COLOR } from './../shared/lb.config';
 import { InputSearch } from '../components/common';
 
@@ -210,6 +211,17 @@ class FilterBeforePage extends Component {
           </View>
           <View style={{ flex: 1 }}>
             <CheckBox
+              style={{
+                borderWidth: 0,
+                padding: 0,
+                margin: 0,
+                marginTop: 10,
+                width: 25
+              }}
+              onClick={() => this.checkItem(item)}
+              isChecked={this.state.checkedSupplier.includes(item)}
+            />
+            {/* <CheckBox
               containerStyle={{
                 borderWidth: 0,
                 padding: 0,
@@ -219,7 +231,7 @@ class FilterBeforePage extends Component {
               }}
               onPress={() => this.checkItem(item)}
               checked={this.state.checkedSupplier.includes(item)}
-            />
+            /> */}
           </View>
         </View>
       </View>
