@@ -349,7 +349,7 @@ class FormContractRevisionPage extends Component {
   querySuggestion = (text) => {
     this.setState({ value: text })
     AsyncStorage.getItem('loginCredential', (err, result) => {
-      axios.get(`${BASE_URL}/fishes?key=${text}&pageSize=5sorting=ASC`, {
+      axios.get(`${BASE_URL}/cities/search?key=${text}&pageSize=5sorting=ASC`, {
         headers: { 'x-access-token': result }
       })
         .then(response => {
@@ -505,6 +505,7 @@ class FormContractRevisionPage extends Component {
 
       price,
       locationOfreception,
+      locationOfreceptionTemp,
       dpAmount,
       fishReject,
       maxFishReject,
@@ -521,6 +522,7 @@ class FormContractRevisionPage extends Component {
 
     const sizeConvert = { uri: `${BASE_URL}/images/${this.state.dataMaster.Request.Transaction.photo}` };
     const addressBuyer = dataMaster.Request.Buyer.address;
+    console.log(locationOfreceptionTemp, 'TEMP NIH');
 
     return (
       <ScrollView
@@ -662,7 +664,7 @@ class FormContractRevisionPage extends Component {
           <CheckBox
             rightText='Lokasi penerimaan komoditas sama dengan lokasi pembeli'
             onClick={() => this.checkItem(addressBuyer)}
-            isChecked={locationOfreception.includes(addressBuyer)}
+            isChecked={locationOfreceptionTemp.includes(addressBuyer)}
           />
 
           <ContainerSection>

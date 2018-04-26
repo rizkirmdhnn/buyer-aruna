@@ -865,17 +865,6 @@ class DetailTransactionPage extends Component {
                                 onClick={() => this.checkBoxSample()}
                                 isChecked={sample}
                               />
-
-                              {/* <CheckBox
-                                title='Survei'
-                                checked={survey}
-                                onPress={() => this.checkBoxSurvey()}
-                              /> */}
-                              {/* <CheckBox
-                                title='Sample'
-                                checked={sample}
-                                onPress={() => this.checkBoxSample()}
-                              /> */}
                             </View>
                           </View>
                           <View style={{ marginTop: 10 }}>

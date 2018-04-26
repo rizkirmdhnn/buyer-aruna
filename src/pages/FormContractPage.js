@@ -66,7 +66,6 @@ class FormContractPage extends Component {
       tanggalPenggiriman: false,
       tanggalDP: false,
       loading: null,
-      refreshing: true,
       photo: null,
       dataMaster: '',
       dateNowPickPengiriman: '',
@@ -110,26 +109,12 @@ class FormContractPage extends Component {
       fishDescribe: this.props.navigation.state.params.datas.Request.Transaction.describe,
       hargaTot: totLah
     });
-
-    AsyncStorage.getItem('loginCredential', (err, resultToken) => {
-      if (resultToken) {
-        return this.getData(resultToken);
-      }
-    });
   }
 
   onChangeInput = (name, v) => {
     this.setState({ [name]: v }, () => {
       console.log('Panggil Sum');
       this.sum();
-    });
-  }
-
-  onRefresh() {
-    this.setState({
-      refreshing: true
-    }, () => {
-      this.getData();
     });
   }
 
@@ -210,7 +195,7 @@ class FormContractPage extends Component {
                                           default:
                                             console.log('Presentase Komoditas Reject Tidak Kosong');
                                             switch (cityId) {
-                                              case '0':
+                                              case '':
                                                 return ToastAndroid.show('Kota Tidak Boleh Kosong', ToastAndroid.SHORT)
                                               default:
                                                 return this.onSubmit();
@@ -278,6 +263,7 @@ class FormContractPage extends Component {
           this.setState({ loading: false })
         })
         .catch(error => {
+          console.log(error.response.data.message, 'Error Kontrak');
           if (error.response) {
             ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
           }
@@ -297,32 +283,10 @@ class FormContractPage extends Component {
     })
   }
 
-
-  getData(token) {
-    axios.get(`${BASE_URL}/cities`, {
-      headers: { 'x-access-token': token }
-    })
-      .then(response => {
-        res = response.data.data;
-        this.setState({ dataMapCity: res, refreshing: false });
-        console.log(res, 'DATA CITY');
-      })
-      .catch(error => {
-        this.setState({ refreshing: false })
-        ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
-        // if (error.response) {
-        //   alert(error.response.data.message)
-        // }
-        // else {
-        //   alert('Koneksi internet bermasalah Provinsi')
-        // }
-      })
-  }
-
   querySuggestion = (text) => {
     this.setState({ value: text })
     AsyncStorage.getItem('loginCredential', (err, result) => {
-      axios.get(`${BASE_URL}/fishes?key=${text}&pageSize=5sorting=ASC`, {
+      axios.get(`${BASE_URL}/cities/search?key=${text}&pageSize=5sorting=ASC`, {
         headers: { 'x-access-token': result }
       })
         .then(response => {
@@ -501,12 +465,6 @@ class FormContractPage extends Component {
     return (
       <ScrollView
         keyboardShouldPersistTaps="always"
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.refreshing}
-            onRefresh={this.onRefresh.bind(this)}
-          />
-        }
       >
         <Container>
 
