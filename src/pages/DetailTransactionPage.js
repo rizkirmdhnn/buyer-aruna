@@ -129,7 +129,8 @@ class DetailTransactionPage extends Component {
       doneExpanded: false,
 
 
-      reviewKomentar: ''
+      reviewKomentar: '',
+      rate: ''
     }
   }
 
@@ -677,16 +678,15 @@ class DetailTransactionPage extends Component {
           .catch(error => {
             console.log(error);
             ToastAndroid.show('Internet Bermasalah', ToastAndroid.SHORT);
-            // if (error.response) {
-            //   alert(error.response.data.message)
-            // }
-            // else {
-            //   alert('Koneksi internet bermasalah Revision')
-            // }
             this.setState({ loader: false })
           })
       }
     });
+  }
+
+  ratingCompleted = (rating) => {
+    this.setState({ rate: rating });
+    console.log(rating, 'Rating');
   }
 
 
@@ -695,7 +695,7 @@ class DetailTransactionPage extends Component {
     const idOrder = this.state.dataTransaction.id;
     this.setState({ loader: true });
     const dataReviews = {
-      rating: 4,
+      rating: this.state.rate,
       comment: this.state.reviewKomentar
     }
     console.log(idOrder, '', dataReviews)
@@ -1518,7 +1518,8 @@ class DetailTransactionPage extends Component {
                               <View style={{ alignItems: 'center', flex: 1, marginBottom: 20 }}>
                                 <Rating
                                   imageSize={20}
-                                  startingValue={3.5}
+                                  startingValue={0}
+                                  onFinishRating={this.ratingCompleted}
                                 />
                               </View>
                               <Input
